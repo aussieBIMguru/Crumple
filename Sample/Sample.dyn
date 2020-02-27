@@ -1,0 +1,553 @@
+{
+  "Uuid": "e643fa75-e24b-495e-9287-9b3e9e63fb39",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "Demonstration",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nfrom System import Environment\r\nOUT = Environment.UserName",
+      "VariableInputPorts": true,
+      "Id": "e4f896f00eb4461aac740a15aec7cadf",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "11c02faf936c4778b7cb6932345cda43",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "4b3a2a49-0a7a-44f2-b257-e74f19adf4a8",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "fdfdba797f4f4cefa3fc8e1220cf8dd6",
+      "Inputs": [
+        {
+          "Id": "7c68f21d5e874843a2c35d63dfe8b87a",
+          "Name": "Refresh",
+          "Description": "bool\nDefault value : true",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "3e088128e05c442aa18f34bf435949ef",
+          "Name": "UserName",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "19b5c5ac330c4f749995774cc37606fc",
+          "Name": "RevitName",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "20c4745718224a52a38a163b55f90e0e",
+          "Name": "RevitPath",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "f7ded638d1e7402a9356e963e4952e16",
+          "Name": "ScriptName",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "This node returns values about the current session, useful for tracking scripts! Username, Revit file name/path and Dynamo script name (for 2.X versions) are returned."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "b08696b5-5d67-47d8-bad8-e7834373b2c0",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "fd783871b61949c4b62b131739efbcb3",
+      "Inputs": [
+        {
+          "Id": "8139c9c19fda4fc0b3b84aa8e499e309",
+          "Name": "Refresh",
+          "Description": "bool\nDefault value : true",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "daf8b601120447e9a9cd09efef10a1f6",
+          "Name": "Full",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "b00a825d555b4c588dbd4470792e7846",
+          "Name": "DatePrefix",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a683124f829f429b95e531c2e7538e98",
+          "Name": "TimeSuffix",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "A typical date time format for the current time, as well as date prefix and time suffix fields. These are typically useful for appending to file names generated via Dynamo."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "56d07fb7-96c6-4441-9746-b818d2f37007",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "f61a5c47d04a4f29838a20beebea6402",
+      "Inputs": [
+        {
+          "Id": "c04eca0bf0fc466aaa2eb955abc0145a",
+          "Name": "If",
+          "Description": "bool\nDefault value : true",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "153a167aa71d477ebf35f2bbe1050586",
+          "Name": "Then",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "331f19e9753046e7ba98479a65ec0e6a",
+          "Name": "Else",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "4e0a7920c6fb4bd493a1f143a8feed47",
+          "Name": "Output",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "A simple if/then/else logic gate. If true, you get the 'then' input, otherwise you get the 'else' input. Unlike the OOTB 'If' node, this one allows differing list sizes."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "true;\n1..3..1;\n1..4..1;",
+      "Id": "a30653610b0c466281f52beaa0c4d9a0",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "f034b1a8f66e48f48e0eee7134410c0a",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "1345eaa2a0a04d5aac1954c86751a9ec",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "f7d34b57b11049818d9f728796e5d577",
+          "Name": "",
+          "Description": "Value of expression at line 3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "9ae1a7ec-8a71-4e6c-9d3a-422f659043e4",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "6a0019bae4c5485ebce2a1b807e78420",
+      "Inputs": [
+        {
+          "Id": "5111f8a1b72642619581637cfec4e074",
+          "Name": "Item",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": true,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f8f60a9bc67b4f57a806ac31fc48019d",
+          "Name": "List",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "A basic node to check if the input is in the form of a list, and if not it forces it to become one. This simple python script is useful for incorporation into larger scripts for iterating."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "[5,\n[5]];",
+      "Id": "2a7d60ba124140439b4e863b4ae9d54f",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "aadc7b875fc844a7a1f0a1876e154c7c",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "985622ec-b857-41c9-9899-8f502a60c2f9",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "730a6d7cabb94275b19dc67fbaec7a3a",
+      "Inputs": [
+        {
+          "Id": "d16099df2e634ebf9ec4fecf736a62fd",
+          "Name": "Data",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "6a3b9d3b4b354e73a9d6cdff5b716c8d",
+          "Name": "Kick",
+          "Description": "int\nDefault value : 1",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "65df66bf24bc4044a61abb0fadf2687d",
+          "Name": "Flip!",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Drops a certain number of rows from the front a list, then transposes it. Handy for pre-processing Excel data!"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "[[\"headers\"],\n[1,2,3],\n[4,5,6],\n[7,8,9]];\n1;",
+      "Id": "aa6022e899ea43c29d788882b15ee46c",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "7a93fef09ab246449c751ea94a02dd3c",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "9386c09767a14a9da160a18e3e8389be",
+          "Name": "",
+          "Description": "Value of expression at line 5",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "4b65e9b1-efb6-4261-be34-2d2c65ca5c5e",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "ac8c2b8dbe564d45a7a9c8ca2bf7c8bc",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "3c5bde68941f477d9a41dda813b22d96",
+          "Name": "About",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "About the package."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "f034b1a8f66e48f48e0eee7134410c0a",
+      "End": "c04eca0bf0fc466aaa2eb955abc0145a",
+      "Id": "22bb6cde0cc04193bede774c077d1b61"
+    },
+    {
+      "Start": "1345eaa2a0a04d5aac1954c86751a9ec",
+      "End": "153a167aa71d477ebf35f2bbe1050586",
+      "Id": "0ad2825877e94deb9e8e7e03856ae0f6"
+    },
+    {
+      "Start": "f7d34b57b11049818d9f728796e5d577",
+      "End": "331f19e9753046e7ba98479a65ec0e6a",
+      "Id": "eafa053c03f541f5a618505f5d20c0ea"
+    },
+    {
+      "Start": "aadc7b875fc844a7a1f0a1876e154c7c",
+      "End": "5111f8a1b72642619581637cfec4e074",
+      "Id": "7bb19517349246f9b31c97fc211273a3"
+    },
+    {
+      "Start": "7a93fef09ab246449c751ea94a02dd3c",
+      "End": "d16099df2e634ebf9ec4fecf736a62fd",
+      "Id": "7b5b67f1d229437a94ad29976aa94863"
+    },
+    {
+      "Start": "9386c09767a14a9da160a18e3e8389be",
+      "End": "6a3b9d3b4b354e73a9d6cdff5b716c8d",
+      "Id": "241a5bcdfc3b40e698f71c780b035ef5"
+    }
+  ],
+  "Dependencies": [
+    "4b3a2a49-0a7a-44f2-b257-e74f19adf4a8",
+    "b08696b5-5d67-47d8-bad8-e7834373b2c0",
+    "56d07fb7-96c6-4441-9746-b818d2f37007",
+    "9ae1a7ec-8a71-4e6c-9d3a-422f659043e4",
+    "985622ec-b857-41c9-9899-8f502a60c2f9",
+    "4b65e9b1-efb6-4261-be34-2d2c65ca5c5e"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Crumple",
+      "Version": "0.0.1",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "fdfdba797f4f4cefa3fc8e1220cf8dd6",
+        "fd783871b61949c4b62b131739efbcb3",
+        "f61a5c47d04a4f29838a20beebea6402",
+        "6a0019bae4c5485ebce2a1b807e78420",
+        "730a6d7cabb94275b19dc67fbaec7a3a",
+        "ac8c2b8dbe564d45a7a9c8ca2bf7c8bc"
+      ]
+    }
+  ],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -11.043384345179302,
+      "EyeY": -125.86860381844261,
+      "EyeZ": 1.2048454488474647,
+      "LookX": 26.655947466758825,
+      "LookY": 21.709384362656778,
+      "LookZ": 39.802201508638063,
+      "UpX": 0.11569241652453324,
+      "UpY": -0.978147600733808,
+      "UpZ": 0.17274992311840229
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "e4f896f00eb4461aac740a15aec7cadf",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 289.0,
+        "Y": 139.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "SessionData",
+        "Id": "fdfdba797f4f4cefa3fc8e1220cf8dd6",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1602.43989806149,
+        "Y": 56.489541231436874
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "DateTimeFormatted",
+        "Id": "fd783871b61949c4b62b131739efbcb3",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1609.4924895752531,
+        "Y": -429.06201435180361
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "IfThenElse",
+        "Id": "f61a5c47d04a4f29838a20beebea6402",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1316.6184626567197,
+        "Y": -428.22071487181552
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "a30653610b0c466281f52beaa0c4d9a0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1169.2552630208065,
+        "Y": -418.49475433952415
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "ListForce",
+        "Id": "6a0019bae4c5485ebce2a1b807e78420",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1692.7799708911243,
+        "Y": -183.42590824669028
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "2a7d60ba124140439b4e863b4ae9d54f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1573.5864467147142,
+        "Y": -179.21261390220366
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "ListKickFlip",
+        "Id": "730a6d7cabb94275b19dc67fbaec7a3a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1320.368278521782,
+        "Y": -31.570668670613486
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "aa6022e899ea43c29d788882b15ee46c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1131.3009119922672,
+        "Y": -33.9464970621238
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Crumple",
+        "Id": "ac8c2b8dbe564d45a7a9c8ca2bf7c8bc",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 896.79386889914122,
+        "Y": -38.0713729981872
+      }
+    ],
+    "Annotations": [],
+    "X": -383.75822622352109,
+    "Y": 335.28156839523638,
+    "Zoom": 0.51222211672934692
+  }
+}
