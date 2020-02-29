@@ -1,0 +1,165 @@
+{
+  "Uuid": "617443b6-d636-4928-81af-3de7ab53fb34",
+  "IsCustomNode": true,
+  "Category": "Crumple.String.Modify",
+  "Description": "Splits one or multiple strings into sublists, broken down at each upper case character.",
+  "Name": "StringSplitCaps",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n#Import Regex (regular expressions)\r\nimport re\r\n\r\n#Turn data into a list for iteration\r\nif isinstance(IN[0], list):\r\n\tlst = IN[0]\r\nelse:\r\n\tlst = [IN[0]]\r\n\r\n#Empty list, apply regex for capital letters\r\ndataout = []\r\n\r\nfor str in lst:\r\n\tcaps = re.findall('[A-Z][^A-Z]*', str)\r\n\tdataout.append(caps)\r\n\r\n#Define output\r\nOUT = dataout",
+      "VariableInputPorts": true,
+      "Id": "17a5fcc0977a49c088a6a41d634a2b02",
+      "Inputs": [
+        {
+          "Id": "f7f5dc88380643b9b88745ba1ea9ec1a",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "61a4b6bb45eb4ce79083f1fe65e0e6ed",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "strings",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "82b6aac3871d419687175939f31b336c",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "1686584005af4c22b1ca3aae27e0bab0",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "output",
+      "Id": "517b4c1faea14ea58d463bbfc0a6f1b5",
+      "Inputs": [
+        {
+          "Id": "9038ee8d97204642bf9b01756f12b57f",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "61a4b6bb45eb4ce79083f1fe65e0e6ed",
+      "End": "9038ee8d97204642bf9b01756f12b57f",
+      "Id": "47de2720d67c490dab316225738eb2d3"
+    },
+    {
+      "Start": "1686584005af4c22b1ca3aae27e0bab0",
+      "End": "f7f5dc88380643b9b88745ba1ea9ec1a",
+      "Id": "379ea4c2c34c40a2a75426d0221c8e30"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -22.690067997921883,
+      "EyeY": 127.58618559551243,
+      "EyeZ": 25.605151229021907,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "17a5fcc0977a49c088a6a41d634a2b02",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "82b6aac3871d419687175939f31b336c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 0.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "517b4c1faea14ea58d463bbfc0a6f1b5",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 449.0,
+        "Y": 0.0
+      }
+    ],
+    "Annotations": [],
+    "X": 54.0,
+    "Y": 166.0,
+    "Zoom": 1.0
+  }
+}

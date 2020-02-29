@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n#Reference for script name: https://github.com/Amoursol/dynamoPython/blob/master/dynamoAPI/dynamoAPICurrentGraphName.py\r\n#Thanks to John Pierson for sharing the code!\r\n\r\n#Add CLR and Dynamo services for its API\r\nimport clr\r\nclr.AddReference('DynamoRevitDS')\r\nimport Dynamo\r\nfrom System import Environment\r\n\r\n#Add document manager from Revit services\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\n# access to the current Dynamo instance and workspace\r\nDynamoCurrent = Dynamo.Applications.DynamoRevit()\r\nActiveScript  = DynamoCurrent.RevitDynamoModel.CurrentWorkspace\r\nDynamoVersion = DynamoCurrent.RevitDynamoModel.Version\r\n\r\n# ensure version 2.X, get name\r\nif DynamoVersion.StartsWith(\"2.\"):\r\n\tScriptName = ActiveScript.Name + \".dyn\"\r\nelse:\r\n\tScriptName = \"Version not supported\"\r\n\r\n# get system user name\r\nUserName = Environment.UserName\r\n\r\n# get active document name and path\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nDocPath = doc.PathName\r\n# note the use of escape characters (\\\\)\r\nDocName = (DocPath.split('\\\\')[-1]).split('.')[0]\r\n\r\n# define output\r\nOUT = [UserName, DocName, DocPath, ScriptName]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n#Reference for script name: https://github.com/Amoursol/dynamoPython/blob/master/dynamoAPI/dynamoAPICurrentGraphName.py\r\n#Thanks to John Pierson for sharing the code for Dynamo file data\r\n\r\n#Add CLR and Dynamo services for its API\r\nimport clr\r\nclr.AddReference('DynamoRevitDS')\r\nimport Dynamo\r\nfrom System import Environment\r\n\r\n#Add document manager from Revit services\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\n# access to the current Dynamo instance and workspace\r\nDynamoCurrent = Dynamo.Applications.DynamoRevit()\r\nActiveScript  = DynamoCurrent.RevitDynamoModel.CurrentWorkspace\r\nDynamoVersion = DynamoCurrent.RevitDynamoModel.Version\r\n\r\n# ensure version 2.X, get name\r\nif DynamoVersion.StartsWith(\"2.\"):\r\n\tScriptName = ActiveScript.Name + \".dyn\"\r\nelse:\r\n\tScriptName = \"Version not supported\"\r\n\r\n# get system user name\r\nUserName = Environment.UserName\r\n\r\n# get active document name and path\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nDocPath = doc.PathName\r\n# note the use of escape characters (\\\\)\r\nDocName = (DocPath.split('\\\\')[-1]).split('.')[0]\r\n\r\n# catch unsaved\r\ndata  = [UserName, DocName, DocPath, ScriptName]\r\nfinal = []\r\nfor i in data:\r\n\tif i == \"\":\r\n\t\tfinal.append(\"Unsaved document\")\r\n\telse:\r\n\t\tfinal.append(i)\r\n\r\n# define output\r\nOUT = final",
       "VariableInputPorts": true,
       "Id": "42e4301fea504a1e968fe246a62c567a",
       "Inputs": [
@@ -243,6 +243,7 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
@@ -272,8 +273,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 0.0,
-        "Y": 0.0
+        "X": -205.0,
+        "Y": -2.0
       },
       {
         "ShowGeometry": true,
@@ -282,8 +283,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 0.0,
-        "Y": 0.0
+        "X": -16.0,
+        "Y": 1.0
       },
       {
         "ShowGeometry": true,
@@ -292,8 +293,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 0.0,
-        "Y": 0.0
+        "X": 317.0,
+        "Y": -48.0
       },
       {
         "ShowGeometry": true,
@@ -302,8 +303,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 0.0,
-        "Y": 0.0
+        "X": 317.0,
+        "Y": 14.0
       },
       {
         "ShowGeometry": true,
@@ -312,8 +313,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 0.0,
-        "Y": 0.0
+        "X": 316.0,
+        "Y": 78.0
       },
       {
         "ShowGeometry": true,
@@ -322,8 +323,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 0.0,
-        "Y": 0.0
+        "X": 314.0,
+        "Y": 141.0
       },
       {
         "ShowGeometry": true,
@@ -332,13 +333,13 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 0.0,
-        "Y": 0.0
+        "X": -452.0,
+        "Y": -2.0
       }
     ],
     "Annotations": [],
-    "X": 0.0,
-    "Y": 0.0,
+    "X": 666.0,
+    "Y": 174.0,
     "Zoom": 1.0
   }
 }
