@@ -1,0 +1,255 @@
+{
+  "Uuid": "55db1ac9-8b03-44a9-a996-722a7ed261f9",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.Views",
+  "Description": "Returns the views/legends contained within the current document. Legends are broken out into their own sub-list.",
+  "Name": "ViewsCleaned",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Import RevitAPI\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Import DocumentManager\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\n# Get the project document.\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Get all views\r\nViews_doc = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Views)\r\n\r\n# Create empty lists\r\nView_list   = []\r\nLegend_list = []\r\n\r\n# Find views that aren't legends, then non-template\r\nfor view in Views_doc:\r\n\tif str(view.GetType()) == \"Autodesk.Revit.DB.View\":\r\n\t\tLegend_list.append(view)\r\n\telse:\r\n\t\tif not(view.IsTemplate):\r\n\t\t\tView_list.append(view)\r\n\r\n# Output cleaned view lists\r\nOUT = [View_list, Legend_list]",
+      "VariableInputPorts": true,
+      "Id": "d843bc92f22748618004d4a1492d2c06",
+      "Inputs": [
+        {
+          "Id": "b88a467a1b604118bf0c16690ef962b4",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "3bde16c407424924b5fab5bc4b9e2d3c",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "Views",
+      "Id": "25984a06c1fd4c3e8545176a77c49dfe",
+      "Inputs": [
+        {
+          "Id": "5871db2448c54f73beb028be298b2977",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "Refresh",
+        "TypeName": "bool",
+        "TypeRank": 0,
+        "DefaultValue": "true",
+        "Description": ""
+      },
+      "Id": "ea78d492c80a4fe89ee29de65ba6724c",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "888f5297f1b74a2fb14ff6d9cda8e091",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "views   = out[0];\nlegends = out[1];",
+      "Id": "c5032f52c77441c2a89231101f485fa9",
+      "Inputs": [
+        {
+          "Id": "847fb02141d6412ab4a3215b1680c1f5",
+          "Name": "out",
+          "Description": "out",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "a65865051edc4e68ac18d43eaca8306b",
+          "Name": "",
+          "Description": "views",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "97a9fb3c049045608dc01f6681611529",
+          "Name": "",
+          "Description": "legends",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "Legends",
+      "Id": "7a1829f29e75457aa3fd706d2b5fd685",
+      "Inputs": [
+        {
+          "Id": "83d3cfed449c4e4b8f64a5e1fd08a301",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "3bde16c407424924b5fab5bc4b9e2d3c",
+      "End": "847fb02141d6412ab4a3215b1680c1f5",
+      "Id": "fe8085082f3b44688eb4b8a41613bc2f"
+    },
+    {
+      "Start": "888f5297f1b74a2fb14ff6d9cda8e091",
+      "End": "b88a467a1b604118bf0c16690ef962b4",
+      "Id": "a6f254e2e9f4447695e05246cddb2097"
+    },
+    {
+      "Start": "a65865051edc4e68ac18d43eaca8306b",
+      "End": "5871db2448c54f73beb028be298b2977",
+      "Id": "213b5eeb9f9d49a69f623f5567a7cc98"
+    },
+    {
+      "Start": "97a9fb3c049045608dc01f6681611529",
+      "End": "83d3cfed449c4e4b8f64a5e1fd08a301",
+      "Id": "156da7b278db4108bf31a45a252a02c6"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "d843bc92f22748618004d4a1492d2c06",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "25984a06c1fd4c3e8545176a77c49dfe",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 732.0,
+        "Y": -41.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "ea78d492c80a4fe89ee29de65ba6724c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -4.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "c5032f52c77441c2a89231101f485fa9",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 414.0,
+        "Y": 4.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "7a1829f29e75457aa3fd706d2b5fd685",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 724.51187904967628,
+        "Y": 51.57019438444928
+      }
+    ],
+    "Annotations": [],
+    "X": 185.83999999999992,
+    "Y": 290.4575,
+    "Zoom": 1.1575
+  }
+}
