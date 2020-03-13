@@ -52,7 +52,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nfrom System import Environment\r\n\r\ndrive = IN[0]\r\n\r\nuser = Environment.UserName\r\nmd = drive + \":\\Users\\\\\" + user + \"\\Documents\"\r\n\r\nOUT = [user,md]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Thanks to Sean Page for suggesting the os package\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport os\r\n\r\nuser = os.environ.get('USERNAME')\r\nfl = os.environ.get('USERPROFILE')\r\n\r\nmd = fl + \"\\Documents\"\r\n\r\nOUT = [user,md]",
       "VariableInputPorts": true,
       "Id": "f3fab379128e4ae3b17e0bc21eb65830",
       "Inputs": [
@@ -60,15 +60,6 @@
           "Id": "a399bf97887f42b1a4d11389fd5bbb4f",
           "Name": "IN[0]",
           "Description": "Input #0",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "1e8b051cc49d48d5a21ce2bc77781720",
-          "Name": "IN[1]",
-          "Description": "Input #1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -104,32 +95,6 @@
       "Outputs": [
         {
           "Id": "cda1b1734c85405dbd18f865f6209cda",
-          "Name": "",
-          "Description": "Symbol",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
-      "Parameter": {
-        "Name": "Drive",
-        "TypeName": "string",
-        "TypeRank": 0,
-        "DefaultValue": "\"C\"",
-        "Description": ""
-      },
-      "Id": "25cebfa10c7942c98dbb53a54ec5c234",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "2ae45f92e5f74c308ece42489f5e353d",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -202,13 +167,8 @@
     },
     {
       "Start": "cda1b1734c85405dbd18f865f6209cda",
-      "End": "1e8b051cc49d48d5a21ce2bc77781720",
-      "Id": "8497db4e6c81465dace94bbb1e62aa67"
-    },
-    {
-      "Start": "2ae45f92e5f74c308ece42489f5e353d",
       "End": "a399bf97887f42b1a4d11389fd5bbb4f",
-      "Id": "71c0466a48044a338b6bee942a953c2e"
+      "Id": "b0a901e2ba8742d9b70b00caa4fab316"
     }
   ],
   "Dependencies": [],
@@ -263,18 +223,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -33.0,
-        "Y": 59.0
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "25cebfa10c7942c98dbb53a54ec5c234",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": -24.0,
-        "Y": -8.0
+        "X": -11.0,
+        "Y": 1.0
       },
       {
         "ShowGeometry": true,

@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n#Add Dynamo services for its API\r\nclr.AddReference('DynamoRevitDS')\r\nimport Dynamo\r\nfrom System import Environment\r\n\r\n# access to the current Dynamo instance and workspace\r\nDynamoCurrent = Dynamo.Applications.DynamoRevit()\r\nDynamoVersion = DynamoCurrent.RevitDynamoModel.Version\r\n\r\ndrive = IN[0]\r\n\r\nuser = Environment.UserName\r\n\r\nfl = drive + \":\\Users\\\\\" + user + \"\\\\\"\r\ndt = drive + \":\\Users\\\\\" + user + \"\\Desktop\"\r\nmd = drive + \":\\Users\\\\\" + user + \"\\Documents\"\r\nte = drive + \":\\Users\\\\\" + user + \"\\AppData\\Local\\Temp\"\r\ndr = drive + \":\\Users\\\\\" + user + \"\\AppData\\Roaming\\Dynamo\\Dynamo Revit\\\\\" + DynamoVersion[0:3]\r\ndl = drive + \":\\Users\\\\\" + user + \"\\AppData\\Roaming\\Dynamo\\Dynamo Revit\\\\\" + DynamoVersion[0:3] + \"\\Logs\"\r\n\r\nOUT = [user,fl,dt,md,te,dr,dl]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Thanks to Sean Page for suggesting the os package\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport os\r\n\r\n#Add Dynamo services for its API\r\nclr.AddReference('DynamoRevitDS')\r\nimport Dynamo\r\nfrom System import Environment\r\n\r\n# access to the current Dynamo instance and workspace\r\nDynamoCurrent = Dynamo.Applications.DynamoRevit()\r\nDynamoVersion = DynamoCurrent.RevitDynamoModel.Version\r\n\r\nuser = os.environ.get('USERNAME')\r\nfl = os.environ.get('USERPROFILE')\r\n\r\ndt = fl + \"\\Desktop\"\r\nmd = fl + \"\\Documents\"\r\nte = fl + \"\\AppData\\Local\\Temp\"\r\ndr = fl + \"\\AppData\\Roaming\\Dynamo\\Dynamo Revit\\\\\" + DynamoVersion[0:3]\r\ndl = fl + \"\\AppData\\Roaming\\Dynamo\\Dynamo Revit\\\\\" + DynamoVersion[0:3] + \"\\Logs\"\r\n\r\nOUT = [user,fl,dt,md,te,dr,dl]",
       "VariableInputPorts": true,
       "Id": "264a476e8c6f42e6a0933952734a518b",
       "Inputs": [
@@ -21,15 +21,6 @@
           "Id": "1c4e042de73a4bdbaba626af5fdc21ae",
           "Name": "IN[0]",
           "Description": "Input #0",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "583de05ce2d44a47a3646fa389c5c3f0",
-          "Name": "IN[1]",
-          "Description": "Input #1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -86,32 +77,6 @@
       "Outputs": [
         {
           "Id": "7a5952c481bd4266ae96b8c69bc1dd42",
-          "Name": "",
-          "Description": "Symbol",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
-      "Parameter": {
-        "Name": "Drive",
-        "TypeName": "string",
-        "TypeRank": 0,
-        "DefaultValue": "\"C\"",
-        "Description": ""
-      },
-      "Id": "791b318297014e1c9eab4c08efa258f6",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "313277f48e5746cf922cfc7773ba08b4",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -342,13 +307,8 @@
     },
     {
       "Start": "7a5952c481bd4266ae96b8c69bc1dd42",
-      "End": "583de05ce2d44a47a3646fa389c5c3f0",
-      "Id": "3ff0acfee18d47039a4360a2b7ca7ee1"
-    },
-    {
-      "Start": "313277f48e5746cf922cfc7773ba08b4",
       "End": "1c4e042de73a4bdbaba626af5fdc21ae",
-      "Id": "953648e6da9442c9ac7a8c8720e266b1"
+      "Id": "a6ed889edf6441f1bd68e4cf1829acc7"
     },
     {
       "Start": "193872b9c5194cf9908f6cbef74c6482",
@@ -438,18 +398,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 130.0,
-        "Y": 69.0
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "791b318297014e1c9eab4c08efa258f6",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 139.0,
-        "Y": 2.0
+        "X": 146.08473206432939,
+        "Y": 13.322081315782782
       },
       {
         "ShowGeometry": true,
