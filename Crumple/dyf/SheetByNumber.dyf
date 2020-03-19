@@ -1,9 +1,9 @@
 {
-  "Uuid": "b4bd2349-d332-419a-ae3e-b0d08ded2b53",
+  "Uuid": "dbdecaef-6dc7-4c36-8b45-5e98327d3398",
   "IsCustomNode": true,
-  "Category": "Crumple.Revit.Coordinates",
-  "Description": "This node will return the Revit survey point as well as the NS, EW and elevation values.",
-  "Name": "SurveyPoint",
+  "Category": "Crumple.Revit.Sheets",
+  "Description": "Given a sheet number, return the matching sheet. If no match is found, a message is returned. The node also returns a matches list and a list of indices for non-matches.",
+  "Name": "SheetByNumber",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -13,12 +13,12 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Credit to Genius Loci for much of the workflow\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport math\r\n\r\n# Revit nodes\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\n# Revit services and API\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Get project base point\r\nbps     = FilteredElementCollector(doc).OfClass(BasePoint).ToElements()\r\nsvp     = bps[0]\r\n\r\n# Get unit types\r\nDUT = Document.GetUnits(doc).GetFormatOptions(UnitType.UT_Length).DisplayUnits\r\n\r\npoints = []\r\n\r\n# Get pbp values\r\new = svp.get_Parameter(BuiltInParameter.BASEPOINT_EASTWEST_PARAM).AsDouble()\r\nns = svp.get_Parameter(BuiltInParameter.BASEPOINT_NORTHSOUTH_PARAM).AsDouble()\r\nel = svp.get_Parameter(BuiltInParameter.BASEPOINT_ELEVATION_PARAM).AsDouble()\r\n\r\n# Get EW, NS, Elev\r\nsvp_ns = UnitUtils.ConvertFromInternalUnits(round(ns, 6), DUT)\r\nsvp_ew = UnitUtils.ConvertFromInternalUnits(round(ew, 6), DUT)\r\nsvp_el = UnitUtils.ConvertFromInternalUnits(round(el, 6), DUT)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [svp_ns, svp_ew, svp_el]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Document Manager\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager  \r\n\r\n# Revit API\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Inputs, make sure it's a list\r\nnumbers = IN[0] if isinstance(IN[0], list) else [IN[0]]\r\n\r\n# Container lists for iteration\r\nsht_l, num_l, matches, matches_clean, fails = [], [], [], [], []\r\n\r\n# Get all sheets and their numbers\r\nsheets = FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.ViewSheet).ToElements()\r\n\r\nfor s in sheets:\r\n\tsht_l.append(s)\r\n\tnum_l.append(s.SheetNumber)\r\n\r\n# Find matching sheets, catch the non-matches\r\nfor n in numbers:\r\n\ttry:\r\n\t\tind = num_l.index(n)\r\n\t\tmatch = sht_l[ind]\r\n\t\tmatches.append(match)\r\n\t\tmatches_clean.append(match)\r\n\texcept:\r\n\t\tind = numbers.index(n)\r\n\t\tmatches.append(\"No match\")\r\n\t\tfails.append(ind)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [matches, matches_clean, fails]",
       "VariableInputPorts": true,
-      "Id": "bd5b1544b45e4f53af91e80922859b83",
+      "Id": "923a0935896c4f16b7f7ed3b37e23a23",
       "Inputs": [
         {
-          "Id": "9bd5d55520da4f138538882d6dd7f6d2",
+          "Id": "9a60cb54905348968f87fb6d0a4b8337",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -29,7 +29,7 @@
       ],
       "Outputs": [
         {
-          "Id": "a168da2693cd4712992880fd134ed3c7",
+          "Id": "e5965dcacfc94431bf444010ac6b34d9",
           "Name": "OUT",
           "Description": "Result of the python script",
           "UsingDefaultValue": false,
@@ -42,40 +42,14 @@
       "Description": "Runs an embedded IronPython script."
     },
     {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
-      "Parameter": {
-        "Name": "Refresh",
-        "TypeName": "bool",
-        "TypeRank": 0,
-        "DefaultValue": "true",
-        "Description": ""
-      },
-      "Id": "9fbf3b663a0c43e48da868bd35a220a4",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "0000709433f34d12be28c192f35b0973",
-          "Name": "",
-          "Description": "Symbol",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
-    },
-    {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "NS",
-      "Id": "7c0cb65f6d6741ebb730ca8207df1363",
+      "Symbol": "sheets",
+      "Id": "69c883fcc57a4f5e9958e0b2318d0ce8",
       "Inputs": [
         {
-          "Id": "7f7b04ef5d7a470da1f394e5175c1a2c",
+          "Id": "bec07abf5bb640ce98189b3899debe15",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -89,13 +63,39 @@
       "Description": "A function output, use with custom nodes"
     },
     {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "sheets",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "fdfb99e2cfa94ee38efb67317037f7d1",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "332d7a8f16bf4dec9767b521bb7d01e0",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
       "Code": "x[0];\nx[1];\nx[2];",
-      "Id": "99ed78201665459f80b02371a97e1c12",
+      "Id": "de0d0dd6f9a048d88bbbe5af9fd7a5c0",
       "Inputs": [
         {
-          "Id": "72837c518f3a41ceb7caf459f74e298f",
+          "Id": "1680085b585e42bdb29374903f4a32fe",
           "Name": "x",
           "Description": "x",
           "UsingDefaultValue": false,
@@ -106,7 +106,7 @@
       ],
       "Outputs": [
         {
-          "Id": "1a66554c06a840e0a3f9f8c5bd1724a7",
+          "Id": "ed563687b4f243e3a1a17e9ce8be5c46",
           "Name": "",
           "Description": "Value of expression at line 1",
           "UsingDefaultValue": false,
@@ -115,7 +115,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "34f0106629b7423a956fdae1764a4d31",
+          "Id": "cf0b869ee1254f619715434dae1ea577",
           "Name": "",
           "Description": "Value of expression at line 2",
           "UsingDefaultValue": false,
@@ -124,7 +124,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "133470696ea84d01a787ddd48d3ed4e2",
+          "Id": "c088f4b78e844c91b661cccd1c56b4dd",
           "Name": "",
           "Description": "Value of expression at line 3",
           "UsingDefaultValue": false,
@@ -140,11 +140,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "EW",
-      "Id": "2b761e8c719b49d680b713cb6c81fcb0",
+      "Symbol": "matches_only",
+      "Id": "66517b8d732843dea3555df0c74e223d",
       "Inputs": [
         {
-          "Id": "ae486606d61b4d52add8554f3d871b5d",
+          "Id": "12afef8458d4405892fb09ffe0ffdbd4",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -161,11 +161,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "Elevation",
-      "Id": "e83807d8d67b423d80220a68cb23c06f",
+      "Symbol": "failing_indices",
+      "Id": "17c296bb95414df69da023446b2767d4",
       "Inputs": [
         {
-          "Id": "88157fd94a8948f89da117bb0697dc28",
+          "Id": "c6d9b45468ad4a0c90625c74a066ce45",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -181,29 +181,29 @@
   ],
   "Connectors": [
     {
-      "Start": "a168da2693cd4712992880fd134ed3c7",
-      "End": "72837c518f3a41ceb7caf459f74e298f",
-      "Id": "9e1cee0e67fc4cd69a51622f62ab43c7"
+      "Start": "e5965dcacfc94431bf444010ac6b34d9",
+      "End": "1680085b585e42bdb29374903f4a32fe",
+      "Id": "feffebc3df9f4b3b8e1518f8ede9b385"
     },
     {
-      "Start": "0000709433f34d12be28c192f35b0973",
-      "End": "9bd5d55520da4f138538882d6dd7f6d2",
-      "Id": "a8bea5ed24bf4388972dcc033ce6a76b"
+      "Start": "332d7a8f16bf4dec9767b521bb7d01e0",
+      "End": "9a60cb54905348968f87fb6d0a4b8337",
+      "Id": "9767bffcdd444b8e99c55c7e8fd44f0b"
     },
     {
-      "Start": "1a66554c06a840e0a3f9f8c5bd1724a7",
-      "End": "7f7b04ef5d7a470da1f394e5175c1a2c",
-      "Id": "8860c1210f7c4a568583adf931e3a810"
+      "Start": "ed563687b4f243e3a1a17e9ce8be5c46",
+      "End": "bec07abf5bb640ce98189b3899debe15",
+      "Id": "4a9be08fcd1149b0ac6ccb2e6718040d"
     },
     {
-      "Start": "34f0106629b7423a956fdae1764a4d31",
-      "End": "ae486606d61b4d52add8554f3d871b5d",
-      "Id": "a8228d197a754534b665b52e99ed45ca"
+      "Start": "cf0b869ee1254f619715434dae1ea577",
+      "End": "12afef8458d4405892fb09ffe0ffdbd4",
+      "Id": "0a529b52be9b4195add7ce371d32b9fe"
     },
     {
-      "Start": "133470696ea84d01a787ddd48d3ed4e2",
-      "End": "88157fd94a8948f89da117bb0697dc28",
-      "Id": "40e86f35ca684110bd3343769b78e373"
+      "Start": "c088f4b78e844c91b661cccd1c56b4dd",
+      "End": "c6d9b45468ad4a0c90625c74a066ce45",
+      "Id": "f19a575c79a14b0490064d9f30f34c4b"
     }
   ],
   "Dependencies": [],
@@ -234,7 +234,7 @@
       {
         "ShowGeometry": true,
         "Name": "Python Script",
-        "Id": "bd5b1544b45e4f53af91e80922859b83",
+        "Id": "923a0935896c4f16b7f7ed3b37e23a23",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
@@ -243,58 +243,58 @@
       },
       {
         "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "9fbf3b663a0c43e48da868bd35a220a4",
+        "Name": "Output",
+        "Id": "69c883fcc57a4f5e9958e0b2318d0ce8",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 22.0,
-        "Y": -1.0
+        "X": 603.0,
+        "Y": -63.0
       },
       {
         "ShowGeometry": true,
-        "Name": "Output",
-        "Id": "7c0cb65f6d6741ebb730ca8207df1363",
+        "Name": "Input",
+        "Id": "fdfb99e2cfa94ee38efb67317037f7d1",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 601.13606911447073,
-        "Y": -56.779697624190135
+        "X": 29.7284100544735,
+        "Y": 0.59415118340632489
       },
       {
         "ShowGeometry": true,
         "Name": "Code Block",
-        "Id": "99ed78201665459f80b02371a97e1c12",
+        "Id": "de0d0dd6f9a048d88bbbe5af9fd7a5c0",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 430.57667386609069,
-        "Y": 3.2462203023757752
+        "X": 429.0,
+        "Y": 3.0
       },
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "2b761e8c719b49d680b713cb6c81fcb0",
+        "Id": "66517b8d732843dea3555df0c74e223d",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 607.4967602591787,
-        "Y": 16.308855291576606
+        "X": 602.0,
+        "Y": 16.0
       },
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "e83807d8d67b423d80220a68cb23c06f",
+        "Id": "17c296bb95414df69da023446b2767d4",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 605.20518358531274,
-        "Y": 83.397408207343375
+        "X": 605.0,
+        "Y": 88.0
       }
     ],
     "Annotations": [],
-    "X": 24.379408298710217,
-    "Y": 243.622889690987,
-    "Zoom": 0.910063803931439
+    "X": -76.0,
+    "Y": 137.0,
+    "Zoom": 1.0
   }
 }

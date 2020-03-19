@@ -2,7 +2,7 @@
   "Uuid": "6417bd36-c046-44ce-9da5-1cd5a6323eca",
   "IsCustomNode": true,
   "Category": "Crumple.Revit.Coordinates",
-  "Description": "This node will return the Revit project base point as well as the NS, EW and elevation values. The result may be returned in Metric format (mm) or Imperial (feet).",
+  "Description": "This node will return the Revit project base point as well as the NS, EW and elevation values.",
   "Name": "ProjectBasePoint",
   "ElementResolver": {
     "ResolutionMap": {}
@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Credit to Genius Loci for much of the workflow\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport math\r\n\r\n# Revit nodes\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\n# Revit services and API\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Preparing input from dynamo to revit\r\nmetric = IN[0]\r\n\r\n# Get project base point\r\npbps    = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_ProjectBasePoint).ToElements()\r\npbp     = pbps[0]\r\n\r\n# Feet or mm converter\r\nif metric == True:\r\n\tU_mult = 304.8\r\nelse:\r\n\tU_mult = 1\r\n\r\npoints = []\r\n\r\n# Get pbp values\r\new = pbp.get_Parameter(BuiltInParameter.BASEPOINT_EASTWEST_PARAM).AsDouble()\r\nns = pbp.get_Parameter(BuiltInParameter.BASEPOINT_NORTHSOUTH_PARAM).AsDouble()\r\nel = pbp.get_Parameter(BuiltInParameter.BASEPOINT_ELEVATION_PARAM).AsDouble()\r\nan = pbp.get_Parameter(BuiltInParameter.BASEPOINT_ANGLETON_PARAM).AsDouble()\r\n\r\n# Get EW, NS, Elev\r\npbp_ns = round(ns * U_mult, 6)\r\npbp_ew = round(ew * U_mult, 6)\r\npbp_el = round(el * U_mult, 6)\r\npbp_an = round(an * 180/math.pi)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [pbp_ns, pbp_ew, pbp_el, pbp_an]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Credit to Genius Loci for much of the workflow\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport math\r\n\r\n# Revit nodes\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\n# Revit services and API\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Get project base point\r\nbps    = FilteredElementCollector(doc).OfClass(BasePoint).ToElements()\r\npbp    = bps[1]\r\n\r\n# Get unit types\r\nDUT = Document.GetUnits(doc).GetFormatOptions(UnitType.UT_Length).DisplayUnits\r\n\r\npoints = []\r\n\r\n# Get pbp values\r\new = pbp.get_Parameter(BuiltInParameter.BASEPOINT_EASTWEST_PARAM).AsDouble()\r\nns = pbp.get_Parameter(BuiltInParameter.BASEPOINT_NORTHSOUTH_PARAM).AsDouble()\r\nel = pbp.get_Parameter(BuiltInParameter.BASEPOINT_ELEVATION_PARAM).AsDouble()\r\nan = pbp.get_Parameter(BuiltInParameter.BASEPOINT_ANGLETON_PARAM).AsDouble()\r\n\r\n# Get EW, NS, Elev\r\npbp_ns = UnitUtils.ConvertFromInternalUnits(round(ns, 6), DUT)\r\npbp_ew = UnitUtils.ConvertFromInternalUnits(round(ew, 6), DUT)\r\npbp_el = UnitUtils.ConvertFromInternalUnits(round(el, 6), DUT)\r\npbp_an = round(an * 180/math.pi)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [pbp_ns, pbp_ew, pbp_el, pbp_an]",
       "VariableInputPorts": true,
       "Id": "15121901da544ebd843ec5127922d4ac",
       "Inputs": [
@@ -45,7 +45,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "Metric",
+        "Name": "Refresh",
         "TypeName": "bool",
         "TypeRank": 0,
         "DefaultValue": "true",
@@ -255,15 +255,15 @@
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": 69044.476088129886,
-      "EyeY": 184560.03835455517,
-      "EyeZ": 139143.75606132695,
-      "LookX": -25587.906328227196,
-      "LookY": -190796.62225996109,
-      "LookZ": -186538.85783590854,
-      "UpX": -0.0740161160682318,
-      "UpY": 0.83867056794542638,
-      "UpZ": -0.53958622390149535
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "NodeViews": [
       {
@@ -338,8 +338,8 @@
       }
     ],
     "Annotations": [],
-    "X": 125.28500000000003,
-    "Y": 274.82,
+    "X": 100.28500000000003,
+    "Y": 252.82,
     "Zoom": 1.1575
   }
 }

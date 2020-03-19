@@ -2,7 +2,7 @@
   "Uuid": "08d14606-1114-4fdc-bdc9-4e3fc366b4b7",
   "IsCustomNode": true,
   "Category": "Crumple.Revit.Coordinates",
-  "Description": "This node will return the Revit project origin as well as the NS, EW and elevation values. The result may be returned in Metric format (mm) or Imperial (feet).",
+  "Description": "This node will return the Revit project origin as well as the NS, EW and elevation values.",
   "Name": "ProjectOrigin",
   "ElementResolver": {
     "ResolutionMap": {
@@ -26,7 +26,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Revit services and API\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Preparing input from dynamo to revit\r\nmetric = IN[0]\r\n\r\n# Get project position\r\nori = doc.ActiveProjectLocation.GetProjectPosition(XYZ(0,0,0))\r\n\r\n# Feet or mm converter\r\nif metric == True:\r\n\tU_mult = 304.8\r\nelse:\r\n\tU_mult = 1\r\n\r\n# Get EW, NS, Elev\r\nori_ns = round(ori.NorthSouth * U_mult, 6)\r\nori_ew = round(ori.EastWest   * U_mult, 6)\r\nori_el = round(ori.Elevation  * U_mult, 6)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [ori_ns, ori_ew, ori_el]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Revit services and API\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Get project position\r\nori = doc.ActiveProjectLocation.GetProjectPosition(XYZ(0,0,0))\r\n\r\n# Get unit types\r\nDUT = Document.GetUnits(doc).GetFormatOptions(UnitType.UT_Length).DisplayUnits\r\n\r\n# Get EW, NS, Elev\r\nori_ns = UnitUtils.ConvertFromInternalUnits(round(ori.NorthSouth, 6), DUT)\r\nori_ew = UnitUtils.ConvertFromInternalUnits(round(ori.EastWest, 6), DUT)\r\nori_el = UnitUtils.ConvertFromInternalUnits(round(ori.Elevation, 6), DUT)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [ori_ns, ori_ew, ori_el]",
       "VariableInputPorts": true,
       "Id": "2245f95ce7ae41e9abe2e4bb5e71eaec",
       "Inputs": [
@@ -58,7 +58,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "Metric",
+        "Name": "Refresh",
         "TypeName": "bool",
         "TypeRank": 0,
         "DefaultValue": "true",
@@ -279,15 +279,15 @@
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -11.732585969962239,
-      "EyeY": 250.24665787650716,
-      "EyeZ": 210.55361070333322,
-      "LookX": 11.732585969962239,
-      "LookY": -250.24665787650716,
-      "LookZ": -210.55361070333322,
-      "UpX": 0.033869203327228689,
-      "UpY": 0.79335334029123639,
-      "UpZ": -0.607818521036271
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "NodeViews": [
       {

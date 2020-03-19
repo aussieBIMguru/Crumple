@@ -2,7 +2,7 @@
   "Uuid": "087e24b8-a7cf-48ad-90a6-227f99c437ab",
   "IsCustomNode": true,
   "Category": "Crumple.Revit.Coordinates",
-  "Description": "This node translates points in Dynamo coordinates to their respective Revit project coordinate. The results may be converted as Metric format (mm) or Imperial (feet).",
+  "Description": "This node translates points in Dynamo coordinates to their respective Revit project coordinate.",
   "Name": "PointsToRevitCoordinates",
   "ElementResolver": {
     "ResolutionMap": {
@@ -454,11 +454,11 @@
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
-      "Code": "a = out[0];\nx = out[1];\ny = out[2];\nz = out[3];",
+      "Code": "a = out[0];\nx = out[1]*-1;\ny = out[2]*-1;\nz = out[3]*-1;",
       "Id": "0c363d5c407a4808bd66ebd0e239b100",
       "Inputs": [
         {
-          "Id": "1b1f1f6b4e2849fcb0b3b6e3637f3fd4",
+          "Id": "42d5777040c8487498c045be6a5550b4",
           "Name": "out",
           "Description": "out",
           "UsingDefaultValue": false,
@@ -469,7 +469,7 @@
       ],
       "Outputs": [
         {
-          "Id": "f3a26b0a7be044479514f5ec38895743",
+          "Id": "b488a051dc0a4b89a92c6b23d42b72f1",
           "Name": "",
           "Description": "a",
           "UsingDefaultValue": false,
@@ -478,7 +478,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "0604dc4098604a128974d119ea5c263a",
+          "Id": "3f016bcefaf54171909d26ae01138152",
           "Name": "",
           "Description": "x",
           "UsingDefaultValue": false,
@@ -487,7 +487,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "ff6e5c3af451441d8bb1df33ae595ad7",
+          "Id": "2ac446d6d56a4aa1b3c82261d5ef0fdd",
           "Name": "",
           "Description": "y",
           "UsingDefaultValue": false,
@@ -496,7 +496,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "9679d05976e249348030ac6b95274801",
+          "Id": "5b7a1d84aa7e4679b643dcc73d06badf",
           "Name": "",
           "Description": "z",
           "UsingDefaultValue": false,
@@ -511,20 +511,10 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Credit to Genius Loci for much of the workflow\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport math\r\n\r\n# Revit nodes\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\n# Revit services and API\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Preparing input from dynamo to revit\r\nmetric = IN[0]\r\n\r\n# Get project position\r\nori = doc.ActiveProjectLocation.GetProjectPosition(XYZ(0,0,0))\r\n\r\n# Get project base point\r\npbps    = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_ProjectBasePoint).ToElements()\r\npbp     = pbps[0]\r\n\r\n# Get pbp angle\r\nan = pbp.get_Parameter(BuiltInParameter.BASEPOINT_ANGLETON_PARAM).AsDouble()\r\npbp_an = round(an * 180/math.pi)\r\n\r\n# Feet or mm converter\r\nif metric == True:\r\n\tU_mult = -304.8\r\nelse:\r\n\tU_mult = -1\r\n\r\n# Get translation values from origin\r\ny = round(ori.NorthSouth * U_mult, 6)\r\nx = round(ori.EastWest   * U_mult, 6)\r\nz = round(ori.Elevation  * U_mult, 6)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [pbp_an, x, y, z]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Credit to Genius Loci for much of the workflow\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport math\r\n\r\n# Revit nodes\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\n# Revit services and API\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Get project position\r\nori = doc.ActiveProjectLocation.GetProjectPosition(XYZ(0,0,0))\r\n\r\n# Get project base point\r\nbps = FilteredElementCollector(doc).OfClass(BasePoint).ToElements()\r\npbp = bps[1]\r\n\r\n# Get pbp angle\r\nan = pbp.get_Parameter(BuiltInParameter.BASEPOINT_ANGLETON_PARAM).AsDouble()\r\npbp_an = round(an * 180/math.pi)\r\n\r\n# Get unit types\r\nDUT = Document.GetUnits(doc).GetFormatOptions(UnitType.UT_Length).DisplayUnits\r\n\r\n# Get translation values from origin\r\ny = UnitUtils.ConvertFromInternalUnits(round(ori.NorthSouth, 6), DUT)\r\nx = UnitUtils.ConvertFromInternalUnits(round(ori.EastWest, 6), DUT)\r\nz = UnitUtils.ConvertFromInternalUnits(round(ori.Elevation, 6), DUT)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [pbp_an, x, y, z]",
       "VariableInputPorts": true,
       "Id": "0ccafb74a93940ff998dab2ad613959d",
-      "Inputs": [
-        {
-          "Id": "2c153f0fbb05466c9c1dba3dc7d36730",
-          "Name": "IN[0]",
-          "Description": "Input #0",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
+      "Inputs": [],
       "Outputs": [
         {
           "Id": "68b57f197c8c4da6b1d9ccc6fabe3e59",
@@ -559,32 +549,6 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
-      "Parameter": {
-        "Name": "Metric",
-        "TypeName": "bool",
-        "TypeRank": 0,
-        "DefaultValue": "true",
-        "Description": ""
-      },
-      "Id": "75e865678d8940fe8d850077e7b98aea",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "9418270141ca4754ad3d6e1fe93df838",
-          "Name": "",
-          "Description": "Symbol",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -637,7 +601,7 @@
     {
       "Start": "1a9577f3b9584339a48097c9fcb7bdb8",
       "End": "917fe97e2d704af08e406722cfc9f84a",
-      "Id": "8d3ba64cbb724cc9a24fc51e0f423b00"
+      "Id": "c0764624dd4d4f7789822028077914b4"
     },
     {
       "Start": "b42f2ebd39a246ba9a3a4fdcba8a5406",
@@ -695,34 +659,29 @@
       "Id": "3b7646d16ff94f8ca56e81255e4b565a"
     },
     {
-      "Start": "f3a26b0a7be044479514f5ec38895743",
+      "Start": "b488a051dc0a4b89a92c6b23d42b72f1",
       "End": "8f5090762d064bf386d439e39eb5058d",
-      "Id": "72169b3bd82343febace0061b7cae422"
+      "Id": "cc8b35146cd84f0a8d8b0f7df135b113"
     },
     {
-      "Start": "0604dc4098604a128974d119ea5c263a",
+      "Start": "3f016bcefaf54171909d26ae01138152",
       "End": "3c6d94c4b73b45d8aa3dfd29cd37402d",
-      "Id": "e5bcb90132c243e681dbb974cdcc9029"
+      "Id": "33a8529241bd4ed4bf3ba6ffaef6c059"
     },
     {
-      "Start": "ff6e5c3af451441d8bb1df33ae595ad7",
+      "Start": "2ac446d6d56a4aa1b3c82261d5ef0fdd",
       "End": "75dac9aa5a9f40bbac0c0e0af876f74a",
-      "Id": "36e91be9dee34a3293a96fb17551056e"
+      "Id": "08cbb162113e4430b963e3a964d81608"
     },
     {
-      "Start": "9679d05976e249348030ac6b95274801",
+      "Start": "5b7a1d84aa7e4679b643dcc73d06badf",
       "End": "307ba75442f341528274d186076f57c0",
-      "Id": "a6bae0e97b66474587d15c136ce578fa"
+      "Id": "ed59a5bae6cd4bd1a263060dcb627c84"
     },
     {
       "Start": "68b57f197c8c4da6b1d9ccc6fabe3e59",
-      "End": "1b1f1f6b4e2849fcb0b3b6e3637f3fd4",
-      "Id": "c732517936b34cc08ba921fbd30074ab"
-    },
-    {
-      "Start": "9418270141ca4754ad3d6e1fe93df838",
-      "End": "2c153f0fbb05466c9c1dba3dc7d36730",
-      "Id": "e591f0dced60418abed98819e193035b"
+      "End": "42d5777040c8487498c045be6a5550b4",
+      "Id": "9ca8fa01404846309173e0b77434b367"
     },
     {
       "Start": "0a6a74d944104c3ebb28a6776e57ec66",
@@ -862,8 +821,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 430.33326127276473,
-        "Y": 202.33832187224215
+        "X": 412.84112752844504,
+        "Y": 202.338321872242
       },
       {
         "ShowGeometry": true,
@@ -878,16 +837,6 @@
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "75e865678d8940fe8d850077e7b98aea",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 174.50845455555839,
-        "Y": 202.11848811698115
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "2c3e8df35ac046f1be9b5dcc7f7f85bb",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -897,8 +846,8 @@
       }
     ],
     "Annotations": [],
-    "X": -37.583810073168991,
-    "Y": 187.86983323841898,
-    "Zoom": 0.4239045329420621
+    "X": -188.1213383461843,
+    "Y": 67.5763563288254,
+    "Zoom": 0.90041428511471922
   }
 }
