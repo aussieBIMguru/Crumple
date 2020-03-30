@@ -1,0 +1,265 @@
+{
+  "Uuid": "e976eef7-5cde-4008-a239-50603199fd8d",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.Views",
+  "Description": "Moves views to sheets based on viewport centres. If you provide less points than views, the node will source the last point in the list for the remainder (so you can use 1 point for a 'longest' lacing effect).",
+  "Name": "ViewsToSheets",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nimport sys\r\nsys.path.append('C:\\Program Files (x86)\\IronPython 2.7\\Lib')\r\n\r\nimport System\r\nfrom System import Array\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Preparing input from dynamo to revit\r\nviewlist  = IN[0] if isinstance(IN[0], list) else [IN[0]]\r\nsheetlist = IN[1] if isinstance(IN[1], list) else [IN[1]]\r\npointlist = IN[2] if isinstance(IN[2], list) else [IN[2]]\r\n\r\n# Find how many fewer points there are than views\r\nviewcount  = len(viewlist)\r\npointcount = len(pointlist)\r\ndifference = viewcount-pointcount\r\n\r\n# Fill the points list to match the number of views\r\npointsadd = [pointlist[-1]]*difference\r\npointsfix = pointlist + pointsadd\r\n\r\n# Unwrap elements\r\nviews  = []\r\nsheets = []\r\npoints = []\r\n\r\nfor v in viewlist:\r\n\tviews.append(UnwrapElement(v))\r\nfor s in sheetlist:\r\n\tsheets.append(UnwrapElement(s))\r\nfor p in pointsfix:\r\n\tpoints.append(UnwrapElement(p).ToXyz())\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nviewports = []\r\nfor v,s,p in zip(views,sheets,points):\r\n\ttry:\r\n\t\tvp = Viewport.Create(doc, s.Id, v.Id, p)\r\n\t\tviewports.append(vp)\r\n\texcept:\r\n\t\tviewports.append(\"View already placed!\")\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Output and Changing element to Dynamo for export\r\n# <element>.ToDSType(True), #Not created in script, mark as Revit-owned\r\n# <element>.ToDSType(False) #Created in script, mark as non-Revit-owned\r\n\r\n# Preparing output to Dynamo\r\nOUT = viewports",
+      "VariableInputPorts": true,
+      "Id": "c70b4a1ed9b74765a868eab1417cb1bd",
+      "Inputs": [
+        {
+          "Id": "fdf80c7df51d4b668dafa9d9d19a98db",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "4e62f2640c5d40d694339914e005cec8",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "0fe53c8bd02b4a839970b41b2726508a",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c553c3c318ec49da9bc60058d918b965",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//All results, including views that\r\n//failed to place. These are most\r\n//likely already on a sheet.\r\nviewports",
+      "Id": "7f4fb87fd4b142fa9ad6677324442fdc",
+      "Inputs": [
+        {
+          "Id": "1814f25caff347b3af8c8ea8ab823acc",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "views",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "View count should match sheet count."
+      },
+      "Id": "3209bc700cc840c5a7115672962ff6e9",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "0b845c77416e440ba9907cfcb0507f03",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "sheets",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "Sheet count should match view count."
+      },
+      "Id": "426586f0847c4cc29c706a5e88148b39",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "d34cb0c4315248bfaf7c04bcc52f10e8",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "points",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "Points will be sourced to match the\nnumber of views provided."
+      },
+      "Id": "753a96b941a14b42854c59c962170900",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "da73d25fbaea4686b178202e1e2d8bc7",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "c553c3c318ec49da9bc60058d918b965",
+      "End": "1814f25caff347b3af8c8ea8ab823acc",
+      "Id": "351e779ccf0b4591ba001897ea7c0a88"
+    },
+    {
+      "Start": "0b845c77416e440ba9907cfcb0507f03",
+      "End": "fdf80c7df51d4b668dafa9d9d19a98db",
+      "Id": "e766211f2e444846b8610b25676f0f14"
+    },
+    {
+      "Start": "d34cb0c4315248bfaf7c04bcc52f10e8",
+      "End": "4e62f2640c5d40d694339914e005cec8",
+      "Id": "cda450f66a4d4869a1f978bd6707af93"
+    },
+    {
+      "Start": "da73d25fbaea4686b178202e1e2d8bc7",
+      "End": "0fe53c8bd02b4a839970b41b2726508a",
+      "Id": "4c21ab051c904220af8f93c55b0a4196"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -22.499469651426988,
+      "EyeY": 83.474008687746775,
+      "EyeZ": 25.340790306871632,
+      "LookX": 10.07099783483187,
+      "LookY": -10.910247654401203,
+      "LookZ": -48.676489535020693,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "c70b4a1ed9b74765a868eab1417cb1bd",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "7f4fb87fd4b142fa9ad6677324442fdc",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 468.14265107770939,
+        "Y": -0.934545999052034
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "3209bc700cc840c5a7115672962ff6e9",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -198.96387539235593,
+        "Y": -49.608733174647483
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "426586f0847c4cc29c706a5e88148b39",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -200.11198947210937,
+        "Y": 23.795450658374563
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "753a96b941a14b42854c59c962170900",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -200.05067824476339,
+        "Y": 98.409059798496031
+      }
+    ],
+    "Annotations": [],
+    "X": 343.71633748665209,
+    "Y": 209.44261155503398,
+    "Zoom": 1.2270473614083377
+  }
+}

@@ -1,0 +1,355 @@
+{
+  "Uuid": "8d81e226-8c7e-4588-be21-7089d208550e",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.Views",
+  "Description": "Given a list of views, apply a datetime and shadow intensity setting to their sun settings (still). You will need to update the shadows on/off setting manually or via a view template.",
+  "Name": "ViewSetSunSettings",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Credit to Matthew Anderle & Chris Williams for their examples\r\n# DTx Library: https://trello.com/c/mOujiMPA/39-slider-sun-settings\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nimport System\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Preparing input from dynamo to revit\r\nviews = IN[0] if isinstance(IN[0], list) else [IN[0]]\r\ntimes = IN[1] if isinstance(IN[1], list) else [IN[1]]\r\nshade = IN[2]\r\n\r\n# Datetimes set as local\r\nDT_kind = System.DateTimeKind.Local\r\n\r\n# Rebuild datetimes list\r\nDT_times = []\r\nfor time in times:\r\n\tspectime = System.DateTime.SpecifyKind(time, DT_kind)\r\n\tDT_times.append(spectime)\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\n# Transactable actions\r\nviews_done = []\r\n\r\nfor view, time in zip(views, DT_times):\r\n\tview_uw  = UnwrapElement(view)\r\n\tsettings = view_uw.SunAndShadowSettings\r\n\tview_uw.ShadowIntensity = 1\r\n\tsettings.SunAndShadowType = SunAndShadowType.StillImage\r\n\tsettings.StartDateAndTime = time\r\n\tview_uw.ShadowIntensity = shade\r\n\tviews_done.append(view)\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = [views_done, DT_times]",
+      "VariableInputPorts": true,
+      "Id": "0ee51f98c53144f2bac683be8f73ee79",
+      "Inputs": [
+        {
+          "Id": "6bef6b7adb1b4519bc39d364b04cae95",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "96a946ef86664bd4be73be9f6bb75c17",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "75108777b7bb4b099fd1bf124b8ce256",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "a650870cc86d4b0baa5f6b61b648938d",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "views",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "Provide a view or list of views"
+      },
+      "Id": "c27da7bfcd3a4a5ca84c9dcd5720bd7e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "da2df011f9ca4cd8adda198a6cc5c2d9",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "datetimes",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "Provide a datetime or list of them.\nShould be same length as views."
+      },
+      "Id": "51f56483206c4812ac71b2148e416a1e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "81bff9f0dcc84e93afdfee21fc402c8d",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "intensity",
+        "TypeName": "int",
+        "TypeRank": 0,
+        "DefaultValue": "100",
+        "Description": "Sets shadow intensity.\nProvide a number between 0 and 100."
+      },
+      "Id": "1f30363f829a427e80d8130a9ba74f84",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "05bfe5b6d8c948879d9e929925e8c51a",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//Views updated\r\nviews",
+      "Id": "2aadf9b4ef624c778ef4c2511421a15a",
+      "Inputs": [
+        {
+          "Id": "b6e9593deece46c284854ce5c9c7cbbd",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "views = lst[0];\ndates = lst[1];",
+      "Id": "2d40e2862588419d94c65fa09461892a",
+      "Inputs": [
+        {
+          "Id": "ae58c72646f74ab0891e4826c3f5ba9e",
+          "Name": "lst",
+          "Description": "lst",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "9278b67cb20a4d50afe185e72a8b5363",
+          "Name": "",
+          "Description": "views",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "612f5ae5c7744901a94dcfe5e9201a02",
+          "Name": "",
+          "Description": "dates",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//Datetimes of updated views\r\ndatetimes",
+      "Id": "48731d0d9cfc4fba854623cbab9d18a8",
+      "Inputs": [
+        {
+          "Id": "7f2f84baea994157bfa500a3785c1009",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "a650870cc86d4b0baa5f6b61b648938d",
+      "End": "ae58c72646f74ab0891e4826c3f5ba9e",
+      "Id": "4cb28974054c485e88cc0ec65a02e950"
+    },
+    {
+      "Start": "da2df011f9ca4cd8adda198a6cc5c2d9",
+      "End": "6bef6b7adb1b4519bc39d364b04cae95",
+      "Id": "8d435666108d419ab040d9815b290bc5"
+    },
+    {
+      "Start": "81bff9f0dcc84e93afdfee21fc402c8d",
+      "End": "96a946ef86664bd4be73be9f6bb75c17",
+      "Id": "b3d76d6da8a745aa82e9aabc4e0811e5"
+    },
+    {
+      "Start": "05bfe5b6d8c948879d9e929925e8c51a",
+      "End": "75108777b7bb4b099fd1bf124b8ce256",
+      "Id": "fcdbc6c4daa94b0c8412b52f00ee09cd"
+    },
+    {
+      "Start": "9278b67cb20a4d50afe185e72a8b5363",
+      "End": "b6e9593deece46c284854ce5c9c7cbbd",
+      "Id": "695dd17185684ad18103a670e4dea8c1"
+    },
+    {
+      "Start": "612f5ae5c7744901a94dcfe5e9201a02",
+      "End": "7f2f84baea994157bfa500a3785c1009",
+      "Id": "5a8d222b7be2454b991081358a59afb7"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -22.499469651426988,
+      "EyeY": 83.474008687746775,
+      "EyeZ": 25.340790306871632,
+      "LookX": 10.07099783483187,
+      "LookY": -10.910247654401203,
+      "LookZ": -48.676489535020693,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "0ee51f98c53144f2bac683be8f73ee79",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 264.88075636458393,
+        "Y": 20.703661028986318
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "c27da7bfcd3a4a5ca84c9dcd5720bd7e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -187.62692807518835,
+        "Y": -31.055491543479462
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "51f56483206c4812ac71b2148e416a1e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -192.80284333243509,
+        "Y": 47.128684262224283
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "1f30363f829a427e80d8130a9ba74f84",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -198.62574799683739,
+        "Y": 138.8996376182003
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "2aadf9b4ef624c778ef4c2511421a15a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 707.12577173125248,
+        "Y": -34.54158467998468
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "2d40e2862588419d94c65fa09461892a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 444.52774577173977,
+        "Y": 24.182995727352733
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "48731d0d9cfc4fba854623cbab9d18a8",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 704.5356380706836,
+        "Y": 109.74751380329478
+      }
+    ],
+    "Annotations": [],
+    "X": 340.3503826848347,
+    "Y": 214.29381424669458,
+    "Zoom": 0.98264231136796509
+  }
+}
