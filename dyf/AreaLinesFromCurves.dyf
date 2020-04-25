@@ -34,7 +34,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Preparing input from dynamo to revit\r\ncurves_list = UnwrapElement([IN[0]])\r\nview_r      = UnwrapElement(IN[1])\r\n\r\n# Start making Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\n# Make sketchplane at level of view\r\nlevel_r = view_r.GenLevel\r\nplane_r = SketchPlane.Create(doc, level_r.Id)\r\n\r\n# Make area boundary lines from curves\r\nbounds = []\r\n\r\nfor curves in curves_list:\r\n\tbound = []\r\n\tfor curve in curves:\r\n\t\tcrv = curve.ToRevitType()\r\n\t\tline = doc.Create.NewAreaBoundaryLine(plane_r, crv, view_r)\r\n\t\tbound.append(line.ToDSType(False))\r\n\tbounds.append(bound)\r\n\t\t\r\n# Finish making transaction\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = bounds",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Preparing input from dynamo to revit\r\ncurves_list = [IN[0]]\r\nview_r      = UnwrapElement(IN[1])\r\n\r\n# Start making Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\n# Make sketchplane at level of view\r\nlevel_r = view_r.GenLevel\r\nplane_r = SketchPlane.Create(doc, level_r.Id)\r\n\r\n# Make area boundary lines from curves\r\nbounds = []\r\n\r\nfor curves in curves_list:\r\n\tbound = []\r\n\tfor curve in curves:\r\n\t\tcrv = curve.ToRevitType()\r\n\t\tline = doc.Create.NewAreaBoundaryLine(plane_r, crv, view_r)\r\n\t\tbound.append(line.ToDSType(False))\r\n\tbounds.append(bound)\r\n\t\t\r\n# Finish making transaction\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = bounds",
       "VariableInputPorts": true,
       "Id": "f81b7cde7fb94a84ac1476e1c4ba842c",
       "Inputs": [
@@ -220,71 +220,71 @@
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -3466.6222642643252,
-      "EyeY": 21624.161165618305,
-      "EyeZ": 17258.394651081308,
-      "LookX": 6455.4791090061508,
-      "LookY": -24421.51507761153,
-      "LookZ": -8508.05715459134,
-      "UpX": 0.48901138529229637,
-      "UpY": 0.5877852522924748,
-      "UpZ": -0.64449698388897447
+      "EyeX": -11158.285184136945,
+      "EyeY": 10370.620066646608,
+      "EyeZ": 13133.886120494808,
+      "LookX": 8003.1580155800566,
+      "LookY": -7571.7073906548885,
+      "LookZ": -12235.061432570052,
+      "UpX": 0.14167960507423552,
+      "UpY": 0.965925826289074,
+      "UpZ": -0.21659683195695417
     },
     "NodeViews": [
       {
-        "ShowGeometry": true,
-        "Name": "Python Script",
         "Id": "f81b7cde7fb94a84ac1476e1c4ba842c",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
         "Excluded": false,
         "X": 663.335714345289,
         "Y": 28.454783560078852
       },
       {
-        "ShowGeometry": true,
-        "Name": "List.Flatten",
         "Id": "af64092263ec4c309a873944c9a73103",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
+        "Name": "List.Flatten",
+        "ShowGeometry": true,
         "Excluded": false,
         "X": 356.80036404121256,
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "0a7c2a11bc92446bbe54d6bdfcece046",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
         "Excluded": false,
         "X": 144.00115221736962,
         "Y": 135.7154618124967
       },
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "b1f5fbfb68be4470b1b5dfd3e8756187",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
         "Excluded": false,
         "X": 69.439753527295636,
         "Y": 0.30048311256030047
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "19ad51d1255a45ffb3df3159f63598ca",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
         "Excluded": false,
         "X": 874.01901505438684,
         "Y": 29.485876535972892
       }
     ],
     "Annotations": [],
-    "X": 303.86427764380983,
-    "Y": 246.4158332262104,
+    "X": -192.13572235619017,
+    "Y": 232.4158332262104,
     "Zoom": 1.4425890929331342
   }
 }
