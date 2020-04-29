@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Get inputs\r\nitems = IN[0] if isinstance(IN[0], list) else [IN[0]]\r\n\r\n# Convert to strings\r\nstrings = []\r\n\r\nfor i in items:\r\n\tstrings.append(str(i))\r\n\r\n# Define outputs\r\nOUT = strings",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Get inputs\r\nitems = IN[0] if isinstance(IN[0], list) else [IN[0]]\r\n\r\n# Convert to strings\r\nstrings = []\r\n\r\nfor i in items:\r\n\ttostr = str(i)\r\n\ttry:\r\n\t\tind = tostr.index(\".\")\r\n\t\tstrings.append(tostr[:ind])\r\n\texcept:\r\n\t\tstrings.append(tostr)\r\n\r\n# Define outputs\r\nOUT = strings",
       "VariableInputPorts": true,
       "Id": "3754d6e9934745b193c4bbf02cb70564",
       "Inputs": [
@@ -115,9 +115,9 @@
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -20.241256297759172,
-      "EyeY": 120.20095030201026,
-      "EyeZ": 27.7671132844957,
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
       "LookX": 12.0,
       "LookY": -13.0,
       "LookZ": -58.0,
