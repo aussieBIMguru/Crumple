@@ -26,7 +26,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n#Credit to Joshua Budarick for his assistance with this workflow!\r\n# https://www.linkedin.com/in/joshua-budarick-9bb50b4b/\r\n\r\n# Boilerplate text\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n#Inputdoc : Part of script by Andreas Dieckmann\r\ninputdoc = IN[0]\r\n\r\nif inputdoc == None:\r\n    doc = DocumentManager.Instance.CurrentDBDocument\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.Document\":\r\n    doc = inputdoc\r\nelse:\r\n\tdoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(input)\r\n\r\n#unwrap all elements to use with API\r\nparams = uwlist(IN[1])\r\nnames  = uwlist(IN[2])\r\n\r\nparams_new, names_new = [],[]\r\n\r\n# Collect values\r\nif doc.IsFamilyDocument:\r\n\r\n\t# \"Start\" the transaction\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\t\r\n\tfor p,n in zip(params, names):\r\n\t\ttry:\r\n\t\t\tnew = doc.FamilyManager.ReplaceParameter(p, n, p.Definition.ParameterGroup, p.IsInstance)\r\n\t\t\tparams_new.append(new)\r\n\t\t\tnames_new.append(n)\r\n\t\texcept:\r\n\t\t\tparams_new.append(None)\r\n\t\t\tnames_new_append(None)\r\n\r\n\t# \"End\" the transaction\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\n\r\n\tOUT = [params_new, names]\r\n\t\r\nelse:\r\n\tOUT = [\"Document is not a family.\",\"\"]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n#Credit to Joshua Budarick for his assistance with this workflow!\r\n# https://www.linkedin.com/in/joshua-budarick-9bb50b4b/\r\n\r\n# Boilerplate text\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n#Inputdoc : Part of script by Andreas Dieckmann\r\ninputdoc = IN[0]\r\n\r\nif inputdoc == None:\r\n    doc = DocumentManager.Instance.CurrentDBDocument\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.Document\":\r\n    doc = inputdoc\r\nelse:\r\n\tdoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(input)\r\n\r\n#unwrap all elements to use with API\r\nparams = uwlist(IN[1])\r\nnames  = uwlist(IN[2])\r\n\r\nparams_new, names_new = [],[]\r\n\r\n# Collect values\r\nif doc.IsFamilyDocument:\r\n\r\n\t# \"Start\" the transaction\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\t\r\n\tfor p,n in zip(params, names):\r\n\t\ttry:\r\n\t\t\tnew = doc.FamilyManager.ReplaceParameter(p, n, p.Definition.ParameterGroup, p.IsInstance)\r\n\t\t\tparams_new.append(new)\r\n\t\t\tnames_new.append(n)\r\n\t\texcept:\r\n\t\t\tparams_new.append(None)\r\n\t\t\tnames_new.append(None)\r\n\r\n\t# \"End\" the transaction\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\n\r\n\tOUT = [params_new, names]\r\n\t\r\nelse:\r\n\tOUT = [\"Document is not a family.\",\"\"]",
       "VariableInputPorts": true,
       "Id": "b013c540b51f4405a79c3f143160dacb",
       "Inputs": [
@@ -361,8 +361,8 @@
       }
     ],
     "Annotations": [],
-    "X": -81.25248620673915,
-    "Y": 219.56244479695994,
-    "Zoom": 1.1917937712929565
+    "X": 137.20099138375198,
+    "Y": 157.61150446070175,
+    "Zoom": 0.80821986639302912
   }
 }
