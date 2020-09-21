@@ -1,0 +1,165 @@
+{
+  "Uuid": "09ba95c4-f7c0-4ee0-bc64-b3e2ad58ba2a",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.Elements",
+  "Description": "Given a string or list of strings, return the corresponding BuiltIn Parameter Group.",
+  "Name": "BuiltInParameterGroupByName",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport System\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Declare inputs\r\nnames = IN[0] if isinstance(IN[0], list) else [IN[0]]\r\n\r\n# Enumerate over all BIPG types\r\nbi_groups = [a for a in System.Enum.GetValues(BuiltInParameterGroup)]\r\nbi_names  = [a.ToString() for a in System.Enum.GetValues(BuiltInParameterGroup)]\r\n\r\nmatches = []\r\n\r\nfor n in names:\r\n\ttry:\r\n\t\tind = bi_names.index(n)\r\n\t\tmatches.append(bi_groups[ind])\r\n\texcept:\r\n\t\tmatches.append(None)\r\n\r\n# Preparing output to Dynamo\r\nOUT = matches",
+      "VariableInputPorts": true,
+      "Id": "6ade4d154ce34ecc8916f7eb9794929b",
+      "Inputs": [
+        {
+          "Id": "d1eca185a06449bc84fa22ff0dc10eaa",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "902d6829f0134f91b4bcfadede578fe4",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//The corresponding groups.\r\n//No match = Null\r\ngroups",
+      "Id": "2f4660f186084af5912e652936a0d6ea",
+      "Inputs": [
+        {
+          "Id": "1902310162844a4ea5289977fadac0a6",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "names",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "Names of parameter groups\nas strings"
+      },
+      "Id": "41da611ed6a64b81aa72e50104119cde",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "c05ad154d04643cd866ca525afcd9f80",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "902d6829f0134f91b4bcfadede578fe4",
+      "End": "1902310162844a4ea5289977fadac0a6",
+      "Id": "dfe2d90e10094f8cb934778ece78da3b"
+    },
+    {
+      "Start": "c05ad154d04643cd866ca525afcd9f80",
+      "End": "d1eca185a06449bc84fa22ff0dc10eaa",
+      "Id": "fd47fcd1a0e7499f98e24650956beb60"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -22.020641205966292,
+      "EyeY": 107.30823585841793,
+      "EyeZ": 30.288711023603071,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "6ade4d154ce34ecc8916f7eb9794929b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 258.40996039601669,
+        "Y": 1.6819920792033258
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "2f4660f186084af5912e652936a0d6ea",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 456.28863234321443,
+        "Y": 1.6819920792033258
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "41da611ed6a64b81aa72e50104119cde",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -58.567823669210611,
+        "Y": 1.2574071459962113
+      }
+    ],
+    "Annotations": [],
+    "X": 690.34593053080016,
+    "Y": 291.8952680049573,
+    "Zoom": 1.5193932772469254
+  }
+}

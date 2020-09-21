@@ -1,0 +1,290 @@
+{
+  "Uuid": "9a56fed4-fb58-477b-9cb5-c09b5f7fe039",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.Areas",
+  "Description": "Given a list of Dynamo curves, the node generates area boundary lines along them in the given view. For convenience of iterability, this node flattens the curve list by default.",
+  "Name": "AreaLinesFromCurves",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Revit.Document.Current": {
+        "Key": "Revit.Application.Document",
+        "Value": "RevitNodes.dll"
+      },
+      "Revit.Document": {
+        "Key": "Revit.Application.Document",
+        "Value": "RevitNodes.dll"
+      },
+      "Revit.Application.Document.Current": {
+        "Key": "Revit.Application.Document",
+        "Value": "RevitNodes.dll"
+      },
+      "Revit.Application.Document": {
+        "Key": "Revit.Application.Document",
+        "Value": "RevitNodes.dll"
+      },
+      "Views": {
+        "Key": "archilab.Revit.Views.Views",
+        "Value": "archilab.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Preparing input from dynamo to revit\r\ncurves_list = [IN[0]]\r\nview_r      = UnwrapElement(IN[1])\r\n\r\n# Start making Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\n# Make sketchplane at level of view\r\nlevel_r = view_r.GenLevel\r\nplane_r = SketchPlane.Create(doc, level_r.Id)\r\n\r\n# Make area boundary lines from curves\r\nbounds = []\r\n\r\nfor curves in curves_list:\r\n\tbound = []\r\n\tfor curve in curves:\r\n\t\tcrv = curve.ToRevitType()\r\n\t\tline = doc.Create.NewAreaBoundaryLine(plane_r, crv, view_r)\r\n\t\tbound.append(line.ToDSType(False))\r\n\tbounds.append(bound)\r\n\t\t\r\n# Finish making transaction\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = bounds",
+      "VariableInputPorts": true,
+      "Id": "f81b7cde7fb94a84ac1476e1c4ba842c",
+      "Inputs": [
+        {
+          "Id": "45a1edf1a5ab442db1b0b0be6865ea61",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "f9e0b50e49a64e8b94680d0a685fb9d3",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "9864287982e34add91127207fc1d0656",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.Flatten@var[]..[],int",
+      "Id": "af64092263ec4c309a873944c9a73103",
+      "Inputs": [
+        {
+          "Id": "e4521e1e18c14df89b08a72a77ddbcc1",
+          "Name": "list",
+          "Description": "List to flatten.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "9d829902a1d74226a4ffe925f0846f02",
+          "Name": "amt",
+          "Description": "Layers of nesting to remove.\n\nint\nDefault value : -1",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "1f2f9094cad74bea92abb43b315943f9",
+          "Name": "var[]..[]",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Flattens a nested list of lists by a certain amount.\n\nList.Flatten (list: var[]..[], amt: int = -1): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "view",
+        "TypeName": "var",
+        "TypeRank": 0,
+        "DefaultValue": "Revit.Application.Document.Current.ActiveView",
+        "Description": "The view to place the lines in."
+      },
+      "Id": "0a7c2a11bc92446bbe54d6bdfcece046",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "c0d24a7cfa154282896ba3feaf2da7fe",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "curves",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "Curves to base the area\nseparation lines from."
+      },
+      "Id": "b1f5fbfb68be4470b1b5dfd3e8756187",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "accbf73423f3449aa7c9cca996bbf07f",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//The model curves as elements.\r\nareas",
+      "Id": "19ad51d1255a45ffb3df3159f63598ca",
+      "Inputs": [
+        {
+          "Id": "ef91f43e1765461cb95a7f7887217593",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "9864287982e34add91127207fc1d0656",
+      "End": "ef91f43e1765461cb95a7f7887217593",
+      "Id": "9c1348be95364542b8eb52fa5de39dbb"
+    },
+    {
+      "Start": "1f2f9094cad74bea92abb43b315943f9",
+      "End": "45a1edf1a5ab442db1b0b0be6865ea61",
+      "Id": "62c7b9f9627448e084fb7ea633713586"
+    },
+    {
+      "Start": "c0d24a7cfa154282896ba3feaf2da7fe",
+      "End": "f9e0b50e49a64e8b94680d0a685fb9d3",
+      "Id": "b4f692a3586349f3adcfc006ee78b9bb"
+    },
+    {
+      "Start": "accbf73423f3449aa7c9cca996bbf07f",
+      "End": "e4521e1e18c14df89b08a72a77ddbcc1",
+      "Id": "18e93feea6044ce59ab4e1ba8178e294"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -11158.285184136945,
+      "EyeY": 10370.620066646608,
+      "EyeZ": 13133.886120494808,
+      "LookX": 8003.1580155800566,
+      "LookY": -7571.7073906548885,
+      "LookZ": -12235.061432570052,
+      "UpX": 0.14167960507423552,
+      "UpY": 0.965925826289074,
+      "UpZ": -0.21659683195695417
+    },
+    "NodeViews": [
+      {
+        "Id": "f81b7cde7fb94a84ac1476e1c4ba842c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 663.335714345289,
+        "Y": 28.454783560078852
+      },
+      {
+        "Id": "af64092263ec4c309a873944c9a73103",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "List.Flatten",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 356.80036404121256,
+        "Y": 0.0
+      },
+      {
+        "Id": "0a7c2a11bc92446bbe54d6bdfcece046",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 144.00115221736962,
+        "Y": 135.7154618124967
+      },
+      {
+        "Id": "b1f5fbfb68be4470b1b5dfd3e8756187",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 69.439753527295636,
+        "Y": 0.30048311256030047
+      },
+      {
+        "Id": "19ad51d1255a45ffb3df3159f63598ca",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 874.01901505438684,
+        "Y": 29.485876535972892
+      }
+    ],
+    "Annotations": [],
+    "X": -192.13572235619017,
+    "Y": 232.4158332262104,
+    "Zoom": 1.4425890929331342
+  }
+}

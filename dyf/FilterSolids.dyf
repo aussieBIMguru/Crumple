@@ -1,0 +1,298 @@
+{
+  "Uuid": "ccabdc41-db4d-4d78-ba7d-de72b08a60c4",
+  "IsCustomNode": true,
+  "Category": "Crumple.Geometry.Modifiers",
+  "Description": "From a list or lists of geometry, filter out anything that doesn't fall under the object type solid. This is useful for dealing with families that contain geometry like curves from model lines.",
+  "Name": "FilterSolids",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "DSCore.Object": {
+        "Key": "DSCore.Object",
+        "Value": "DSCoreNodes.dll"
+      },
+      "DSCore.String": {
+        "Key": "DSCore.String",
+        "Value": "DSCoreNodes.dll"
+      },
+      "DSCore.List": {
+        "Key": "DSCore.List",
+        "Value": "DSCoreNodes.dll"
+      },
+      "DesignScript.Dictionary": {
+        "Key": "DesignScript.Builtin.Dictionary",
+        "Value": "DesignScriptBuiltin.dll"
+      },
+      "DesignScript.Builtin.Dictionary": {
+        "Key": "DesignScript.Builtin.Dictionary",
+        "Value": "DesignScriptBuiltin.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.FilterByBoolMask@var[]..[],var[]..[]",
+      "Id": "5647d46345c047c1a0f6f275f29f518c",
+      "Inputs": [
+        {
+          "Id": "7a58700cd1e940c2bfa956cf87ed2f36",
+          "Name": "list",
+          "Description": "List to filter.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e300910c8fdf4011bea7cdfa71c7892b",
+          "Name": "mask",
+          "Description": "List of booleans representing a mask.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "469e025f465c426dac24a5c539ec2371",
+          "Name": "in",
+          "Description": "Items whose mask index is true.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a5749cae5d7b45278992b441bcf32e48",
+          "Name": "out",
+          "Description": "Items whose mask index is false.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Filters a sequence by looking up corresponding indices in a separate list of booleans.\n\nList.FilterByBoolMask (list: var[]..[], mask: var[]..[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "//Get geometry types\ntypes   = DSCore.Object.Type(geometry);\n//Mask for solids\nDSCore.String.EndsWith(types, \".Solid\", false);",
+      "Id": "d2ac932623f7435887a8c883d937f633",
+      "Inputs": [
+        {
+          "Id": "fb6ec61d426a40d8ab2a657d13f5b6e0",
+          "Name": "geometry",
+          "Description": "geometry",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "d5bfcf0a1a0a4a83bbcec6386fafa51a",
+          "Name": "",
+          "Description": "types",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "8b8c6724739e4cf49f5375b9d8b80233",
+          "Name": "",
+          "Description": "Value of expression at line 4",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "geometry",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "Dynamo geometry for filtering."
+      },
+      "Id": "17424407ea984221844e00c3aeb6244d",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "7faba62627a04760bed5fafd65f7682c",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//Dynamo solid geometry.\r\nSolids",
+      "Id": "216b55febb5d4843891def70059ee281",
+      "Inputs": [
+        {
+          "Id": "82ac3a3867b947e1a9c7c19bddadbe56",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//Dynamo non-solid geometry.\r\nNonSolids",
+      "Id": "dbba86ec9fae4da59b84faebf211a44f",
+      "Inputs": [
+        {
+          "Id": "f9879ecc2cc2401e8645ca049a179d7a",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "469e025f465c426dac24a5c539ec2371",
+      "End": "82ac3a3867b947e1a9c7c19bddadbe56",
+      "Id": "94cc538e1a1c4f5fb0feafbb6149748a"
+    },
+    {
+      "Start": "a5749cae5d7b45278992b441bcf32e48",
+      "End": "f9879ecc2cc2401e8645ca049a179d7a",
+      "Id": "7807f6f5beaf4299a5529a90219bf812"
+    },
+    {
+      "Start": "d5bfcf0a1a0a4a83bbcec6386fafa51a",
+      "End": "7a58700cd1e940c2bfa956cf87ed2f36",
+      "Id": "5baf75f9974a41d18947a2910463d49c"
+    },
+    {
+      "Start": "8b8c6724739e4cf49f5375b9d8b80233",
+      "End": "e300910c8fdf4011bea7cdfa71c7892b",
+      "Id": "be544cac5fca4319bb3e53389c8a5760"
+    },
+    {
+      "Start": "7faba62627a04760bed5fafd65f7682c",
+      "End": "fb6ec61d426a40d8ab2a657d13f5b6e0",
+      "Id": "ad4daecbd53e46628b0fc0d448cc463d"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -22.499469651426988,
+      "EyeY": 83.474008687746775,
+      "EyeZ": 25.340790306871632,
+      "LookX": 10.07099783483187,
+      "LookY": -10.910247654401203,
+      "LookZ": -48.676489535020693,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "List.FilterByBoolMask",
+        "Id": "5647d46345c047c1a0f6f275f29f518c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 789.89601321935515,
+        "Y": 15.23967056034212
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "d2ac932623f7435887a8c883d937f633",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "17424407ea984221844e00c3aeb6244d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -109.37933364124018,
+        "Y": -5.00815192541711
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "216b55febb5d4843891def70059ee281",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1057.2137331350464,
+        "Y": -4.8987122783252772
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "dbba86ec9fae4da59b84faebf211a44f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1056.1542262590935,
+        "Y": 71.885145371793755
+      }
+    ],
+    "Annotations": [],
+    "X": 185.42503051953531,
+    "Y": 191.60518692015353,
+    "Zoom": 0.76582939285155183
+  }
+}
