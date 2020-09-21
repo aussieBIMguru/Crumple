@@ -1,0 +1,228 @@
+{
+  "Uuid": "985622ec-b857-41c9-9899-8f502a60c2f9",
+  "IsCustomNode": true,
+  "Category": "Crumple.List.Organize",
+  "Description": "Drops a certain number of rows from the front a list, then transposes it. Handy for pre-processing Excel data!",
+  "Name": "ListKickFlip",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "DSCore.List": {
+        "Key": "DSCore.List",
+        "Value": "DSCoreNodes.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "data = DSCore.List.DropItems(list, amount);\ndata_t = DSCore.List.Transpose(data);",
+      "Id": "ef630ab873234e57876a6c1adcea1d26",
+      "Inputs": [
+        {
+          "Id": "4eb37a7e0438464eaa6c207b32c7a3e5",
+          "Name": "list",
+          "Description": "list",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "8ecf199986e74ccab9df150eb3ef235d",
+          "Name": "amount",
+          "Description": "amount",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "ee637ff23bd24a8b89516a5dce48b718",
+          "Name": "",
+          "Description": "data",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "3c1d4135fd5e41b4ba3f4fb66faac9bc",
+          "Name": "",
+          "Description": "data_t",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "data",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "Data for processing, most likely a\nset of lists derived from Excel."
+      },
+      "Id": "2fbfdfff2e574a218178b52bbbf68c43",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "90626b76b8a64723894a350d87606e01",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "kick",
+        "TypeName": "int",
+        "TypeRank": 0,
+        "DefaultValue": "1",
+        "Description": "The number of header rows."
+      },
+      "Id": "21334baac16a419e84d29a42223da7ee",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "d323bb227fee4b1f91bc203b4eddf3b5",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//The transposed list data as\r\n//columns, without headers.\r\nflipped",
+      "Id": "c521b6173c48454ba9c3c3f3fbb48f53",
+      "Inputs": [
+        {
+          "Id": "f100d2aab325444e8459c7dac01b643b",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "3c1d4135fd5e41b4ba3f4fb66faac9bc",
+      "End": "f100d2aab325444e8459c7dac01b643b",
+      "Id": "aa7077b406af42218294b0e45aa865f9"
+    },
+    {
+      "Start": "90626b76b8a64723894a350d87606e01",
+      "End": "4eb37a7e0438464eaa6c207b32c7a3e5",
+      "Id": "c3ea7b265a59479b8cfcdb51ed795779"
+    },
+    {
+      "Start": "d323bb227fee4b1f91bc203b4eddf3b5",
+      "End": "8ecf199986e74ccab9df150eb3ef235d",
+      "Id": "5675b7544d094bc7a40795ae91dfbb31"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -22.499469651426988,
+      "EyeY": 83.474008687746775,
+      "EyeZ": 25.340790306871632,
+      "LookX": 10.07099783483187,
+      "LookY": -10.910247654401203,
+      "LookZ": -48.676489535020693,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "ef630ab873234e57876a6c1adcea1d26",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -11.529879540117236,
+        "Y": 170.85185136719258
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "2fbfdfff2e574a218178b52bbbf68c43",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -433.73761284565364,
+        "Y": 131.26019096485996
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "21334baac16a419e84d29a42223da7ee",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -369.42184429379938,
+        "Y": 243.27147338399175
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "c521b6173c48454ba9c3c3f3fbb48f53",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 515.70006670342809,
+        "Y": 183.42990177459328
+      }
+    ],
+    "Annotations": [],
+    "X": 515.9452466676812,
+    "Y": 38.175501523281127,
+    "Zoom": 1.0298856394709863
+  }
+}

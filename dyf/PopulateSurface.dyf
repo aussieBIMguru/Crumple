@@ -1,0 +1,391 @@
+{
+  "Uuid": "029ce9e0-21e2-4570-bfcd-4f50ab1ad700",
+  "IsCustomNode": true,
+  "Category": "Crumple.Geometry.Surfaces",
+  "Description": "Distributes a certain number of points randomly across an input surface.",
+  "Name": "PopulateSurface",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Number": {
+        "Key": "Orchid.Core.Number",
+        "Value": "OrchidRB.dll"
+      },
+      "Surface": {
+        "Key": "Autodesk.DesignScript.Geometry.Surface",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Autodesk.DesignScript.Geometry.Surface": {
+        "Key": "Autodesk.DesignScript.Geometry.Surface",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Surface.PointAtParameter@double,double",
+      "Id": "2722d2ed4ab048a5b60d0534a881aa65",
+      "Inputs": [
+        {
+          "Id": "8883f4abfa284193bb9b6f31e0a5f586",
+          "Name": "surface",
+          "Description": "Autodesk.DesignScript.Geometry.Surface",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "bbb74a379add49809c806f171c2c5793",
+          "Name": "u",
+          "Description": "double\nDefault value : 0",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e83ffbb3280b453f95148c56a3658bf5",
+          "Name": "v",
+          "Description": "double\nDefault value : 0",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "3aa1f57fc78f4584ac412dc7fd3ec1fa",
+          "Name": "Point",
+          "Description": "Point",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Longest",
+      "Description": "Return the Point at specified U and V parameters.\n\nSurface.PointAtParameter (u: double = 0, v: double = 0): Point"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "u = lst[0];\nv = lst[1];",
+      "Id": "a79fd47aeb704102b6b8364edeb3ba3e",
+      "Inputs": [
+        {
+          "Id": "b3f933b500724835a504c9eec2b7f2c0",
+          "Name": "lst",
+          "Description": "lst",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "3192bc0ac867441eb5ca7146d5e92021",
+          "Name": "",
+          "Description": "u",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "300a84365f01434db6710d11df4faf5c",
+          "Name": "",
+          "Description": "v",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Import random package\r\nfrom random import seed\r\nfrom random import random\r\n\r\n# Define inputs\r\nrcount = IN[0]\r\nrseed  = IN[1]\r\n\r\n# Set seed\r\nseed(rseed)\r\n\r\n# Empty list for values\r\nnums_x, nums_y = [], []\r\n\r\n# Generate random values\r\nfor r in range(rcount):\r\n\tval1, val2 = random(), random()\r\n\tnums_x.append(val1)\r\n\tnums_y.append(val2)\r\n\r\n# Output\r\nOUT = [nums_x, nums_y]",
+      "VariableInputPorts": true,
+      "Id": "ff504c4fb40e469081e24264ee392806",
+      "Inputs": [
+        {
+          "Id": "318c2d2767544c2ea57e4328bc42c7b4",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "4f0d4b39f6b448f8a37994223d8d2e39",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "4ef6542aed1f47cbbfc21266546e2b41",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "surface",
+        "TypeName": "Autodesk.DesignScript.Geometry.Surface",
+        "TypeRank": 0,
+        "DefaultValue": null,
+        "Description": "Surface to populate."
+      },
+      "Id": "974557ad19424a7bab3cba35851345c8",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "9029b87586f84b5e808a292639707cce",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "count",
+        "TypeName": "int",
+        "TypeRank": 0,
+        "DefaultValue": "1",
+        "Description": "The number of points to generate."
+      },
+      "Id": "c1387e78c6914fbe855b3c7812869051",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "e8f6ff67021c43babbbbc1124021c293",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "seed",
+        "TypeName": "int",
+        "TypeRank": 0,
+        "DefaultValue": "1",
+        "Description": "The seed of randomisation."
+      },
+      "Id": "a320bedf03614fc5803f61445b0fdc04",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "3f4867cd075e4795906376161cf98333",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "points",
+      "Id": "4e2205cdbc2246af8b813bf5601c0b0b",
+      "Inputs": [
+        {
+          "Id": "4608365dd45e458b81dc95e2982faa6d",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "3aa1f57fc78f4584ac412dc7fd3ec1fa",
+      "End": "4608365dd45e458b81dc95e2982faa6d",
+      "Id": "ff8aef32b9054a78b49c9b8d75ab7e8a"
+    },
+    {
+      "Start": "3192bc0ac867441eb5ca7146d5e92021",
+      "End": "bbb74a379add49809c806f171c2c5793",
+      "Id": "9ade911e63514c19b22f420a820efeb2"
+    },
+    {
+      "Start": "300a84365f01434db6710d11df4faf5c",
+      "End": "e83ffbb3280b453f95148c56a3658bf5",
+      "Id": "679a7937354140eca53bcce231a6d5ee"
+    },
+    {
+      "Start": "4ef6542aed1f47cbbfc21266546e2b41",
+      "End": "b3f933b500724835a504c9eec2b7f2c0",
+      "Id": "96e3f4b10a8249feb653b217854c7d4a"
+    },
+    {
+      "Start": "9029b87586f84b5e808a292639707cce",
+      "End": "8883f4abfa284193bb9b6f31e0a5f586",
+      "Id": "9a2bdb9573044d989291871282ad032f"
+    },
+    {
+      "Start": "e8f6ff67021c43babbbbc1124021c293",
+      "End": "318c2d2767544c2ea57e4328bc42c7b4",
+      "Id": "ce62186cae8f47dcba9bafeda35943d9"
+    },
+    {
+      "Start": "3f4867cd075e4795906376161cf98333",
+      "End": "4f0d4b39f6b448f8a37994223d8d2e39",
+      "Id": "d1b23b63312f4ff0b6ba763843b9b0d1"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -4.852500201896591,
+      "EyeY": 10.044396577961736,
+      "EyeZ": 6.8984872198701588,
+      "LookX": 4.9719378964461516,
+      "LookY": -9.2038184987381033,
+      "LookZ": -7.6009951925874439,
+      "UpX": 0.29813974222173972,
+      "UpY": 0.83867056794542527,
+      "UpZ": -0.45578983377216203
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Surface.PointAtParameter",
+        "Id": "2722d2ed4ab048a5b60d0534a881aa65",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 598.63971798310786,
+        "Y": 97.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "a79fd47aeb704102b6b8364edeb3ba3e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 378.19199063307633,
+        "Y": 130.13787549498593
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "ff504c4fb40e469081e24264ee392806",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 216.0,
+        "Y": 125.61880231413343
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "974557ad19424a7bab3cba35851345c8",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -166.07571361535395,
+        "Y": 7.3830458459936779
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "c1387e78c6914fbe855b3c7812869051",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -171.0,
+        "Y": 98.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "a320bedf03614fc5803f61445b0fdc04",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -110.0,
+        "Y": 180.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "4e2205cdbc2246af8b813bf5601c0b0b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 884.63971798310786,
+        "Y": 97.0
+      }
+    ],
+    "Annotations": [],
+    "X": 560.86419733246214,
+    "Y": 190.99102084054607,
+    "Zoom": 1.2484436539722306
+  }
+}

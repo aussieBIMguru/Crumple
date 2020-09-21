@@ -1,0 +1,300 @@
+{
+  "Uuid": "9163bcd3-a51c-42e4-867a-b9ea5d487875",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.Spaces",
+  "Description": "Gets a Space's Type as well as it's name and Id.",
+  "Name": "GetSpaceType",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Preparing input from dynamo to revit\r\nelements = IN[0] if isinstance(IN[0], list) else [IN[0]]\r\n\r\n# Prepare empty lists\r\neles, names, ids = [], [], []\r\n\r\n# Find space type Id and convert to element\r\nfor e in elements:\r\n\tuw = UnwrapElement(e)\r\n\tid_uwr = uw.SpaceTypeId\r\n\tspt = doc.GetElement(id_uwr).ToDSType(True)\r\n\teles.append(spt)\r\n\tnames.append(spt.Name)\r\n\tid_str = id_uwr.ToString()\r\n\tid_int = int(id_str)\r\n\tids.append(id_int)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [eles, names, ids]",
+      "VariableInputPorts": true,
+      "Id": "f2871e5eaeaa4e7881bacc272b2af717",
+      "Inputs": [
+        {
+          "Id": "77eef7429b9e404ab18fcc2de1f9c8e5",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "198ed0f27e804858936a085e885f8462",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "spaces",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "A space or list of spaces."
+      },
+      "Id": "0dd3657aed0b4a8e9b87001d396a67f3",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "8ad4726ae33540908a60bbba52c76534",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//As an element.\r\nspace_type",
+      "Id": "b2ab0eb8b82e421ea7d563e77fc54e95",
+      "Inputs": [
+        {
+          "Id": "4141bf9c8dfa48b1934c713808853ccf",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "st = lst[0];\nnm = lst[1];\nID = lst[2];",
+      "Id": "45bbfe4e0e2148628726a97017525784",
+      "Inputs": [
+        {
+          "Id": "ea27d233211e4995ad8324c29553d3cc",
+          "Name": "lst",
+          "Description": "lst",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "79abd20096494bd2ba98b2ba363cd98f",
+          "Name": "",
+          "Description": "st",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "2eadc01a052743d79183b7725bfb5b0e",
+          "Name": "",
+          "Description": "nm",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a0f2beb1b1354ce8b098369ad36910ce",
+          "Name": "",
+          "Description": "ID",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//As a string.\r\ntype_name",
+      "Id": "b343cbc671d84125957e1e77f3554b7b",
+      "Inputs": [
+        {
+          "Id": "49ca3e39816a474e80df86e08107787d",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//As an integer.\r\ntype_id",
+      "Id": "b140d9cb993b43db98643a6494bb58c4",
+      "Inputs": [
+        {
+          "Id": "e74df30db03f406b95d8ba9fb0042afb",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "198ed0f27e804858936a085e885f8462",
+      "End": "ea27d233211e4995ad8324c29553d3cc",
+      "Id": "a2b21be1b707475083f310f423b6fd2b"
+    },
+    {
+      "Start": "8ad4726ae33540908a60bbba52c76534",
+      "End": "77eef7429b9e404ab18fcc2de1f9c8e5",
+      "Id": "9cb1cdc183ed4ef5a61b3eb73e75c1a3"
+    },
+    {
+      "Start": "79abd20096494bd2ba98b2ba363cd98f",
+      "End": "4141bf9c8dfa48b1934c713808853ccf",
+      "Id": "a63bb3684d5f4a7d938d87e833683ae8"
+    },
+    {
+      "Start": "2eadc01a052743d79183b7725bfb5b0e",
+      "End": "49ca3e39816a474e80df86e08107787d",
+      "Id": "0a83aed5ca844e88a39c19544559ccf6"
+    },
+    {
+      "Start": "a0f2beb1b1354ce8b098369ad36910ce",
+      "End": "e74df30db03f406b95d8ba9fb0042afb",
+      "Id": "cd164ec31acf4f18984493d4091bae63"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -16.657216786055237,
+      "EyeY": 114.57313150030453,
+      "EyeZ": 29.770046363161676,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "f2871e5eaeaa4e7881bacc272b2af717",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "0dd3657aed0b4a8e9b87001d396a67f3",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -47.477744807121667,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "b2ab0eb8b82e421ea7d563e77fc54e95",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 687.0,
+        "Y": -73.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "45bbfe4e0e2148628726a97017525784",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 415.0,
+        "Y": 4.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "b343cbc671d84125957e1e77f3554b7b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 689.0,
+        "Y": 15.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "b140d9cb993b43db98643a6494bb58c4",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 691.5,
+        "Y": 106.5
+      }
+    ],
+    "Annotations": [],
+    "X": 83.834999999999923,
+    "Y": 280.6125,
+    "Zoom": 0.8425
+  }
+}
