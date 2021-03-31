@@ -1,0 +1,265 @@
+{
+  "Uuid": "56d07fb7-96c6-4441-9746-b818d2f37007",
+  "IsCustomNode": true,
+  "Category": "Crumple.Math.Logic",
+  "Description": "A simple if/then/else logic gate. If true, you get the 'then' input, otherwise you get the 'else' input. Unlike the OOTB 'If' node, this one allows differing list sizes.",
+  "Name": "© IfThenElse",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n#Code\r\nif IN[0]:\r\n\tOUT = IN[1]\r\nelse:\r\n\tOUT = IN[2]",
+      "VariableInputPorts": true,
+      "Id": "33864f08165d4f04a4e629b71b21d1c8",
+      "Inputs": [
+        {
+          "Id": "ba46041b0d874143b9557324f3405743",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "c7ab391c5f6f44588a2a8803331c3c05",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "89e54a738bbc4a1b9bfdb37e76d4b052",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "469aa56501e642af9dc2ac58279ff828",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "If",
+        "TypeName": "bool",
+        "TypeRank": 0,
+        "DefaultValue": "true",
+        "Description": "Value to determine\nthen or else outcome.\n\nTrue  = Then\nFalse = Else"
+      },
+      "Id": "7cad5b3a6a744b24af0e2c377482801a",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "b12410174e44431c9db33e3b4d223da3",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "Then",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "Outcome if True"
+      },
+      "Id": "8e854befeb114e9792a0e3b6484a12fb",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "fb364a619b174c11925d9a67f08c2561",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "Else",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "Outcome if False"
+      },
+      "Id": "f93fd42b068140df9b8ff877f1586a64",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "89877c8e38f44a44b1b70db84ee8a84a",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//The outcome\r\n//\r\n//True  = Then\r\n//False = Else\r\nOutput",
+      "Id": "51a3e607eb044be7a487fbd52a5afc39",
+      "Inputs": [
+        {
+          "Id": "b8f46a5fb457447e9d6857cdec0e2311",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "469aa56501e642af9dc2ac58279ff828",
+      "End": "b8f46a5fb457447e9d6857cdec0e2311",
+      "Id": "6c9bd89cd03c40588f6c34071332cd05"
+    },
+    {
+      "Start": "b12410174e44431c9db33e3b4d223da3",
+      "End": "ba46041b0d874143b9557324f3405743",
+      "Id": "bf81f51d7a3e42a29c629489bb6ede25"
+    },
+    {
+      "Start": "fb364a619b174c11925d9a67f08c2561",
+      "End": "c7ab391c5f6f44588a2a8803331c3c05",
+      "Id": "d443877e3fcc4dc4841080ba3372d2dc"
+    },
+    {
+      "Start": "89877c8e38f44a44b1b70db84ee8a84a",
+      "End": "89e54a738bbc4a1b9bfdb37e76d4b052",
+      "Id": "aa0e0564d92947d590fef54188717778"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -22.499469651426988,
+      "EyeY": 83.474008687746775,
+      "EyeZ": 25.340790306871632,
+      "LookX": 10.07099783483187,
+      "LookY": -10.910247654401203,
+      "LookZ": -48.676489535020693,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "33864f08165d4f04a4e629b71b21d1c8",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 0.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "7cad5b3a6a744b24af0e2c377482801a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -387.87041036717051,
+        "Y": -110.00647948164146
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "8e854befeb114e9792a0e3b6484a12fb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -388.781857451404,
+        "Y": 33.822894168466519
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "f93fd42b068140df9b8ff877f1586a64",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -390.32613390928736,
+        "Y": 117.85745140388769
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "51a3e607eb044be7a487fbd52a5afc39",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": -1.0
+      }
+    ],
+    "Annotations": [],
+    "X": 657.36610619600424,
+    "Y": 225.31766330993523,
+    "Zoom": 1.33823125
+  }
+}

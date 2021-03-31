@@ -1,0 +1,271 @@
+{
+  "Uuid": "9487d6cf-da87-434d-a069-18eac47a0555",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.Elements",
+  "Description": "Given a list of element lists, exclude elements that wont comply with a given separation from one another. The node will return (one of) the most best possible outcomes for that group of elements.",
+  "Name": "© ElementsQuarantine",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Vector": {
+        "Key": "Autodesk.DesignScript.Geometry.Vector",
+        "Value": "ProtoGeometry.dll"
+      },
+      "DSCore.Color": {
+        "Key": "DSCore.Color",
+        "Value": "DSCoreNodes.dll"
+      },
+      "Geometry": {
+        "Key": "Autodesk.DesignScript.Geometry.Geometry",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Point": {
+        "Key": "Autodesk.DesignScript.Geometry.Point",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Math": {
+        "Key": "DSCore.Math",
+        "Value": "DSCoreNodes.dll"
+      },
+      "KeyNotFoundException.Y": {
+        "Key": "DesignScript.Builtin.KeyNotFoundException",
+        "Value": "DesignScriptBuiltin.dll"
+      },
+      "Line": {
+        "Key": "Autodesk.DesignScript.Geometry.Line",
+        "Value": "ProtoGeometry.dll"
+      },
+      "List": {
+        "Key": "List",
+        "Value": "BuiltIn.ds"
+      },
+      "BoundingBox": {
+        "Key": "Autodesk.DesignScript.Geometry.BoundingBox",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Polygon": {
+        "Key": "Autodesk.DesignScript.Geometry.Polygon",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Credit to Cyril Poupin for contributing the below Python code\r\n# Shared here via the package for others to use :)\r\n\r\n# ORIGINAL THREAD AND USER PROFILE OF C.POUPIN\r\n# https://forum.dynamobim.com/u/c.poupin\r\n# https://forum.dynamobim.com/t/covid-chair-spacing-iteration-challenge/57031/6\r\n\r\n# Thanks also to Vikram Subbaiah for his Design script alternative\r\n# https://forum.dynamobim.com/u/Vikram_Subbaiah\r\n\r\n# Boilerplate\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\nclr.AddReference('RevitAPI')\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Function for reviewing chairs\r\ndef nextSpaceChair(group = [], elemA = None, startIdx = 0):\r\n    global margin\r\n    group = list(group)\r\n    if elemA is None: \r\n        elemA = group.pop(startIdx)\r\n        return [elemA] + nextSpaceChair(group, elemA )\r\n    else:   \r\n        locPt = elemA.Location.Point\r\n        lstPair = [[x, x.Location.Point.DistanceTo(locPt)] for x in group if x.Location.Point.DistanceTo(locPt) > margin]\r\n        lstPair.sort(key = lambda x : x[1])\r\n        if len(lstPair) > 0:\r\n            #get the nearest chair >= 1.50m\r\n            nearElem = lstPair[0][0]\r\n            #get the rest\r\n            group = [x[0] for x in lstPair[1:] ]\r\n            return [nearElem] + nextSpaceChair(group = group, elemA = nearElem )\r\n        else:\r\n            return []   \r\n\r\n# Declare inputs\r\nallGroup = list(UnwrapElement(IN[0]))\r\nmargin = IN[1] * 0.00328084 #simple convert in feet\r\n\r\n# Build outputs\r\nout = []\r\nfor g in allGroup:\r\n    # test with change first element, for each chair in group\r\n    testLst = [nextSpaceChair(group = g, elemA = None, startIdx = i) for i in range(len(g))]\r\n    maxlst = max(testLst, key = len)\r\n    out.append(maxlst)\r\n\r\n# Declare output\r\nOUT = out",
+      "VariableInputPorts": true,
+      "Id": "8b96266f3385496b9d107584a6f907df",
+      "Inputs": [
+        {
+          "Id": "2cc533273c2b44b3b0d272fa78100014",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a15169e9a4d74c618b28616abb34aea2",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "0aa6bae1dbbc4e3daca7becc8466df01",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "elements",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "Elements to separate, in the\nformat of a list of lists."
+      },
+      "Id": "ec4f503212cc49d9ac9da99d1da7cafe",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "52c3d62049d843deabb9c433b51593f7",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "count",
+        "TypeName": "int",
+        "TypeRank": 0,
+        "DefaultValue": "1500",
+        "Description": "The minimum separation."
+      },
+      "Id": "04181f9c5c7b483db010750409b6d4ab",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "59b981cbd5554c50a9c9e4c454ac2a0b",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//Best configuration.\r\nelements",
+      "Id": "63e6235e8c2b403f89c48d1107ebdd5c",
+      "Inputs": [
+        {
+          "Id": "e2ad20bc2d2e42be88fe74e11ff6b4f9",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "0aa6bae1dbbc4e3daca7becc8466df01",
+      "End": "e2ad20bc2d2e42be88fe74e11ff6b4f9",
+      "Id": "56cbb743349c4bde987645831f0f5f6f"
+    },
+    {
+      "Start": "52c3d62049d843deabb9c433b51593f7",
+      "End": "2cc533273c2b44b3b0d272fa78100014",
+      "Id": "0cead72c0a224a6cbfd78015a2ab3f39"
+    },
+    {
+      "Start": "59b981cbd5554c50a9c9e4c454ac2a0b",
+      "End": "a15169e9a4d74c618b28616abb34aea2",
+      "Id": "6b38fc748d2f40c18ed0a43b64c9e6d8"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": 15074.1944443899,
+      "EyeY": 22427.546638550954,
+      "EyeZ": 6840.57052768032,
+      "LookX": -3979.1713079701967,
+      "LookY": -23185.119361437057,
+      "LookZ": -11394.596710872032,
+      "UpX": -0.29243917394561852,
+      "UpY": 0.46174861323505406,
+      "UpZ": -0.837417188573025
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "8b96266f3385496b9d107584a6f907df",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 150.61508427635351,
+        "Y": -52.307850380866512
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "ec4f503212cc49d9ac9da99d1da7cafe",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -174.0,
+        "Y": -82.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "04181f9c5c7b483db010750409b6d4ab",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -135.45140542760564,
+        "Y": 21.741854759729591
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "63e6235e8c2b403f89c48d1107ebdd5c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 321.39671768238861,
+        "Y": -52.407697660624791
+      }
+    ],
+    "Annotations": [
+      {
+        "Id": "b7f2a8285bc748e2b2f28baff185e018",
+        "Title": "Credit to Cyril Poupin for contributing the below Python code\r\n\r\nShared here via the package for others to use :)\r\n\r\nLINKS\r\nhttps://forum.dynamobim.com/u/c.poupin\r\n\r\nhttps://forum.dynamobim.com/t/covid-chair-spacing-iteration-challenge/57031/6",
+        "Nodes": [],
+        "Left": 78.198337921147925,
+        "Top": -261.59748771067211,
+        "Width": 0.0,
+        "Height": 0.0,
+        "FontSize": 36.0,
+        "InitialTop": 0.0,
+        "InitialHeight": 0.0,
+        "TextblockHeight": 0.0,
+        "Background": "#FFC1D676"
+      }
+    ],
+    "X": 486.71995211034221,
+    "Y": 479.42579486454395,
+    "Zoom": 1.2777169841077238
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "Uuid": "1e08d07a-b41d-4f09-8ca1-8f39242bcdca",
+  "IsCustomNode": true,
+  "Category": "Crumple.Application.UI",
+  "Description": "When runMe is set to true, this node will display a file path dialogue for the user to interact with. The script will remain paused until the input is provided a value.",
+  "Name": "© UIPather",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "DSCore.List": {
+        "Key": "DSCore.List",
+        "Value": "DSCoreNodes.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Repackaged by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n##based off of code from http://onecore.net/ironpython-using-textbox-widget.htm\n##also made possible thanks to the awesome work of Dimitar Venkov, without his examples I wouldn't be able to do any of this.\n##built for Dynamo by john pierson\n\n# Boilerplate text\nimport clr\n\nimport sys\nimport System\nclr.AddReference('System.Windows.Forms')\nclr.AddReference('System.Drawing')\nclr.AddReference('System')\n\nfrom System.Drawing import Point, Font\nfrom System.Windows.Forms import OpenFileDialog\n\n# Preparing input from dynamo to revit\nif IN[0]:\n\t\n\topenDialog = OpenFileDialog()\n\topenDialog.Multiselect = True\n\topenDialog.Filter = \"All files|*.*\"\n\topenDialog.ShowDialog()\n\t\n\tOUT = openDialog.FileNames\n\t\nelse:\n\t\n\tOUT = \"set runMe to true!\"",
+      "VariableInputPorts": true,
+      "Id": "ca76943e8f074436a0df8a92f212e73c",
+      "Inputs": [
+        {
+          "Id": "94a1775ad1c74b899eb5f496856fcb24",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "d0637a100b0641b8b712389ab5d14891",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "runMe",
+        "TypeName": "bool",
+        "TypeRank": 0,
+        "DefaultValue": "false",
+        "Description": "Set runMe to true."
+      },
+      "Id": "47678cebff99401ca3f826cd2d6b2d85",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "a803e3c5e08b4e63b4cbb8000daa1507",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//The nominated file path\r\nfilePath",
+      "Id": "00edf8ecc1a54363af7c9b1dc42b04e3",
+      "Inputs": [
+        {
+          "Id": "1e7628920bb3465f8f223ecf81984b32",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "d0637a100b0641b8b712389ab5d14891",
+      "End": "1e7628920bb3465f8f223ecf81984b32",
+      "Id": "5eda946d748945efab8a45286660df96"
+    },
+    {
+      "Start": "a803e3c5e08b4e63b4cbb8000daa1507",
+      "End": "94a1775ad1c74b899eb5f496856fcb24",
+      "Id": "e85e0074ec214bd58cacaf2202e457e5"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "ca76943e8f074436a0df8a92f212e73c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 166.30743939061358,
+        "Y": -2.2417650163228586
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "47678cebff99401ca3f826cd2d6b2d85",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -72.0,
+        "Y": -2.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "00edf8ecc1a54363af7c9b1dc42b04e3",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 314.33488933620413,
+        "Y": -1.0
+      }
+    ],
+    "Annotations": [],
+    "X": 138.36172252969757,
+    "Y": 250.48571875,
+    "Zoom": 1.33823125
+  }
+}

@@ -1,0 +1,355 @@
+{
+  "Uuid": "8640f900-6ed5-43ba-9e07-257918d9a6fc",
+  "IsCustomNode": true,
+  "Category": "Crumple.Math.Functions",
+  "Description": "For each number, find the nearest number in another list. Values are able to be forced down.",
+  "Name": "© ClosestNumber",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Declare inputs, ensure values and range are iterable\r\nvalues_in = IN[0] if isinstance(IN[0], list) else [IN[0]]\r\nrange_in  = IN[1] if isinstance(IN[0], list) else [IN[1]]\r\nforcedown = IN[2]\r\n\r\n# Define function for finding closest number\r\n# Note we find absolute value, then find the floor later on\r\ndef closest(list, number):\r\n\tdiff = []\r\n\tfor i in list:\r\n\t\tdiff.append(abs(number-i))\r\n\treturn diff.index(min(diff))\r\n\r\n# Build empty lists\r\nindices = []\r\nvalues_out  = []\r\n\r\n# Test all values on the range using our function 'closest'\r\nfor i in values_in:\r\n\tindex = closest(range_in, i)\r\n\t# Test if the value is under the nearest\r\n\tif i - range_in[index] >= 0 and forcedown == False:\r\n\t\tindices.append(index)\r\n\t\tvalues_out.append(range_in[index])\r\n\telse:\r\n\t\t# Test if the value is the first item (can't reduce index)\r\n\t\tif index != 0:\r\n\t\t\tindices.append(index-1)\r\n\t\t\tvalues_out.append(range_in[index-1])\r\n\t\telse:\r\n\t\t\tindices.append(0)\r\n\t\t\tvalues_out.append(range_in[0])\r\n\r\n# Outputs\r\nOUT = [values_out, indices]",
+      "VariableInputPorts": true,
+      "Id": "c18e2b5685e24472bf9f5fef4bf3cf78",
+      "Inputs": [
+        {
+          "Id": "bf70a9782feb44deb7523e1e25445804",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "fe5dc9455c614e5d9b27e6c72adabf01",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "b60fdc334967474f8b61d6654889c569",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "2b8efd12dd7741baaa9a9b674c962443",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "values",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "Numbers, ideally.\n\nThese will be rounded to\nthe nearest value in the range."
+      },
+      "Id": "c6f45b0079c641d9882fffa1b71c58f7",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "f6478a9e3f524f9bb7836abb3a945f82",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//The closest value to the number.\r\nclosest",
+      "Id": "cf0a6d3416864454a7231e6e7594f75c",
+      "Inputs": [
+        {
+          "Id": "d30ace7f57fb425781461508009645e2",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "out[0];\nout[1];",
+      "Id": "bf1e6c7b6f2b4d73ab74e2de702e4df0",
+      "Inputs": [
+        {
+          "Id": "88bf49af727342aa91ffb5ec03dc76d8",
+          "Name": "out",
+          "Description": "out",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "35206446012448f9a759809f7dabd934",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "522e899e09104064a8947e734da6ec50",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//The index of the closest\r\n//value from the range.\r\nindices",
+      "Id": "0f4d5b0b7b974c1d86f9ec6ff36b993c",
+      "Inputs": [
+        {
+          "Id": "c0fb07e70b674cd9bd30842b1371ee89",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "range",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "The numerical range by which\nthe other numbers will be rounded to."
+      },
+      "Id": "3f7a5488c3cb426e8a63b0e77e533040",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "5ea452aac6a04b3b8d50c94d6e782dc8",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "forceFloor",
+        "TypeName": "bool",
+        "TypeRank": 0,
+        "DefaultValue": "false",
+        "Description": "If true, the rounding function will\nalways be applied as a floor (down)."
+      },
+      "Id": "bfa0d8edb98940e9b4ebbad749dc11b5",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "5ff5ba2637d844f3b5d494a4593ecf91",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "2b8efd12dd7741baaa9a9b674c962443",
+      "End": "88bf49af727342aa91ffb5ec03dc76d8",
+      "Id": "3ddafcdcda194687b402eaa8a1608d75"
+    },
+    {
+      "Start": "f6478a9e3f524f9bb7836abb3a945f82",
+      "End": "bf70a9782feb44deb7523e1e25445804",
+      "Id": "5fcec27abed44e4bb09fd36b6984fd00"
+    },
+    {
+      "Start": "35206446012448f9a759809f7dabd934",
+      "End": "d30ace7f57fb425781461508009645e2",
+      "Id": "a6a51dbbdba540a3b16be42961c9d94e"
+    },
+    {
+      "Start": "522e899e09104064a8947e734da6ec50",
+      "End": "c0fb07e70b674cd9bd30842b1371ee89",
+      "Id": "c29bcfc23ef647d6b59de4f951245752"
+    },
+    {
+      "Start": "5ea452aac6a04b3b8d50c94d6e782dc8",
+      "End": "fe5dc9455c614e5d9b27e6c72adabf01",
+      "Id": "a943f7b71d364a028fc8d7538667a592"
+    },
+    {
+      "Start": "5ff5ba2637d844f3b5d494a4593ecf91",
+      "End": "b60fdc334967474f8b61d6654889c569",
+      "Id": "037ecf0e726949068fe748981eaaf27d"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -22.499469651426988,
+      "EyeY": 83.474008687746775,
+      "EyeZ": 25.340790306871632,
+      "LookX": 10.07099783483187,
+      "LookY": -10.910247654401203,
+      "LookZ": -48.676489535020693,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "c18e2b5685e24472bf9f5fef4bf3cf78",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "c6f45b0079c641d9882fffa1b71c58f7",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -198.06830800312019,
+        "Y": -101.26023387648436
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "cf0a6d3416864454a7231e6e7594f75c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 589.64174876213838,
+        "Y": -46.36495815698845
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "bf1e6c7b6f2b4d73ab74e2de702e4df0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 410.0,
+        "Y": 4.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "0f4d5b0b7b974c1d86f9ec6ff36b993c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 588.52101043736116,
+        "Y": 43.509190611058443
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "3f7a5488c3cb426e8a63b0e77e533040",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -198.52666095942544,
+        "Y": 27.209534140014767
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "bfa0d8edb98940e9b4ebbad749dc11b5",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -198.27628101257125,
+        "Y": 137.67297380592876
+      }
+    ],
+    "Annotations": [],
+    "X": 292.20571832847793,
+    "Y": 240.37739917199463,
+    "Zoom": 1.2270473614083381
+  }
+}

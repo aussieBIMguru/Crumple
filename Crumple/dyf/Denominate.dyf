@@ -1,0 +1,310 @@
+{
+  "Uuid": "9bf3a1b1-f82d-4a2a-a527-abc2b1516b16",
+  "IsCustomNode": true,
+  "Category": "Crumple.Math.Functions",
+  "Description": "Given a list of numbers and a denominator, return the remainder of the numbers when divided by it. If the number is less than the demoninator, it will return the same number. This can be useful for identifying parallel vectors facing different directions by their angle about axis.",
+  "Name": "© Denominate",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Vector": {
+        "Key": "Autodesk.DesignScript.Geometry.Vector",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "nums = lst[0];\nlows = lst[1];",
+      "Id": "b85ed8bbace24157a5aaab9254769f0c",
+      "Inputs": [
+        {
+          "Id": "5d59f9f876324e6ea28e518b171e587f",
+          "Name": "lst",
+          "Description": "lst",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "da95370851db48248052144e935ce7d7",
+          "Name": "",
+          "Description": "nums",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "3fb5c511ef9f4279b41ce221a33b6e92",
+          "Name": "",
+          "Description": "lows",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//The denominated values\r\nnumbers",
+      "Id": "8ba469b99f7e4549a85de30baf31ec67",
+      "Inputs": [
+        {
+          "Id": "3d4b2759b99e418bbbb81d92d5e3d20d",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Prepare inputs\r\nnumbers = IN[0] if isinstance(IN[0], list) else [IN[0]]\r\nlimit   = IN[1]\r\n\r\n# Process down\r\nclamped, changed = [], []\r\n\r\n# Find clamped values\r\nfor n in numbers:\r\n\thigher    = n > limit\r\n\tremainder = n % limit\r\n\texcess    = (n-remainder)/limit\r\n\tresult    = n-(limit*excess)\r\n\tclamped.append(result)\r\n\tchanged.append(higher)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [clamped, changed]",
+      "VariableInputPorts": true,
+      "Id": "5afdca600c1249c9b1359a5dcb5e0a8d",
+      "Inputs": [
+        {
+          "Id": "efa5f6947af74832aa44d4164fa3e728",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e67168994b8d48bfb1cd2f4f29159bf1",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "8c7f9b426c99454cbd9ac17636fb6ef1",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "numbers",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "A list of numbers."
+      },
+      "Id": "f7d197150753441891be7b35f9c9890e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "119f47b8cb974745a74fac3789aa2e13",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "denominator",
+        "TypeName": "double",
+        "TypeRank": 0,
+        "DefaultValue": "180",
+        "Description": "The number to divide by."
+      },
+      "Id": "f0703e21338349e4be31c72e269bde57",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "df0931925fd649a8b50212793a6d203d",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//Were the numbers changed\r\nchanged",
+      "Id": "35f4104a1dc34584a2888bf785b4b0ed",
+      "Inputs": [
+        {
+          "Id": "e3d50e958a6e46ecac5c614b3c49bc82",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "da95370851db48248052144e935ce7d7",
+      "End": "3d4b2759b99e418bbbb81d92d5e3d20d",
+      "Id": "b537fca424a547d58577449d020da3a8"
+    },
+    {
+      "Start": "3fb5c511ef9f4279b41ce221a33b6e92",
+      "End": "e3d50e958a6e46ecac5c614b3c49bc82",
+      "Id": "72e285b1833a4f2fb835e7c2b0f4ffe1"
+    },
+    {
+      "Start": "8c7f9b426c99454cbd9ac17636fb6ef1",
+      "End": "5d59f9f876324e6ea28e518b171e587f",
+      "Id": "5e26fcdc45a44843bb9b5049a681a281"
+    },
+    {
+      "Start": "119f47b8cb974745a74fac3789aa2e13",
+      "End": "efa5f6947af74832aa44d4164fa3e728",
+      "Id": "e0ac0708e505487287127e6b1396a02f"
+    },
+    {
+      "Start": "df0931925fd649a8b50212793a6d203d",
+      "End": "e67168994b8d48bfb1cd2f4f29159bf1",
+      "Id": "9fe11b1228444fc8a7dd4f169a5ddc2c"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "b85ed8bbace24157a5aaab9254769f0c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 350.40185960381393,
+        "Y": 96.734176550612375
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "8ba469b99f7e4549a85de30baf31ec67",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 584.24556034870284,
+        "Y": 74.450663961649951
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "5afdca600c1249c9b1359a5dcb5e0a8d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 180.09686902996691,
+        "Y": 92.4933291230781
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "f7d197150753441891be7b35f9c9890e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -69.687988647206112,
+        "Y": 54.105030558720131
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "f0703e21338349e4be31c72e269bde57",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -119.19815720616208,
+        "Y": 150.7748412029724
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "35f4104a1dc34584a2888bf785b4b0ed",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 588.534300248092,
+        "Y": 151.05142305206729
+      }
+    ],
+    "Annotations": [],
+    "X": 588.23137215962072,
+    "Y": 168.18971243622045,
+    "Zoom": 1.1917937712929565
+  }
+}

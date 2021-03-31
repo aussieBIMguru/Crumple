@@ -1,0 +1,220 @@
+{
+  "Uuid": "4fe1c647-1de0-4d97-a1b1-d1ab28448190",
+  "IsCustomNode": true,
+  "Category": "Crumple.String.Generate",
+  "Description": "Given a list of numbers with decimal places, round them to a specific length and convert that to a string. More reliable than String.ToObject.",
+  "Name": "© RoundToString",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "DSCore.List": {
+        "Key": "DSCore.List",
+        "Value": "DSCoreNodes.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Get inputs\r\nitems = IN[0] if isinstance(IN[0], list) else [IN[0]]\r\nn = IN[1]\r\n\r\n# Convert to strings\r\nstrings = []\r\n\r\nfor i in items:\r\n\ttostr = str(i)\r\n\ttry:\r\n\t\tind = tostr.index(\".\")+n+1\r\n\t\tstrings.append(tostr[:ind])\r\n\texcept:\r\n\t\tstrings.append(tostr)\r\n\r\n# Define outputs\r\nOUT = strings",
+      "VariableInputPorts": true,
+      "Id": "059141099ebc4c49bf81f190b46264a4",
+      "Inputs": [
+        {
+          "Id": "76a96b3741d64fd69a95642bc3602fcb",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "8fd19766b55244a68441d41844710f51",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "90ce88cd65e447a583a2242073842434",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "numbers",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "Data for conversion."
+      },
+      "Id": "e151698e948841b3bf53334b512d6510",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "c5d3f5519577491180517e5b8e359447",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//Data returned as strings.\r\nstr",
+      "Id": "44a6472851184e4883f7aec3d12a9f26",
+      "Inputs": [
+        {
+          "Id": "44472e42175449a783b4981c4e76fed7",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "digits",
+        "TypeName": "int",
+        "TypeRank": 0,
+        "DefaultValue": "2",
+        "Description": "Rounding digits."
+      },
+      "Id": "db5d37fc1ce544fcb4a48d722879685f",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "637b6c2638e84e8282b1e91fe6ec2790",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "90ce88cd65e447a583a2242073842434",
+      "End": "44472e42175449a783b4981c4e76fed7",
+      "Id": "3470ff9d40aa4733b5f372de542496e3"
+    },
+    {
+      "Start": "c5d3f5519577491180517e5b8e359447",
+      "End": "76a96b3741d64fd69a95642bc3602fcb",
+      "Id": "ed0cd88f5568433995aec1e649a7f617"
+    },
+    {
+      "Start": "637b6c2638e84e8282b1e91fe6ec2790",
+      "End": "8fd19766b55244a68441d41844710f51",
+      "Id": "717d22aed834441cb55db29abb92f5e8"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "059141099ebc4c49bf81f190b46264a4",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "e151698e948841b3bf53334b512d6510",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -54.065606457532454,
+        "Y": -28.454527921855572
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "44a6472851184e4883f7aec3d12a9f26",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 419.0,
+        "Y": 1.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "db5d37fc1ce544fcb4a48d722879685f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -19.90009565188933,
+        "Y": 67.264450855810622
+      }
+    ],
+    "Annotations": [],
+    "X": 124.0,
+    "Y": 257.0,
+    "Zoom": 1.0
+  }
+}

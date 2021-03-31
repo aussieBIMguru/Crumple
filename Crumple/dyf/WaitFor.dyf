@@ -1,0 +1,214 @@
+{
+  "Uuid": "8a176012-6eba-46df-8f41-6a40b2bb13a5",
+  "IsCustomNode": true,
+  "Category": "Crumple.Script.Flow",
+  "Description": "Tells the first input to wait for the second input to arrive, then passes on the first input. Really useful for scripts which have branching paths that rely on their outputs to carry each other forward.\r\n\r\nQuite a few custom packages have a 'passthrough' or 'waitfor' node. I use these all the time, so find it useful to have them contained in this package also.",
+  "Name": "© WaitFor",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "[data,waitfor][0];",
+      "Id": "0139d9435a3f4092a7d140031d074ea2",
+      "Inputs": [
+        {
+          "Id": "41410739153843d3bc00c107e8cc0d23",
+          "Name": "data",
+          "Description": "data",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "dc28bb884abe4404a42643a3df6d3a4a",
+          "Name": "waitfor",
+          "Description": "waitfor",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "98a8df0ff4d54d1ba4693780301105d5",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//Passed through data\r\ndata",
+      "Id": "bf67e863151b41cd9a2eb5e2d8e92aae",
+      "Inputs": [
+        {
+          "Id": "a2ce30c4f681442f89509b3a52070d13",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "data",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "Data to pass through"
+      },
+      "Id": "a94a66a251a543dc8d2e856925ef0a8d",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "b8c6155fb44b426dbb416c52c1a776b3",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "waitFor",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "Data to wait for until\nthe upper stream can be\npassed."
+      },
+      "Id": "05e46e6c783248bd86e24e0c48ac346e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "3b060c306cac41ba80bd38a33fbc7c67",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "98a8df0ff4d54d1ba4693780301105d5",
+      "End": "a2ce30c4f681442f89509b3a52070d13",
+      "Id": "35988f036bc046319c91cba4ea000adf"
+    },
+    {
+      "Start": "b8c6155fb44b426dbb416c52c1a776b3",
+      "End": "41410739153843d3bc00c107e8cc0d23",
+      "Id": "72dd9699938844e4a8067a59d4345043"
+    },
+    {
+      "Start": "3b060c306cac41ba80bd38a33fbc7c67",
+      "End": "dc28bb884abe4404a42643a3df6d3a4a",
+      "Id": "ed636cec50dc4f38ba582c70fcc0dc40"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -22.499469651426988,
+      "EyeY": 83.474008687746775,
+      "EyeZ": 25.340790306871632,
+      "LookX": 10.07099783483187,
+      "LookY": -10.910247654401203,
+      "LookZ": -48.676489535020693,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "0139d9435a3f4092a7d140031d074ea2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "bf67e863151b41cd9a2eb5e2d8e92aae",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 532.59332981500779,
+        "Y": -3.7362750272047549
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "a94a66a251a543dc8d2e856925ef0a8d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -49.417855658355052,
+        "Y": -45.164905168669492
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "05e46e6c783248bd86e24e0c48ac346e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -50.659620674677853,
+        "Y": 61.9560800870552
+      }
+    ],
+    "Annotations": [],
+    "X": 159.04927778186527,
+    "Y": 228.53206469193793,
+    "Zoom": 1.545620359375
+  }
+}

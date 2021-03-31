@@ -1,0 +1,228 @@
+{
+  "Uuid": "0c0ff9bc-673a-4c4e-86d7-190f7a263a4b",
+  "IsCustomNode": true,
+  "Category": "Crumple.Math.Functions",
+  "Description": "Continuously adds a list of numbers together, returning a list of the values in sequence.",
+  "Name": "© SumCumulative",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Rooms": {
+        "Key": "Rhythm.Revit.Elements.Rooms",
+        "Value": "RhythmRevit.dll"
+      },
+      "Revit.Application.Document.Current": {
+        "Key": "Revit.Application.Document",
+        "Value": "RevitNodes.dll"
+      },
+      "Revit.Application.Document": {
+        "Key": "Revit.Application.Document",
+        "Value": "RevitNodes.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Collect inputs\r\nnums  = IN[0] if isinstance(IN[0], list) else [IN[0]]\r\nspace = IN[1]\r\n\r\n# Conduct cumulative sum\r\nacc_sum = []\r\nval = 0\r\n\r\nfor n in nums:\r\n\tval += n + space\r\n\tacc_sum.append(val)\r\n\r\n# Send output to Dynamo\r\nOUT = acc_sum",
+      "VariableInputPorts": true,
+      "Id": "75f7042d262c4ebb9e2b0e4d60200ec5",
+      "Inputs": [
+        {
+          "Id": "e67915f35bdf4fc4b843b33dcfa14641",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d5e7014184f642a4aa6987ef968f81fa",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "ddc55ccc80064e84973b426d5db15365",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "numbers",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "List of numbers to sum."
+      },
+      "Id": "02fb4dd0b8b240918af85499a0099ab2",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "77b197842b83443ea8b7577892ffed7c",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "pad",
+        "TypeName": "double",
+        "TypeRank": 0,
+        "DefaultValue": "0",
+        "Description": "Additional space to add\nbetween each addition."
+      },
+      "Id": "81700cbcc13f43d0bfece8918ae77429",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "89482d873de847c3a9752ad1f3778c87",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//The cumulative sum.\r\nsum",
+      "Id": "4784c812cc3e45c2823678cdae6d715a",
+      "Inputs": [
+        {
+          "Id": "1804401495b74ba5a75d9fd5f4ae07bb",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "ddc55ccc80064e84973b426d5db15365",
+      "End": "1804401495b74ba5a75d9fd5f4ae07bb",
+      "Id": "367e551cfb6d42cab187a78f603af090"
+    },
+    {
+      "Start": "77b197842b83443ea8b7577892ffed7c",
+      "End": "e67915f35bdf4fc4b843b33dcfa14641",
+      "Id": "fe118e8311714ab0b3dcd918bc7235ea"
+    },
+    {
+      "Start": "89482d873de847c3a9752ad1f3778c87",
+      "End": "d5e7014184f642a4aa6987ef968f81fa",
+      "Id": "302ea09bce114d0abe352a62a5d98fd8"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "75f7042d262c4ebb9e2b0e4d60200ec5",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "02fb4dd0b8b240918af85499a0099ab2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -82.0,
+        "Y": -27.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "81700cbcc13f43d0bfece8918ae77429",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -86.0,
+        "Y": 54.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "4784c812cc3e45c2823678cdae6d715a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 443.0,
+        "Y": -1.0
+      }
+    ],
+    "Annotations": [],
+    "X": 357.84756228401739,
+    "Y": 273.95078434125264,
+    "Zoom": 1.33823125
+  }
+}

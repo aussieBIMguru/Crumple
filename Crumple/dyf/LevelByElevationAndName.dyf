@@ -1,0 +1,340 @@
+{
+  "Uuid": "263ecd26-214d-469a-b9d6-bc0bd78f9e75",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.Levels",
+  "Description": "Given elevations and names, create levels with those properties.",
+  "Name": "© LevelByElevationAndName",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "DSCore.List": {
+        "Key": "DSCore.List",
+        "Value": "DSCoreNodes.dll"
+      },
+      "Autodesk.Curve": {
+        "Key": "Autodesk.DesignScript.Geometry.Curve",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Autodesk.DesignScript.Geometry.Curve": {
+        "Key": "Autodesk.DesignScript.Geometry.Curve",
+        "Value": "ProtoGeometry.dll"
+      },
+      "DSCore.Math": {
+        "Key": "DSCore.Math",
+        "Value": "DSCoreNodes.dll"
+      },
+      "DesignScript.Dictionary": {
+        "Key": "DesignScript.Builtin.Dictionary",
+        "Value": "DesignScriptBuiltin.dll"
+      },
+      "DesignScript.Builtin.Dictionary": {
+        "Key": "DesignScript.Builtin.Dictionary",
+        "Value": "DesignScriptBuiltin.dll"
+      },
+      "Vector": {
+        "Key": "Autodesk.DesignScript.Geometry.Vector",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Autodesk.Geometry": {
+        "Key": "Autodesk.DesignScript.Geometry.Geometry",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Autodesk.DesignScript.Geometry.Geometry": {
+        "Key": "Autodesk.DesignScript.Geometry.Geometry",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Elements.Element.SetParameterByName@string,var",
+      "Id": "a128da0012954ac9b86af252d48c16e6",
+      "Inputs": [
+        {
+          "Id": "0c6f018d32e0457c8279571106b72999",
+          "Name": "element",
+          "Description": "Revit.Elements.Element",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d6cf604d4ca542f49cf2e1fdce6135e9",
+          "Name": "parameterName",
+          "Description": "The name of the parameter to set.\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "b577046b2b794c1e99e2da61ce82a5c2",
+          "Name": "value",
+          "Description": "The value.\n\nvar",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "7365f97be62e4ac39f1879731c18d3ed",
+          "Name": "Element",
+          "Description": "Element",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Set one of the element's parameters.\n\nElement.SetParameterByName (parameterName: string, value: var): Element"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Elements.Level.ByElevation@double",
+      "Id": "f4a029b4489c43609eb7e3dfad50ecc9",
+      "Inputs": [
+        {
+          "Id": "08548d1e94d946d8a7e03b483735a06b",
+          "Name": "elevation",
+          "Description": "double",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "00ca590f3caf4d59bd0553089c79878d",
+          "Name": "Level",
+          "Description": "Level",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Create a Revit Level given it's elevation. The name will be whatever Revit gives it.\n\nLevel.ByElevation (elevation: double): Level"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"Name\";",
+      "Id": "bc7dfa68d8e44431b14331bb1793aca2",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "e9b0fe7cb7d94732b10bcd0e7bfdb5de",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//Resultant levels\r\nlvls",
+      "Id": "e28c15a8737949e9846415354506fa7b",
+      "Inputs": [
+        {
+          "Id": "e97565ff61df46d3a57128934c79872f",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "elevation",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "Level elevations as doubles"
+      },
+      "Id": "4007b03e56d64dfa81d63d3f9093006c",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "b995142351dc4db8af873c843e8bfb01",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "name",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "Level names as strings"
+      },
+      "Id": "6aa8c28246b64605b69ede02cce54384",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "ea4277739c0f4fa48ec8825138680b8a",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "7365f97be62e4ac39f1879731c18d3ed",
+      "End": "e97565ff61df46d3a57128934c79872f",
+      "Id": "666b31665ead44a8a23ad44f3b2261f7"
+    },
+    {
+      "Start": "00ca590f3caf4d59bd0553089c79878d",
+      "End": "0c6f018d32e0457c8279571106b72999",
+      "Id": "fd625c03f6f14375bb95d21a71041555"
+    },
+    {
+      "Start": "e9b0fe7cb7d94732b10bcd0e7bfdb5de",
+      "End": "d6cf604d4ca542f49cf2e1fdce6135e9",
+      "Id": "d98fdbf44ab644b0a72a08e5762b8d58"
+    },
+    {
+      "Start": "b995142351dc4db8af873c843e8bfb01",
+      "End": "08548d1e94d946d8a7e03b483735a06b",
+      "Id": "fd5cc5fe42af4009bb286dc27f54bd4c"
+    },
+    {
+      "Start": "ea4277739c0f4fa48ec8825138680b8a",
+      "End": "b577046b2b794c1e99e2da61ce82a5c2",
+      "Id": "1c4bfbc1d46941c3a4f8608ff8b8acb3"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": 80.362662303761951,
+      "EyeY": 167.04285600082127,
+      "EyeZ": 58.985713488839338,
+      "LookX": 58.724953663034924,
+      "LookY": -153.04285600082127,
+      "LookZ": -130.73381758429832,
+      "UpX": 0.23208710191035592,
+      "UpY": 0.824126188622054,
+      "UpZ": -0.51667359362969789
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Element.SetParameterByName",
+        "Id": "a128da0012954ac9b86af252d48c16e6",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 544.76261454464588,
+        "Y": 59.3995946590544
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Level.ByElevation",
+        "Id": "f4a029b4489c43609eb7e3dfad50ecc9",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "bc7dfa68d8e44431b14331bb1793aca2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 367.56750637792265,
+        "Y": 89.193099781813771
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "e28c15a8737949e9846415354506fa7b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 921.810092289453,
+        "Y": 55.786350148367944
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "4007b03e56d64dfa81d63d3f9093006c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -77.367952522255109,
+        "Y": -2.9762611275964161
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "6aa8c28246b64605b69ede02cce54384",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 234.18397626112778,
+        "Y": 171.32640949554903
+      }
+    ],
+    "Annotations": [],
+    "X": 117.51237650222549,
+    "Y": 228.89247312685461,
+    "Zoom": 0.70823125000000009
+  }
+}

@@ -1,0 +1,514 @@
+{
+  "Uuid": "364f492c-6da6-4246-9a2e-714c6b6d6327",
+  "IsCustomNode": true,
+  "Category": "Crumple.Geometry.Vectors",
+  "Description": "Given a list of vectors (and a list of data), return the data and vectors grouped by their direction.",
+  "Name": "© VectorGroupByDirection",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Vector": {
+        "Key": "Autodesk.DesignScript.Geometry.Vector",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "02d1a157-7c2d-47c6-85b2-68983e6904b1",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "2260646652264b9ca2c37db0832a1b3b",
+      "Inputs": [
+        {
+          "Id": "b204ec305f8c4207a641f38146335d5f",
+          "Name": "strings",
+          "Description": "A string or list of strings\nin a vector based format.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": true,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "bd3967281c3a46fca10ed6c8e1701876",
+          "Name": "vectors",
+          "Description": "Equivalent vectors",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Given a string form of a vector (X = x.xxx, Y = x.xxx, Z = x.xxx), return the equivalent vector. Note that if the original vector was more precise than 3 significant figures, it will be now only accurate to this many."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.GroupByKey@var[]..[],var[]..[]",
+      "Id": "ed35650beb2441988063a2c2fd364c11",
+      "Inputs": [
+        {
+          "Id": "93c6ee5d1da74e728408919d593564aa",
+          "Name": "list",
+          "Description": "List of items to group as sublists\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": true,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a10e7f3c9f3044f7b93123dedfdc98b6",
+          "Name": "keys",
+          "Description": "Key values, one per item in the input list, used for grouping the items\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": true,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "62b2ef9d1df94728b6e8715d3744760d",
+          "Name": "groups",
+          "Description": "list of sublists, with items grouped by like key values",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "9e7641c2a74f400082618a474cd40103",
+          "Name": "unique keys",
+          "Description": "key value corresponding to each group",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Group items into sub-lists based on their like key values\n\nList.GroupByKey (list: var[]..[], keys: var[]..[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.FromObject, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "65b066787c8c441fabe6e92d28736b19",
+      "Inputs": [
+        {
+          "Id": "2f5ca611a6c345b2bef103b179cdb0a5",
+          "Name": "obj",
+          "Description": "Object to be serialized",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "5be3a1f623ed40b4983e763efcc05200",
+          "Name": "str",
+          "Description": "Result of math computation",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Convert an object to a string representation."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Vector.Normalized",
+      "Id": "684d134470ff4086acebb7b487138017",
+      "Inputs": [
+        {
+          "Id": "13ef0ebf21634374baff2550eecf5ad8",
+          "Name": "vector",
+          "Description": "Autodesk.DesignScript.Geometry.Vector",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "4ada976b1d334e33861fae1c0ad64725",
+          "Name": "Vector",
+          "Description": "Vector",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Get the normalized version of a vector\n\nVector.Normalized ( ): Vector"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "data",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "Parallel data to group based\non the vectors.\n\nIf you do not want to group data,\njust feed in the same vector list."
+      },
+      "Id": "afd1b11ca724401c8184a847472c6975",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "9401f8ea964c4c8da10fee7ce34a3b13",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//Grouped sets of data.\r\ndata_grouped",
+      "Id": "aed77267ddb84e119c7f783818b3d56f",
+      "Inputs": [
+        {
+          "Id": "b9b7a1cbbe7345329c04dbd9df34281e",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//Grouped sets of vectors.\r\nvectors_grouped",
+      "Id": "7029d51e4e204c5c9eca961774203d6c",
+      "Inputs": [
+        {
+          "Id": "efd89ab752c4432bbe111c4abf34e950",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//The vector keys for each group.\r\nkeys",
+      "Id": "bdb7bc86e2244ca6a51328f31d20ead3",
+      "Inputs": [
+        {
+          "Id": "3b59ab2271e1448bbf7924aac1d211e5",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.GroupByKey@var[]..[],var[]..[]",
+      "Id": "25bcfaf79cc9409c8c607716f8a7d5c1",
+      "Inputs": [
+        {
+          "Id": "4c2764a37aa243dfb062208a6dbac09d",
+          "Name": "list",
+          "Description": "List of items to group as sublists\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": true,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "91a96f94195e4d1d92da54224c67fe71",
+          "Name": "keys",
+          "Description": "Key values, one per item in the input list, used for grouping the items\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": true,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "b48f3b294e5e4c6d9079d49e2fa85fb5",
+          "Name": "groups",
+          "Description": "list of sublists, with items grouped by like key values",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "96b450453c1142c4a0edd501d6d9e089",
+          "Name": "unique keys",
+          "Description": "key value corresponding to each group",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Group items into sub-lists based on their like key values\n\nList.GroupByKey (list: var[]..[], keys: var[]..[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "vectors",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "List of vectors to be grouped by."
+      },
+      "Id": "5db7dec9252c405f9b0aee79d68b913a",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "9eb490f727494ed0b08fb9530f0f7678",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "bd3967281c3a46fca10ed6c8e1701876",
+      "End": "3b59ab2271e1448bbf7924aac1d211e5",
+      "Id": "c9507b077987456c8cbc8d89915ea9a4"
+    },
+    {
+      "Start": "62b2ef9d1df94728b6e8715d3744760d",
+      "End": "efd89ab752c4432bbe111c4abf34e950",
+      "Id": "7e64bed232544d528ba6c6354253b1de"
+    },
+    {
+      "Start": "9e7641c2a74f400082618a474cd40103",
+      "End": "b204ec305f8c4207a641f38146335d5f",
+      "Id": "bf57ba21640342c2b20f84f92198e5c6"
+    },
+    {
+      "Start": "5be3a1f623ed40b4983e763efcc05200",
+      "End": "a10e7f3c9f3044f7b93123dedfdc98b6",
+      "Id": "ad7c19bcdf684685991a4d46089af860"
+    },
+    {
+      "Start": "5be3a1f623ed40b4983e763efcc05200",
+      "End": "91a96f94195e4d1d92da54224c67fe71",
+      "Id": "51ed6bf6792e4ec9976737acdc368b0a"
+    },
+    {
+      "Start": "4ada976b1d334e33861fae1c0ad64725",
+      "End": "2f5ca611a6c345b2bef103b179cdb0a5",
+      "Id": "23f89e4e17f94523b78776a3555e0e39"
+    },
+    {
+      "Start": "9401f8ea964c4c8da10fee7ce34a3b13",
+      "End": "4c2764a37aa243dfb062208a6dbac09d",
+      "Id": "8dd1f61fb0b0458ba4eb6a63ea6850fb"
+    },
+    {
+      "Start": "b48f3b294e5e4c6d9079d49e2fa85fb5",
+      "End": "b9b7a1cbbe7345329c04dbd9df34281e",
+      "Id": "5d4fcd892a4b4c3083d586e5b1bf9e8f"
+    },
+    {
+      "Start": "9eb490f727494ed0b08fb9530f0f7678",
+      "End": "13ef0ebf21634374baff2550eecf5ad8",
+      "Id": "87a7d8f891cb4c34833d18b10aa4f192"
+    },
+    {
+      "Start": "9eb490f727494ed0b08fb9530f0f7678",
+      "End": "93c6ee5d1da74e728408919d593564aa",
+      "Id": "643bf45c9d1c481b9547315786cca3ef"
+    }
+  ],
+  "Dependencies": [
+    "02d1a157-7c2d-47c6-85b2-68983e6904b1"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Crumple",
+      "Version": "0.0.1",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "2260646652264b9ca2c37db0832a1b3b"
+      ]
+    }
+  ],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": 33.673815732871731,
+      "EyeY": 84.396178380152136,
+      "EyeZ": 138.26462731686973,
+      "LookX": -38.673815732871731,
+      "LookY": -73.396178380152136,
+      "LookZ": -146.26462731686973,
+      "UpX": -0.059674503991736461,
+      "UpY": 0.97236992039767678,
+      "UpZ": -0.22568936944206389
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "VectorFromString",
+        "Id": "2260646652264b9ca2c37db0832a1b3b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1159.9703074155445,
+        "Y": 190.04035905193467
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.GroupByKey",
+        "Id": "ed35650beb2441988063a2c2fd364c11",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 769.041806505928,
+        "Y": 161.77317046960928
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "String from Object",
+        "Id": "65b066787c8c441fabe6e92d28736b19",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 484.23749189616319,
+        "Y": 88.823188953253066
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Vector.Normalized",
+        "Id": "684d134470ff4086acebb7b487138017",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 257.18786920942762,
+        "Y": 89.461396093976589
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "afd1b11ca724401c8184a847472c6975",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -162.83848529660008,
+        "Y": 11.161050068393337
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "aed77267ddb84e119c7f783818b3d56f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1161.9464514957783,
+        "Y": 17.416243753049613
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "7029d51e4e204c5c9eca961774203d6c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1160.8932440347673,
+        "Y": 98.995641327771338
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "bdb7bc86e2244ca6a51328f31d20ead3",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1439.9230858092185,
+        "Y": 188.69722358325464
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.GroupByKey",
+        "Id": "25bcfaf79cc9409c8c607716f8a7d5c1",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 770.04282838847928,
+        "Y": 16.931130264895558
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "5db7dec9252c405f9b0aee79d68b913a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -154.988973899764,
+        "Y": 162.19097879782828
+      }
+    ],
+    "Annotations": [],
+    "X": 499.10520518967013,
+    "Y": 210.69128064662718,
+    "Zoom": 0.69561644130111466
+  }
+}

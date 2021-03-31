@@ -1,0 +1,300 @@
+{
+  "Uuid": "e25b3db2-2c92-49ef-a378-d8b9214b9824",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.Views",
+  "Description": "Returns the curves of a view's cropbox (even if not visible/active). Also returns whether the cropbox is currently visible and active as booleans.",
+  "Name": "© ViewCropBox",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitAPI\")\r\n\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Preparing input from dynamo to revit\r\nviews_d = IN[0] if isinstance(IN[0], list) else [IN[0]]\r\nviews_r = UnwrapElement(views_d)\r\n\r\n# Preparing empty lists\r\ncrops, active, visible = [], [], []\r\n\r\n# Getting view level\r\nfor v in views_r:\r\n\tactive.append(v.CropBoxActive)\r\n\tvisible.append(v.CropBoxVisible)\r\n\tcrop = v.GetCropRegionShapeManager().GetCropShape()\r\n\tif len(crop) > 0:\r\n\t\tedges = [c.ToProtoType() for c in crop[0]]\r\n\t\tcrops.append(edges)\r\n\telse:\r\n\t\tcrops.append(None)\r\n\t\t\r\n# Preparing output to Dynamo\r\nOUT = [crops, active, visible]",
+      "VariableInputPorts": true,
+      "Id": "b5fa7f09b172453392eccd116ab6533d",
+      "Inputs": [
+        {
+          "Id": "53bff44644414e86a11fc61770798c87",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "da177b13d295424cacbaccb052d7fb31",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "views",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "Views to retrieve the\ncrop boxes of."
+      },
+      "Id": "78603ac5eeb64cccb27bd59aca41ff22",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "c4a76e70b92c4e29a794ac947a76a85d",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//The Dynamo curves of the\r\n//view's crop box.\r\ncurves",
+      "Id": "ca1dc7234cf941f68a309b3aff75341d",
+      "Inputs": [
+        {
+          "Id": "1e3e823e037a45c0b1040cd96beac4d0",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "cbxs = lst[0];\ncbac = lst[1];\ncbvs = lst[2];",
+      "Id": "5ea7e08b2f584aaf837d206e4781d59f",
+      "Inputs": [
+        {
+          "Id": "75174ffeedba46869b642f396f8ff8f5",
+          "Name": "lst",
+          "Description": "lst",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "1cb2ad0b629342c0be305fe065de0fef",
+          "Name": "",
+          "Description": "cbxs",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "9c52026b9dd9420abbe43b4bf8bad2bc",
+          "Name": "",
+          "Description": "cbac",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "3a29ad3c29e443158786117c356dbe4a",
+          "Name": "",
+          "Description": "cbvs",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//Is the crop box active.\r\nactive",
+      "Id": "910f03d54cf84467a869019b062fee8e",
+      "Inputs": [
+        {
+          "Id": "8c57d1c6217e4135802f5413ec49cd57",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//Is the crop box visible.\r\nvisible",
+      "Id": "ee155c97d5444c4b8ff42dcca52be244",
+      "Inputs": [
+        {
+          "Id": "3ae7e04aee924fdf9f0411965fe8d6f4",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "da177b13d295424cacbaccb052d7fb31",
+      "End": "75174ffeedba46869b642f396f8ff8f5",
+      "Id": "72d5b2192b8145b08aa7a0e92f191227"
+    },
+    {
+      "Start": "c4a76e70b92c4e29a794ac947a76a85d",
+      "End": "53bff44644414e86a11fc61770798c87",
+      "Id": "af18aed5e842469da01bc2ef24ff494e"
+    },
+    {
+      "Start": "1cb2ad0b629342c0be305fe065de0fef",
+      "End": "1e3e823e037a45c0b1040cd96beac4d0",
+      "Id": "a6e70df9cefa4da4bda29dadfab5afd5"
+    },
+    {
+      "Start": "9c52026b9dd9420abbe43b4bf8bad2bc",
+      "End": "8c57d1c6217e4135802f5413ec49cd57",
+      "Id": "3b644c00a03b488f9cb6f9f0c56fb405"
+    },
+    {
+      "Start": "3a29ad3c29e443158786117c356dbe4a",
+      "End": "3ae7e04aee924fdf9f0411965fe8d6f4",
+      "Id": "30178871c6ca412c8ca598acaa765ffd"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": 94.539105515851645,
+      "EyeY": 28322.041413892533,
+      "EyeZ": 17437.544009438676,
+      "LookX": -94.539105515851645,
+      "LookY": -28322.041413892533,
+      "LookZ": -17437.544009438676,
+      "UpX": -0.0038999036679377248,
+      "UpY": 0.69465837045900369,
+      "UpZ": -0.71932922858913273
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "b5fa7f09b172453392eccd116ab6533d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "78603ac5eeb64cccb27bd59aca41ff22",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -58.0,
+        "Y": 1.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "ca1dc7234cf941f68a309b3aff75341d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 756.0,
+        "Y": -78.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "5ea7e08b2f584aaf837d206e4781d59f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 436.0,
+        "Y": 4.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "910f03d54cf84467a869019b062fee8e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 755.5,
+        "Y": 17.5
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "ee155c97d5444c4b8ff42dcca52be244",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 752.5,
+        "Y": 99.5
+      }
+    ],
+    "Annotations": [],
+    "X": 84.808308197092856,
+    "Y": 246.286180936953,
+    "Zoom": 0.6913477938671877
+  }
+}

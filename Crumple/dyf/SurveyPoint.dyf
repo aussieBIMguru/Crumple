@@ -1,0 +1,300 @@
+{
+  "Uuid": "b4bd2349-d332-419a-ae3e-b0d08ded2b53",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.Coordinates",
+  "Description": "This node will return the Revit survey point as well as the NS, EW and elevation values.",
+  "Name": "© SurveyPoint",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Credit to Genius Loci for much of the workflow\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport math\r\n\r\n# Revit nodes\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\n# Revit services and API\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Get project base point\r\nbps     = FilteredElementCollector(doc).OfClass(BasePoint).ToElements()\r\nsvp     = bps[0]\r\n\r\n# Get unit types\r\nDUT = Document.GetUnits(doc).GetFormatOptions(UnitType.UT_Length).DisplayUnits\r\n\r\npoints = []\r\n\r\n# Get pbp values\r\new = svp.get_Parameter(BuiltInParameter.BASEPOINT_EASTWEST_PARAM).AsDouble()\r\nns = svp.get_Parameter(BuiltInParameter.BASEPOINT_NORTHSOUTH_PARAM).AsDouble()\r\nel = svp.get_Parameter(BuiltInParameter.BASEPOINT_ELEVATION_PARAM).AsDouble()\r\n\r\n# Get EW, NS, Elev\r\nsvp_ns = UnitUtils.ConvertFromInternalUnits(round(ns, 6), DUT)\r\nsvp_ew = UnitUtils.ConvertFromInternalUnits(round(ew, 6), DUT)\r\nsvp_el = UnitUtils.ConvertFromInternalUnits(round(el, 6), DUT)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [svp_ns, svp_ew, svp_el]",
+      "VariableInputPorts": true,
+      "Id": "bd5b1544b45e4f53af91e80922859b83",
+      "Inputs": [
+        {
+          "Id": "9bd5d55520da4f138538882d6dd7f6d2",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "a168da2693cd4712992880fd134ed3c7",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "Refresh",
+        "TypeName": "bool",
+        "TypeRank": 0,
+        "DefaultValue": "true",
+        "Description": "Toggle to refresh"
+      },
+      "Id": "9fbf3b663a0c43e48da868bd35a220a4",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "0000709433f34d12be28c192f35b0973",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//The Northing value of the survey point\r\n//returned in Revit coordinates.\r\nNS",
+      "Id": "7c0cb65f6d6741ebb730ca8207df1363",
+      "Inputs": [
+        {
+          "Id": "7f7b04ef5d7a470da1f394e5175c1a2c",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "x[0];\nx[1];\nx[2];",
+      "Id": "99ed78201665459f80b02371a97e1c12",
+      "Inputs": [
+        {
+          "Id": "72837c518f3a41ceb7caf459f74e298f",
+          "Name": "x",
+          "Description": "x",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "1a66554c06a840e0a3f9f8c5bd1724a7",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "34f0106629b7423a956fdae1764a4d31",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "133470696ea84d01a787ddd48d3ed4e2",
+          "Name": "",
+          "Description": "Value of expression at line 3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//The Easting value of the survey point\r\n//returned in Revit coordinates.\r\nEW",
+      "Id": "2b761e8c719b49d680b713cb6c81fcb0",
+      "Inputs": [
+        {
+          "Id": "ae486606d61b4d52add8554f3d871b5d",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//The Elevation value of the survey point\r\n//returned in Revit coordinates.\r\nElevation",
+      "Id": "e83807d8d67b423d80220a68cb23c06f",
+      "Inputs": [
+        {
+          "Id": "88157fd94a8948f89da117bb0697dc28",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "a168da2693cd4712992880fd134ed3c7",
+      "End": "72837c518f3a41ceb7caf459f74e298f",
+      "Id": "9e1cee0e67fc4cd69a51622f62ab43c7"
+    },
+    {
+      "Start": "0000709433f34d12be28c192f35b0973",
+      "End": "9bd5d55520da4f138538882d6dd7f6d2",
+      "Id": "a8bea5ed24bf4388972dcc033ce6a76b"
+    },
+    {
+      "Start": "1a66554c06a840e0a3f9f8c5bd1724a7",
+      "End": "7f7b04ef5d7a470da1f394e5175c1a2c",
+      "Id": "8860c1210f7c4a568583adf931e3a810"
+    },
+    {
+      "Start": "34f0106629b7423a956fdae1764a4d31",
+      "End": "ae486606d61b4d52add8554f3d871b5d",
+      "Id": "a8228d197a754534b665b52e99ed45ca"
+    },
+    {
+      "Start": "133470696ea84d01a787ddd48d3ed4e2",
+      "End": "88157fd94a8948f89da117bb0697dc28",
+      "Id": "40e86f35ca684110bd3343769b78e373"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -22.499469651426988,
+      "EyeY": 83.474008687746775,
+      "EyeZ": 25.340790306871632,
+      "LookX": 10.07099783483187,
+      "LookY": -10.910247654401203,
+      "LookZ": -48.676489535020693,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "bd5b1544b45e4f53af91e80922859b83",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "9fbf3b663a0c43e48da868bd35a220a4",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 22.0,
+        "Y": -1.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "7c0cb65f6d6741ebb730ca8207df1363",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 610.08650015407886,
+        "Y": -79.375487012769611
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "99ed78201665459f80b02371a97e1c12",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 430.57667386609069,
+        "Y": 3.2462203023757752
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "2b761e8c719b49d680b713cb6c81fcb0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 608.64886384618126,
+        "Y": 16.308855291576606
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "e83807d8d67b423d80220a68cb23c06f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 606.844786956379,
+        "Y": 113.73007057206874
+      }
+    ],
+    "Annotations": [],
+    "X": 147.84867231628323,
+    "Y": 288.21464836848986,
+    "Zoom": 1.1643898080562645
+  }
+}

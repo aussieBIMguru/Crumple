@@ -1,0 +1,165 @@
+{
+  "Uuid": "02d1a157-7c2d-47c6-85b2-68983e6904b1",
+  "IsCustomNode": true,
+  "Category": "Crumple.Geometry.Vectors",
+  "Description": "Given a string form of a vector (X = x.xxx, Y = x.xxx, Z = x.xxx), return the equivalent vector. Note that if the original vector was more precise than 3 significant figures, it will be now only accurate to this many.",
+  "Name": "© VectorFromString",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\n# Preparing input from dynamo to revit\r\nstrs = IN[0] if isinstance(IN[0], list) else [IN[0]]\r\n\r\nvectors = []\r\n\r\n# Convert string to vector format\r\nfor s in strs:\r\n\txind = s.index('X = ')\r\n\tyind = s.index('Y = ')\r\n\tzind = s.index('Z = ')\r\n\t\r\n\tx = float(s[xind+4:xind+9])\r\n\ty = float(s[yind+4:yind+9])\r\n\tz = float(s[zind+4:zind+9])\r\n\t\r\n\tv = Vector.ByCoordinates(x,y,z)\r\n\tvectors.append(v)\r\n\r\n# Preparing output to Dynamo\r\nOUT = vectors",
+      "VariableInputPorts": true,
+      "Id": "b1ba004e98404780b85543da896d1aa8",
+      "Inputs": [
+        {
+          "Id": "aa89b06125094fe49097ed755f650eb4",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "a4bbbbeac45b4b56839739d7011bdec7",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "strings",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "A string or list of strings\nin a vector based format."
+      },
+      "Id": "a6d58517a4504cac95c9e93e7f38fd13",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "55b394e841c845c18dc90acba1ac8882",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//Equivalent vectors\r\nvectors",
+      "Id": "d53bf49e0193418aaa41b3c536c341e9",
+      "Inputs": [
+        {
+          "Id": "eeeabe3d59114d03b2fa7ee1592b6874",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "a4bbbbeac45b4b56839739d7011bdec7",
+      "End": "eeeabe3d59114d03b2fa7ee1592b6874",
+      "Id": "f72d43e59e044ca0bab60f9563074557"
+    },
+    {
+      "Start": "55b394e841c845c18dc90acba1ac8882",
+      "End": "aa89b06125094fe49097ed755f650eb4",
+      "Id": "23546a5172964f88a5e821672e891f4d"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "b1ba004e98404780b85543da896d1aa8",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "a6d58517a4504cac95c9e93e7f38fd13",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -95.648640696441589,
+        "Y": -1.4945100108818679
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "d53bf49e0193418aaa41b3c536c341e9",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 449.0,
+        "Y": 0.0
+      }
+    ],
+    "Annotations": [],
+    "X": 621.64924475565851,
+    "Y": 285.75902589479091,
+    "Zoom": 1.545620359375
+  }
+}
