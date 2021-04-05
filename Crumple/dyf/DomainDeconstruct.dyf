@@ -1,0 +1,259 @@
+{
+  "Uuid": "da25a714-a532-475c-ba99-94b7e9ba3b1d",
+  "IsCustomNode": true,
+  "Category": "Crumple.Math.Functions",
+  "Description": "Given a range of values, return the minimum, maximum and size of its domain.",
+  "Name": "© DomainDeconstruct",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "DSCore.List": {
+        "Key": "DSCore.List",
+        "Value": "DSCoreNodes.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "max = DSCore.List.MaximumItem(num1);\nmin = DSCore.List.MinimumItem(num1);\ndom = max - min;",
+      "Id": "c03038aea13c4709ad2742d1943cae9f",
+      "Inputs": [
+        {
+          "Id": "2562c36a55f6452cac40ba2caf2766a3",
+          "Name": "num1",
+          "Description": "num1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f666db9ad04949d08e5502b3eb3f1fcd",
+          "Name": "",
+          "Description": "max",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a7f878b630c0432a9b5a74a621007e96",
+          "Name": "",
+          "Description": "min",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "cf96e1b4ac7e4e5c80df8c8af2d660c8",
+          "Name": "",
+          "Description": "dom",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "range",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "e8a2ed6a1bda453e901ec9d10b9974bd",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "8900b9a2948448a59efeedfb3baf1864",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "min",
+      "Id": "ff115dfc9d37457e9a8e95d6e08a1b46",
+      "Inputs": [
+        {
+          "Id": "d417808f682b416e9b78c4fb95f244d6",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "max",
+      "Id": "535173ee918d48489397eb5454cc6c7d",
+      "Inputs": [
+        {
+          "Id": "893d5e5a943a4209831640b43bc654d3",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "size",
+      "Id": "8b42cd7c47ce40d8837c76606ed37c66",
+      "Inputs": [
+        {
+          "Id": "eb68ff6c15cb4a45815fda5fe1ff8d99",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "f666db9ad04949d08e5502b3eb3f1fcd",
+      "End": "893d5e5a943a4209831640b43bc654d3",
+      "Id": "ea7225cb920047ccbbb55645ffaf5a2c"
+    },
+    {
+      "Start": "a7f878b630c0432a9b5a74a621007e96",
+      "End": "d417808f682b416e9b78c4fb95f244d6",
+      "Id": "0c29d4de09eb43a1a5023ccdde4c6b17"
+    },
+    {
+      "Start": "cf96e1b4ac7e4e5c80df8c8af2d660c8",
+      "End": "eb68ff6c15cb4a45815fda5fe1ff8d99",
+      "Id": "8ff71d0c2f4048afaa2b9b0c6e2798ff"
+    },
+    {
+      "Start": "8900b9a2948448a59efeedfb3baf1864",
+      "End": "2562c36a55f6452cac40ba2caf2766a3",
+      "Id": "00f57efd5cb348c0ae2f06983f0fdb94"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "c03038aea13c4709ad2742d1943cae9f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "e8a2ed6a1bda453e901ec9d10b9974bd",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 25.0,
+        "Y": -5.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "ff115dfc9d37457e9a8e95d6e08a1b46",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 717.00000000000023,
+        "Y": -76.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "535173ee918d48489397eb5454cc6c7d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 722.00000000000023,
+        "Y": -4.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "8b42cd7c47ce40d8837c76606ed37c66",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 721.00000000000023,
+        "Y": 71.0
+      }
+    ],
+    "Annotations": [],
+    "X": 114.0,
+    "Y": 243.0,
+    "Zoom": 1.0
+  }
+}

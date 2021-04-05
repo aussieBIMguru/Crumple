@@ -1,9 +1,9 @@
 {
-  "Uuid": "a6be4988-4443-4266-8a68-1d4e94652741",
+  "Uuid": "e0d01115-8760-42bc-9ae5-9845031894e8",
   "IsCustomNode": true,
-  "Category": "Crumple.Revit.Parameters",
-  "Description": "Returns the path to the currently active shared parameters file.",
-  "Name": "© SharedParametersPath",
+  "Category": "Crumple.Revit.Selection",
+  "Description": "Returns all view templates in the active document. Due to API/Dynamo limitations, 3D view templates are excluded from the list.",
+  "Name": "© ViewTemplates",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -13,12 +13,12 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPIUI\")\r\nfrom Autodesk.Revit.UI import *\r\n\r\n# Current doc/app/ui\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application \r\n\r\n# Preparing output to Dynamo\r\nOUT = app.SharedParametersFilename",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Get view templates\r\nviews_all = FilteredElementCollector(doc).OfClass(View).ToElements()\r\n\r\nviewTemplates = []\r\n\r\nfor v in views_all:\r\n\tif v.IsTemplate and v.ViewType != ViewType.ThreeD:\r\n\t\tviewTemplates.append(v)\r\n\r\n# Preparing output to Dynamo\r\nOUT = viewTemplates",
       "VariableInputPorts": true,
-      "Id": "f65196056acd44979c2148bd619213f5",
+      "Id": "d95dcb08b6ab4e5db0b0a5c5b5d2df73",
       "Inputs": [
         {
-          "Id": "595c36b00a034ccc903141514b3a5849",
+          "Id": "5e1fca83e45e4ed3bc73c47fff889d5e",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -29,7 +29,7 @@
       ],
       "Outputs": [
         {
-          "Id": "8ddc85d9e8604ea794ad2d28fa9ec1a6",
+          "Id": "9c650fb71067460d99ea5019778b4999",
           "Name": "OUT",
           "Description": "Result of the python script",
           "UsingDefaultValue": false,
@@ -45,11 +45,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//The path to the SP file.\r\nfilepath",
-      "Id": "cda915221b50432fbf13ffb8f15887e6",
+      "Symbol": "viewTemplates",
+      "Id": "7728bdec4df746c9a8762d4ce7812f87",
       "Inputs": [
         {
-          "Id": "3d7c5eaf5083444d9a783577bec262a7",
+          "Id": "06644fa832d74c09ba695b88c17e97af",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -69,14 +69,14 @@
         "Name": "Refresh",
         "TypeName": "bool",
         "TypeRank": 0,
-        "DefaultValue": "true",
-        "Description": "Toggle to refresh"
+        "DefaultValue": "True",
+        "Description": ""
       },
-      "Id": "d9c8410423ec470fb17d1978df27c655",
+      "Id": "8d991ea470e04764944f44a818eb0b5c",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "17a6729cd9694eeaa8e1a94a14a8adf0",
+          "Id": "23af95321c4f4595986f3c9072b3dc6f",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -91,14 +91,14 @@
   ],
   "Connectors": [
     {
-      "Start": "8ddc85d9e8604ea794ad2d28fa9ec1a6",
-      "End": "3d7c5eaf5083444d9a783577bec262a7",
-      "Id": "d64d8d86a3784ca3a45130a90754cace"
+      "Start": "9c650fb71067460d99ea5019778b4999",
+      "End": "06644fa832d74c09ba695b88c17e97af",
+      "Id": "b28e60292f8742bf92d440c15f4079fb"
     },
     {
-      "Start": "17a6729cd9694eeaa8e1a94a14a8adf0",
-      "End": "595c36b00a034ccc903141514b3a5849",
-      "Id": "1c57b231cfd24632b89407ac15e64c12"
+      "Start": "23af95321c4f4595986f3c9072b3dc6f",
+      "End": "5e1fca83e45e4ed3bc73c47fff889d5e",
+      "Id": "946cb49ba38045a3a4acf5a7683b9052"
     }
   ],
   "Dependencies": [],
@@ -129,7 +129,7 @@
       {
         "ShowGeometry": true,
         "Name": "Python Script",
-        "Id": "f65196056acd44979c2148bd619213f5",
+        "Id": "d95dcb08b6ab4e5db0b0a5c5b5d2df73",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
@@ -139,27 +139,27 @@
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "cda915221b50432fbf13ffb8f15887e6",
+        "Id": "7728bdec4df746c9a8762d4ce7812f87",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 449.00000000000006,
+        "X": 449.0,
         "Y": 0.0
       },
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "d9c8410423ec470fb17d1978df27c655",
+        "Id": "8d991ea470e04764944f44a818eb0b5c",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -37.150901296270234,
-        "Y": 1.7495521545564543
+        "X": 18.0,
+        "Y": -1.0
       }
     ],
     "Annotations": [],
-    "X": 88.808301499360113,
-    "Y": 171.93931819923267,
-    "Zoom": 0.74769281712332525
+    "X": 221.86244405143589,
+    "Y": 280.28539035921779,
+    "Zoom": 1.7835993623828124
   }
 }

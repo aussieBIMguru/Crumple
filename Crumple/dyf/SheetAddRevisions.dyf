@@ -1,9 +1,9 @@
 {
-  "Uuid": "c1c01465-8e50-416b-909a-d9902aa0780b",
+  "Uuid": "6bc9aee2-6a33-4f52-bae0-97d72a247fc5",
   "IsCustomNode": true,
-  "Category": "Crumple.Application.UI",
-  "Description": "Displays a message box with a title/body and OK/cancel button. If OK is selected, the third input's data will be passed through.",
-  "Name": "© UIMessenger",
+  "Category": "Crumple.Revit.Sheets",
+  "Description": "Given a list of sheets, attempt to add the given revisions to each of those sheets.",
+  "Name": "© SheetAddRevisions",
   "ElementResolver": {
     "ResolutionMap": {
       "DSCore.List": {
@@ -18,12 +18,12 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nclr.AddReference(\"RevitAPIUI\")\r\nfrom Autodesk.Revit.UI import *\r\n\r\n# Preparing input from dynamo to revit\r\ntitle = IN[0]\r\nbody  = IN[1]\r\npasst = IN[2]\r\n\r\n# Build and show the task dialogue\r\nmsg = TaskDialog.Show(title, body,\r\nTaskDialogCommonButtons.Ok|TaskDialogCommonButtons.Cancel,TaskDialogResult.Cancel)\r\n\r\n# Check if passing the result\r\nif msg == TaskDialogResult.Ok:\r\n\tOUT = passt\r\nelse:\r\n\tOUT = None",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nsheets     = uwlist(IN[0])\r\nrevisions  = uwlist(IN[1])\r\nrunMe      = IN[2]\r\n\r\n# Do some action in a Transaction\r\nif runMe:\r\n\tfor s in sheets:\r\n\t\t\r\n\t\t# Get revisions currently on sheets\r\n\t\tsheetRevs = s.GetAdditionalRevisionIds()\r\n\t\t\r\n\t\t# Check if new revisions are on sheet, if not add them\r\n\t\tfor r in revisions:\r\n\t\t\tif r.Id not in sheetRevs:\r\n\t\t\t\tsheetRevs.Add(r.Id)\r\n\t\t\telse:\r\n\t\t\t\tcontinue\r\n\t\r\n\t\t# Add the revisions to the sheets\r\n\t\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\t\ts.SetAdditionalRevisionIds(sheetRevs)\r\n\t\tTransactionManager.Instance.TransactionTaskDone()\r\n\t\t\r\n\tOUT = sheets\r\n\t\r\nelse:\r\n\tOUT = \"Set runMe to true!\"",
       "VariableInputPorts": true,
-      "Id": "2f13a22914334d39b9ece42d415494b2",
+      "Id": "e6d2043453fe4907911df7617f251601",
       "Inputs": [
         {
-          "Id": "62e1451071d64924b935e6bcf44e9bca",
+          "Id": "75d981096c9e4d6384c1fa699f7f22cb",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -32,7 +32,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "789bf8945e6b4a3b849c70845772b637",
+          "Id": "f8f2e49072a44368bdafd4841c8a8ac0",
           "Name": "IN[1]",
           "Description": "Input #1",
           "UsingDefaultValue": false,
@@ -41,7 +41,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "f70504f1aa7c458b8c0d7717e53ab90d",
+          "Id": "bf706d23add94001bbb9f9348c11cb7c",
           "Name": "IN[2]",
           "Description": "Input #2",
           "UsingDefaultValue": false,
@@ -52,7 +52,7 @@
       ],
       "Outputs": [
         {
-          "Id": "44aa9786d66a4677bd4bbc012bafb77b",
+          "Id": "5a31cd4e90694a9cb07e65fc2b5015f9",
           "Name": "OUT",
           "Description": "Result of the python script",
           "UsingDefaultValue": false,
@@ -68,17 +68,17 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "title",
-        "TypeName": "string",
-        "TypeRank": 0,
+        "Name": "sheets",
+        "TypeName": "var",
+        "TypeRank": -1,
         "DefaultValue": null,
-        "Description": "Title of the UI."
+        "Description": ""
       },
-      "Id": "5b20ab354e4741ed989b482f0916a663",
+      "Id": "0cb1831ca77c4404a9233e6240867dfe",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "c3cf296b98e944208aba83afe212bf47",
+          "Id": "233c3776b513425ea5a4430926d9c0d7",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -94,11 +94,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//Passed through data. If canceled, will be null.\r\nresult",
-      "Id": "2e7d9c6f40e340d3a737c3597a43bc7b",
+      "Symbol": "sheets",
+      "Id": "8d2a08374fe64c5bb18bdeb988f0b092",
       "Inputs": [
         {
-          "Id": "4ca41377533b4289abcf37566e6aca31",
+          "Id": "197781166b1a44bd9204e732d49f6539",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -115,17 +115,17 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "body",
-        "TypeName": "string",
-        "TypeRank": 0,
+        "Name": "revisions",
+        "TypeName": "var",
+        "TypeRank": -1,
         "DefaultValue": null,
-        "Description": "Body text of the UI."
+        "Description": ""
       },
-      "Id": "f11defd5bef64cbf8b2fbb25d8ca64f8",
+      "Id": "1c8d6d58378f4876b9ed30c4607be722",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "4ccef2d98c3c42e3ba1e472cec974b4a",
+          "Id": "612f1c9d2dc84ee5a5cedb8bfb623fa7",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -141,17 +141,17 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "pass",
-        "TypeName": "var",
-        "TypeRank": -1,
-        "DefaultValue": "null",
-        "Description": "Data to pass through"
+        "Name": "runMe",
+        "TypeName": "bool",
+        "TypeRank": 0,
+        "DefaultValue": "false",
+        "Description": ""
       },
-      "Id": "d620b6be429348aba05690fb808a77f4",
+      "Id": "af2e1fd0ee684265b2b0682c6b481be7",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "dfe7ebfbb5224399a5638ba5b4f9d8f3",
+          "Id": "01a26443fb3e44b1bf510e861150e2d1",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -166,24 +166,24 @@
   ],
   "Connectors": [
     {
-      "Start": "44aa9786d66a4677bd4bbc012bafb77b",
-      "End": "4ca41377533b4289abcf37566e6aca31",
-      "Id": "cc478afe3e434c1889806e1e34b60f1d"
+      "Start": "5a31cd4e90694a9cb07e65fc2b5015f9",
+      "End": "197781166b1a44bd9204e732d49f6539",
+      "Id": "0caef640ff9442b69c2bf79676030e35"
     },
     {
-      "Start": "c3cf296b98e944208aba83afe212bf47",
-      "End": "62e1451071d64924b935e6bcf44e9bca",
-      "Id": "1ef50f4df9684e9fb94a82aab8ad1208"
+      "Start": "233c3776b513425ea5a4430926d9c0d7",
+      "End": "75d981096c9e4d6384c1fa699f7f22cb",
+      "Id": "97879e5be86f4d1190a3947ca5d4e854"
     },
     {
-      "Start": "4ccef2d98c3c42e3ba1e472cec974b4a",
-      "End": "789bf8945e6b4a3b849c70845772b637",
-      "Id": "e1281052787841be8e6aa8b5ac9e6710"
+      "Start": "612f1c9d2dc84ee5a5cedb8bfb623fa7",
+      "End": "f8f2e49072a44368bdafd4841c8a8ac0",
+      "Id": "297141555e414a84a21f2df14c5d3e8c"
     },
     {
-      "Start": "dfe7ebfbb5224399a5638ba5b4f9d8f3",
-      "End": "f70504f1aa7c458b8c0d7717e53ab90d",
-      "Id": "5db7261676c14aab976614f0d3472206"
+      "Start": "01a26443fb3e44b1bf510e861150e2d1",
+      "End": "bf706d23add94001bbb9f9348c11cb7c",
+      "Id": "ee75767fb6884ea4ada2caf6610255f2"
     }
   ],
   "Dependencies": [],
@@ -214,57 +214,57 @@
       {
         "ShowGeometry": true,
         "Name": "Python Script",
-        "Id": "2f13a22914334d39b9ece42d415494b2",
+        "Id": "e6d2043453fe4907911df7617f251601",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 250.0,
-        "Y": 0.0
+        "X": 237.70720126403944,
+        "Y": -4.5289258500907579
       },
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "5b20ab354e4741ed989b482f0916a663",
+        "Id": "0cb1831ca77c4404a9233e6240867dfe",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -47.170619914430119,
-        "Y": -51.067574411085957
+        "X": -21.997639843297975,
+        "Y": -38.819364429349321
       },
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "2e7d9c6f40e340d3a737c3597a43bc7b",
+        "Id": "8d2a08374fe64c5bb18bdeb988f0b092",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 425.5,
-        "Y": 0.0
+        "X": 427.00236015670214,
+        "Y": -3.8819364429349434
       },
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "f11defd5bef64cbf8b2fbb25d8ca64f8",
+        "Id": "1c8d6d58378f4876b9ed30c4607be722",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -77.985748556323642,
-        "Y": 17.720727571970372
+        "X": -46.798123019030868,
+        "Y": 20.646989407155843
       },
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "d620b6be429348aba05690fb808a77f4",
+        "Id": "af2e1fd0ee684265b2b0682c6b481be7",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -82.538330049633089,
-        "Y": 93.213235290956732
+        "X": -41.127532044854604,
+        "Y": 84.9374279864144
       }
     ],
     "Annotations": [],
-    "X": 336.85018771773093,
-    "Y": 284.61877637680823,
-    "Zoom": 1.130842140625
+    "X": 159.43970252166255,
+    "Y": 306.92385427368112,
+    "Zoom": 2.7659165404780177
   }
 }

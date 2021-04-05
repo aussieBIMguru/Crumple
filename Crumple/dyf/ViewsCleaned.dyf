@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Import RevitAPI\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Import DocumentManager\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\n# Get the project document.\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Get all views\r\nViews_doc = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Views)\r\n\r\n# Create empty lists\r\nView_list   = []\r\nLegend_list = []\r\n\r\n# Find views that aren't legends, then non-template\r\nfor view in Views_doc:\r\n\tif str(view.GetType()) == \"Autodesk.Revit.DB.View\":\r\n\t\tLegend_list.append(view)\r\n\telse:\r\n\t\tif not(view.IsTemplate):\r\n\t\t\tView_list.append(view)\r\n\r\n# Output cleaned view lists\r\nOUT = [View_list, Legend_list]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Import RevitAPI\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Import DocumentManager\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\n# Get the project document.\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Get all views\r\nViews_doc = FilteredElementCollector(doc).OfClass(View).ToElements()\r\n\r\n# Create empty lists\r\nView_list, Legend_list, Template_list, Schedule_list = [],[],[],[]\r\n\r\n# Find views that aren't legends, then non-template\r\nfor view in Views_doc:\r\n\tif view.ViewType == ViewType.Legend:\r\n\t\tLegend_list.append(view)\r\n\telif view.ViewType == ViewType.Schedule:\r\n\t\tSchedule_list.append(view)\r\n\telif not(view.IsTemplate) and view.ViewType != ViewType.DrawingSheet:\r\n\t\tView_list.append(view)\r\n\telif view.ViewType != ViewType.ThreeD:\r\n\t\tTemplate_list.append(view)\r\n\r\n# Output cleaned view lists\r\nOUT = [View_list, Legend_list, Schedule_list, Template_list]",
       "VariableInputPorts": true,
       "Id": "d843bc92f22748618004d4a1492d2c06",
       "Inputs": [
@@ -45,7 +45,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//All views in the current document.\r\nViews",
+      "Symbol": "//All views in the current document.\r\nviews",
       "Id": "25984a06c1fd4c3e8545176a77c49dfe",
       "Inputs": [
         {
@@ -91,11 +91,11 @@
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
-      "Code": "views   = out[0];\nlegends = out[1];",
+      "Code": "views   = out[0];\nlegends = out[1];\nscheds  = out[2];\ntemps   = out[3];",
       "Id": "c5032f52c77441c2a89231101f485fa9",
       "Inputs": [
         {
-          "Id": "847fb02141d6412ab4a3215b1680c1f5",
+          "Id": "9c0a7ed38a1b4f50a94c4a970a6c7ea6",
           "Name": "out",
           "Description": "out",
           "UsingDefaultValue": false,
@@ -106,7 +106,7 @@
       ],
       "Outputs": [
         {
-          "Id": "a65865051edc4e68ac18d43eaca8306b",
+          "Id": "069dd8deda194085849908a4ea630aa9",
           "Name": "",
           "Description": "views",
           "UsingDefaultValue": false,
@@ -115,9 +115,27 @@
           "KeepListStructure": false
         },
         {
-          "Id": "97a9fb3c049045608dc01f6681611529",
+          "Id": "4dd5c643905d441381c3f9a70a79c523",
           "Name": "",
           "Description": "legends",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a6fc30847c6a431089329e72e284fb5e",
+          "Name": "",
+          "Description": "scheds",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e1dec6f22b80480d8c5b05c2a58e73a4",
+          "Name": "",
+          "Description": "temps",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -131,11 +149,53 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//All legends in the current document.\r\nLegends",
+      "Symbol": "//All legends in the current document.\r\nlegends",
       "Id": "7a1829f29e75457aa3fd706d2b5fd685",
       "Inputs": [
         {
           "Id": "83d3cfed449c4e4b8f64a5e1fd08a301",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//All schedules in the current document.\r\nschedules",
+      "Id": "0c75feb228ee42cab3b943088d3ff10a",
+      "Inputs": [
+        {
+          "Id": "39a09e5edd1049fbbffacaa026037fc4",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//All view templates in the current document.\r\ntemplates",
+      "Id": "e46ce000c0864cdbb32df92724400110",
+      "Inputs": [
+        {
+          "Id": "5dc05c052751419b857a105c27000f5d",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -152,8 +212,8 @@
   "Connectors": [
     {
       "Start": "3bde16c407424924b5fab5bc4b9e2d3c",
-      "End": "847fb02141d6412ab4a3215b1680c1f5",
-      "Id": "fe8085082f3b44688eb4b8a41613bc2f"
+      "End": "9c0a7ed38a1b4f50a94c4a970a6c7ea6",
+      "Id": "11c2cce5d5b2440b859aa834ff35f5da"
     },
     {
       "Start": "888f5297f1b74a2fb14ff6d9cda8e091",
@@ -161,14 +221,24 @@
       "Id": "a6f254e2e9f4447695e05246cddb2097"
     },
     {
-      "Start": "a65865051edc4e68ac18d43eaca8306b",
+      "Start": "069dd8deda194085849908a4ea630aa9",
       "End": "5871db2448c54f73beb028be298b2977",
-      "Id": "213b5eeb9f9d49a69f623f5567a7cc98"
+      "Id": "ce2de0e59926484793f351ef031fe18a"
     },
     {
-      "Start": "97a9fb3c049045608dc01f6681611529",
+      "Start": "4dd5c643905d441381c3f9a70a79c523",
       "End": "83d3cfed449c4e4b8f64a5e1fd08a301",
-      "Id": "156da7b278db4108bf31a45a252a02c6"
+      "Id": "06feb85277c845eebe7ae2ff9139b0a5"
+    },
+    {
+      "Start": "a6fc30847c6a431089329e72e284fb5e",
+      "End": "39a09e5edd1049fbbffacaa026037fc4",
+      "Id": "5deda399c3f94d0aad01ac0b004251f4"
+    },
+    {
+      "Start": "e1dec6f22b80480d8c5b05c2a58e73a4",
+      "End": "5dc05c052751419b857a105c27000f5d",
+      "Id": "adb4cf739bb84ee2b4eb12ef26e4db5b"
     }
   ],
   "Dependencies": [],
@@ -185,12 +255,12 @@
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -22.499469651426988,
-      "EyeY": 83.474008687746775,
-      "EyeZ": 25.340790306871632,
-      "LookX": 10.07099783483187,
-      "LookY": -10.910247654401203,
-      "LookZ": -48.676489535020693,
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
       "UpX": 0.0,
       "UpY": 1.0,
       "UpZ": 0.0
@@ -213,8 +283,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 732.0,
-        "Y": -41.0
+        "X": 749.27861771058315,
+        "Y": -144.67170626349889
       },
       {
         "ShowGeometry": true,
@@ -243,8 +313,28 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 724.51187904967628,
-        "Y": 51.57019438444928
+        "X": 748.70194384449269,
+        "Y": -68.5161987041036
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "0c75feb228ee42cab3b943088d3ff10a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 748.00000000000034,
+        "Y": 40.339092872570234
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "e46ce000c0864cdbb32df92724400110",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 746.768898488121,
+        "Y": 121.18142548596114
       }
     ],
     "Annotations": [],

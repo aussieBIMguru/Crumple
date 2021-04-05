@@ -1,0 +1,266 @@
+{
+  "Uuid": "64c36ba3-de7b-44c1-a293-7bb9b1b9d595",
+  "IsCustomNode": true,
+  "Category": "Crumple.String.Generate",
+  "Description": "Generates an upper or lower case alphabet.",
+  "Name": "© Alphabet",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "CoreNodeModels.Logic.If, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "f90fd835a5544aee82e4957c6a3fecdc",
+      "Inputs": [
+        {
+          "Id": "13c05751c05a4bfd9b57f5b4e044066b",
+          "Name": "test",
+          "Description": "Test block",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d01bbd8ed864493e8940e833779aa6f2",
+          "Name": "true",
+          "Description": "True block",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "cd36157718fc49209b266f958d1253ad",
+          "Name": "false",
+          "Description": "False block",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "d55dfe58d5634ca38cef1452d078953c",
+          "Name": "result",
+          "Description": "result",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Conditional statement"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.String.ToUpper@string",
+      "Id": "62512e64136f43efa2bcd69ed5c4c1b6",
+      "Inputs": [
+        {
+          "Id": "13e86bfea54d480796af25a3a39ed104",
+          "Name": "str",
+          "Description": "String to be made uppercase.\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "8b116e8ed61d4699aea6e81b16118738",
+          "Name": "str",
+          "Description": "Uppercase string.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Converts the given string to all uppercase characters.\n\nString.ToUpper (str: string): string"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"a\"..\"z\"..1;",
+      "Id": "e27022543f814d2c931624a19c9fcb14",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "8189a2eca4d24e60b25038ac2c60b532",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "alphabet",
+      "Id": "282ebceccaea43ef97b454cae6ec4d24",
+      "Inputs": [
+        {
+          "Id": "41f4c9b4be4e482ca62267a88e00cf58",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "upper",
+        "TypeName": "bool",
+        "TypeRank": 0,
+        "DefaultValue": "false",
+        "Description": ""
+      },
+      "Id": "1fee6cb08eb64dee9debd09a85da2f27",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "f4ae7538f3894f98a36cfc336301dfa7",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "d55dfe58d5634ca38cef1452d078953c",
+      "End": "41f4c9b4be4e482ca62267a88e00cf58",
+      "Id": "b433501937de4672a2e6f89951076167"
+    },
+    {
+      "Start": "8b116e8ed61d4699aea6e81b16118738",
+      "End": "d01bbd8ed864493e8940e833779aa6f2",
+      "Id": "fdce08f01f424c248f69474444d36ae6"
+    },
+    {
+      "Start": "8189a2eca4d24e60b25038ac2c60b532",
+      "End": "13e86bfea54d480796af25a3a39ed104",
+      "Id": "9295ede3ab524b6d938589c5d8597cb6"
+    },
+    {
+      "Start": "8189a2eca4d24e60b25038ac2c60b532",
+      "End": "cd36157718fc49209b266f958d1253ad",
+      "Id": "b2e5e6e2d33f4862846afcb0859e5bec"
+    },
+    {
+      "Start": "f4ae7538f3894f98a36cfc336301dfa7",
+      "End": "13c05751c05a4bfd9b57f5b4e044066b",
+      "Id": "88db070a1ee1414bafa0444db0e817c0"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "If",
+        "Id": "f90fd835a5544aee82e4957c6a3fecdc",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 740.0,
+        "Y": 80.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "String.ToUpper",
+        "Id": "62512e64136f43efa2bcd69ed5c4c1b6",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 464.0,
+        "Y": 76.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "e27022543f814d2c931624a19c9fcb14",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 229.0,
+        "Y": 138.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "282ebceccaea43ef97b454cae6ec4d24",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 923.0,
+        "Y": 77.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "1fee6cb08eb64dee9debd09a85da2f27",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 431.0,
+        "Y": -1.0
+      }
+    ],
+    "Annotations": [],
+    "X": -413.21645569620256,
+    "Y": 260.13291139240505,
+    "Zoom": 1.9354430379746836
+  }
+}

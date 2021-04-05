@@ -1,0 +1,273 @@
+{
+  "Uuid": "c10140e1-8c4d-465d-b24e-d8c5f9594360",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.Elements",
+  "Description": "Combines a list of elements together and attempts mass deletion. This is much faster than deleting one by one, but will not tell you if some elements were not successfully deleted from the set.",
+  "Name": "© DeleteCareless",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nimport sys\r\nsys.path.append('C:\\Program Files (x86)\\IronPython 2.7\\Lib')\r\n\r\nimport System\r\nfrom System import Array\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nclr.AddReference(\"RevitAPIUI\")\r\n\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.UI import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application \r\nuidoc = uiapp.ActiveUIDocument\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(input)\r\n\r\n# Preparing input from dynamo to revit\r\nelement    = IN[0]\r\nelements = tolist(IN[0])\r\nuw_list  = uwlist(IN[0])\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n# your actions\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Output and Changing element to Dynamo for export\r\n# <element>.ToDSType(True), #Not created in script, mark as Revit-owned\r\n# <element>.ToDSType(False) #Created in script, mark as non-Revit-owned\r\n\r\n# Preparing output to Dynamo\r\nOUT = element",
+      "VariableInputPorts": true,
+      "Id": "403f43f8606544b1a50b872ecba79e19",
+      "Inputs": [
+        {
+          "Id": "beaa865ed69b4e90b3fa4b6ce6bf231d",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "cd28d88ef6bd4c11b9f395d5cdd88a63",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.Flatten@var[]..[],int",
+      "Id": "ef0a123bd0ba49e78a10c491e0290160",
+      "Inputs": [
+        {
+          "Id": "c73c917a4c9e41f38404d05d006a7a28",
+          "Name": "list",
+          "Description": "List to flatten.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "9bbe3a511b754579bd93b0daa752d054",
+          "Name": "amt",
+          "Description": "Layers of nesting to remove.\n\nint\nDefault value : -1",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "617cffc83ecb4faf95205710640e743f",
+          "Name": "var[]..[]",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Flattens a nested list of lists by a certain amount.\n\nList.Flatten (list: var[]..[], amt: int = -1): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "elements",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "fb59827d114545618cb1b49cc712a479",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "74884b0f503e45159f04d605e3ae2739",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "wasRun: bool = true",
+      "Id": "cb1cb6cfc2cf48b9ad9ff1cf4af3b5b8",
+      "Inputs": [
+        {
+          "Id": "2c8656d830c04f8bb90a2e137c45fd3c",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "input;\ntrue;",
+      "Id": "001b5f7443574b6f918eb75c60d39db1",
+      "Inputs": [
+        {
+          "Id": "eaa8cb00ccc64dbdb229e18cb8009d25",
+          "Name": "input",
+          "Description": "input",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "16985fc642e44ca8b2ecd9bc35f95e13",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d9c94f24c48b4e29b8c2c29c5722c44b",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "cd28d88ef6bd4c11b9f395d5cdd88a63",
+      "End": "eaa8cb00ccc64dbdb229e18cb8009d25",
+      "Id": "e1a0206273704097a30be243b7f3ac77"
+    },
+    {
+      "Start": "617cffc83ecb4faf95205710640e743f",
+      "End": "beaa865ed69b4e90b3fa4b6ce6bf231d",
+      "Id": "78abf736bc2443e6ac8ed1a22dc983ac"
+    },
+    {
+      "Start": "74884b0f503e45159f04d605e3ae2739",
+      "End": "c73c917a4c9e41f38404d05d006a7a28",
+      "Id": "7149ca1e31e04a4dbb661e9481be4ad1"
+    },
+    {
+      "Start": "d9c94f24c48b4e29b8c2c29c5722c44b",
+      "End": "2c8656d830c04f8bb90a2e137c45fd3c",
+      "Id": "f28b2dec31ff442c949e56cc0cd4a32f"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "403f43f8606544b1a50b872ecba79e19",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 466.0514408987674,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.Flatten",
+        "Id": "ef0a123bd0ba49e78a10c491e0290160",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 237.31647917853707,
+        "Y": -0.69434514153914506
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "fb59827d114545618cb1b49cc712a479",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1.5500578405333272,
+        "Y": 0.23971053619263216
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "cb1cb6cfc2cf48b9ad9ff1cf4af3b5b8",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 814.02727971771992,
+        "Y": 16.036538614509169
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "001b5f7443574b6f918eb75c60d39db1",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 624.0,
+        "Y": 4.0
+      }
+    ],
+    "Annotations": [],
+    "X": 79.0,
+    "Y": 159.0,
+    "Zoom": 1.0
+  }
+}
