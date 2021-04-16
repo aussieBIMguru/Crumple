@@ -1,0 +1,432 @@
+{
+  "Uuid": "3d02a01a-6712-45d4-a0d7-a87a3c1dd023",
+  "IsCustomNode": true,
+  "Category": "Crumple.Geometry.Curve",
+  "Description": "Given a curve or list of curves, filter from the list only those of a specific Z factor in their midpoint direction.",
+  "Name": "© CurvesFilterByZ",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Autodesk.Topology": {
+        "Key": "Autodesk.DesignScript.Geometry.Topology",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Autodesk.DesignScript.Geometry.Topology": {
+        "Key": "Autodesk.DesignScript.Geometry.Topology",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Autodesk.Edge": {
+        "Key": "Autodesk.DesignScript.Geometry.Edge",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Autodesk.DesignScript.Geometry.Edge": {
+        "Key": "Autodesk.DesignScript.Geometry.Edge",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Autodesk.DesignScript.Geometry.BoundingBox": {
+        "Key": "Autodesk.DesignScript.Geometry.BoundingBox",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Vector.Z": {
+        "Key": "Autodesk.DesignScript.Geometry.Vector",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "vec.Z == n;",
+      "Id": "1eb13fb08c1e48f0a29106794ff152c6",
+      "Inputs": [
+        {
+          "Id": "2989edeab5014029ade2cc206c46a4a3",
+          "Name": "vec",
+          "Description": "vec",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "432e20f6397640ddb39e3125d49fec62",
+          "Name": "n",
+          "Description": "n",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c9053a19fb0448fda014052be0a0b164",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.FilterByBoolMask@var[]..[],var[]..[]",
+      "Id": "fe315924aed94ef58ee7abc54d6710b3",
+      "Inputs": [
+        {
+          "Id": "2b9172d879a74c2eb5f2c0e8caa0676f",
+          "Name": "list",
+          "Description": "List to filter.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "0e8bd3f0bcb5486c88ef7fdcff374651",
+          "Name": "mask",
+          "Description": "List of booleans representing a mask.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "a41721dad3564069af8457d0c9c76380",
+          "Name": "in",
+          "Description": "Items whose mask index is true.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "49599d73c89f453f9813a160d5c42f71",
+          "Name": "out",
+          "Description": "Items whose mask index is false.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Filters a sequence by looking up corresponding indices in a separate list of booleans.\n\nList.FilterByBoolMask (list: var[]..[], mask: var[]..[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Curve.TangentAtParameter@double",
+      "Id": "19584b32e40640cd94ca1ffe6c1da990",
+      "Inputs": [
+        {
+          "Id": "4f9a2711ad1b444c91f95f32ca6254b4",
+          "Name": "curve",
+          "Description": "Autodesk.DesignScript.Geometry.Curve",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "0bab36b21cda4b26b050fc6ee1d27217",
+          "Name": "param",
+          "Description": "The parameter at which to evaluate\n\ndouble\nDefault value : 0",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "74bbbd908fa7491bb6e2dc8daa5006b9",
+          "Name": "Vector",
+          "Description": "A Vector parallel to the curve at param",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Get a Vector tangent to the curve at a specified parameter between StartParameter() and EndParameter()\n\nCurve.TangentAtParameter (param: double = 0): Vector"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "0.5;",
+      "Id": "7959044c2f3b470e96dca39b3baff844",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "bb83209fe4204a4089a64f2713f61444",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "curves",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "b2afb7abbf4c42c8adf248140bc33820",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "74e973335d4342e2b669377efde12f1a",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "equal",
+      "Id": "c0c560067ff54316993a5b96247cecb6",
+      "Inputs": [
+        {
+          "Id": "a2543eb7e4e24c0999e3de6827f69c1c",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "z",
+        "TypeName": "double",
+        "TypeRank": 0,
+        "DefaultValue": "0",
+        "Description": ""
+      },
+      "Id": "b31fac2735744703a20fbe19e8a157d9",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "c1fd5a0b83ba474bbe93eaf63869c906",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "notEqual",
+      "Id": "bfcb09a1d4844823bda0fd97b140eeca",
+      "Inputs": [
+        {
+          "Id": "89024318f7f24056ac4eeadb20fd1bfb",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "c9053a19fb0448fda014052be0a0b164",
+      "End": "0e8bd3f0bcb5486c88ef7fdcff374651",
+      "Id": "2f8dbfca4c13400c93e676aa29d911c0"
+    },
+    {
+      "Start": "a41721dad3564069af8457d0c9c76380",
+      "End": "a2543eb7e4e24c0999e3de6827f69c1c",
+      "Id": "643be05403694858932b8a5785fed406"
+    },
+    {
+      "Start": "49599d73c89f453f9813a160d5c42f71",
+      "End": "89024318f7f24056ac4eeadb20fd1bfb",
+      "Id": "8a54c4c0f19f4cd482f6308d0562bdf0"
+    },
+    {
+      "Start": "74bbbd908fa7491bb6e2dc8daa5006b9",
+      "End": "2989edeab5014029ade2cc206c46a4a3",
+      "Id": "c03757c451814ad69cbc1d009aeadd99"
+    },
+    {
+      "Start": "bb83209fe4204a4089a64f2713f61444",
+      "End": "0bab36b21cda4b26b050fc6ee1d27217",
+      "Id": "e878ab156e544a47beaba61b4bb2c0d0"
+    },
+    {
+      "Start": "74e973335d4342e2b669377efde12f1a",
+      "End": "2b9172d879a74c2eb5f2c0e8caa0676f",
+      "Id": "a96773019ad344398971c9369b641a27"
+    },
+    {
+      "Start": "74e973335d4342e2b669377efde12f1a",
+      "End": "4f9a2711ad1b444c91f95f32ca6254b4",
+      "Id": "163d02a5ecff4a1c9e7967ef5f64ae16"
+    },
+    {
+      "Start": "c1fd5a0b83ba474bbe93eaf63869c906",
+      "End": "432e20f6397640ddb39e3125d49fec62",
+      "Id": "5022ddbec66f4f5fa66ebb91f729a505"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": 120.9815878609031,
+      "EyeY": 222.31299409951782,
+      "EyeZ": -99.0597732812335,
+      "LookX": -120.9815878609031,
+      "LookY": -222.31299409951782,
+      "LookZ": 99.0597732812335,
+      "UpX": -0.52271946405145442,
+      "UpY": 0.73727733681012575,
+      "UpZ": 0.428002909485359
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "1eb13fb08c1e48f0a29106794ff152c6",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 607.02523656482481,
+        "Y": 70.1944678200374
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.FilterByBoolMask",
+        "Id": "fe315924aed94ef58ee7abc54d6710b3",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 864.85401265582914,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Curve.TangentAtParameter",
+        "Id": "19584b32e40640cd94ca1ffe6c1da990",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 185.73607993008318,
+        "Y": 66.470009915899368
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "7959044c2f3b470e96dca39b3baff844",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 72.0,
+        "Y": 94.450525768385546
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "b2afb7abbf4c42c8adf248140bc33820",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -73.0,
+        "Y": -3.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "c0c560067ff54316993a5b96247cecb6",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1157.7887307567194,
+        "Y": -23.925816023738889
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "b31fac2735744703a20fbe19e8a157d9",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 232.0,
+        "Y": 193.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "bfcb09a1d4844823bda0fd97b140eeca",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1158.5810156231883,
+        "Y": 55.421364985163166
+      }
+    ],
+    "Annotations": [],
+    "X": 114.18382575398743,
+    "Y": 185.47542403625744,
+    "Zoom": 1.130842140625
+  }
+}

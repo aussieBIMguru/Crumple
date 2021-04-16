@@ -1,0 +1,255 @@
+{
+  "Uuid": "d941bb4f-7fcb-494f-8793-63a24fc6c7e1",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.Views",
+  "Description": "Returns the section box of any view as a bounding box in Dynamo. Does not support section boxes with rotations applied to them (will return the original section box before rotation), and will actually return a bounding box even if a view doesn't have one applied. Use with care!",
+  "Name": "© ViewSectionBox",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Credit to Amy Williams for sharing a majority of this code\r\n# https://forum.dynamobim.com/t/bounding-box-of-section-box-min-max-pts-z-values-dont-correspond-with-model-elevation/15776\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nviewlist = uwlist(IN[0])\r\nboxlist, result = [], []\r\n\r\n# Get section boxes\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor view in viewlist:\r\n\ttry:\r\n\t\tsectionbox = view.GetSectionBox()\r\n\t\tproceed = True\r\n\texcept:\r\n\t\tproceed = False\r\n\tif proceed:\r\n\t\ttransform = sectionbox.Transform\r\n\t\tsboxoriginx = transform.Origin.X\r\n\t\tsboxoriginy = transform.Origin.Y\r\n\t\tsboxoriginz = transform.Origin.Z\r\n\t\tminx = sectionbox.Min.X + sboxoriginx\r\n\t\tmaxx = sectionbox.Max.X + sboxoriginx\r\n\t\tminy = sectionbox.Min.Y + sboxoriginy\r\n\t\tmaxy = sectionbox.Max.Y + sboxoriginy\r\n\t\tminz = sectionbox.Min.Z + sboxoriginz\r\n\t\tmaxz = sectionbox.Max.Z + sboxoriginz\r\n\t\tbbox = BoundingBoxXYZ()\r\n\t\tbbox.Min = XYZ((minx), (miny), (minz))\r\n\t\tbbox.Max = XYZ((maxx), (maxy), (maxz))\r\n\t\ttsectionbox = bbox.ToProtoType()\r\n\t\tboxlist.append(tsectionbox)\r\n\telse:\r\n\t\tboxlist.append(None)\r\n\tresult.append(proceed)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Send bounding boxes back\r\nOUT = [boxlist,result]",
+      "VariableInputPorts": true,
+      "Id": "98ded9adfbb94519a5f07541db8d0a95",
+      "Inputs": [
+        {
+          "Id": "0d0c48a217854f0885e9e314efc36926",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "7caed4c0d3de4548bc42d87f64b67d26",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "views",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "143952589d184797909fbe9d24815929",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "dc749c71390445ab821fe6e9b2011d90",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "boundingBox",
+      "Id": "5903d50fda5f4dbf856cfad07b26e328",
+      "Inputs": [
+        {
+          "Id": "a74c6214393e4e65b71926667249f9ba",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "boxes  = out[0];\nresult = out[1];",
+      "Id": "4ddd17fd3d8e46f9b386724e3ccd9cd5",
+      "Inputs": [
+        {
+          "Id": "1b895497484341ebb494f01bb2f6df54",
+          "Name": "out",
+          "Description": "out",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "9f5cf8bf1c1d4f3791ab999da1426ca5",
+          "Name": "",
+          "Description": "boxes",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "2ebb4239e97245beb7a39ce0a1763a2c",
+          "Name": "",
+          "Description": "result",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "hasBox",
+      "Id": "218975a35b00459ea19565efe3e2cb4d",
+      "Inputs": [
+        {
+          "Id": "a43d6b3fd6414fb6974e57e7e642c675",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "7caed4c0d3de4548bc42d87f64b67d26",
+      "End": "1b895497484341ebb494f01bb2f6df54",
+      "Id": "6698e043df984430960fd31e04ba2126"
+    },
+    {
+      "Start": "dc749c71390445ab821fe6e9b2011d90",
+      "End": "0d0c48a217854f0885e9e314efc36926",
+      "Id": "8f0f25aa2d60454cac5ea6a286f003ab"
+    },
+    {
+      "Start": "9f5cf8bf1c1d4f3791ab999da1426ca5",
+      "End": "a74c6214393e4e65b71926667249f9ba",
+      "Id": "6350db3d98224a0f967dda2a424c6b8d"
+    },
+    {
+      "Start": "2ebb4239e97245beb7a39ce0a1763a2c",
+      "End": "a43d6b3fd6414fb6974e57e7e642c675",
+      "Id": "a5a558ecde8b4772b9e17afaa83cd2e5"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -62685.153014105206,
+      "EyeY": 159597.30953715186,
+      "EyeZ": 145818.19927580157,
+      "LookX": 64968.283873480206,
+      "LookY": -154545.25387308936,
+      "LookZ": -135058.24615080157,
+      "UpX": 0.23926020619998048,
+      "UpY": 0.83388582206716988,
+      "UpZ": -0.49738213627401895
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "98ded9adfbb94519a5f07541db8d0a95",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "143952589d184797909fbe9d24815929",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 0.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "5903d50fda5f4dbf856cfad07b26e328",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 682.1435616975765,
+        "Y": -49.318830359102691
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "4ddd17fd3d8e46f9b386724e3ccd9cd5",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 422.47275554953603,
+        "Y": 4.5166754624807766
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "218975a35b00459ea19565efe3e2cb4d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 686.39589570188252,
+        "Y": 57.362750272047577
+      }
+    ],
+    "Annotations": [],
+    "X": -454.51455625,
+    "Y": 178.22988305885531,
+    "Zoom": 1.33823125
+  }
+}

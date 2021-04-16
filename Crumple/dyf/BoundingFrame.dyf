@@ -1,0 +1,207 @@
+{
+  "Uuid": "3d14be20-d0de-4f7e-a204-cb72060587c2",
+  "IsCustomNode": true,
+  "Category": "Crumple.Geometry.Abstract.BoundingBox",
+  "Description": "Given a bounding box, returns the frame curves around it.",
+  "Name": "© BoundingFrame",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Autodesk.Topology": {
+        "Key": "Autodesk.DesignScript.Geometry.Topology",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Autodesk.DesignScript.Geometry.Topology": {
+        "Key": "Autodesk.DesignScript.Geometry.Topology",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Autodesk.Edge": {
+        "Key": "Autodesk.DesignScript.Geometry.Edge",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Autodesk.DesignScript.Geometry.Edge": {
+        "Key": "Autodesk.DesignScript.Geometry.Edge",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Autodesk.DesignScript.Geometry.BoundingBox": {
+        "Key": "Autodesk.DesignScript.Geometry.BoundingBox",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Vector.Z": {
+        "Key": "Autodesk.DesignScript.Geometry.Vector",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "cuboid = Autodesk.DesignScript.Geometry.BoundingBox.ToCuboid(boundingBox);\nedges = Autodesk.Topology.Edges(cuboid);\nAutodesk.Edge.CurveGeometry(edges);",
+      "Id": "0591bf3e8353483a908d5c1447d1eed9",
+      "Inputs": [
+        {
+          "Id": "2e2d1340fbd94ff885cbaa766838acb0",
+          "Name": "boundingBox",
+          "Description": "boundingBox",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "d9dd1c2f410f404b87a86093656c6bba",
+          "Name": "",
+          "Description": "cuboid",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "45dd33f0676140b8a5d1cfa9587deac7",
+          "Name": "",
+          "Description": "edges",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "fac3538f9ddc4183a4068713a3fccb1f",
+          "Name": "",
+          "Description": "Value of expression at line 3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "boundingBox",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "25fb6e5cf93c47bb9c14f9b352a95415",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "b8fa4b83b2c44cf78a9b08385292462b",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "frameCurves",
+      "Id": "65729123f9484ef3be1d577b01b5e36b",
+      "Inputs": [
+        {
+          "Id": "33f0d6615f514ac5a64cc074ecc0fde5",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "fac3538f9ddc4183a4068713a3fccb1f",
+      "End": "33f0d6615f514ac5a64cc074ecc0fde5",
+      "Id": "138d4bb9cf47426ea2c7ed90d15af803"
+    },
+    {
+      "Start": "b8fa4b83b2c44cf78a9b08385292462b",
+      "End": "2e2d1340fbd94ff885cbaa766838acb0",
+      "Id": "8c40418d0d7d4cf58bd733ee316f98de"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": 120.9815878609031,
+      "EyeY": 222.31299409951782,
+      "EyeZ": -99.0597732812335,
+      "LookX": -120.9815878609031,
+      "LookY": -222.31299409951782,
+      "LookZ": 99.0597732812335,
+      "UpX": -0.52271946405145442,
+      "UpY": 0.73727733681012575,
+      "UpZ": 0.428002909485359
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "0591bf3e8353483a908d5c1447d1eed9",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "25fb6e5cf93c47bb9c14f9b352a95415",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -18.0,
+        "Y": -4.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "65729123f9484ef3be1d577b01b5e36b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1051.952483801296,
+        "Y": 31.101511879049667
+      }
+    ],
+    "Annotations": [],
+    "X": 117.03489656909187,
+    "Y": 206.71844588045465,
+    "Zoom": 1.1047642563030271
+  }
+}
