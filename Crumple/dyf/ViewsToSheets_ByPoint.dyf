@@ -34,7 +34,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nimport sys\r\nsys.path.append('C:\\Program Files (x86)\\IronPython 2.7\\Lib')\r\n\r\nimport System\r\nfrom System import Array\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Function for unwrapping and forcing lists\r\ndef uwlist(input):\r\n\ttolist = input if isinstance(input, list) else [input]\r\n\tunwrap = UnwrapElement(tolist)\r\n\treturn unwrap\r\n\r\n# Preparing input from dynamo to revit\r\nviews   = uwlist(IN[0])\r\nsheets  = uwlist(IN[1])\r\npointin = UnwrapElement(IN[2])\r\npoint   = pointin.ToXyz()\r\n\r\n# Do some action in a Transaction\r\nviewports = []\r\nreport = []\r\n\r\nfor v,s in zip(views,sheets):\r\n\r\n\tisUnplaced = Viewport.CanAddViewToSheet(doc, s.Id, v.Id)\r\n\t\r\n\tif isUnplaced:\r\n\t\treport.append(\"\")\r\n\t\tvp = Viewport.Create(doc, s.Id, v.Id, point)\r\n\t\tviewports.append(vp)\r\n\telse:\r\n\t\treport.append(\"View is already placed.\")\r\n\t\tviewports.append(None)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = [viewports, report]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nimport sys\r\nsys.path.append('C:\\Program Files (x86)\\IronPython 2.7\\Lib')\r\n\r\nimport System\r\nfrom System import Array\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Function for unwrapping and forcing lists\r\ndef uwlist(input):\r\n\ttolist = input if isinstance(input, list) else [input]\r\n\tunwrap = UnwrapElement(tolist)\r\n\treturn unwrap\r\n\r\n# Preparing input from dynamo to revit\r\nviews   = uwlist(IN[0])\r\nsheets  = uwlist(IN[1])\r\npointin = UnwrapElement(IN[2])\r\npoint   = pointin.ToXyz()\r\n\r\nviewports = []\r\nreport = []\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor v,s in zip(views,sheets):\r\n\r\n\tisUnplaced = Viewport.CanAddViewToSheet(doc, s.Id, v.Id)\r\n\t\r\n\tif isUnplaced:\r\n\t\treport.append(\"\")\r\n\t\tvp = Viewport.Create(doc, s.Id, v.Id, point)\r\n\t\tviewports.append(vp)\r\n\telse:\r\n\t\treport.append(\"View is already placed.\")\r\n\t\tviewports.append(None)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = [viewports, report]",
       "VariableInputPorts": true,
       "Id": "e9cbc4921aa345898d128d52013967b7",
       "Inputs": [
@@ -265,12 +265,12 @@
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -17.0,
-      "EyeY": 24.0,
-      "EyeZ": 50.0,
-      "LookX": 12.0,
-      "LookY": -13.0,
-      "LookZ": -58.0,
+      "EyeX": -6.8262050237213323,
+      "EyeY": 71.6941118918191,
+      "EyeZ": 40.50195319175323,
+      "LookX": 11.827200000000001,
+      "LookY": -12.812800000000003,
+      "LookZ": -57.164800000000007,
       "UpX": 0.0,
       "UpY": 1.0,
       "UpZ": 0.0
@@ -348,8 +348,8 @@
       }
     ],
     "Annotations": [],
-    "X": -976.52713665016472,
-    "Y": -201.41560419757195,
+    "X": -365.52713665016472,
+    "Y": -183.41560419757195,
     "Zoom": 1.1988764122516979
   }
 }

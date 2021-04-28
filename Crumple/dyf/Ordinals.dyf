@@ -1,0 +1,241 @@
+{
+  "Uuid": "6dfd8b0f-4eb9-495e-9bb4-1c93ca614411",
+  "IsCustomNode": true,
+  "Category": "Crumple.Math.Functions",
+  "Description": "Returns a list containing 1 through to 99 in ordinal format.",
+  "Name": "© Ordinals",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "DSCore.List": {
+        "Key": "DSCore.List",
+        "Value": "DSCoreNodes.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "refresh;\n\n//Set value lists for combination\none_to_nine = [\"First\", \"Second\", \"Third\", \"Fourth\", \"Fifth\", \"Sixth\", \"Seventh\", \"Eigth\", \"Ninth\"];\nten_to_twen = [\"Tenth\", \"Eleventh\", \"Twelth\", \"Thirteenth\", \"Fourteenth\", \"Fifteenth\", \"Sixteenth\", \"Seventeenth\", \"Eigteenth\", \"Ninteenth\"];\ntens        = [\"Twenty\", \"Thirty\", \"Fourty\", \"Fifty\", \"Sixty\", \"Seventy\", \"Eighty\", \"Ninety\"];\nten_ords    = [\"Twentieth\", \"Thirtieth\", \"Fourtieth\", \"Fiftieth\", \"Sixtieth\", \"Seventieth\", \"Eightieth\", \"Ninetieth\"];\n\n//Build up the higher values\none_to_nine_sp = \" \" + one_to_nine;\nabove_twen = tens@L1<1L> + one_to_nine_sp@L2<1L>;\n\n//Add the tens, drop twenty and join the list\ntwen_n_ten = DSCore.List.Flatten(DSCore.List.AddItemToFront(ten_ords@L1<1>, above_twen@L2<1>));\nordinal_nn = DSCore.List.Join([one_to_nine, ten_to_twen, twen_n_ten]);",
+      "Id": "e9e0d17105944cb9a31851ed0267b876",
+      "Inputs": [
+        {
+          "Id": "1eb7869f4c4842e8ab495c74f4cae795",
+          "Name": "refresh",
+          "Description": "refresh",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "911c503aec534954ab6e790aa6ada484",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "0fc74250f6ca4e2d9bad56c1fb441ba3",
+          "Name": "",
+          "Description": "one_to_nine",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "04da2765e666441b81cbb188c62caac0",
+          "Name": "",
+          "Description": "ten_to_twen",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "67d4924b402446b581ee2bf46b9a78d8",
+          "Name": "",
+          "Description": "tens",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "f7ec8cda3f4746f985152000a5db259d",
+          "Name": "",
+          "Description": "ten_ords",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "92d651dd5ab142838f7962cc711be5d5",
+          "Name": "",
+          "Description": "one_to_nine_sp",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "3e10acd9c9ef48f89cb01d8eba4eea02",
+          "Name": "",
+          "Description": "above_twen",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ac9adc3b91a941f494d1327a41803b4c",
+          "Name": "",
+          "Description": "twen_n_ten",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "9615506529c34b02895ce59442dda5f9",
+          "Name": "",
+          "Description": "ordinal_nn",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "refresh",
+        "TypeName": "bool",
+        "TypeRank": 0,
+        "DefaultValue": "true",
+        "Description": ""
+      },
+      "Id": "9476cce89e1c443dbf385d65494a428e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "43caa8981636432b8dcc7e9545425f8a",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "ordinals",
+      "Id": "057beb4226a248acae95371d3edbb78b",
+      "Inputs": [
+        {
+          "Id": "0dd19b7c527c4f4ea04808c88e0c618b",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "9615506529c34b02895ce59442dda5f9",
+      "End": "0dd19b7c527c4f4ea04808c88e0c618b",
+      "Id": "cad60fc57a7e4b4f90abe01f8920f97c"
+    },
+    {
+      "Start": "43caa8981636432b8dcc7e9545425f8a",
+      "End": "1eb7869f4c4842e8ab495c74f4cae795",
+      "Id": "f758e5e923c84a1496ca605edf58ce49"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "e9e0d17105944cb9a31851ed0267b876",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "9476cce89e1c443dbf385d65494a428e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -9.9675526005379425,
+        "Y": -4.4083823681398258
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "057beb4226a248acae95371d3edbb78b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1097.2790270898352,
+        "Y": 241.13165413223575
+      }
+    ],
+    "Annotations": [],
+    "X": 45.757518312653929,
+    "Y": 186.75776310946043,
+    "Zoom": 1.0792537289518349
+  }
+}
