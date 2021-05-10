@@ -1,0 +1,298 @@
+{
+  "Uuid": "b2682366-412a-4bcf-931f-4fab55cbce92",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.ElementType",
+  "Description": "Given an element type name, if it finds a match it will return that element type.",
+  "Name": "© ElementTypeByName",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.IndexOf@var[]..[],var",
+      "Id": "41ae275c73304a95888b9475f7310b8b",
+      "Inputs": [
+        {
+          "Id": "6be7946d43654251b222b4bac95a9f9e",
+          "Name": "list",
+          "Description": "The list to find the element in.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "36ffc51d67574626ac29479bf7ff0567",
+          "Name": "element",
+          "Description": "The element whose index is to be returned.\n\nvar",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "5db904e434a24ea9913270006ba92c74",
+          "Name": "int",
+          "Description": "The index of the element in the list.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Returns the index of the element in the given list.\n\nList.IndexOf (list: var[]..[], element: var): int"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.GetItemAtIndex@var[]..[],int",
+      "Id": "96abf82b66474b6d938a8a829816049b",
+      "Inputs": [
+        {
+          "Id": "91556cfb41e447d083b64d00d6712af3",
+          "Name": "list",
+          "Description": "List to fetch an item from.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "9ca6aa823e9c494a95678ea43b13445a",
+          "Name": "index",
+          "Description": "Index of the item to be fetched.\n\nint",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "2f1463b4f47b4041a94ada7a09a69608",
+          "Name": "item",
+          "Description": "Item in the list at the given index.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Returns an item from the given list that's located at the specified index.\n\nList.GetItemAtIndex (list: var[]..[], index: int): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "elementType",
+      "Id": "4239b83fdb7c45b8a132a6fbb37b9b66",
+      "Inputs": [
+        {
+          "Id": "fa66f4ddd0f848ce98699700c7607265",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "2941ba78-3612-4123-a1e5-369f012f1082",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "67f6b1a90dfd4f82bbdf9f69d0778af1",
+      "Inputs": [
+        {
+          "Id": "aad8c24ea1934de7bac87b8984ddb6d9",
+          "Name": "refresh",
+          "Description": "bool\nDefault value : true",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "5780faef26ef48c98d3d3586d4e19b86",
+          "Name": "elementTypes",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d5e4948624c74f40a008919f9d9745e2",
+          "Name": "typeNames",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Returns all element types and their names in the active document."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "name",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "6d748accc18c4fdfb4d4127575c064dd",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "88ed412cd7d5404b9334b0f8cfd7deea",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "5db904e434a24ea9913270006ba92c74",
+      "End": "9ca6aa823e9c494a95678ea43b13445a",
+      "Id": "7464e50c624c410aac14f4dce5b23bea"
+    },
+    {
+      "Start": "2f1463b4f47b4041a94ada7a09a69608",
+      "End": "fa66f4ddd0f848ce98699700c7607265",
+      "Id": "f3724516dc6e466fa850d3ce90862baa"
+    },
+    {
+      "Start": "5780faef26ef48c98d3d3586d4e19b86",
+      "End": "91556cfb41e447d083b64d00d6712af3",
+      "Id": "812f7e85135444babda628286742aa17"
+    },
+    {
+      "Start": "d5e4948624c74f40a008919f9d9745e2",
+      "End": "6be7946d43654251b222b4bac95a9f9e",
+      "Id": "d2d879c7c27744d0ae60e8fa68c68e45"
+    },
+    {
+      "Start": "88ed412cd7d5404b9334b0f8cfd7deea",
+      "End": "36ffc51d67574626ac29479bf7ff0567",
+      "Id": "39c1ab18c303412e9370fa11f8ba3d0a"
+    }
+  ],
+  "Dependencies": [
+    "2941ba78-3612-4123-a1e5-369f012f1082"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Crumple",
+      "Version": "2021.4.24",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "67f6b1a90dfd4f82bbdf9f69d0778af1"
+      ]
+    }
+  ],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "List.IndexOf",
+        "Id": "41ae275c73304a95888b9475f7310b8b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 669.7556648301545,
+        "Y": 104.21037409681361
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.GetItemAtIndex",
+        "Id": "96abf82b66474b6d938a8a829816049b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1012.4061426119019,
+        "Y": 2.9494866329541196
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "4239b83fdb7c45b8a132a6fbb37b9b66",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1266.4061426119017,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "© ElementTypes",
+        "Id": "67f6b1a90dfd4f82bbdf9f69d0778af1",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 245.5,
+        "Y": -2.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "6d748accc18c4fdfb4d4127575c064dd",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 427.0,
+        "Y": 184.0
+      }
+    ],
+    "Annotations": [],
+    "X": -35.0,
+    "Y": 242.0,
+    "Zoom": 1.0
+  }
+}
