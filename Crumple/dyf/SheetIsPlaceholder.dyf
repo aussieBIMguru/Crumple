@@ -1,0 +1,165 @@
+{
+  "Uuid": "38683940-084b-43c2-a430-f199fce27a4b",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.Sheets",
+  "Description": "Given a list of sheets, returns a boolean as to whether they are placeholders.",
+  "Name": "© SheetIsPlaceholder",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nsheets = uwlist(IN[0])\r\n\r\n# Check if placeholder\r\nbools = []\r\n\r\nfor s in sheets:\r\n\tph = s.IsPlaceholder\r\n\tbools.append(ph)\r\n\r\n# Preparing output to Dynamo\r\nOUT = bools",
+      "VariableInputPorts": true,
+      "Id": "d6a16a34547c451c9bdf70947c6f5113",
+      "Inputs": [
+        {
+          "Id": "1cf12ead0493491eaffcf76fd9af80d5",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "3cd8d620179b457bb72cc028b40f1488",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "sheets",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "6dc1940c89f64554920ff2a4cd0b40ea",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "15ace4c236674736a62ac08014660fab",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "isPlaceholder",
+      "Id": "4eee4d6fcf354f0183cfc1cb19d61580",
+      "Inputs": [
+        {
+          "Id": "b4ae4acfbb52444c98d4939a4020a64a",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "3cd8d620179b457bb72cc028b40f1488",
+      "End": "b4ae4acfbb52444c98d4939a4020a64a",
+      "Id": "2355552ba60d49269329a631dcbabe9f"
+    },
+    {
+      "Start": "15ace4c236674736a62ac08014660fab",
+      "End": "1cf12ead0493491eaffcf76fd9af80d5",
+      "Id": "2a2a81010f854021bd92f8793474b22b"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": 18.503696896977047,
+      "EyeY": 177.2501939930566,
+      "EyeZ": 75.273264955367054,
+      "LookX": -18.503696896977047,
+      "LookY": -177.2501939930566,
+      "LookZ": -75.273264955367054,
+      "UpX": -0.19312339198054268,
+      "UpY": 0.58778525229247391,
+      "UpZ": -0.78562831711783654
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "d6a16a34547c451c9bdf70947c6f5113",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "6dc1940c89f64554920ff2a4cd0b40ea",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 0.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "4eee4d6fcf354f0183cfc1cb19d61580",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 448.99999999999977,
+        "Y": 0.0
+      }
+    ],
+    "Annotations": [],
+    "X": 30.0,
+    "Y": 374.85580204778154,
+    "Zoom": 2.6092150170648476
+  }
+}
