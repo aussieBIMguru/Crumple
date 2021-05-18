@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Credit to Genius Loci for much of the workflow\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport math\r\n\r\n# Revit nodes\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\n# Revit services and API\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Get project base point\r\nbps     = FilteredElementCollector(doc).OfClass(BasePoint).ToElements()\r\nsvp     = bps[0]\r\n\r\n# Get unit types\r\nDUT = Document.GetUnits(doc).GetFormatOptions(UnitType.UT_Length).DisplayUnits\r\n\r\npoints = []\r\n\r\n# Get pbp values\r\new = svp.get_Parameter(BuiltInParameter.BASEPOINT_EASTWEST_PARAM).AsDouble()\r\nns = svp.get_Parameter(BuiltInParameter.BASEPOINT_NORTHSOUTH_PARAM).AsDouble()\r\nel = svp.get_Parameter(BuiltInParameter.BASEPOINT_ELEVATION_PARAM).AsDouble()\r\n\r\n# Get EW, NS, Elev\r\nsvp_ns = UnitUtils.ConvertFromInternalUnits(round(ns, 6), DUT)\r\nsvp_ew = UnitUtils.ConvertFromInternalUnits(round(ew, 6), DUT)\r\nsvp_el = UnitUtils.ConvertFromInternalUnits(round(el, 6), DUT)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [svp_ns, svp_ew, svp_el]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Credit to Genius Loci for much of the workflow\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport math\r\n\r\n# Revit nodes\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\n# Revit services and API\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Get project base point\r\nbps     = FilteredElementCollector(doc).OfClass(BasePoint).ToElements()\r\nsvp     = bps[0]\r\n\r\n# Get unit types\r\nDUT = Document.GetUnits(doc).GetFormatOptions(UnitType.UT_Length).DisplayUnits\r\n\r\npoints = []\r\n\r\n# Get pbp values\r\new = svp.get_Parameter(BuiltInParameter.BASEPOINT_EASTWEST_PARAM).AsDouble()\r\nns = svp.get_Parameter(BuiltInParameter.BASEPOINT_NORTHSOUTH_PARAM).AsDouble()\r\nel = svp.get_Parameter(BuiltInParameter.BASEPOINT_ELEVATION_PARAM).AsDouble()\r\n\r\n# Get EW, NS, Elev\r\n# Thanks for letting me know about the rounding issue Ruben Romero Vivancos!\r\nsvp_ns = round(UnitUtils.ConvertFromInternalUnits(ns, DUT), 15)\r\nsvp_ew = round(UnitUtils.ConvertFromInternalUnits(ew, DUT), 15)\r\nsvp_el = round(UnitUtils.ConvertFromInternalUnits(el, DUT), 15)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [svp_ns, svp_ew, svp_el]",
       "VariableInputPorts": true,
       "Id": "bd5b1544b45e4f53af91e80922859b83",
       "Inputs": [
@@ -220,12 +220,12 @@
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -22.499469651426988,
-      "EyeY": 83.474008687746775,
-      "EyeZ": 25.340790306871632,
-      "LookX": 10.07099783483187,
-      "LookY": -10.910247654401203,
-      "LookZ": -48.676489535020693,
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
       "UpX": 0.0,
       "UpY": 1.0,
       "UpZ": 0.0
