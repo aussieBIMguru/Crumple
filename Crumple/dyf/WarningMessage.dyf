@@ -1,9 +1,9 @@
 {
-  "Uuid": "bea35a0d-a8ee-4084-9e6f-402d4ef108e0",
+  "Uuid": "e72f013c-1a38-46e7-830c-735d8abbcd03",
   "IsCustomNode": true,
-  "Category": "Crumple.Revit.Sheets",
-  "Description": "Returns all the sheets in the current document, with the option to omit any placeholder sheets.",
-  "Name": "© SheetsCleaned",
+  "Category": "Crumple.Revit.Warnings",
+  "Description": "Given a warning element in Revit db format, will return the message associated with that warning in a generic string format.",
+  "Name": "© WarningMessage",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -13,12 +13,12 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Preparing input from dynamo to revit\r\ninclude = IN[0]\r\n\r\n# Collect all sheets\r\nsheets = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Sheets).WhereElementIsNotElementType().ToElements()\r\n\r\n# Build output\r\nsheetsout = []\r\n\r\nfor s in sheets:\r\n\tif not(s.IsPlaceholder) or include:\r\n\t\tsheetsout.append(s)\r\n\r\n# Preparing output to Dynamo\r\nOUT = sheetsout",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nwarnings  = uwlist(IN[0])\r\n\r\nmessages = []\r\n\r\n# Get messages\r\nfor w in warnings:\r\n\tmessage = w.GetDescriptionText().ToString()\r\n\tmessages.append(message)\r\n\r\n# Preparing output to Dynamo\r\nOUT = messages",
       "VariableInputPorts": true,
-      "Id": "9f2e5957d7524086838658f7f56c7bce",
+      "Id": "f0d92742b59d4f81881c8abd63b93070",
       "Inputs": [
         {
-          "Id": "7fe96131ae8d473b9f0f192e0fc71e39",
+          "Id": "64cc3f16da524d249453de1b5c91baa4",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -29,7 +29,7 @@
       ],
       "Outputs": [
         {
-          "Id": "1a76a26d34e1475f8320abcaf0002995",
+          "Id": "3508a438fcf64e8f9f4557ddcbbf45c9",
           "Name": "OUT",
           "Description": "Result of the python script",
           "UsingDefaultValue": false,
@@ -45,17 +45,17 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "includePlaceholders",
-        "TypeName": "bool",
-        "TypeRank": 0,
-        "DefaultValue": "true",
+        "Name": "warning",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
         "Description": ""
       },
-      "Id": "b6408d5623014fc5bdd4746b46ef6883",
+      "Id": "38e3994307d748aba1a3f2906fa9095d",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "9921d159d5d24d988e8619641901228f",
+          "Id": "f12e4a7fa9da45a4ac340c91d6a3ce5d",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -71,11 +71,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "sheets",
-      "Id": "fb18d410d4544d72857c7190bb1480f1",
+      "Symbol": "message",
+      "Id": "f3725ef9de094fe79d677ef0c77c3e2c",
       "Inputs": [
         {
-          "Id": "cbeda9fcc00f4656aa9691dc35a5c192",
+          "Id": "fb5d6c15078c4291b1d445f652bbf149",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -91,14 +91,14 @@
   ],
   "Connectors": [
     {
-      "Start": "1a76a26d34e1475f8320abcaf0002995",
-      "End": "cbeda9fcc00f4656aa9691dc35a5c192",
-      "Id": "0f0c3ba5a43d4d239d4f9d21ee225872"
+      "Start": "3508a438fcf64e8f9f4557ddcbbf45c9",
+      "End": "fb5d6c15078c4291b1d445f652bbf149",
+      "Id": "038a4efdd1a54e4882d6ea89984ec0a6"
     },
     {
-      "Start": "9921d159d5d24d988e8619641901228f",
-      "End": "7fe96131ae8d473b9f0f192e0fc71e39",
-      "Id": "22d4a9935c3840a8b786e1d6b6907cee"
+      "Start": "f12e4a7fa9da45a4ac340c91d6a3ce5d",
+      "End": "64cc3f16da524d249453de1b5c91baa4",
+      "Id": "52b5225687d54ee6b0074e88a7ceef31"
     }
   ],
   "Dependencies": [],
@@ -115,21 +115,21 @@
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": 18.503696896977047,
-      "EyeY": 177.2501939930566,
-      "EyeZ": 75.273264955367054,
-      "LookX": -18.503696896977047,
-      "LookY": -177.2501939930566,
-      "LookZ": -75.273264955367054,
-      "UpX": -0.19312339198054268,
-      "UpY": 0.58778525229247391,
-      "UpZ": -0.78562831711783654
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "NodeViews": [
       {
         "ShowGeometry": true,
         "Name": "Python Script",
-        "Id": "9f2e5957d7524086838658f7f56c7bce",
+        "Id": "f0d92742b59d4f81881c8abd63b93070",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
@@ -139,27 +139,27 @@
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "b6408d5623014fc5bdd4746b46ef6883",
+        "Id": "38e3994307d748aba1a3f2906fa9095d",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -84.60235782829,
-        "Y": -0.48622044728904257
+        "X": 37.0,
+        "Y": -1.0
       },
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "fb18d410d4544d72857c7190bb1480f1",
+        "Id": "f3725ef9de094fe79d677ef0c77c3e2c",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 415.93700958434647,
+        "X": 404.00000000000023,
         "Y": 0.0
       }
     ],
     "Annotations": [],
-    "X": 253.20658853077055,
-    "Y": 374.72638939562717,
-    "Zoom": 2.6383022206519757
+    "X": -94.336263736263675,
+    "Y": 356.62857142857149,
+    "Zoom": 3.3604395604395587
   }
 }

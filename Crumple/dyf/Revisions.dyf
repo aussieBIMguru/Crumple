@@ -1,11 +1,16 @@
 {
-  "Uuid": "23808bd0-139a-4f06-bac1-417950f48b41",
+  "Uuid": "fb6059cc-3684-428f-9ae5-f5faf8952736",
   "IsCustomNode": true,
-  "Category": "Crumple.Revit.Sheets",
-  "Description": "Returns all placeholder sheets in the current document.",
-  "Name": "© PlaceholderSheets",
+  "Category": "Crumple.Revit.ProjectInformation",
+  "Description": "Returns all revisions in the current document.",
+  "Name": "© Revisions",
   "ElementResolver": {
-    "ResolutionMap": {}
+    "ResolutionMap": {
+      "DSCore.List": {
+        "Key": "DSCore.List",
+        "Value": "DSCoreNodes.dll"
+      }
+    }
   },
   "Inputs": [],
   "Outputs": [],
@@ -13,12 +18,12 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Collect all sheets\r\nsheets = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Sheets).WhereElementIsNotElementType().ToElements()\r\n\r\n# Build output\r\nsheetsout = []\r\n\r\nfor s in sheets:\r\n\tif s.IsPlaceholder:\r\n\t\tsheetsout.append(s)\r\n\r\n# Preparing output to Dynamo\r\nOUT = sheetsout",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Collect revisions\r\nrevisions = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Revisions).WhereElementIsNotElementType().ToElements()\r\n\r\n# Preparing output to Dynamo\r\nOUT = revisions",
       "VariableInputPorts": true,
-      "Id": "44c8c0b25b094ecaaa00864ac1ccd0ac",
+      "Id": "80a5f627ec784c889119aaa70357a416",
       "Inputs": [
         {
-          "Id": "68aae56d258d42d6a08477a76aa29049",
+          "Id": "9ae17a9558e642e69bc30474010e7afb",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -29,7 +34,7 @@
       ],
       "Outputs": [
         {
-          "Id": "cf5dd324d8de4590ac4ae5afda8c085d",
+          "Id": "2ef1731196aa4031af49ca1b63205b93",
           "Name": "OUT",
           "Description": "Result of the python script",
           "UsingDefaultValue": false,
@@ -45,11 +50,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "sheets",
-      "Id": "fe03fda71c414c53ad5362d949794f99",
+      "Symbol": "revisions",
+      "Id": "886820182e194809b2c0e7a0b93b2304",
       "Inputs": [
         {
-          "Id": "02f9a10a7d4d4aefa2b07cf021de7e8e",
+          "Id": "cb97ac12946f4de284187ceacd9cf91c",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -66,17 +71,17 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "refresh",
+        "Name": "Refresh",
         "TypeName": "bool",
         "TypeRank": 0,
         "DefaultValue": "true",
         "Description": ""
       },
-      "Id": "65402882348e45519d552cf53c7b7a46",
+      "Id": "3ef724f74ed44dffa31b5ae1c59b28ce",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "346ca3f302f8403db8bd540c130eb893",
+          "Id": "05b2141730614a37bffb41ce54568def",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -91,14 +96,14 @@
   ],
   "Connectors": [
     {
-      "Start": "cf5dd324d8de4590ac4ae5afda8c085d",
-      "End": "02f9a10a7d4d4aefa2b07cf021de7e8e",
-      "Id": "84c6b44a8b424f518f6cf0e5befba0f4"
+      "Start": "2ef1731196aa4031af49ca1b63205b93",
+      "End": "cb97ac12946f4de284187ceacd9cf91c",
+      "Id": "405877d72670422199bf4f0899602c2d"
     },
     {
-      "Start": "346ca3f302f8403db8bd540c130eb893",
-      "End": "68aae56d258d42d6a08477a76aa29049",
-      "Id": "09e7bdc6be3b4c8c86e8277e2bf32ecb"
+      "Start": "05b2141730614a37bffb41ce54568def",
+      "End": "9ae17a9558e642e69bc30474010e7afb",
+      "Id": "22d44325f4d54c9a9149805cc181935e"
     }
   ],
   "Dependencies": [],
@@ -115,21 +120,21 @@
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": 18.503696896977047,
-      "EyeY": 177.2501939930566,
-      "EyeZ": 75.273264955367054,
-      "LookX": -18.503696896977047,
-      "LookY": -177.2501939930566,
-      "LookZ": -75.273264955367054,
-      "UpX": -0.19312339198054268,
-      "UpY": 0.58778525229247391,
-      "UpZ": -0.78562831711783654
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "NodeViews": [
       {
         "ShowGeometry": true,
         "Name": "Python Script",
-        "Id": "44c8c0b25b094ecaaa00864ac1ccd0ac",
+        "Id": "80a5f627ec784c889119aaa70357a416",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
@@ -139,27 +144,27 @@
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "fe03fda71c414c53ad5362d949794f99",
+        "Id": "886820182e194809b2c0e7a0b93b2304",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 406.94568853487158,
+        "X": 412.76859319927394,
         "Y": 0.0
       },
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "65402882348e45519d552cf53c7b7a46",
+        "Id": "3ef724f74ed44dffa31b5ae1c59b28ce",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 22.12278387046922,
-        "Y": 0.76505296422089941
+        "X": 19.04089441508313,
+        "Y": -1.4533587215643138
       }
     ],
     "Annotations": [],
-    "X": -42.928128813349446,
-    "Y": 355.38129967754156,
-    "Zoom": 3.29651680549563
+    "X": -28.492882015162692,
+    "Y": 364.82536826134992,
+    "Zoom": 3.0719608407065113
   }
 }

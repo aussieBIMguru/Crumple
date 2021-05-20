@@ -1,9 +1,9 @@
 {
-  "Uuid": "55645bca-7a42-48ee-b7ee-5452a2f6ced9",
+  "Uuid": "148f4f60-b76d-42a8-90d1-a8c5d3ba95b1",
   "IsCustomNode": true,
-  "Category": "Crumple.Revit.Deletion",
-  "Description": "Given a list of elements, attempt to delete them and then return true or false depending on whether it could be deleted. This script flattens the list structure before attempting.",
-  "Name": "© DeleteCareful",
+  "Category": "Crumple.Revit.Elements",
+  "Description": "Given a workset and a list of elements, attempt to set those elements' worksets to it.",
+  "Name": "© ElementSetWorkset",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -13,14 +13,23 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(input)\r\n\r\n#unwrap all elements to use with API\r\nelements = uwlist(IN[0])\r\n\r\n# Check and delete\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nresults,fails = [],[]\r\n\r\nfor e in elements:\r\n\tid = None\r\n\ttry:\r\n\t\tid = e.Id\r\n\t\tdel_id = doc.Delete(id)\r\n\t\tresults.append(True)\r\n\texcept:\r\n\t\tif id is not None:\r\n\t\t\tfails.append(e)\t\t\r\n\t\tresults.append(False)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n   \r\n# Result of transaction\r\nOUT = [results,fails]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nelements = uwlist(IN[0])\r\nworkset = UnwrapElement(IN[1])\r\n\r\nbools = []\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor e in elements:\r\n\ttry:\r\n\t\twsId = workset.Id.IntegerValue\r\n\t\tparam = e.get_Parameter(BuiltInParameter.ELEM_PARTITION_PARAM)\r\n\t\tparam.Set(wsId)\r\n\t\tbools.append(True)\r\n\texcept:\r\n\t\tbools.append(False)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = [elements,bools]",
       "VariableInputPorts": true,
-      "Id": "c10aa140a9a54d44b64236876afbacc0",
+      "Id": "6e3ed4afd90f4117a4a845e5733bdda3",
       "Inputs": [
         {
-          "Id": "9395f69ec7f14b60a9876056ad71decf",
+          "Id": "a953b4fb1bbd4a26b721b66b94576216",
           "Name": "IN[0]",
           "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "2018bedf1ee84aadb70e7863a20e0312",
+          "Name": "IN[1]",
+          "Description": "Input #1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -29,7 +38,7 @@
       ],
       "Outputs": [
         {
-          "Id": "2a30bf3a2b234fb8a4ffa5ff4cae27eb",
+          "Id": "01e9494c131c4ef4945130cf616a686a",
           "Name": "OUT",
           "Description": "Result of the python script",
           "UsingDefaultValue": false,
@@ -42,45 +51,6 @@
       "Description": "Runs an embedded IronPython script."
     },
     {
-      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
-      "NodeType": "FunctionNode",
-      "FunctionSignature": "DSCore.List.Flatten@var[]..[],int",
-      "Id": "8a2237898fb740bdbc4fb40550d20ef0",
-      "Inputs": [
-        {
-          "Id": "6a47f5ad16524e138a2cc36d50aab6ec",
-          "Name": "list",
-          "Description": "List to flatten.\n\nvar[]..[]",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "2b4da1ff0bfb4e819d03a39bc94bdf2a",
-          "Name": "amt",
-          "Description": "Layers of nesting to remove.\n\nint\nDefault value : -1",
-          "UsingDefaultValue": true,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "beba5e8a586a4e1e9b263786b5561404",
-          "Name": "var[]..[]",
-          "Description": "var[]..[]",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Flattens a nested list of lists by a certain amount.\n\nList.Flatten (list: var[]..[], amt: int = -1): var[]..[]"
-    },
-    {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
@@ -90,11 +60,37 @@
         "DefaultValue": null,
         "Description": ""
       },
-      "Id": "1143d6a152db4d26b0b983359af2760b",
+      "Id": "9ca94d3264714ab3865058de752fca34",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "55f06e68a0794515a81e69af19706b6d",
+          "Id": "5e0873727dc840d487e16cde27d63748",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "workset",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "47a5654e24ea4aa495cc880aa7f357eb",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "af5907c91fe642b99a8dab46fbd7c33c",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -110,11 +106,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "results",
-      "Id": "c3f000d465ea4d9f948bb0bd3dc689c9",
+      "Symbol": "elements",
+      "Id": "a9e296239a0e44a6b30de3eb44b28474",
       "Inputs": [
         {
-          "Id": "d700d9367d5c4a0993490629f965afb4",
+          "Id": "a77391004b084b93a17495f9518bd854",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -130,13 +126,13 @@
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
-      "Code": "results = out[0];\nfails = out[1];",
-      "Id": "fa5aeb96009449f1bb95b7aab7edd18a",
+      "Code": "data[0];\ndata[1];",
+      "Id": "535dc2c8081447f186f9035a70ce828f",
       "Inputs": [
         {
-          "Id": "3ac17ab681c64efea44226f39cdfb386",
-          "Name": "out",
-          "Description": "out",
+          "Id": "6981b022cad740e8b0ac835740364563",
+          "Name": "data",
+          "Description": "data",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -145,18 +141,18 @@
       ],
       "Outputs": [
         {
-          "Id": "e7334c4afa6f4aa2a11c8b55ef8ae0aa",
+          "Id": "f0fee0fcafb84e42b0340c7510585d87",
           "Name": "",
-          "Description": "results",
+          "Description": "Value of expression at line 1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
           "KeepListStructure": false
         },
         {
-          "Id": "788f1b9b97904caaa4dacaa14b8df3b3",
+          "Id": "8d2f318b02364eb0806ffe17f83ecbb1",
           "Name": "",
-          "Description": "fails",
+          "Description": "Value of expression at line 2",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -170,11 +166,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "failed",
-      "Id": "f8b0cde0224347769a735b1468aa6e3b",
+      "Symbol": "success",
+      "Id": "ed007e921f21467eb0dc892cfa595fbc",
       "Inputs": [
         {
-          "Id": "0ebd3432019e464d8e12729a84940fae",
+          "Id": "c90c894f1c3a4a3b981e789cf51d9123",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -190,29 +186,29 @@
   ],
   "Connectors": [
     {
-      "Start": "2a30bf3a2b234fb8a4ffa5ff4cae27eb",
-      "End": "3ac17ab681c64efea44226f39cdfb386",
-      "Id": "2793483940a1441e940dc2acaffd30c4"
+      "Start": "01e9494c131c4ef4945130cf616a686a",
+      "End": "6981b022cad740e8b0ac835740364563",
+      "Id": "4cbbe502e0b44ad1b825fa2f1ea24c94"
     },
     {
-      "Start": "beba5e8a586a4e1e9b263786b5561404",
-      "End": "9395f69ec7f14b60a9876056ad71decf",
-      "Id": "e34ee3d9ccaf43cb89b028e986841a69"
+      "Start": "5e0873727dc840d487e16cde27d63748",
+      "End": "a953b4fb1bbd4a26b721b66b94576216",
+      "Id": "5c2df442195f409c83b80c8be0cc09f8"
     },
     {
-      "Start": "55f06e68a0794515a81e69af19706b6d",
-      "End": "6a47f5ad16524e138a2cc36d50aab6ec",
-      "Id": "84b040060f9e4688838184f146a94fa4"
+      "Start": "af5907c91fe642b99a8dab46fbd7c33c",
+      "End": "2018bedf1ee84aadb70e7863a20e0312",
+      "Id": "da26e95a713248f08a1affc6e96ac76a"
     },
     {
-      "Start": "e7334c4afa6f4aa2a11c8b55ef8ae0aa",
-      "End": "d700d9367d5c4a0993490629f965afb4",
-      "Id": "846c0dca35a44dd7a06870d37811ff83"
+      "Start": "f0fee0fcafb84e42b0340c7510585d87",
+      "End": "a77391004b084b93a17495f9518bd854",
+      "Id": "5d1620a79cca4d0e89ea6a962acca7b4"
     },
     {
-      "Start": "788f1b9b97904caaa4dacaa14b8df3b3",
-      "End": "0ebd3432019e464d8e12729a84940fae",
-      "Id": "67175ed89d534173a27c6be6327b68e5"
+      "Start": "8d2f318b02364eb0806ffe17f83ecbb1",
+      "End": "c90c894f1c3a4a3b981e789cf51d9123",
+      "Id": "f3cdb641e34648e9b4bb56852941337f"
     }
   ],
   "Dependencies": [],
@@ -243,67 +239,67 @@
       {
         "ShowGeometry": true,
         "Name": "Python Script",
-        "Id": "c10aa140a9a54d44b64236876afbacc0",
+        "Id": "6e3ed4afd90f4117a4a845e5733bdda3",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 489.9149202616918,
-        "Y": -15.0
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "List.Flatten",
-        "Id": "8a2237898fb740bdbc4fb40550d20ef0",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 229.76642133800408,
-        "Y": -15.0
+        "X": 250.0,
+        "Y": 0.0
       },
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "1143d6a152db4d26b0b983359af2760b",
+        "Id": "9ca94d3264714ab3865058de752fca34",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -6.0,
-        "Y": -14.065944322268216
+        "X": -3.0089283140378029,
+        "Y": -21.389891081382302
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "47a5654e24ea4aa495cc880aa7f357eb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 6.7370886915518895,
+        "Y": 63.005795883413384
       },
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "c3f000d465ea4d9f948bb0bd3dc689c9",
+        "Id": "a9e296239a0e44a6b30de3eb44b28474",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 987.49419405835852,
-        "Y": -62.042150495136752
+        "X": 638.27408846565254,
+        "Y": -14.418266648608181
       },
       {
         "ShowGeometry": true,
         "Name": "Code Block",
-        "Id": "fa5aeb96009449f1bb95b7aab7edd18a",
+        "Id": "535dc2c8081447f186f9035a70ce828f",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 708.07405412505739,
-        "Y": -11.347383498378953
+        "X": 425.61508427635363,
+        "Y": 4.6372497279524794
       },
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "f8b0cde0224347769a735b1468aa6e3b",
+        "Id": "ed007e921f21467eb0dc892cfa595fbc",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 991.96913313856362,
-        "Y": 23.67392970100326
+        "X": 642.5,
+        "Y": 50.0
       }
     ],
     "Annotations": [],
-    "X": 38.482708506805878,
-    "Y": 424.94370172332532,
-    "Zoom": 1.4137847511343122
+    "X": 36.240007280051884,
+    "Y": 345.89132588853994,
+    "Zoom": 2.073830490058453
   }
 }
