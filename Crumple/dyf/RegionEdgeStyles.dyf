@@ -1,9 +1,9 @@
 {
-  "Uuid": "f8c9ccce-fe99-4683-b4cb-7650aa6afbef",
+  "Uuid": "9c8c6dc6-7e58-4f04-91a9-f4479e1b8db7",
   "IsCustomNode": true,
-  "Category": "Crumple.Revit.Levels",
-  "Description": "Given a list of names, returns the matching levels (if they exist).",
-  "Name": "© LevelGetByName",
+  "Category": "Crumple.Revit.GraphicStyles",
+  "Description": "Returns the graphic styles of the edges of a filled or masking region.",
+  "Name": "© RegionEdgeStyles",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -13,12 +13,12 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Preparing input from dynamo to revit\r\nnames_in   = tolist(IN[0])\r\nlevels_out = []\r\n\r\n# Get all levels in document\r\nlevels_all = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Levels).WhereElementIsNotElementType().ToElements()\r\nnames_all  = [l.Name for l in levels_all]\r\n\r\n# Get matching levels by number\r\nfor n in names_in:\r\n\ttry:\r\n\t\tind = names_all.index(n)\r\n\t\tlvl = levels_all[ind]\r\n\t\tlevels_out.append(lvl)\r\n\texcept:\r\n\t\tlevels_out.append(None)\r\n\r\n# Preparing output to Dynamo\r\nOUT = levels_out",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application \r\nuidoc = uiapp.ActiveUIDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nregions = uwlist(IN[0])\r\n\r\n# Establish default options and prepare edge arrays\r\ngeomOption = app.Create.NewGeometryOptions()\r\n\r\nedgeArray = []\r\n\r\n# Construct edge array for review\r\nfor r in regions:\r\n\tgeomElem = r.get_Geometry(geomOption)\r\n\tenum1 = geomElem.GetEnumerator() ; enum1.MoveNext()\r\n\tgeo = enum1.Current\r\n\tedgeArray.append(geo.Edges)\r\n\t\r\n# Get the graphic style of each edge\r\nlineStyles = []\r\n\r\nfor i in range(0,len(edgeArray)):\r\n\tls = []\r\n\tfor edge in edgeArray[i]:\r\n\t\tls.append(doc.GetElement(edge.GraphicsStyleId))\r\n\tlineStyles.append(ls)\r\n\r\n# Preparing output to Dynamo\r\nOUT = lineStyles",
       "VariableInputPorts": true,
-      "Id": "b8f3a4d5fc8d491580815c9aecc352bf",
+      "Id": "2f3034c3c76a46c0bdb5687979a4b396",
       "Inputs": [
         {
-          "Id": "aa4fc979642b4f26972f2ad586a4ebd7",
+          "Id": "aa7c060d6d944df0aa14f3d263ac6665",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -29,7 +29,7 @@
       ],
       "Outputs": [
         {
-          "Id": "806c1cf0cccb4c0883b4ca0ef506f8c8",
+          "Id": "4358237cd4d34721afd67a5450d75c39",
           "Name": "OUT",
           "Description": "Result of the python script",
           "UsingDefaultValue": false,
@@ -45,17 +45,17 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "name",
+        "Name": "region",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
         "Description": ""
       },
-      "Id": "c4a19942718c4e24a217384021cf4d61",
+      "Id": "fad342f5e66d41838bfd51d7cb20824e",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "51351e4f896f4892b059bbb63de1d731",
+          "Id": "1905d26d3c0a4a7e84b1c5e9e0176934",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -71,11 +71,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "level",
-      "Id": "e10f571ea8144056a6a86c8c090bffa9",
+      "Symbol": "graphicStyles",
+      "Id": "5834a838d81b4b9e8cfe888cfdc17273",
       "Inputs": [
         {
-          "Id": "b39b7d700cf6460db36fa5a6c0da672a",
+          "Id": "0246fb5866964dcfa34e3c5b003de4d1",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -91,14 +91,14 @@
   ],
   "Connectors": [
     {
-      "Start": "806c1cf0cccb4c0883b4ca0ef506f8c8",
-      "End": "b39b7d700cf6460db36fa5a6c0da672a",
-      "Id": "f8dea3b48bdc413aa007d3086ad3211b"
+      "Start": "4358237cd4d34721afd67a5450d75c39",
+      "End": "0246fb5866964dcfa34e3c5b003de4d1",
+      "Id": "0e485760f76a41ad958b544e1822181e"
     },
     {
-      "Start": "51351e4f896f4892b059bbb63de1d731",
-      "End": "aa4fc979642b4f26972f2ad586a4ebd7",
-      "Id": "f310808480f94041ba23a4cf3bf96268"
+      "Start": "1905d26d3c0a4a7e84b1c5e9e0176934",
+      "End": "aa7c060d6d944df0aa14f3d263ac6665",
+      "Id": "ea1c6a2716fb4e57a6d9b13d67f5d8a3"
     }
   ],
   "Dependencies": [],
@@ -129,37 +129,37 @@
       {
         "ShowGeometry": true,
         "Name": "Python Script",
-        "Id": "b8f3a4d5fc8d491580815c9aecc352bf",
+        "Id": "2f3034c3c76a46c0bdb5687979a4b396",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 242.23612711413011,
-        "Y": -0.64698940715581443
+        "X": 250.0,
+        "Y": 0.0
       },
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "c4a19942718c4e24a217384021cf4d61",
+        "Id": "fad342f5e66d41838bfd51d7cb20824e",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 0.0,
+        "X": 11.0,
         "Y": 0.0
       },
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "e10f571ea8144056a6a86c8c090bffa9",
+        "Id": "5834a838d81b4b9e8cfe888cfdc17273",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 449.0,
-        "Y": 0.0
+        "X": 453.86043917131303,
+        "Y": 1.0436457668427721
       }
     ],
     "Annotations": [],
-    "X": 30.0,
-    "Y": 368.19720341244431,
-    "Zoom": 2.8958333333333335
+    "X": -11.146107560117812,
+    "Y": 342.92337901529913,
+    "Zoom": 3.7405552327379832
   }
 }
