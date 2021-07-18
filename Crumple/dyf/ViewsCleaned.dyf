@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Import RevitAPI\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Import DocumentManager\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\n# Get the project document.\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Get all views\r\nViews_doc = FilteredElementCollector(doc).OfClass(View).ToElements()\r\n\r\n# Create empty lists\r\nView_list, Legend_list, Template_list, Schedule_list = [],[],[],[]\r\n\r\n# Find views that aren't legends, then non-template\r\nfor view in Views_doc:\r\n\tif view.ViewType == ViewType.Legend:\r\n\t\tLegend_list.append(view)\r\n\telif view.ViewType == ViewType.Schedule:\r\n\t\tSchedule_list.append(view)\r\n\telif not(view.IsTemplate) and view.ViewType != ViewType.DrawingSheet:\r\n\t\tView_list.append(view)\r\n\telif view.ViewType != ViewType.ThreeD:\r\n\t\tTemplate_list.append(view)\r\n\r\n# Output cleaned view lists\r\nOUT = [View_list, Legend_list, Schedule_list, Template_list]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Import RevitAPI\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Import DocumentManager\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\n# Get the project document.\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Get all views\r\nViews_doc = FilteredElementCollector(doc).OfClass(View).ToElements()\r\n\r\n# Create empty lists\r\nView_list, Legend_list, Template_list, Schedule_list = [],[],[],[]\r\n\r\n# Find views that aren't legends, then non-template\r\nfor view in Views_doc:\r\n\tif view.ViewType == ViewType.Legend:\r\n\t\tLegend_list.append(view)\r\n\telif view.ViewType == ViewType.Schedule:\r\n\t\tSchedule_list.append(view)\r\n\telif not(view.IsTemplate):\r\n\t\tView_list.append(view)\r\n\telif view.ViewType != ViewType.ThreeD and view.ViewType != ViewType.DrawingSheet:\r\n\t\tTemplate_list.append(view)\r\n\r\n# Output cleaned view lists\r\nOUT = [View_list, Legend_list, Schedule_list, Template_list]",
       "VariableInputPorts": true,
       "Id": "d843bc92f22748618004d4a1492d2c06",
       "Inputs": [
@@ -249,7 +249,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.3.1.11775",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
