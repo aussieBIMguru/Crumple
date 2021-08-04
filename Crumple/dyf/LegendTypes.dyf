@@ -1,0 +1,165 @@
+{
+  "Uuid": "fb4882f3-f260-4861-8fd3-96d3075c77c1",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.Views",
+  "Description": "Returns all legend types in the current document.",
+  "Name": "© LegendTypes",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Import RevitAPI\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Import DocumentManager\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\n# Get the project document.\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Get all views\r\nViews_doc = FilteredElementCollector(doc).OfClass(View).ToElements()\r\n\r\n# Create empty lists\r\nLegend_list = []\r\n\r\n# Find views that aren't legends, then non-template\r\nfor view in Views_doc:\r\n\tif view.ViewType == ViewType.Legend:\r\n\t\tLegend_list.append(view)\r\n\r\n# Output cleaned view lists\r\nOUT = Legend_list",
+      "VariableInputPorts": true,
+      "Id": "dd422e620c2c41ea8045f33361f32898",
+      "Inputs": [
+        {
+          "Id": "50f7f40eb21c4c1d8154c5c09180c153",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "2c8e657c894d4fe8a11aa452fc875a99",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "Refresh",
+        "TypeName": "bool",
+        "TypeRank": 0,
+        "DefaultValue": "true",
+        "Description": "Toggle to refresh"
+      },
+      "Id": "648604fb55c54987a9ba89b8e7970006",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "eb16ec5bb8eb450dbdaec3792c225866",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//All legends in the current document.\r\nlegendTypes",
+      "Id": "644911181fc2468294c3b0482154b231",
+      "Inputs": [
+        {
+          "Id": "e1e6a3cc21414c2492e02f28fac1f6be",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "2c8e657c894d4fe8a11aa452fc875a99",
+      "End": "e1e6a3cc21414c2492e02f28fac1f6be",
+      "Id": "e7f61c3e4ff146818436cdc296d55078"
+    },
+    {
+      "Start": "eb16ec5bb8eb450dbdaec3792c225866",
+      "End": "50f7f40eb21c4c1d8154c5c09180c153",
+      "Id": "d60ec4bfe04348eb97857446b052acd2"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.1.11775",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "dd422e620c2c41ea8045f33361f32898",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "648604fb55c54987a9ba89b8e7970006",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -12.0,
+        "Y": 1.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "644911181fc2468294c3b0482154b231",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 434.0,
+        "Y": -1.0
+      }
+    ],
+    "Annotations": [],
+    "X": 43.49049429657795,
+    "Y": 336.149556400507,
+    "Zoom": 1.1242078580481623
+  }
+}

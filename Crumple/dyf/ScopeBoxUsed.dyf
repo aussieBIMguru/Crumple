@@ -1,0 +1,165 @@
+{
+  "Uuid": "4fe41391-f12e-4998-ba4a-1f598dad9f8e",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.ScopeBoxes",
+  "Description": "Checks if a scope box is applied to any views, levels or grids in the current document.",
+  "Name": "© ScopeBoxUsed",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Get scope boxes\r\nusedScopeBoxes, inUse = [],[]\r\n    \r\n# Check scopebox of elements\r\ndef checkSB(elements):\r\n\tfor e in elements:\r\n\t\ttry:\r\n\t\t\tif e.GetParameters(\"Scope Box\")[0].AsValueString() != \"None\":\r\n\t\t\t\tusedScopeBoxes.append(e.GetParameters(\"Scope Box\")[0].AsValueString())\r\n\t\texcept:\r\n\t\t\tpass\r\n\r\n# Get all used scopebox names\r\ngrids = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Grids).OfClass(Grid)\r\nlevels = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Levels).OfClass(Level)\r\nviews = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Views)\r\n\r\ncheckSB(grids)\r\ncheckSB(levels)\r\ncheckSB(views)\r\n\r\n# Get all scope boxes in model\r\nallScopeBoxes = IN[0]\r\n\r\n# Preparing output to Dynamo\r\nOUT = [s.Name in usedScopeBoxes for s in allScopeBoxes]",
+      "VariableInputPorts": true,
+      "Id": "4a3db16fd2f745debc4938e000f52cc3",
+      "Inputs": [
+        {
+          "Id": "81299e942958461991b1fe5651cb86ad",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c787989d6c3542a1bbfc4d7886d1fcfb",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "scopeBoxes",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "a2bd759fed574bf7953f011c6d701118",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "80044979fe914246b6d2f9a13e577bea",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "inUse",
+      "Id": "a13482bd62254a299d4ee89a5b9a9c51",
+      "Inputs": [
+        {
+          "Id": "ec6e3de9430543268e8b60c8f43b1cb6",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "c787989d6c3542a1bbfc4d7886d1fcfb",
+      "End": "ec6e3de9430543268e8b60c8f43b1cb6",
+      "Id": "60bdc3a0a19d44e09d8a0eb33eda802b"
+    },
+    {
+      "Start": "80044979fe914246b6d2f9a13e577bea",
+      "End": "81299e942958461991b1fe5651cb86ad",
+      "Id": "fc455bb449a54b93af128b3b71c8df93"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.1.11775",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "4a3db16fd2f745debc4938e000f52cc3",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "a2bd759fed574bf7953f011c6d701118",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 0.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "a13482bd62254a299d4ee89a5b9a9c51",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 449.0,
+        "Y": 0.0
+      }
+    ],
+    "Annotations": [],
+    "X": 30.0,
+    "Y": 368.06730769230768,
+    "Zoom": 2.8653846153846154
+  }
+}

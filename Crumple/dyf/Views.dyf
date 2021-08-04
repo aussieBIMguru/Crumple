@@ -1,0 +1,165 @@
+{
+  "Uuid": "9b4cfa8d-41dd-4e22-9962-488adf4bebe9",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.Views",
+  "Description": "Returns all views in the model. Excludes system views, templates, legends and schedule instances.",
+  "Name": "© Views",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Import RevitAPI\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Import DocumentManager\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\n# Get the project document.\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Get all views\r\nViews_doc = FilteredElementCollector(doc).OfClass(View).ToElements()\r\n\r\n# Create empty lists\r\nView_list = []\r\n\r\n# Find views that aren't legends, then non-template\r\nfor v in Views_doc:\r\n\tvType = v.ViewType\r\n\tif vType == ViewType.Legend or vType == ViewType.Schedule or v.IsTemplate or vType == ViewType.DrawingSheet or v.Name == \"System Browser\" or v.Name == \"Project View\":\r\n\t\tpass\r\n\telse:\r\n\t\tView_list.append(v)\r\n\r\n# Output cleaned view lists\r\nOUT = View_list",
+      "VariableInputPorts": true,
+      "Id": "779c3a82ecd34d2ba532d36ea87b6c36",
+      "Inputs": [
+        {
+          "Id": "4f71cf6327a7452785111528696b3760",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "bda2f08dda8c4ecbab41d3aae7868f99",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "Refresh",
+        "TypeName": "bool",
+        "TypeRank": 0,
+        "DefaultValue": "true",
+        "Description": "Toggle to refresh"
+      },
+      "Id": "44acbfa26f704ffc89860a4d0dd80673",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "7509b31f1ad54c4d8bd4138603201fca",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//All views in the current document.\r\nviews",
+      "Id": "e1802ecc90474a858684c9de3f646ec0",
+      "Inputs": [
+        {
+          "Id": "6396a71bbaff4fc8a6e636e02c27653a",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "bda2f08dda8c4ecbab41d3aae7868f99",
+      "End": "6396a71bbaff4fc8a6e636e02c27653a",
+      "Id": "9ff58111f48546ea902b78da962aa250"
+    },
+    {
+      "Start": "7509b31f1ad54c4d8bd4138603201fca",
+      "End": "4f71cf6327a7452785111528696b3760",
+      "Id": "2291eecc3cc846c1ac1ec103daee4b68"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.1.11775",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "779c3a82ecd34d2ba532d36ea87b6c36",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "44acbfa26f704ffc89860a4d0dd80673",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -1.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "e1802ecc90474a858684c9de3f646ec0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 428.0,
+        "Y": 0.0
+      }
+    ],
+    "Annotations": [],
+    "X": 31.970899470899472,
+    "Y": 382.90211640211641,
+    "Zoom": 1.9708994708994709
+  }
+}
