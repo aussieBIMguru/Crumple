@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\nimport itertools\r\n\r\ncombinations = []\r\n\r\ndata = IN[0]\r\nlength = IN[1]\r\ncycled = data*length\r\n\r\nfor subset in itertools.permutations(cycled, length):\r\n\tif subset not in combinations:\r\n\t\tcombinations.append(subset)\r\n    \r\nOUT = combinations",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Thanks to cpoupin for guiding a better approach\r\n# https://forum.dynamobim.com/t/get-all-possible-combinations-of-a-list-including-repeating-element-at-a-given-lenght/66784/4\r\n\r\nimport itertools\r\n\r\ndata = IN[0];\r\nr = int(IN[1])\r\n\r\ncombinations = list(itertools.product(data, repeat = r))\r\n    \r\nOUT = combinations",
       "VariableInputPorts": true,
       "Id": "01c2fc95fb834a518b1d8706c0d3796e",
       "Inputs": [
@@ -155,15 +155,15 @@
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -36791.721869806788,
-      "EyeY": 15061.330501259772,
-      "EyeZ": 1657.4750968015269,
-      "LookX": 2582.6049701337779,
-      "LookY": -13232.70014928914,
-      "LookZ": -11469.844557759734,
-      "UpX": 0.12911596327984115,
-      "UpY": 0.80901699437494856,
-      "UpZ": -0.573428784452651
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "NodeViews": [
       {
