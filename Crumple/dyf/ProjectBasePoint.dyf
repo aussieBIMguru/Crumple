@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Credit to Genius Loci for much of the workflow\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport math\r\n\r\n# Revit nodes\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\n# Revit services and API\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Get project base point\r\nbps    = FilteredElementCollector(doc).OfClass(BasePoint).ToElements()\r\npbp    = bps[1]\r\n\r\n# Get unit types\r\nDUT = Document.GetUnits(doc).GetFormatOptions(UnitType.UT_Length).DisplayUnits\r\n\r\npoints = []\r\n\r\n# Get pbp values\r\new = pbp.get_Parameter(BuiltInParameter.BASEPOINT_EASTWEST_PARAM).AsDouble()\r\nns = pbp.get_Parameter(BuiltInParameter.BASEPOINT_NORTHSOUTH_PARAM).AsDouble()\r\nel = pbp.get_Parameter(BuiltInParameter.BASEPOINT_ELEVATION_PARAM).AsDouble()\r\nan = pbp.get_Parameter(BuiltInParameter.BASEPOINT_ANGLETON_PARAM).AsDouble()\r\n\r\n# Get EW, NS, Elev\r\n# Thanks for letting me know about the rounding issue Ruben Romero Vivancos!\r\npbp_ns = round(UnitUtils.ConvertFromInternalUnits(ns, DUT), 15)\r\npbp_ew = round(UnitUtils.ConvertFromInternalUnits(ew, DUT), 15)\r\npbp_el = round(UnitUtils.ConvertFromInternalUnits(el, DUT), 15)\r\npbp_an = round(an * 180/math.pi)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [pbp_ns, pbp_ew, pbp_el, pbp_an]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Credit to Genius Loci for much of the workflow\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport math\r\n\r\n# Revit nodes\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\n# Revit services and API\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Get project base point\r\nbps    = FilteredElementCollector(doc).OfClass(BasePoint).ToElements()\r\npbp    = bps[1]\r\n\r\n# Get pbp values\r\npbp_ew = pbp.get_Parameter(BuiltInParameter.BASEPOINT_EASTWEST_PARAM).AsDouble() * IN[0]\r\npbp_ns = pbp.get_Parameter(BuiltInParameter.BASEPOINT_NORTHSOUTH_PARAM).AsDouble() * IN[0]\r\npbp_el = pbp.get_Parameter(BuiltInParameter.BASEPOINT_ELEVATION_PARAM).AsDouble() * IN[0]\r\npbp_an = pbp.get_Parameter(BuiltInParameter.BASEPOINT_ANGLETON_PARAM).AsDouble() * 180/math.pi\r\n\r\n# Preparing output to Dynamo\r\nOUT = [pbp_ns, pbp_ew, pbp_el, pbp_an]",
       "VariableInputPorts": true,
       "Id": "15121901da544ebd843ec5127922d4ac",
       "Inputs": [
@@ -45,11 +45,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "Refresh",
-        "TypeName": "bool",
+        "Name": "unitFactor",
+        "TypeName": "double",
         "TypeRank": 0,
-        "DefaultValue": "true",
-        "Description": "Toggle to refresh"
+        "DefaultValue": "304.8",
+        "Description": "Because imperial units are silly"
       },
       "Id": "a5eae67f1cb3489385eea4a814b6107c",
       "Inputs": [],
@@ -249,7 +249,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.3.1.11775",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -283,8 +283,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -3.0,
-        "Y": 0.0
+        "X": -117.03887688984889,
+        "Y": 0.86393088552915742
       },
       {
         "ShowGeometry": true,
@@ -338,8 +338,8 @@
       }
     ],
     "Annotations": [],
-    "X": 100.28500000000003,
-    "Y": 252.82,
+    "X": 222.28500000000003,
+    "Y": 305.82,
     "Zoom": 1.1575
   }
 }

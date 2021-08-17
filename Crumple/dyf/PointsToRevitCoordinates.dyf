@@ -511,10 +511,20 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Credit to Genius Loci for much of the workflow\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport math\r\n\r\n# Revit nodes\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\n# Revit services and API\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Get project position\r\nori = doc.ActiveProjectLocation.GetProjectPosition(XYZ(0,0,0))\r\n\r\n# Get project base point\r\nbps = FilteredElementCollector(doc).OfClass(BasePoint).ToElements()\r\npbp = bps[1]\r\n\r\n# Get pbp angle\r\nan = pbp.get_Parameter(BuiltInParameter.BASEPOINT_ANGLETON_PARAM).AsDouble()\r\npbp_an = round(an * 180/math.pi)\r\n\r\n# Get unit types\r\nDUT = Document.GetUnits(doc).GetFormatOptions(UnitType.UT_Length).DisplayUnits\r\n\r\n# Get translation values from origin\r\ny = UnitUtils.ConvertFromInternalUnits(round(ori.NorthSouth, 6), DUT)\r\nx = UnitUtils.ConvertFromInternalUnits(round(ori.EastWest, 6), DUT)\r\nz = UnitUtils.ConvertFromInternalUnits(round(ori.Elevation, 6), DUT)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [pbp_an, x, y, z]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Credit to Genius Loci for much of the workflow\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport math\r\n\r\n# Revit nodes\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\n# Revit services and API\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Get project position\r\nori = doc.ActiveProjectLocation.GetProjectPosition(XYZ(0,0,0))\r\n\r\n# Get project base point\r\nbps = FilteredElementCollector(doc).OfClass(BasePoint).ToElements()\r\npbp = bps[1]\r\n\r\n# Get pbp angle\r\nan = pbp.get_Parameter(BuiltInParameter.BASEPOINT_ANGLETON_PARAM).AsDouble()\r\npbp_an = round(an * 180/math.pi)\r\n\r\n# Get translation values from origin\r\ny = ori.NorthSouth * IN[0]\r\nx = ori.EastWest * IN[0]\r\nz = ori.Elevation  * IN[0]\r\n\r\n# Preparing output to Dynamo\r\nOUT = [pbp_an, x, y, z]",
       "VariableInputPorts": true,
       "Id": "0ccafb74a93940ff998dab2ad613959d",
-      "Inputs": [],
+      "Inputs": [
+        {
+          "Id": "958dbe39e0fb431ea6dca4014cbcc2ce",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
       "Outputs": [
         {
           "Id": "68b57f197c8c4da6b1d9ccc6fabe3e59",
@@ -565,6 +575,32 @@
       "Outputs": [
         {
           "Id": "0a6a74d944104c3ebb28a6776e57ec66",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "unitFactor",
+        "TypeName": "double",
+        "TypeRank": 0,
+        "DefaultValue": "304.8",
+        "Description": "Because imperial units are silly"
+      },
+      "Id": "ff5cd17d58ed4cae9dd2c8b6f689b17e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "4f39d926ba224c68b41f74d9e083f086",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -687,6 +723,11 @@
       "Start": "0a6a74d944104c3ebb28a6776e57ec66",
       "End": "36d82f7ca0de48c2bd8892094cc4a86d",
       "Id": "6e9ab8e86dff4ccc97580fbc47ec4f9c"
+    },
+    {
+      "Start": "4f39d926ba224c68b41f74d9e083f086",
+      "End": "958dbe39e0fb431ea6dca4014cbcc2ce",
+      "Id": "aef5d6d736634cde852e4dc2a0c17ab4"
     }
   ],
   "Dependencies": [],
@@ -697,18 +738,18 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.3.1.11775",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -22.499469651426988,
-      "EyeY": 83.474008687746775,
-      "EyeZ": 25.340790306871632,
-      "LookX": 10.07099783483187,
-      "LookY": -10.910247654401203,
-      "LookZ": -48.676489535020693,
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
       "UpX": 0.0,
       "UpY": 1.0,
       "UpZ": 0.0
@@ -843,11 +884,21 @@
         "Excluded": false,
         "X": 1580.0467820678184,
         "Y": 363.087317331447
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "ff5cd17d58ed4cae9dd2c8b6f689b17e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 55.245343304656046,
+        "Y": 200.99845162604237
       }
     ],
     "Annotations": [],
-    "X": -93.862465678249237,
-    "Y": 262.61576843923137,
-    "Zoom": 0.50328730786933917
+    "X": 2.0496952678621909,
+    "Y": 331.91430370823997,
+    "Zoom": 0.50593051034189473
   }
 }

@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Credit to Genius Loci for much of the workflow\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport math\r\n\r\n# Revit nodes\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\n# Revit services and API\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Get project base point\r\nbps     = FilteredElementCollector(doc).OfClass(BasePoint).ToElements()\r\nsvp     = bps[0]\r\n\r\n# Get unit types\r\nDUT = Document.GetUnits(doc).GetFormatOptions(UnitType.UT_Length).DisplayUnits\r\n\r\npoints = []\r\n\r\n# Get pbp values\r\new = svp.get_Parameter(BuiltInParameter.BASEPOINT_EASTWEST_PARAM).AsDouble()\r\nns = svp.get_Parameter(BuiltInParameter.BASEPOINT_NORTHSOUTH_PARAM).AsDouble()\r\nel = svp.get_Parameter(BuiltInParameter.BASEPOINT_ELEVATION_PARAM).AsDouble()\r\n\r\n# Get EW, NS, Elev\r\n# Thanks for letting me know about the rounding issue Ruben Romero Vivancos!\r\nsvp_ns = round(UnitUtils.ConvertFromInternalUnits(ns, DUT), 15)\r\nsvp_ew = round(UnitUtils.ConvertFromInternalUnits(ew, DUT), 15)\r\nsvp_el = round(UnitUtils.ConvertFromInternalUnits(el, DUT), 15)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [svp_ns, svp_ew, svp_el]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Credit to Genius Loci for much of the workflow\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport math\r\n\r\n# Revit nodes\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\n# Revit services and API\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Get project base point\r\nbps     = FilteredElementCollector(doc).OfClass(BasePoint).ToElements()\r\nsvp     = bps[0]\r\n\r\n# Get pbp values\r\nsvp_ew = svp.get_Parameter(BuiltInParameter.BASEPOINT_EASTWEST_PARAM).AsDouble() * IN[0]\r\nsvp_ns = svp.get_Parameter(BuiltInParameter.BASEPOINT_NORTHSOUTH_PARAM).AsDouble() * IN[0]\r\nsvp_el = svp.get_Parameter(BuiltInParameter.BASEPOINT_ELEVATION_PARAM).AsDouble() * IN[0]\r\n\r\n# Preparing output to Dynamo\r\nOUT = [svp_ns, svp_ew, svp_el]",
       "VariableInputPorts": true,
       "Id": "bd5b1544b45e4f53af91e80922859b83",
       "Inputs": [
@@ -40,32 +40,6 @@
       ],
       "Replication": "Disabled",
       "Description": "Runs an embedded IronPython script."
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
-      "Parameter": {
-        "Name": "Refresh",
-        "TypeName": "bool",
-        "TypeRank": 0,
-        "DefaultValue": "true",
-        "Description": "Toggle to refresh"
-      },
-      "Id": "9fbf3b663a0c43e48da868bd35a220a4",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "0000709433f34d12be28c192f35b0973",
-          "Name": "",
-          "Description": "Symbol",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -177,6 +151,32 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "unitFactor",
+        "TypeName": "double",
+        "TypeRank": 0,
+        "DefaultValue": "304.8",
+        "Description": "Because imperial units are silly"
+      },
+      "Id": "fa5bd284068b43c183a5db5c9d90aafa",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "d023546132254351b3baadd37b0e7b5d",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     }
   ],
   "Connectors": [
@@ -184,11 +184,6 @@
       "Start": "a168da2693cd4712992880fd134ed3c7",
       "End": "72837c518f3a41ceb7caf459f74e298f",
       "Id": "9e1cee0e67fc4cd69a51622f62ab43c7"
-    },
-    {
-      "Start": "0000709433f34d12be28c192f35b0973",
-      "End": "9bd5d55520da4f138538882d6dd7f6d2",
-      "Id": "a8bea5ed24bf4388972dcc033ce6a76b"
     },
     {
       "Start": "1a66554c06a840e0a3f9f8c5bd1724a7",
@@ -204,6 +199,11 @@
       "Start": "133470696ea84d01a787ddd48d3ed4e2",
       "End": "88157fd94a8948f89da117bb0697dc28",
       "Id": "40e86f35ca684110bd3343769b78e373"
+    },
+    {
+      "Start": "d023546132254351b3baadd37b0e7b5d",
+      "End": "9bd5d55520da4f138538882d6dd7f6d2",
+      "Id": "c2e7a5db06f941028dbb4610bfe94bc7"
     }
   ],
   "Dependencies": [],
@@ -214,7 +214,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.3.1.11775",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -238,18 +238,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 250.0,
-        "Y": 0.0
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "9fbf3b663a0c43e48da868bd35a220a4",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 22.0,
-        "Y": -1.0
+        "X": 244.847086466674,
+        "Y": -1.7176378444419811
       },
       {
         "ShowGeometry": true,
@@ -268,8 +258,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 430.57667386609069,
-        "Y": 3.2462203023757752
+        "X": 452.04714692161588,
+        "Y": 2.3874013801548131
       },
       {
         "ShowGeometry": true,
@@ -290,11 +280,21 @@
         "Excluded": false,
         "X": 606.844786956379,
         "Y": 113.73007057206874
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "fa5bd284068b43c183a5db5c9d90aafa",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -128.84880793380762,
+        "Y": -2.3241800144379
       }
     ],
     "Annotations": [],
-    "X": 147.84867231628323,
-    "Y": 288.21464836848986,
+    "X": 178.84867231628323,
+    "Y": 305.21464836848986,
     "Zoom": 1.1643898080562645
   }
 }
