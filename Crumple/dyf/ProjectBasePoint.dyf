@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Credit to Genius Loci for much of the workflow\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport math\r\n\r\n# Revit nodes\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\n# Revit services and API\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Get project base point\r\nbps    = FilteredElementCollector(doc).OfClass(BasePoint).ToElements()\r\npbp    = bps[1]\r\n\r\n# Get pbp values\r\npbp_ew = pbp.get_Parameter(BuiltInParameter.BASEPOINT_EASTWEST_PARAM).AsDouble() * IN[0]\r\npbp_ns = pbp.get_Parameter(BuiltInParameter.BASEPOINT_NORTHSOUTH_PARAM).AsDouble() * IN[0]\r\npbp_el = pbp.get_Parameter(BuiltInParameter.BASEPOINT_ELEVATION_PARAM).AsDouble() * IN[0]\r\npbp_an = pbp.get_Parameter(BuiltInParameter.BASEPOINT_ANGLETON_PARAM).AsDouble() * 180/math.pi\r\n\r\n# Preparing output to Dynamo\r\nOUT = [pbp_ns, pbp_ew, pbp_el, pbp_an]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Credit to Genius Loci for much of the workflow\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport math\r\n\r\n# Revit nodes\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\n# Revit services and API\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[1]\r\n\r\n# Get project base point\r\nbps    = FilteredElementCollector(doc).OfClass(BasePoint).ToElements()\r\npbp    = bps[1]\r\n\r\n# Get pbp values\r\npbp_ew = pbp.get_Parameter(BuiltInParameter.BASEPOINT_EASTWEST_PARAM).AsDouble() * IN[0]\r\npbp_ns = pbp.get_Parameter(BuiltInParameter.BASEPOINT_NORTHSOUTH_PARAM).AsDouble() * IN[0]\r\npbp_el = pbp.get_Parameter(BuiltInParameter.BASEPOINT_ELEVATION_PARAM).AsDouble() * IN[0]\r\npbp_an = pbp.get_Parameter(BuiltInParameter.BASEPOINT_ANGLETON_PARAM).AsDouble() * 180/math.pi\r\n\r\n# Preparing output to Dynamo\r\nOUT = [pbp_ns, pbp_ew, pbp_el, pbp_an]",
       "VariableInputPorts": true,
       "Id": "15121901da544ebd843ec5127922d4ac",
       "Inputs": [
@@ -21,6 +21,15 @@
           "Id": "20c2270c93ed4fdebeedc31d15a9a8c3",
           "Name": "IN[0]",
           "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d84f29c73e494b4191f130f28558b622",
+          "Name": "IN[1]",
+          "Description": "Input #1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -207,6 +216,72 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "d9aad23bd35443708a267c99999a130c",
+      "Inputs": [
+        {
+          "Id": "d1586a9e91d54be990a3ca5bba97831a",
+          "Name": "docOrLink",
+          "Description": "var[]..[]\nDefault value : null",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "41ae349ca43f4900821b7c07d9ddf63a",
+          "Name": "document",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "927aed8a735345f2a8a034a8a5ae0cd2",
+          "Name": "outcome",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "docOrLink",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": "null",
+        "Description": "Uses current if none provided.\nAccepts document or link instance."
+      },
+      "Id": "8667abc288274f55b3fa849ae9342a45",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "26fa469b3ee642188c83fd10c001439c",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     }
   ],
   "Connectors": [
@@ -239,10 +314,31 @@
       "Start": "f562ffa17ea04236b25554efb95d3cc5",
       "End": "1bbcadc759f342308beb49d064c06183",
       "Id": "38c8ec51d6f143cbb5d9832502b74106"
+    },
+    {
+      "Start": "41ae349ca43f4900821b7c07d9ddf63a",
+      "End": "d84f29c73e494b4191f130f28558b622",
+      "Id": "faca5b2e5dcc4e9b8052a2bfd41e6e34"
+    },
+    {
+      "Start": "26fa469b3ee642188c83fd10c001439c",
+      "End": "d1586a9e91d54be990a3ca5bba97831a",
+      "Id": "475ffd38cac44b45b02250297320d666"
     }
   ],
-  "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "Dependencies": [
+    "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Crumple",
+      "Version": "2021.8.17",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "d9aad23bd35443708a267c99999a130c"
+      ]
+    }
+  ],
   "Bindings": [],
   "View": {
     "Dynamo": {
@@ -283,8 +379,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -117.03887688984889,
-        "Y": 0.86393088552915742
+        "X": -199.11231101511885,
+        "Y": -20.734341252699778
       },
       {
         "ShowGeometry": true,
@@ -335,11 +431,31 @@
         "Excluded": false,
         "X": 650.99136069114479,
         "Y": 178.67386609071269
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "© GetDocument",
+        "Id": "d9aad23bd35443708a267c99999a130c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -123.82453637633716,
+        "Y": 76.181425485961142
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "8667abc288274f55b3fa849ae9342a45",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -505.64578833693315,
+        "Y": 76.743930173746548
       }
     ],
     "Annotations": [],
-    "X": 222.28500000000003,
-    "Y": 305.82,
-    "Zoom": 1.1575
+    "X": 510.47667838275549,
+    "Y": 381.37758148810838,
+    "Zoom": 0.95022383151462853
   }
 }

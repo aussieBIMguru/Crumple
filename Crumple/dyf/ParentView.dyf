@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nviewlist  = uwlist(IN[0])\r\nparentlist, hasparent, onlyparents = [],[],[]\r\n\r\n# Do some action in a Transaction\r\nfor v in viewlist:\r\n\ttry:\r\n\t\tparentId = v.get_Parameter(BuiltInParameter.SECTION_PARENT_VIEW_NAME).AsElementId()\r\n\t\tparentEl = Document.GetElement(doc, parentId)\r\n\t\tparentlist.append(parentEl)\r\n\t\tif parentEl != None:\r\n\t\t\tonlyparents.append(parentEl)\r\n\t\t\thasparent.append(True)\r\n\t\telse:\r\n\t\t\thasparent.append(False)\r\n\texcept:\r\n\t\tparentlist.append(None)\r\n\t\thasparent.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [parentlist, hasparent, onlyparents]",
+      "Code": "# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[1]\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nviewlist  = uwlist(IN[0])\r\nparentlist, hasparent, onlyparents = [],[],[]\r\n\r\n# Do some action in a Transaction\r\nfor v in viewlist:\r\n\ttry:\r\n\t\tparentId = v.get_Parameter(BuiltInParameter.SECTION_PARENT_VIEW_NAME).AsElementId()\r\n\t\tparentEl = Document.GetElement(doc, parentId)\r\n\t\tparentlist.append(parentEl)\r\n\t\tif parentEl != None:\r\n\t\t\tonlyparents.append(parentEl)\r\n\t\t\thasparent.append(True)\r\n\t\telse:\r\n\t\t\thasparent.append(False)\r\n\texcept:\r\n\t\tparentlist.append(None)\r\n\t\thasparent.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [parentlist, hasparent, onlyparents]",
       "VariableInputPorts": true,
       "Id": "9fdc5fae79084f87aba03d0d6ef30d58",
       "Inputs": [
@@ -21,6 +21,15 @@
           "Id": "6bfe190fe13b4cfba917957613f55e04",
           "Name": "IN[0]",
           "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "0065c2e3e40649108e1b498cbebbc939",
+          "Name": "IN[1]",
+          "Description": "Input #1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -177,6 +186,72 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "d3bd7c3db88f4ea78f4a88a3585f1773",
+      "Inputs": [
+        {
+          "Id": "93033c65ee5c4597846545020d675fb5",
+          "Name": "docOrLink",
+          "Description": "var[]..[]\nDefault value : null",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "5b57b44b0f484068bbc624cba1379c35",
+          "Name": "document",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "dba8c84a72704d0da54b5a292c9d8805",
+          "Name": "outcome",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "docOrLink",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": "null",
+        "Description": "Uses current if none provided.\nAccepts document or link instance."
+      },
+      "Id": "688876275f3746d19f29abf4826aa8c6",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "9d217cfb697c4299b5e5f45491823b63",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     }
   ],
   "Connectors": [
@@ -204,10 +279,31 @@
       "Start": "208f0fc5504445d097517e27fac98e62",
       "End": "5ed93ea440b1444292164df547c5777c",
       "Id": "bc21db4a8b4b4a49a9de0a03dcd22978"
+    },
+    {
+      "Start": "5b57b44b0f484068bbc624cba1379c35",
+      "End": "0065c2e3e40649108e1b498cbebbc939",
+      "Id": "241ff30443c349a68b6ff90c16f9d5eb"
+    },
+    {
+      "Start": "9d217cfb697c4299b5e5f45491823b63",
+      "End": "93033c65ee5c4597846545020d675fb5",
+      "Id": "7d169507c40c44a5a64bece69ce46c76"
     }
   ],
-  "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "Dependencies": [
+    "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Crumple",
+      "Version": "2021.8.17",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "d3bd7c3db88f4ea78f4a88a3585f1773"
+      ]
+    }
+  ],
   "Bindings": [],
   "View": {
     "Dynamo": {
@@ -290,11 +386,31 @@
         "Excluded": false,
         "X": 692.89749554364835,
         "Y": 85.428090743807559
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "© GetDocument",
+        "Id": "d3bd7c3db88f4ea78f4a88a3585f1773",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -37.793669056571161,
+        "Y": 70.6306191974175
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "688876275f3746d19f29abf4826aa8c6",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -429.1930136178587,
+        "Y": 71.0129431130979
       }
     ],
     "Annotations": [],
-    "X": -49.040235415732468,
-    "Y": 362.25532034975276,
-    "Zoom": 1.9278106198959137
+    "X": 530.97644392730354,
+    "Y": 373.37643681923055,
+    "Zoom": 1.1672520941204294
   }
 }

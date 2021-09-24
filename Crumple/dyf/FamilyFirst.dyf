@@ -1,0 +1,304 @@
+{
+  "Uuid": "c13652d2-6aba-4329-bc0f-d9944483a9d8",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.FamilyInstance",
+  "Description": "Returns the first instance of a family in the model. Handy for when you know you'll be targetting an early placed object like a homescreen.",
+  "Name": "© FamilyFirst",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.FirstItem@var[]..[]",
+      "Id": "225751a5802141a7b81ab0821ad65f34",
+      "Inputs": [
+        {
+          "Id": "02fad066d0dd4b9d98e1d02671038c23",
+          "Name": "list",
+          "Description": "List to get the first item from.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "d976ce225c78434a8676a27c965a37c2",
+          "Name": "item",
+          "Description": "First item in the list.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Returns the first item in a list.\n\nList.FirstItem (list: var[]..[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Elements.FamilyInstance.ByFamilyType@Revit.Elements.FamilyType",
+      "Id": "915ef9e56a504de0b52ab9baf5b3c16d",
+      "Inputs": [
+        {
+          "Id": "18a6a0894a4f40318f3682d423d0c0ee",
+          "Name": "familyType",
+          "Description": "Family Type. Also called Family Symbol.\n\nFamilyType",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "52f047e7bd744766ae632d75b199273e",
+          "Name": "FamilyInstance[]",
+          "Description": "FamilyInstance[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Obtain a collection of FamilyInstances from the Revit Document and use them in the Dynamo graph\n\nFamilyInstance.ByFamilyType (familyType: FamilyType): FamilyInstance[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Elements.FamilyType.ByFamilyNameAndTypeName@string,string",
+      "Id": "68067279adc04cd480ede0f07c81eee7",
+      "Inputs": [
+        {
+          "Id": "c2d7b26a694e42718ec365f71ba76c02",
+          "Name": "familyName",
+          "Description": "The FamilyType's parent Family name.\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "2f227357a0c44806a9b116f67e5f7e64",
+          "Name": "typeName",
+          "Description": "The name of the FamilyType.\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "78f905d3db7d47759901b66e83693bf5",
+          "Name": "FamilyType",
+          "Description": "FamilyType",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Select a FamilyType give it's family name and type name.\n\nFamilyType.ByFamilyNameAndTypeName (familyName: string, typeName: string): FamilyType"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "familyName",
+        "TypeName": "string",
+        "TypeRank": 0,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "775972d00b2f4078aca648816ddaae2d",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "5f7a226db24a4e8097b572f807e60919",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "typeName",
+        "TypeName": "string",
+        "TypeRank": 0,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "67662d86da084ef89bb73087094c8387",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "62db608a6a254978b39a108e4e80596c",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "firstInstance",
+      "Id": "e7fa4f5365394c51abb4fdbb9cf20538",
+      "Inputs": [
+        {
+          "Id": "b7b53047347746e0b0bc717097bae524",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "d976ce225c78434a8676a27c965a37c2",
+      "End": "b7b53047347746e0b0bc717097bae524",
+      "Id": "980c4c8554f24e299ac880e86ac2bd91"
+    },
+    {
+      "Start": "52f047e7bd744766ae632d75b199273e",
+      "End": "02fad066d0dd4b9d98e1d02671038c23",
+      "Id": "33b8539834ca488199a19844d8e7f6fa"
+    },
+    {
+      "Start": "78f905d3db7d47759901b66e83693bf5",
+      "End": "18a6a0894a4f40318f3682d423d0c0ee",
+      "Id": "8420dbc708fb4bbda6a2466c3dd65ba3"
+    },
+    {
+      "Start": "5f7a226db24a4e8097b572f807e60919",
+      "End": "c2d7b26a694e42718ec365f71ba76c02",
+      "Id": "371ee3581ca646e3bc9164e958099a42"
+    },
+    {
+      "Start": "62db608a6a254978b39a108e4e80596c",
+      "End": "2f227357a0c44806a9b116f67e5f7e64",
+      "Id": "c54da350b6bb4e859247b30e0bcfdcf6"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.1.11775",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "List.FirstItem",
+        "Id": "225751a5802141a7b81ab0821ad65f34",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 855.715956921777,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "FamilyInstance.ByFamilyType",
+        "Id": "915ef9e56a504de0b52ab9baf5b3c16d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 554.215956921777,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "FamilyType.ByFamilyNameAndTypeName",
+        "Id": "68067279adc04cd480ede0f07c81eee7",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 1.816581135412946
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "775972d00b2f4078aca648816ddaae2d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -31.0,
+        "Y": -34.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "67662d86da084ef89bb73087094c8387",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -12.0,
+        "Y": 79.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "e7fa4f5365394c51abb4fdbb9cf20538",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1080.7159569217768,
+        "Y": 0.0
+      }
+    ],
+    "Annotations": [],
+    "X": 66.02180283727867,
+    "Y": 387.06231164430147,
+    "Zoom": 1.161993639912215
+  }
+}

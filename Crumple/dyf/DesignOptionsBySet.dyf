@@ -142,8 +142,8 @@
       "Inputs": [
         {
           "Id": "3f0e91ebf8ec4c9e9c220eca2cea92c8",
-          "Name": "Referesh",
-          "Description": "bool\nDefault value : true",
+          "Name": "docOrLink",
+          "Description": "Uses current if none provided.\nAccepts document or link instance.\n\nvar[]..[]\nDefault value : null",
           "UsingDefaultValue": true,
           "Level": 2,
           "UseLevels": false,
@@ -163,32 +163,6 @@
       ],
       "Replication": "Auto",
       "Description": "Returns all design options in the model."
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
-      "Parameter": {
-        "Name": "Refresh",
-        "TypeName": "bool",
-        "TypeRank": 0,
-        "DefaultValue": "true",
-        "Description": ""
-      },
-      "Id": "708d745241f7437eb1d12439af480a7d",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "fe5557eab0cd483fb1147147b70aeb5d",
-          "Name": "",
-          "Description": "Symbol",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -252,6 +226,32 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "docOrLink",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": "null",
+        "Description": "Uses current if none provided.\nAccepts document or link instance."
+      },
+      "Id": "4de4dd4fce3b418fbe7cfd5e4ee67bb2",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "604a9032fff341dd9e542be10a07b03d",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     }
   ],
   "Connectors": [
@@ -291,23 +291,33 @@
       "Id": "7e2014775ba84826b56c635c4bf02835"
     },
     {
-      "Start": "fe5557eab0cd483fb1147147b70aeb5d",
+      "Start": "604a9032fff341dd9e542be10a07b03d",
       "End": "3f0e91ebf8ec4c9e9c220eca2cea92c8",
-      "Id": "36b90d45565b4fa08d4e220c53fbc64b"
+      "Id": "f0262ebcf02349958ee50ecc8976285f"
     }
   ],
   "Dependencies": [
     "9291f277-e2e7-4318-bb0b-5cea695f4818",
     "e109db67-07be-4942-a22b-48fd306dfbcb"
   ],
-  "NodeLibraryDependencies": [],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Crumple",
+      "Version": "2021.8.17",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "1ddf87abd70d4141b396924af14c680f",
+        "a9aa64b44e224efdb3312b1f97c9c930"
+      ]
+    }
+  ],
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.3.1.11775",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -366,16 +376,6 @@
       },
       {
         "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "708d745241f7437eb1d12439af480a7d",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 21.0,
-        "Y": 48.0
-      },
-      {
-        "ShowGeometry": true,
         "Name": "Output",
         "Id": "cb9af31e60a346488939dd6a8ced279d",
         "IsSetAsInput": false,
@@ -403,11 +403,21 @@
         "Excluded": false,
         "X": 1251.0,
         "Y": 150.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "4de4dd4fce3b418fbe7cfd5e4ee67bb2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -144.76583819156485,
+        "Y": 46.648927135724534
       }
     ],
     "Annotations": [],
-    "X": 20.050819672131148,
-    "Y": 344.55043812703747,
-    "Zoom": 0.47377049180327868
+    "X": 135.25043930318958,
+    "Y": 380.39228939040731,
+    "Zoom": 0.72703920080864959
   }
 }

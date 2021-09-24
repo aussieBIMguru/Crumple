@@ -1,9 +1,9 @@
 {
-  "Uuid": "8308a06b-d5d3-4435-88d1-8149c9cb9c46",
+  "Uuid": "ca8ff6b3-2ca8-43ad-b365-68ca27761d7f",
   "IsCustomNode": true,
-  "Category": "Crumple.Revit.Views",
-  "Description": "Returns the associated level of a view (if it has one), as well as a boolean mask to remove views without levels after.",
-  "Name": "© ViewLevel",
+  "Category": "Crumple.Application.Windows",
+  "Description": "Attempts to retrieve the current data on the clipboard.",
+  "Name": "© FromClipboard",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -13,12 +13,12 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Preparing input from dynamo to revit\r\nviews_d = IN[0] if isinstance(IN[0], list) else [IN[0]]\r\nviews_r = UnwrapElement(views_d)\r\n\r\n# Preparing empty lists\r\nlevels, bools = [], []\r\n\r\n# Getting view level\r\nfor v in views_r:\r\n\tlvl  = v.GenLevel\r\n\tif lvl != None:\r\n\t\tlevels.append(lvl)\r\n\t\tbools.append(True)\r\n\telse:\r\n\t\tlevels.append(None)\r\n\t\tbools.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [levels, bools]",
+      "Code": "import clr\r\nimport System\r\nfrom System.Threading import Thread, ThreadStart\r\nclr.AddReference(\"System.Windows.Forms\")\r\n\r\nclipboardcontents = '###'\r\n\r\ndef GetText():\r\n    def thread_proc():\r\n        global clipboardcontents\r\n        clipboardcontents = System.Windows.Forms.Clipboard.GetText()\r\n    t = Thread(ThreadStart(thread_proc))\r\n    t.ApartmentState = System.Threading.ApartmentState.STA\r\n    t.Start()\r\n    t.Join()\r\n\r\ntry:\r\n\tGetText()\r\n\tOUT = [clipboardcontents, True]\r\nexcept:\r\n\tOUT = [\"\", False]",
       "VariableInputPorts": true,
-      "Id": "43dfc4d8825748638529e5a6cc781ed7",
+      "Id": "121179b8bf5a45d5bef6a4423208b456",
       "Inputs": [
         {
-          "Id": "93a9a80b7e104b98a36417172b07d3b8",
+          "Id": "8e65a9530bc84005ae27caefd551f00d",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -29,7 +29,7 @@
       ],
       "Outputs": [
         {
-          "Id": "5485f7401a154109b15f790292407593",
+          "Id": "b83b91a505c54508a71e1adc446bf0b2",
           "Name": "OUT",
           "Description": "Result of the python script",
           "UsingDefaultValue": false,
@@ -45,17 +45,17 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "views",
-        "TypeName": "var",
-        "TypeRank": -1,
-        "DefaultValue": null,
-        "Description": "View or list of views\nto return the level of."
+        "Name": "refresh",
+        "TypeName": "bool",
+        "TypeRank": 0,
+        "DefaultValue": "True",
+        "Description": ""
       },
-      "Id": "b7e3794be8554ce79d1d11361d201c60",
+      "Id": "465d280c98b4498185b3097f496904aa",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "5ee802926be64939a912d7d3c5875403",
+          "Id": "169de71ef3c3475ab95d40c5c61511a8",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -71,11 +71,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//Levels of the views.\r\nlvls",
-      "Id": "bd1e965f1afe4a68936700407e74295a",
+      "Symbol": "receivedData",
+      "Id": "bbc7142bfb324efe8a6f9653bf72136b",
       "Inputs": [
         {
-          "Id": "9832c6ae438f4897a450ac2274d9ebf6",
+          "Id": "996c1d00e30745c380e6e8ec6bbb35d6",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -91,13 +91,13 @@
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
-      "Code": "lvls = lst[0];\nbols = lst[1];",
-      "Id": "8154d4c00d354b7cb89f598fdcd94087",
+      "Code": "data[0];\ndata[1];",
+      "Id": "057726fe325349bfb263e37bf314189a",
       "Inputs": [
         {
-          "Id": "50e6245903c24b3ab9b273f0f86b33d8",
-          "Name": "lst",
-          "Description": "lst",
+          "Id": "2fe80265bb8745978f498a241685177b",
+          "Name": "data",
+          "Description": "data",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -106,18 +106,18 @@
       ],
       "Outputs": [
         {
-          "Id": "690b995614504e6c920774540ae714ea",
+          "Id": "19f27f821c85451680ff10355718298e",
           "Name": "",
-          "Description": "lvls",
+          "Description": "Value of expression at line 1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
           "KeepListStructure": false
         },
         {
-          "Id": "b9cce1fd8a8349a5a42fa84a84c05cf8",
+          "Id": "4c08e0d730ac4cec9b4b3cf0671a8d6e",
           "Name": "",
-          "Description": "bols",
+          "Description": "Value of expression at line 2",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -131,11 +131,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//Does the view have a level.\r\nhasLevel",
-      "Id": "e9f7b2a56c1b47e19b4b9f487386bc39",
+      "Symbol": "success",
+      "Id": "856b4ba8fa2f4cff911e4f937153858e",
       "Inputs": [
         {
-          "Id": "f47e7e42aeb341f982bc22071d3aa1b9",
+          "Id": "5207b3c713e142d88a6a70d0e6862d10",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -151,24 +151,24 @@
   ],
   "Connectors": [
     {
-      "Start": "5485f7401a154109b15f790292407593",
-      "End": "50e6245903c24b3ab9b273f0f86b33d8",
-      "Id": "e4f587c212fb484abf0716105d37fce1"
+      "Start": "b83b91a505c54508a71e1adc446bf0b2",
+      "End": "2fe80265bb8745978f498a241685177b",
+      "Id": "81fe289bc05d40c697b147411461be4e"
     },
     {
-      "Start": "5ee802926be64939a912d7d3c5875403",
-      "End": "93a9a80b7e104b98a36417172b07d3b8",
-      "Id": "e1a380e473dc4886b7b55995f6981a75"
+      "Start": "169de71ef3c3475ab95d40c5c61511a8",
+      "End": "8e65a9530bc84005ae27caefd551f00d",
+      "Id": "4c35c311cc664bdf88fbc6a1de23e4b7"
     },
     {
-      "Start": "690b995614504e6c920774540ae714ea",
-      "End": "9832c6ae438f4897a450ac2274d9ebf6",
-      "Id": "9c23d53312594c6485f76978eb07e1bc"
+      "Start": "19f27f821c85451680ff10355718298e",
+      "End": "996c1d00e30745c380e6e8ec6bbb35d6",
+      "Id": "173b112c68554cd991e4a1a1b8761c93"
     },
     {
-      "Start": "b9cce1fd8a8349a5a42fa84a84c05cf8",
-      "End": "f47e7e42aeb341f982bc22071d3aa1b9",
-      "Id": "f130ed4634f54a6692c1f9daee85da8c"
+      "Start": "4c08e0d730ac4cec9b4b3cf0671a8d6e",
+      "End": "5207b3c713e142d88a6a70d0e6862d10",
+      "Id": "aeb66b5b00244022a24a6624cf36b384"
     }
   ],
   "Dependencies": [],
@@ -199,57 +199,57 @@
       {
         "ShowGeometry": true,
         "Name": "Python Script",
-        "Id": "43dfc4d8825748638529e5a6cc781ed7",
+        "Id": "121179b8bf5a45d5bef6a4423208b456",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 248.73283150297755,
+        "X": 250.0,
         "Y": 0.0
       },
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "b7e3794be8554ce79d1d11361d201c60",
+        "Id": "465d280c98b4498185b3097f496904aa",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -36.849854498481307,
-        "Y": 1.0481708672834031
+        "X": 0.095614207414257635,
+        "Y": 0.061097142323433218
       },
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "bd1e965f1afe4a68936700407e74295a",
+        "Id": "bbc7142bfb324efe8a6f9653bf72136b",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 730.02717141340781,
-        "Y": -36.741551588059338
+        "X": 680.20544507700356,
+        "Y": -46.419122841482704
       },
       {
         "ShowGeometry": true,
         "Name": "Code Block",
-        "Id": "8154d4c00d354b7cb89f598fdcd94087",
+        "Id": "057726fe325349bfb263e37bf314189a",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 452.69035422419608,
-        "Y": 1.6489363953759835
+        "X": 437.28217803080156,
+        "Y": 4.2314068007261483
       },
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "e9f7b2a56c1b47e19b4b9f487386bc39",
+        "Id": "856b4ba8fa2f4cff911e4f937153858e",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 730.9373295093153,
-        "Y": 68.04275269314229
+        "X": 691.27627763904661,
+        "Y": 33.04251068161841
       }
     ],
     "Annotations": [],
-    "X": 81.571951989806124,
-    "Y": 378.71174948355781,
-    "Zoom": 1.3995157563493652
+    "X": 350.84947035779106,
+    "Y": 412.18830607993215,
+    "Zoom": 1.0
   }
 }

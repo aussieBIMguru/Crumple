@@ -1,0 +1,215 @@
+{
+  "Uuid": "fc808484-3d43-4ab1-8ea1-0d1ae4b4d115",
+  "IsCustomNode": true,
+  "Category": "Crumple.Script.Flow",
+  "Description": "Unless a true value is provided, sends across an empty list instead of an input stream.",
+  "Name": "© Gate",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\nif IN[0] != False:\r\n\tOUT = IN[1]\r\nelse:\r\n\tOUT = []",
+      "VariableInputPorts": true,
+      "Id": "fbc2c4c3ba4040599c1f4d57fb28bc97",
+      "Inputs": [
+        {
+          "Id": "61f924c8d5364f70a97c97515fddf07a",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "459e0367776f4bb29b5a5a625570d460",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "4327f3d4a69e49fba66b7cae11b7c9ed",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "toggle",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "cb4b16ad34b045e0aa5453a9e2a067e2",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "924f90c9d4e1436dbeffe182d6cc0901",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "data",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "30daf79406c441359296280da263dfc5",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "5004a410d0844cbfa9e83f99ebcdd246",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "output",
+      "Id": "40ba436206dc4a5caf084775df8bf6f5",
+      "Inputs": [
+        {
+          "Id": "e0f2f20d36fc4809bf040e9f789a8c2e",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "4327f3d4a69e49fba66b7cae11b7c9ed",
+      "End": "e0f2f20d36fc4809bf040e9f789a8c2e",
+      "Id": "7c68982d1abb4fc4b1f90cb021972287"
+    },
+    {
+      "Start": "924f90c9d4e1436dbeffe182d6cc0901",
+      "End": "61f924c8d5364f70a97c97515fddf07a",
+      "Id": "881c9037fe4d4f02886476e7cfe016d5"
+    },
+    {
+      "Start": "5004a410d0844cbfa9e83f99ebcdd246",
+      "End": "459e0367776f4bb29b5a5a625570d460",
+      "Id": "76c506f45ed941ca90e269342abc798f"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.1.11775",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "fbc2c4c3ba4040599c1f4d57fb28bc97",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "cb4b16ad34b045e0aa5453a9e2a067e2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 91.87249581612673,
+        "Y": -9.0578517001814873
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "30daf79406c441359296280da263dfc5",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 105.45927336639897,
+        "Y": 52.304599519470884
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "40ba436206dc4a5caf084775df8bf6f5",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 449.0,
+        "Y": 0.0
+      }
+    ],
+    "Annotations": [],
+    "X": -275.66059271739272,
+    "Y": 283.89311640970232,
+    "Zoom": 3.3270086983283953
+  }
+}

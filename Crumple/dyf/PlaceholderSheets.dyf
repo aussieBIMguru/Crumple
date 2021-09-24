@@ -2,7 +2,7 @@
   "Uuid": "23808bd0-139a-4f06-bac1-417950f48b41",
   "IsCustomNode": true,
   "Category": "Crumple.Revit.Sheets",
-  "Description": "Returns all placeholder sheets in the current document.",
+  "Description": "Returns all placeholder sheets in a document.",
   "Name": "© PlaceholderSheets",
   "ElementResolver": {
     "ResolutionMap": {}
@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Collect all sheets\r\nsheets = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Sheets).WhereElementIsNotElementType().ToElements()\r\n\r\n# Build output\r\nsheetsout = []\r\n\r\nfor s in sheets:\r\n\tif s.IsPlaceholder:\r\n\t\tsheetsout.append(s)\r\n\r\n# Preparing output to Dynamo\r\nOUT = sheetsout",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Collect all sheets\r\nsheets = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Sheets).WhereElementIsNotElementType().ToElements()\r\n\r\n# Build output\r\nsheetsout = []\r\n\r\nfor s in sheets:\r\n\tif s.IsPlaceholder:\r\n\t\tsheetsout.append(s)\r\n\r\n# Preparing output to Dynamo\r\nOUT = sheetsout",
       "VariableInputPorts": true,
       "Id": "44c8c0b25b094ecaaa00864ac1ccd0ac",
       "Inputs": [
@@ -63,20 +63,60 @@
       "Description": "A function output, use with custom nodes"
     },
     {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "3a9a39f5fd014b0b8557a8b60ba934df",
+      "Inputs": [
+        {
+          "Id": "ea5ec9b94a054f0f875c0469d7a87792",
+          "Name": "docOrLink",
+          "Description": "var[]..[]\nDefault value : null",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "8c466e735a1b4bb0a4b41316c43ad3d7",
+          "Name": "document",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "5a3f6d0bf0754a0bb976d7e24a644ddd",
+          "Name": "outcome",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
+    },
+    {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "refresh",
-        "TypeName": "bool",
-        "TypeRank": 0,
-        "DefaultValue": "true",
-        "Description": ""
+        "Name": "docOrLink",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": "null",
+        "Description": "Uses current if none provided.\nAccepts document or link instance."
       },
-      "Id": "65402882348e45519d552cf53c7b7a46",
+      "Id": "01e836f533aa4cdcba2e1427bd4f7866",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "346ca3f302f8403db8bd540c130eb893",
+          "Id": "7dc359632f61404faa8ebff6ea161097",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -96,34 +136,50 @@
       "Id": "84c6b44a8b424f518f6cf0e5befba0f4"
     },
     {
-      "Start": "346ca3f302f8403db8bd540c130eb893",
+      "Start": "8c466e735a1b4bb0a4b41316c43ad3d7",
       "End": "68aae56d258d42d6a08477a76aa29049",
-      "Id": "09e7bdc6be3b4c8c86e8277e2bf32ecb"
+      "Id": "2af69c518c2346ac9d7c290a2729a1d5"
+    },
+    {
+      "Start": "7dc359632f61404faa8ebff6ea161097",
+      "End": "ea5ec9b94a054f0f875c0469d7a87792",
+      "Id": "5d1ec488f8994cf18df53a5e71b719c1"
     }
   ],
-  "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "Dependencies": [
+    "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Crumple",
+      "Version": "2021.8.17",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "3a9a39f5fd014b0b8557a8b60ba934df"
+      ]
+    }
+  ],
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.3.1.11775",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": 18.503696896977047,
-      "EyeY": 177.2501939930566,
-      "EyeZ": 75.273264955367054,
-      "LookX": -18.503696896977047,
-      "LookY": -177.2501939930566,
-      "LookZ": -75.273264955367054,
-      "UpX": -0.19312339198054268,
-      "UpY": 0.58778525229247391,
-      "UpZ": -0.78562831711783654
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "NodeViews": [
       {
@@ -148,18 +204,28 @@
       },
       {
         "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "65402882348e45519d552cf53c7b7a46",
+        "Name": "© GetDocument",
+        "Id": "3a9a39f5fd014b0b8557a8b60ba934df",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 22.12278387046922,
-        "Y": 0.76505296422089941
+        "X": -43.78423861585361,
+        "Y": -0.60169939715933651
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "01e836f533aa4cdcba2e1427bd4f7866",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -435.18358317714114,
+        "Y": -0.21937548147894859
       }
     ],
     "Annotations": [],
-    "X": -42.928128813349446,
-    "Y": 355.38129967754156,
-    "Zoom": 3.29651680549563
+    "X": 755.68908994402409,
+    "Y": 347.32509037033833,
+    "Zoom": 0.87074071442556955
   }
 }

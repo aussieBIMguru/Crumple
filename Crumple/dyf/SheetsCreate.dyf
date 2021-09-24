@@ -22,7 +22,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Credit for node concept to Julien Benoit @jbenoit44\r\n# Original node from SteamNodes 1.2.4\r\n# http://aecuandme.wordpress.com/\r\n\r\n# I decided to clean up this node as I use it often and it doesn't\r\n# work in Dynamo 2.3 or Revit 2020 anymore.\r\n\r\n# Credits for Traceback:\r\n# Copyright(c) 2015, Konrad K Sobon\r\n# @arch_laboratory, http://archi-lab.net\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\n\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Preparing input from dynamo to revit\r\nttb_d   = IN[0]\r\nnam_d = IN[1] if isinstance(IN[1], list) else [IN[1]]\r\nnum_d = IN[2] if isinstance(IN[2], list) else [IN[2]]\r\n\r\n# Unwrapping titleblock\r\nttb_r = UnwrapElement(ttb_d).Id\r\n\r\n# Preparing empty lists\r\nnam_r, num_r, sht_d = [], [], []\r\n\r\n# Building name and number lists\r\n[nam_r.append(n) for n in nam_d]\r\n[num_r.append(n) for n in num_d]\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nfor na,nu in zip(nam_r,num_r):\r\n\ttry:\r\n\t\terrorReport = None\r\n\t\tsht = ViewSheet.Create(doc,ttb_r)\r\n\t\tsht.Name = na\r\n\t\tsht.SheetNumber = nu\r\n\t\tsht_d.append(sht.ToDSType(False))\r\n\texcept:\r\n\t\t# if error accurs anywhere in the process catch it\r\n\t\timport traceback\r\n\t\terrorReport = traceback.format_exc()\r\n\r\n# your actions\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nif errorReport == None:\r\n\tOUT = [sht_d, \"No Errors\"]\r\nelse:\r\n\tOUT = [sht_d, [errorReport]]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Collect all sheets\r\nsheets = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Sheets).WhereElementIsNotElementType().ToElements()\r\n\r\nsheetnos = [s.SheetNumber for s in sheets]\r\n\r\n# Preparing input from dynamo to revit\r\nttb_d = IN[0]\r\nnames = tolist(IN[1])\r\nnumbers = tolist(IN[2])\r\nasph = IN[3]\r\n\r\nnumexists = [n in sheetnos for n in numbers]\r\n\r\nsheets,success = [],[]\r\n\r\n# Unwrapping titleblock\r\nttb_r = UnwrapElement(ttb_d).Id\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor nam,num,nex in zip(names,numbers,numexists):\r\n\tif nex == False:\r\n\t\tif asph == True:\r\n\t\t\tplaceholder = ViewSheet.CreatePlaceholder(doc)\r\n\t\telse:\r\n\t\t\tplaceholder = ViewSheet.Create(doc,ttb_r)\r\n\t\tplaceholder.SheetNumber = num\r\n\t\tplaceholder.Name = nam\r\n\t\tsheets.append(placeholder.ToDSType(False))\r\n\t\tsuccess.append(True)\r\n\telse:\r\n\t\tsheets.append(None)\r\n\t\tsuccess.append(False)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = [sheets,success]",
       "VariableInputPorts": true,
       "Id": "282c5fa72b2e49f491ea3a026152668f",
       "Inputs": [
@@ -48,6 +48,15 @@
           "Id": "b56d0497f5894e549d43701e447bcedd",
           "Name": "IN[2]",
           "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "587349e56c28410aaccca7861d538bbf",
+          "Name": "IN[3]",
+          "Description": "Input #3",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -98,7 +107,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//Sheets successfully created.\r\nsheets",
+      "Symbol": "//Sheets created.\r\nsheets",
       "Id": "32bf611176d14cc5ab60ee9ed339d898",
       "Inputs": [
         {
@@ -158,7 +167,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//Errors (unsuccessful sheets).\r\nerrors",
+      "Symbol": "//Was the process successful.\r\nsuccess",
       "Id": "745628e2308546feafd9720673f9b974",
       "Inputs": [
         {
@@ -226,6 +235,32 @@
       ],
       "Replication": "Disabled",
       "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "asph",
+        "TypeName": "bool",
+        "TypeRank": 0,
+        "DefaultValue": "false",
+        "Description": "Are they placeholders?"
+      },
+      "Id": "622c38fd4af343728c68f04211ccdff4",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "31104c84f8474b03859c34309aa8a045",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     }
   ],
   "Connectors": [
@@ -237,7 +272,7 @@
     {
       "Start": "00910f8e1410441eb57b8e6a959e38fa",
       "End": "1747ebc45d6c4ab5923f037232aa94b8",
-      "Id": "975f5e10ae054632ad13c7523982524d"
+      "Id": "1bd208f0745246a6919d4557b5da679d"
     },
     {
       "Start": "aa5a576482ae43c9bb9a8d31d1f031e8",
@@ -258,6 +293,11 @@
       "Start": "d1dedba3a99f42648d71d09c9a563d33",
       "End": "b56d0497f5894e549d43701e447bcedd",
       "Id": "db517b899f2241ef9823aee04ae8b34b"
+    },
+    {
+      "Start": "31104c84f8474b03859c34309aa8a045",
+      "End": "587349e56c28410aaccca7861d538bbf",
+      "Id": "a5a3c5fd89694092a3afba70f62b3445"
     }
   ],
   "Dependencies": [],
@@ -268,18 +308,18 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.3.1.11775",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -22.499469651426988,
-      "EyeY": 83.474008687746775,
-      "EyeZ": 25.340790306871632,
-      "LookX": 10.07099783483187,
-      "LookY": -10.910247654401203,
-      "LookZ": -48.676489535020693,
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
       "UpX": 0.0,
       "UpY": 1.0,
       "UpZ": 0.0
@@ -354,11 +394,21 @@
         "Excluded": false,
         "X": -98.775724145951983,
         "Y": 110.94206974004433
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "622c38fd4af343728c68f04211ccdff4",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -91.613690882569642,
+        "Y": 194.76896424256429
       }
     ],
     "Annotations": [],
-    "X": 357.282726308895,
-    "Y": 267.953266097242,
-    "Zoom": 1.0360578756006076
+    "X": 264.46322749953555,
+    "Y": 345.65241133304073,
+    "Zoom": 1.3533575653868708
   }
 }

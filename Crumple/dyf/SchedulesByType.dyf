@@ -2,7 +2,7 @@
   "Uuid": "df7ccf44-251d-4454-af3b-c77e5f85707b",
   "IsCustomNode": true,
   "Category": "Crumple.Revit.Schedules",
-  "Description": "Returns all schedules in the model, separated into key and non-key schedules.",
+  "Description": "Returns all schedules in a document, separated into key and non-key schedules.",
   "Name": "© SchedulesByType",
   "ElementResolver": {
     "ResolutionMap": {}
@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Preparing input from dynamo to revit\r\nschedules, revschedules, keyschedules = [],[],[]\r\n\r\ncoll = FilteredElementCollector(doc).OfClass(ViewSchedule).ToElements()\r\n\r\n# Filter the schedules\r\nfor s in coll:\r\n\tif s.Definition.IsKeySchedule:\r\n\t\tkeyschedules.append(s)\r\n\telif \"<Revision Schedule>\" in s.Name:\r\n\t\trevschedules.append(s)\r\n\telse:\r\n\t\tschedules.append(s)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [schedules, keyschedules, revschedules]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Preparing input from dynamo to revit\r\nschedules, revschedules, keyschedules = [],[],[]\r\n\r\ncoll = FilteredElementCollector(doc).OfClass(ViewSchedule).ToElements()\r\n\r\n# Filter the schedules\r\nfor s in coll:\r\n\tif s.Definition.IsKeySchedule:\r\n\t\tkeyschedules.append(s)\r\n\telif \"<Revision Schedule>\" in s.Name:\r\n\t\trevschedules.append(s)\r\n\telse:\r\n\t\tschedules.append(s)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [schedules, keyschedules, revschedules]",
       "VariableInputPorts": true,
       "Id": "997a1ac068974c3f80d049ee00163867",
       "Inputs": [
@@ -61,32 +61,6 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
-      "Parameter": {
-        "Name": "refresh",
-        "TypeName": "bool",
-        "TypeRank": 0,
-        "DefaultValue": "true",
-        "Description": ""
-      },
-      "Id": "50e5009d51b646d6a0f838a4de52cb05",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "5ff1f35c492d44a297c2e16362e54957",
-          "Name": "",
-          "Description": "Symbol",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
@@ -177,6 +151,72 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "2262fcb4337c41fbb60f800cc957183b",
+      "Inputs": [
+        {
+          "Id": "dff6b4674ee9488ebec30b5d46efa130",
+          "Name": "docOrLink",
+          "Description": "var[]..[]\nDefault value : null",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "8433463b982f43b3b2c02ebd4b46352d",
+          "Name": "document",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "8bad0ce8e3fa4e05b3e6400d37cfc700",
+          "Name": "outcome",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "docOrLink",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": "null",
+        "Description": "Uses current if none provided.\nAccepts document or link instance."
+      },
+      "Id": "0ef86d94c81a4be4a232daf539d4fb2b",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "afb218f20f6a479d9efca0993b095650",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     }
   ],
   "Connectors": [
@@ -184,11 +224,6 @@
       "Start": "ce3c8e10dea74411b99e6a64c3c68b73",
       "End": "7d88716007014e74957a92ea4341e28b",
       "Id": "0d9672b809cd4110885fe9e402c9ea8e"
-    },
-    {
-      "Start": "5ff1f35c492d44a297c2e16362e54957",
-      "End": "9ac678b47d174dd8a32f4f4c657f5852",
-      "Id": "66bfc78a85624ee9af95789b9725a2ca"
     },
     {
       "Start": "011608923bb94c5c87a05b1248bb028d",
@@ -204,25 +239,46 @@
       "Start": "fd27b9e2b54f42949843ff2a9ebd9c84",
       "End": "96305a8c76304af69bd26806336cc6d1",
       "Id": "4fb35b31b06e43ca871a66bce085e4e0"
+    },
+    {
+      "Start": "8433463b982f43b3b2c02ebd4b46352d",
+      "End": "9ac678b47d174dd8a32f4f4c657f5852",
+      "Id": "948669415d27439ab70772b51df59eb2"
+    },
+    {
+      "Start": "afb218f20f6a479d9efca0993b095650",
+      "End": "dff6b4674ee9488ebec30b5d46efa130",
+      "Id": "de59451f18684a44a5e22aa0e9533fe7"
     }
   ],
-  "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "Dependencies": [
+    "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Crumple",
+      "Version": "2021.8.17",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "2262fcb4337c41fbb60f800cc957183b"
+      ]
+    }
+  ],
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.3.1.11775",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -23.855932753343048,
-      "EyeY": 92.2099081170581,
-      "EyeZ": 33.293103473071177,
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
       "LookX": 12.0,
       "LookY": -13.0,
       "LookZ": -58.0,
@@ -253,16 +309,6 @@
       },
       {
         "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "50e5009d51b646d6a0f838a4de52cb05",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 16.0,
-        "Y": 0.0
-      },
-      {
-        "ShowGeometry": true,
         "Name": "Code Block",
         "Id": "0d187a9a9ceb42118a7296d5657c31df",
         "IsSetAsInput": false,
@@ -290,11 +336,31 @@
         "Excluded": false,
         "X": 706.87769784172667,
         "Y": 89.446043165467671
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "© GetDocument",
+        "Id": "2262fcb4337c41fbb60f800cc957183b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -50.524213546718784,
+        "Y": 2.8377917273568869
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "0ef86d94c81a4be4a232daf539d4fb2b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -441.92355810800632,
+        "Y": 3.2201156430373032
       }
     ],
     "Annotations": [],
-    "X": -648.294622222928,
-    "Y": 291.87492625002119,
-    "Zoom": 1.6691922832992665
+    "X": 531.82380071157354,
+    "Y": 390.81731125368879,
+    "Zoom": 1.1355443526478115
   }
 }

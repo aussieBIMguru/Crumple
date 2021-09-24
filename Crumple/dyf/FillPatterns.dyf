@@ -2,7 +2,7 @@
   "Uuid": "21d825b2-a1ed-4225-af9b-a68ffef0867a",
   "IsCustomNode": true,
   "Category": "Crumple.Revit.GraphicStyles",
-  "Description": "Returns all fill patterns in the active document.",
+  "Description": "Returns all fill patterns in a document.",
   "Name": "© FillPatterns",
   "ElementResolver": {
     "ResolutionMap": {}
@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n# Boilerplate text\nimport clr\n\nclr.AddReference('RevitAPI')\nfrom Autodesk.Revit.DB import *\nimport Autodesk\n\nclr.AddReference(\"RevitServices\")\nimport RevitServices\nfrom RevitServices.Persistence import DocumentManager\n\n# Current document\ndoc = DocumentManager.Instance.CurrentDBDocument\n\nbool = IN[0]\n\nisDrafting = []\n\ncollector = FilteredElementCollector(doc)\nallFillPatterns = collector.OfClass(FillPatternElement).ToElements()\n\nfillPatterns = UnwrapElement(allFillPatterns)\nNames = [p.Name for p in fillPatterns]\n\nfor p in fillPatterns:\n\tfpt = p.GetFillPattern()\n\tif fpt.Target == FillPatternTarget.Drafting :\n\t\tisDrafting.append(True)\n\telse:\n\t\tisDrafting.append(False)\n\nOUT = [allFillPatterns, Names, isDrafting]",
+      "Code": "# Made by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n# Boilerplate text\nimport clr\n\nclr.AddReference('RevitAPI')\nfrom Autodesk.Revit.DB import *\nimport Autodesk\n\nclr.AddReference(\"RevitServices\")\nimport RevitServices\nfrom RevitServices.Persistence import DocumentManager\n\n# Current document\ndoc = IN[0]\n\nisDrafting = []\n\ncollector = FilteredElementCollector(doc)\nallFillPatterns = collector.OfClass(FillPatternElement).ToElements()\n\nfillPatterns = UnwrapElement(allFillPatterns)\nNames = [p.Name for p in fillPatterns]\n\nfor p in fillPatterns:\n\tfpt = p.GetFillPattern()\n\tif fpt.Target == FillPatternTarget.Drafting :\n\t\tisDrafting.append(True)\n\telse:\n\t\tisDrafting.append(False)\n\nOUT = [allFillPatterns, Names, isDrafting]",
       "VariableInputPorts": true,
       "Id": "6bf1f2a97af2466a80889aff3bf2b995",
       "Inputs": [
@@ -153,20 +153,60 @@
       "Description": "A function output, use with custom nodes"
     },
     {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "d0e62de779014f78892d06c09d150255",
+      "Inputs": [
+        {
+          "Id": "ca3206150ca442ea96afaa78ccc9dcd0",
+          "Name": "docOrLink",
+          "Description": "var[]..[]\nDefault value : null",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "0ab2319576264965bc1eb62e67f94227",
+          "Name": "document",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e8dd53f98dba42008b24e7ab0db41a91",
+          "Name": "outcome",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
+    },
+    {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "Refresh",
-        "TypeName": "bool",
-        "TypeRank": 0,
-        "DefaultValue": "true",
-        "Description": "Toggle to refresh"
+        "Name": "docOrLink",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": "null",
+        "Description": "Uses current if none provided.\nAccepts document or link instance."
       },
-      "Id": "e5b12c03e97e4766bb747c442c07a843",
+      "Id": "aca3f24a94ba4f4392519d8a0216998e",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "ddce132976a2400b9c3d4cc92595b647",
+          "Id": "9b67091bb1a4442dbf8cd0e60ba5b4b2",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -201,20 +241,36 @@
       "Id": "255052bb02104491a6c4efecce8a5fc9"
     },
     {
-      "Start": "ddce132976a2400b9c3d4cc92595b647",
+      "Start": "0ab2319576264965bc1eb62e67f94227",
       "End": "7b92d386017b46ed92a1173d4c1e6597",
-      "Id": "fd946ea42b0f4c30b858046ce4a1fbe8"
+      "Id": "0a6b611dd06b41c8991ea7435abefe83"
+    },
+    {
+      "Start": "9b67091bb1a4442dbf8cd0e60ba5b4b2",
+      "End": "ca3206150ca442ea96afaa78ccc9dcd0",
+      "Id": "34405d1091e1401fada92da1dc161f11"
     }
   ],
-  "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "Dependencies": [
+    "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Crumple",
+      "Version": "2021.8.17",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "d0e62de779014f78892d06c09d150255"
+      ]
+    }
+  ],
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.3.1.11775",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -283,18 +339,28 @@
       },
       {
         "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "e5b12c03e97e4766bb747c442c07a843",
+        "Name": "© GetDocument",
+        "Id": "d0e62de779014f78892d06c09d150255",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -48.988902891696171,
-        "Y": 0.5532863425654
+        "X": -75.0710455641738,
+        "Y": 3.7129255110343138
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "aca3f24a94ba4f4392519d8a0216998e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -466.47039012546134,
+        "Y": 4.0952494267147017
       }
     ],
     "Annotations": [],
-    "X": 123.91614629686103,
-    "Y": 149.61877495317441,
-    "Zoom": 0.784369328044827
+    "X": 493.53410364545255,
+    "Y": 395.26464348267456,
+    "Zoom": 0.99370531004289675
   }
 }

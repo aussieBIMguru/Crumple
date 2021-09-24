@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nviewlist  = uwlist(IN[0])\r\nalltrees, alldepths, hasparents = [],[],[]\r\n\r\n# Exhaust the lineage\r\nfor v in viewlist:\r\n\t\r\n\tbreaker = 0\r\n\tcheckview = v\r\n\ttreedepth = 1\r\n\tviewtree  = []\r\n\tgodeeper = True\r\n\t\r\n\twhile godeeper and breaker < 99:\r\n\t\r\n\t\tbreaker += 1\r\n\t\t\r\n\t\ttry:\r\n\t\t\tparentId  = checkview.get_Parameter(BuiltInParameter.SECTION_PARENT_VIEW_NAME).AsElementId()\r\n\t\t\tcheckview = Document.GetElement(doc, parentId)\r\n\t\t\t\r\n\t\t\tif checkview != None:\r\n\t\t\t\ttreedepth += 1\r\n\t\t\t\tviewtree.append(checkview)\r\n\t\t\telse:\r\n\t\t\t\tgodeeper = False\r\n\t\texcept:\r\n\t\t\tgodeeper = False\r\n\t\r\n\talltrees.append(viewtree)\r\n\talldepths.append(treedepth)\r\n\thasparents.append(treedepth > 1)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [alltrees, alldepths, hasparents]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[1]\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nviewlist  = uwlist(IN[0])\r\nalltrees, alldepths, hasparents = [],[],[]\r\n\r\n# Exhaust the lineage\r\nfor v in viewlist:\r\n\t\r\n\tbreaker = 0\r\n\tcheckview = v\r\n\ttreedepth = 1\r\n\tviewtree  = []\r\n\tgodeeper = True\r\n\t\r\n\twhile godeeper and breaker < 99:\r\n\t\r\n\t\tbreaker += 1\r\n\t\t\r\n\t\ttry:\r\n\t\t\tparentId  = checkview.get_Parameter(BuiltInParameter.SECTION_PARENT_VIEW_NAME).AsElementId()\r\n\t\t\tcheckview = Document.GetElement(doc, parentId)\r\n\t\t\t\r\n\t\t\tif checkview != None:\r\n\t\t\t\ttreedepth += 1\r\n\t\t\t\tviewtree.append(checkview)\r\n\t\t\telse:\r\n\t\t\t\tgodeeper = False\r\n\t\texcept:\r\n\t\t\tgodeeper = False\r\n\t\r\n\talltrees.append(viewtree)\r\n\talldepths.append(treedepth)\r\n\thasparents.append(treedepth > 1)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [alltrees, alldepths, hasparents]",
       "VariableInputPorts": true,
       "Id": "dd9ccb6ba3de40c7a93100e405ff6660",
       "Inputs": [
@@ -21,6 +21,15 @@
           "Id": "84d7e816d35940758573ba0f0c0e8e4b",
           "Name": "IN[0]",
           "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e66f518311514d1f96f6448d2302bcb4",
+          "Name": "IN[1]",
+          "Description": "Input #1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -177,6 +186,72 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "fc3f1aa76cbc4f41b89c00fef2ff5d17",
+      "Inputs": [
+        {
+          "Id": "abda9100dd6e49ab810f61043b39c925",
+          "Name": "docOrLink",
+          "Description": "var[]..[]\nDefault value : null",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "5fc58584bc2b4b04a17bfe7192429b16",
+          "Name": "document",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "4473b70060114ff9a575557e97a68c34",
+          "Name": "outcome",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "docOrLink",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": "null",
+        "Description": "Uses current if none provided.\nAccepts document or link instance."
+      },
+      "Id": "7beaba013ae5497bac60e4f2bd820a42",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "30e2453742c44ca1bff0885cf4eb9b40",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     }
   ],
   "Connectors": [
@@ -204,10 +279,31 @@
       "Start": "735b114b440d4818bdd8b6b1b45b8946",
       "End": "78ba02111b3b4abeb07ceffcd3f50302",
       "Id": "b03f54dc34d24e3ca50f81b8b92335b2"
+    },
+    {
+      "Start": "5fc58584bc2b4b04a17bfe7192429b16",
+      "End": "e66f518311514d1f96f6448d2302bcb4",
+      "Id": "c5a106f94e7e46b1a6e9ba394ba54ee3"
+    },
+    {
+      "Start": "30e2453742c44ca1bff0885cf4eb9b40",
+      "End": "abda9100dd6e49ab810f61043b39c925",
+      "Id": "0874ff6f4f46427cb64adde98961127a"
     }
   ],
-  "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "Dependencies": [
+    "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Crumple",
+      "Version": "2021.8.17",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "fc3f1aa76cbc4f41b89c00fef2ff5d17"
+      ]
+    }
+  ],
   "Bindings": [],
   "View": {
     "Dynamo": {
@@ -290,11 +386,31 @@
         "Excluded": false,
         "X": 709.89255714809417,
         "Y": 106.64108901540077
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "© GetDocument",
+        "Id": "fc3f1aa76cbc4f41b89c00fef2ff5d17",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -91.688742066327222,
+        "Y": 79.745373423128115
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "7beaba013ae5497bac60e4f2bd820a42",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -483.0880866276147,
+        "Y": 80.127697338808517
       }
     ],
     "Annotations": [],
-    "X": 33.577892459747524,
-    "Y": 363.39075942967361,
-    "Zoom": 1.7889462298737622
+    "X": 563.46357651241033,
+    "Y": 380.93273185731488,
+    "Zoom": 1.1042780629024851
   }
 }

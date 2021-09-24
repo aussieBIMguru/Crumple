@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Preparing input from dynamo to revit\r\nsheet_list = tolist(IN[0])\r\nsheet_ttbs, has_ttbs = [], []\r\n\r\n# Collect all titleblocks in the project\r\ntblocks = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_TitleBlocks).ToElements()\r\n\r\n# Get ttbs on sheets\r\nfor s in sheet_list:\r\n\t\r\n\tttbs = []\r\n\tsid = s.Id\r\n\t\r\n\t# For each ttb check if it is on this sheet\r\n\tfor tb in tblocks:\r\n\t\tif tb.OwnerViewId.IntegerValue == sid:\r\n\t\t\tttbs.append(tb)\r\n\t\telse:\r\n\t\t\tcontinue\r\n\t\r\n\tsheet_ttbs.append(ttbs)\r\n\t\r\n\t# Check if there is at least 1 TTB\r\n\tif len(ttbs) > 0:\r\n\t\thas_ttbs.append(True)\r\n\telse:\r\n\t\thas_ttbs.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [sheet_ttbs, has_ttbs]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[1]\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Preparing input from dynamo to revit\r\nsheet_list = tolist(IN[0])\r\nsheet_ttbs, has_ttbs = [], []\r\n\r\n# Collect all titleblocks in the project\r\ntblocks = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_TitleBlocks).ToElements()\r\n\r\n# Get ttbs on sheets\r\nfor s in sheet_list:\r\n\t\r\n\tttbs = []\r\n\tsid = s.Id\r\n\t\r\n\t# For each ttb check if it is on this sheet\r\n\tfor tb in tblocks:\r\n\t\tif tb.OwnerViewId.IntegerValue == sid:\r\n\t\t\tttbs.append(tb)\r\n\t\telse:\r\n\t\t\tcontinue\r\n\t\r\n\tsheet_ttbs.append(ttbs)\r\n\t\r\n\t# Check if there is at least 1 TTB\r\n\tif len(ttbs) > 0:\r\n\t\thas_ttbs.append(True)\r\n\telse:\r\n\t\thas_ttbs.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [sheet_ttbs, has_ttbs]",
       "VariableInputPorts": true,
       "Id": "d67c9dbcb0f549dabda28cfae3c03107",
       "Inputs": [
@@ -21,6 +21,15 @@
           "Id": "9a38a6f3c4db48188512d8d99f568116",
           "Name": "IN[0]",
           "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "3296fb5bf9c54953bf642b0255b65d97",
+          "Name": "IN[1]",
+          "Description": "Input #1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -147,6 +156,72 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "9439ca28a3ab429dbf5bf9c7cc19ca47",
+      "Inputs": [
+        {
+          "Id": "3684b3c29c294a09aedb3416fd178907",
+          "Name": "docOrLink",
+          "Description": "var[]..[]\nDefault value : null",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "55163e7a9b324b35a4ac80867cf0c5b9",
+          "Name": "document",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "25d129eec908437887b9857dbc12b081",
+          "Name": "outcome",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "docOrLink",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": "null",
+        "Description": "Uses current if none provided.\nAccepts document or link instance."
+      },
+      "Id": "7470020dd42244d8aab97ba608c81776",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "17d705ec7cfb4aababb0a9dbff769e4d",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     }
   ],
   "Connectors": [
@@ -169,17 +244,38 @@
       "Start": "ffdf96091ec8470baafeae761409c989",
       "End": "beafafec77514afeb64b3c14f922f2a2",
       "Id": "0fc3051eee5b45d9976ed0e5c30ca473"
+    },
+    {
+      "Start": "55163e7a9b324b35a4ac80867cf0c5b9",
+      "End": "3296fb5bf9c54953bf642b0255b65d97",
+      "Id": "4d0296d0c3c742b29bd540be9e1cd676"
+    },
+    {
+      "Start": "17d705ec7cfb4aababb0a9dbff769e4d",
+      "End": "3684b3c29c294a09aedb3416fd178907",
+      "Id": "cefb75e8a1f045fbb469949587f86ab9"
     }
   ],
-  "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "Dependencies": [
+    "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Crumple",
+      "Version": "2021.8.17",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "9439ca28a3ab429dbf5bf9c7cc19ca47"
+      ]
+    }
+  ],
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.3.1.11775",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -245,11 +341,31 @@
         "Excluded": false,
         "X": 700.59374080526061,
         "Y": 64.835300326457059
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "© GetDocument",
+        "Id": "9439ca28a3ab429dbf5bf9c7cc19ca47",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -70.470426379060655,
+        "Y": 72.0563624440934
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "7470020dd42244d8aab97ba608c81776",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -461.86977094034819,
+        "Y": 72.4386863597738
       }
     ],
     "Annotations": [],
-    "X": 30.0,
-    "Y": 393.1000224773851,
-    "Zoom": 1.8741261455008396
+    "X": 554.50833158876947,
+    "Y": 380.09886685583535,
+    "Zoom": 1.1356195286842259
   }
 }

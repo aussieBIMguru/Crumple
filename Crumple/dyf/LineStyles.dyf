@@ -2,7 +2,7 @@
   "Uuid": "96e2fa0a-e0bc-4003-973d-df1046b426a5",
   "IsCustomNode": true,
   "Category": "Crumple.Revit.GraphicStyles",
-  "Description": "Returns all the line styles in the model as well as their graphic styles, names, ids and whether a user made them.",
+  "Description": "Returns all the line styles in a document as well as their graphic styles, names, ids and whether a user made them.",
   "Name": "© LineStyles",
   "ElementResolver": {
     "ResolutionMap": {
@@ -103,35 +103,9 @@
       "Description": "Allows for DesignScript code to be authored directly"
     },
     {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
-      "Parameter": {
-        "Name": "Refresh",
-        "TypeName": "bool",
-        "TypeRank": 0,
-        "DefaultValue": "true",
-        "Description": "Toggle to refresh"
-      },
-      "Id": "80e728bf7d4a4fa8bf6f91407b91c048",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "2131c54a0e0f4739928aba5f9c3eb8df",
-          "Name": "",
-          "Description": "Symbol",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
-    },
-    {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Credit\r\n# Large in part borrows ideas from Genius Loci (Alban de Chasteigner)\r\n# twitter : @geniusloci_bim\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Collect the BIC\r\ncollector = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Lines).ToElements()\r\n\r\n# Isolate BIC from collection\r\nbic = collector[0].Category\r\nsubcats = bic.SubCategories\r\n\r\n# Collect subcategory data\r\nelements, styles, ids, names, user = [],[],[],[],[]\r\n\r\nfor subcat in subcats:\r\n\r\n\tsubcatid = subcat.Id.IntegerValue\r\n\tsubcatidasint = int(subcatid.ToString())\r\n\tids.append(subcatidasint)\r\n\t\r\n\tif subcatidasint > 0:\r\n\t\tuser.append(True)\r\n\telse:\r\n\t\tuser.append(False)\r\n\t\r\n\tsubcatele = Revit.Elements.Category.ById(subcatid)\r\n\telements.append(subcatele)\r\n\t\r\n\tstyle = subcat.GetGraphicsStyle(GraphicsStyleType.Projection)\r\n\tstyles.append(style)\r\n\t\r\n\tsubcatname = style.Name\r\n\tnames.append(subcatname)\r\n\r\n# Outputs for Dynamo\r\nOUT = elements, styles, ids, names, user",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Credit\r\n# Large in part borrows ideas from Genius Loci (Alban de Chasteigner)\r\n# twitter : @geniusloci_bim\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Collect the BIC\r\ncollector = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Lines).ToElements()\r\n\r\n# Isolate BIC from collection\r\nbic = collector[0].Category\r\nsubcats = bic.SubCategories\r\n\r\n# Collect subcategory data\r\nelements, styles, ids, names, user = [],[],[],[],[]\r\n\r\nfor subcat in subcats:\r\n\r\n\tsubcatid = subcat.Id.IntegerValue\r\n\tsubcatidasint = int(subcatid.ToString())\r\n\tids.append(subcatidasint)\r\n\t\r\n\tif subcatidasint > 0:\r\n\t\tuser.append(True)\r\n\telse:\r\n\t\tuser.append(False)\r\n\t\r\n\tsubcatele = Revit.Elements.Category.ById(subcatid)\r\n\telements.append(subcatele)\r\n\t\r\n\tstyle = subcat.GetGraphicsStyle(GraphicsStyleType.Projection)\r\n\tstyles.append(style)\r\n\t\r\n\tsubcatname = style.Name\r\n\tnames.append(subcatname)\r\n\r\n# Outputs for Dynamo\r\nOUT = elements, styles, ids, names, user",
       "VariableInputPorts": true,
       "Id": "8d27650b669e45f9b6f28956c0c7d5b6",
       "Inputs": [
@@ -242,6 +216,72 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "b55d73fbf62a4654aed7e683c61faa1b",
+      "Inputs": [
+        {
+          "Id": "553be9d07a0a412f818e371e8173d7d7",
+          "Name": "docOrLink",
+          "Description": "var[]..[]\nDefault value : null",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "23b48912c50f4d299aea39342f76a744",
+          "Name": "document",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ea0dbbfb80984bc3b39a4e69cabe7bda",
+          "Name": "outcome",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "docOrLink",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": "null",
+        "Description": "Uses current if none provided.\nAccepts document or link instance."
+      },
+      "Id": "9fac29278b23414cb08eb88ea2575b38",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "17aa668923d043c8b459c9bfe24d06e9",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     }
   ],
   "Connectors": [
@@ -271,25 +311,41 @@
       "Id": "bb85c22340c94d5dad3e31bed0b7d17e"
     },
     {
-      "Start": "2131c54a0e0f4739928aba5f9c3eb8df",
-      "End": "bb292cb661a64025b9141239fe768024",
-      "Id": "a91f3fd03c6a44f5b8f5c47c7c3c17ab"
-    },
-    {
       "Start": "6f9bb435e06a418b8b705e4999bdfe78",
       "End": "fbec181a6d5146d8b07bfde6284c1005",
       "Id": "691088aedc6b44fc9fcf6b24f398176e"
+    },
+    {
+      "Start": "23b48912c50f4d299aea39342f76a744",
+      "End": "bb292cb661a64025b9141239fe768024",
+      "Id": "0af0bdb2ba154b4dacf761ab2d005c2e"
+    },
+    {
+      "Start": "17aa668923d043c8b459c9bfe24d06e9",
+      "End": "553be9d07a0a412f818e371e8173d7d7",
+      "Id": "31066f6092c04d6fafb285d2d11edb75"
     }
   ],
-  "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "Dependencies": [
+    "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Crumple",
+      "Version": "2021.8.17",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "b55d73fbf62a4654aed7e683c61faa1b"
+      ]
+    }
+  ],
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.3.1.11775",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -325,16 +381,6 @@
         "Excluded": false,
         "X": 417.64968392974106,
         "Y": 4.223921932870212
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "80e728bf7d4a4fa8bf6f91407b91c048",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 7.0650379868843629,
-        "Y": 0.35039410271372162
       },
       {
         "ShowGeometry": true,
@@ -385,11 +431,31 @@
         "Excluded": false,
         "X": 853.337576443109,
         "Y": 193.72319604450644
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "© GetDocument",
+        "Id": "b55d73fbf62a4654aed7e683c61faa1b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -45.787591544963107,
+        "Y": 0.8971470948632998
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "9fac29278b23414cb08eb88ea2575b38",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -437.18693610625058,
+        "Y": 1.2794710105436877
       }
     ],
     "Annotations": [],
-    "X": 16.749247982150884,
-    "Y": 315.31277449622416,
-    "Zoom": 1.875538679685516
+    "X": 426.29563757746172,
+    "Y": 381.80413272792623,
+    "Zoom": 0.90646724512634813
   }
 }

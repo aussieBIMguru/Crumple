@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nelements = uwlist(IN[0])\r\nwsu_creator, wsu_owner, wsu_change = [],[],[]\r\n\r\n# Find last used and creator\r\nfor e in elements:\r\n\ttry:\r\n\t\twsu = WorksharingUtils.GetWorksharingTooltipInfo(doc, e.Id)\r\n\t\twsu_creator.append(wsu.Creator)\r\n\t\twsu_owner.append(wsu.Owner)\r\n\t\twsu_change.append(wsu.LastChangedBy)\r\n\texcept:\r\n\t\twsu_creator.append(None)\r\n\t\twsu_owner.append(None)\r\n\t\twsu_change.append(None)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [wsu_creator, wsu_owner, wsu_change]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[1]\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nelements = uwlist(IN[0])\r\nwsu_creator, wsu_owner, wsu_change = [],[],[]\r\n\r\n# Find last used and creator\r\nfor e in elements:\r\n\ttry:\r\n\t\twsu = WorksharingUtils.GetWorksharingTooltipInfo(doc, e.Id)\r\n\t\twsu_creator.append(wsu.Creator)\r\n\t\twsu_owner.append(wsu.Owner)\r\n\t\twsu_change.append(wsu.LastChangedBy)\r\n\texcept:\r\n\t\twsu_creator.append(None)\r\n\t\twsu_owner.append(None)\r\n\t\twsu_change.append(None)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [wsu_creator, wsu_owner, wsu_change]",
       "VariableInputPorts": true,
       "Id": "248aa56941ec4deeac3edf1e6b838f31",
       "Inputs": [
@@ -21,6 +21,15 @@
           "Id": "7b84d63e09c2488c94eaf945c6ac83bf",
           "Name": "IN[0]",
           "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "9fd39497084c4b57988b394233c8042a",
+          "Name": "IN[1]",
+          "Description": "Input #1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -177,6 +186,72 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "f22af8505c68463d92cf6ec03f09ca7a",
+      "Inputs": [
+        {
+          "Id": "325acfe998b241b1af5bea8970b5a7d4",
+          "Name": "docOrLink",
+          "Description": "var[]..[]\nDefault value : null",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "fe7f43deda734eea9c4527da6fb27f05",
+          "Name": "document",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "8eaff5c056c0477d9720b818d678b9f8",
+          "Name": "outcome",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "docOrLink",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": "null",
+        "Description": "Uses current if none provided.\nAccepts document or link instance."
+      },
+      "Id": "84d250065466410ea68b4da7f603f122",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "bba1ad3ed32241bba1a4cda3b88f13bb",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     }
   ],
   "Connectors": [
@@ -188,7 +263,7 @@
     {
       "Start": "e5ddd3dea0e2480585f1f25607e13ce9",
       "End": "7b84d63e09c2488c94eaf945c6ac83bf",
-      "Id": "4f427a25da0f427c87ef0fc873a82424"
+      "Id": "e1e1bd59085a4a4fab0e2b8b5dcdb745"
     },
     {
       "Start": "eae61019abac43879d34d1fa1f3acc99",
@@ -204,10 +279,31 @@
       "Start": "0c0a897cfc854514b637bc888ed4e7d1",
       "End": "8f8955fca333436795be7caae22a1147",
       "Id": "b04cf2adf2c24383b763ee5ebdaba5ac"
+    },
+    {
+      "Start": "fe7f43deda734eea9c4527da6fb27f05",
+      "End": "9fd39497084c4b57988b394233c8042a",
+      "Id": "9ad17ac3045a471fb3df24b0aca2ee6f"
+    },
+    {
+      "Start": "bba1ad3ed32241bba1a4cda3b88f13bb",
+      "End": "325acfe998b241b1af5bea8970b5a7d4",
+      "Id": "98d193470cfd47638513576090256573"
     }
   ],
-  "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "Dependencies": [
+    "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Crumple",
+      "Version": "2021.8.17",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "f22af8505c68463d92cf6ec03f09ca7a"
+      ]
+    }
+  ],
   "Bindings": [],
   "View": {
     "Dynamo": {
@@ -290,11 +386,31 @@
         "Excluded": false,
         "X": 672.45927336639852,
         "Y": 74.642269093751665
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "© GetDocument",
+        "Id": "f22af8505c68463d92cf6ec03f09ca7a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -61.94193435491195,
+        "Y": 70.43904909846367
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "84d250065466410ea68b4da7f603f122",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -443.7631863155076,
+        "Y": 71.001553786249076
       }
     ],
     "Annotations": [],
-    "X": 30.0,
-    "Y": 274.45884147094188,
-    "Zoom": 0.95949978439945094
+    "X": 547.096666814287,
+    "Y": 385.71677049019274,
+    "Zoom": 1.165253636985202
   }
 }

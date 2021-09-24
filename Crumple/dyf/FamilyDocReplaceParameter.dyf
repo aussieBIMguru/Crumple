@@ -34,7 +34,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n#Credit to Joshua Budarick for his assistance with this workflow!\r\n# https://www.linkedin.com/in/joshua-budarick-9bb50b4b/\r\n\r\n# Boilerplate text\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n#Inputdoc : Part of script by Andreas Dieckmann\r\ninputdoc = IN[0]\r\n\r\nif inputdoc == None:\r\n    doc = DocumentManager.Instance.CurrentDBDocument\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.Document\":\r\n    doc = inputdoc\r\nelse:\r\n\tdoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(input)\r\n\r\n#unwrap all elements to use with API\r\nparams       = uwlist(IN[1])\r\ndefinitions  = uwlist(IN[2])\r\n\r\nparams_new, names_new = [],[]\r\n\r\n# Collect values\r\nif doc.IsFamilyDocument:\r\n\r\n\t# \"Start\" the transaction\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\t\r\n\tfor p,d in zip(params, definitions):\r\n\t\ttry:\r\n\t\t\tnew = doc.FamilyManager.ReplaceParameter(p, d, p.Definition.ParameterGroup, p.IsInstance)\r\n\t\t\tparams_new.append(new)\r\n\t\texcept:\r\n\t\t\tparams_new.append(None)\r\n\r\n\t# \"End\" the transaction\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\n\r\n\tOUT = params_new\r\n\t\r\nelse:\r\n\tOUT = [\"Document is not a family.\"]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n#Credit to Joshua Budarick for his assistance with this workflow!\r\n# https://www.linkedin.com/in/joshua-budarick-9bb50b4b/\r\n\r\n# Boilerplate text\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n#Inputdoc\r\ndoc = IN[0]\r\n\r\n# Functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(input)\r\n\r\n#unwrap all elements to use with API\r\nparams       = uwlist(IN[1])\r\ndefinitions  = uwlist(IN[2])\r\n\r\nparams_new, names_new = [],[]\r\n\r\n# Collect values\r\nif doc.IsFamilyDocument:\r\n\r\n\t# \"Start\" the transaction\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\t\r\n\tfor p,d in zip(params, definitions):\r\n\t\ttry:\r\n\t\t\tnew = doc.FamilyManager.ReplaceParameter(p, d, p.Definition.ParameterGroup, p.IsInstance)\r\n\t\t\tparams_new.append(new)\r\n\t\texcept:\r\n\t\t\tparams_new.append(None)\r\n\r\n\t# \"End\" the transaction\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\n\r\n\tOUT = params_new\r\n\t\r\nelse:\r\n\tOUT = [\"Document is not a family.\"]",
       "VariableInputPorts": true,
       "Id": "ca3ab299208d488ab65d1052cd2ca9e4",
       "Inputs": [
@@ -102,20 +102,60 @@
       "Description": "A function output, use with custom nodes"
     },
     {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "8ab9cc44d68246a684ebb35a9c0c7efd",
+      "Inputs": [
+        {
+          "Id": "b59e4975aeec41499b266e44756015a3",
+          "Name": "docOrLink",
+          "Description": "var[]..[]\nDefault value : null",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "30608ced2384449d8b1fa4a04704a9f3",
+          "Name": "document",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d2aa368cd4054eeca8b9fbe0df9f7339",
+          "Name": "outcome",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
+    },
+    {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "document",
+        "Name": "familyDocument",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": "null",
-        "Description": " Use only if you want to query other document"
+        "Description": "Uses current if none provided."
       },
-      "Id": "5615f0295e2a4ea18432389e8021a05f",
+      "Id": "2000f9b94cc34a42bd1c4fa27bf9aa7f",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "6ba46c09e39948d3a76b5b0628054d18",
+          "Id": "fda683a932b54ec0bb7e5145af15997d",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -137,11 +177,11 @@
         "DefaultValue": null,
         "Description": "A parameter or list of parameters for conversion."
       },
-      "Id": "8031c393a4ed40559e634d92f9e2b9c6",
+      "Id": "b4d74ee13b4242b38417b0c21e163e45",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "4542214933d94dfaad85877421a99ce4",
+          "Id": "537e0bed2e154c42bec4eee983184d80",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -163,11 +203,11 @@
         "DefaultValue": null,
         "Description": "External parameter definitions."
       },
-      "Id": "3d7d939e10d84e279e143549c9ae4322",
+      "Id": "aaff4ce7079f49218c77949e5995aafe",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "35dc743dfffc40d5b0be629bbf88e1e2",
+          "Id": "19822ca7c9124acab5432d9b42ca6cd1",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -187,30 +227,46 @@
       "Id": "bbde86e88d234745ab4b688f9e381b01"
     },
     {
-      "Start": "6ba46c09e39948d3a76b5b0628054d18",
+      "Start": "30608ced2384449d8b1fa4a04704a9f3",
       "End": "bc8d1358f73d4fe6a992883e95a24a9a",
-      "Id": "83c5c0c9a5b64e0d910f46e26a90dde1"
+      "Id": "ee781c639d3441a19c1fb8fee03a6ed4"
     },
     {
-      "Start": "4542214933d94dfaad85877421a99ce4",
+      "Start": "fda683a932b54ec0bb7e5145af15997d",
+      "End": "b59e4975aeec41499b266e44756015a3",
+      "Id": "7461e605960b43668a6215a2ff59b5e3"
+    },
+    {
+      "Start": "537e0bed2e154c42bec4eee983184d80",
       "End": "206ccb2e40aa4b5084a98bc7d5ab2160",
-      "Id": "e6bc1b5d3a964c2780fb10f6f9f474bf"
+      "Id": "422201f9bcf9483abf5c9c56991e93aa"
     },
     {
-      "Start": "35dc743dfffc40d5b0be629bbf88e1e2",
+      "Start": "19822ca7c9124acab5432d9b42ca6cd1",
       "End": "05d9e8dc932340a384599922ba315046",
-      "Id": "7691728d17af4b96901a50ffe78c51b5"
+      "Id": "50ac13b87af54be2ae081bad88857603"
     }
   ],
-  "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "Dependencies": [
+    "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Crumple",
+      "Version": "2021.8.17",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "8ab9cc44d68246a684ebb35a9c0c7efd"
+      ]
+    }
+  ],
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.3.1.11775",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -249,38 +305,48 @@
       },
       {
         "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "5615f0295e2a4ea18432389e8021a05f",
+        "Name": "© GetDocument",
+        "Id": "8ab9cc44d68246a684ebb35a9c0c7efd",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -308.34623805252704,
-        "Y": -44.727745442513026
+        "X": -118.97962242010806,
+        "Y": -105.90147739982092
       },
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "8031c393a4ed40559e634d92f9e2b9c6",
+        "Id": "2000f9b94cc34a42bd1c4fa27bf9aa7f",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -342.9861046113727,
-        "Y": 28.262764907707947
+        "X": -500.80087438070404,
+        "Y": -105.33897271203602
       },
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "3d7d939e10d84e279e143549c9ae4322",
+        "Id": "b4d74ee13b4242b38417b0c21e163e45",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -179.88903276644055,
-        "Y": 105.98687540543295
+        "X": -349.43983683487011,
+        "Y": 11.839452911327324
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "aaff4ce7079f49218c77949e5995aafe",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -197.59082095507461,
+        "Y": 92.315395904707145
       }
     ],
     "Annotations": [],
-    "X": 806.4498791129804,
-    "Y": 261.77231622248644,
+    "X": 709.4498791129804,
+    "Y": 462.77231622248644,
     "Zoom": 1.4425890929331344
   }
 }

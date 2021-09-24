@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Document Manager\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager  \r\n\r\n# Revit API\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Inputs, make sure it's a list\r\nnumbers = IN[0] if isinstance(IN[0], list) else [IN[0]]\r\n\r\n# Container lists for iteration\r\nsht_l, num_l, matches, matches_clean, fails = [], [], [], [], []\r\n\r\n# Get all sheets and their numbers\r\nsheets = FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.ViewSheet).ToElements()\r\n\r\nfor s in sheets:\r\n\tsht_l.append(s)\r\n\tnum_l.append(s.SheetNumber)\r\n\r\n# Find matching sheets, catch the non-matches\r\nfor n in numbers:\r\n\ttry:\r\n\t\tind = num_l.index(n)\r\n\t\tmatch = sht_l[ind]\r\n\t\tmatches.append(match)\r\n\t\tmatches_clean.append(match)\r\n\texcept:\r\n\t\tind = numbers.index(n)\r\n\t\tmatches.append(\"No match\")\r\n\t\tfails.append(ind)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [matches, matches_clean, fails]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr \r\n\r\n# Revit API\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc\r\ndoc = IN[1]\r\n\r\n# Inputs, make sure it's a list\r\nnumbers = IN[0] if isinstance(IN[0], list) else [IN[0]]\r\n\r\n# Container lists for iteration\r\nsht_l, num_l, matches, matches_clean, fails = [], [], [], [], []\r\n\r\n# Get all sheets and their numbers\r\nsheets = FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.ViewSheet).ToElements()\r\n\r\nfor s in sheets:\r\n\tsht_l.append(s)\r\n\tnum_l.append(s.SheetNumber)\r\n\r\n# Find matching sheets, catch the non-matches\r\nfor n in numbers:\r\n\ttry:\r\n\t\tind = num_l.index(n)\r\n\t\tmatch = sht_l[ind]\r\n\t\tmatches.append(match)\r\n\t\tmatches_clean.append(match)\r\n\texcept:\r\n\t\tind = numbers.index(n)\r\n\t\tmatches.append(\"No match\")\r\n\t\tfails.append(ind)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [matches, matches_clean, fails]",
       "VariableInputPorts": true,
       "Id": "923a0935896c4f16b7f7ed3b37e23a23",
       "Inputs": [
@@ -21,6 +21,15 @@
           "Id": "9a60cb54905348968f87fb6d0a4b8337",
           "Name": "IN[0]",
           "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "f6bfeae25a2a4a3c94455ab9211814c9",
+          "Name": "IN[1]",
+          "Description": "Input #1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -177,6 +186,72 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "06345a26bdd441168e0464e09eb78fad",
+      "Inputs": [
+        {
+          "Id": "d6ad684965434e2cafaffec4d2b511c8",
+          "Name": "docOrLink",
+          "Description": "var[]..[]\nDefault value : null",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c9853cf2bdf94c279263e65cef8fe921",
+          "Name": "document",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "63bc22305adf4b6898171cf23f32dbfe",
+          "Name": "outcome",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "docOrLink",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": "null",
+        "Description": "Uses current if none provided.\nAccepts document or link instance."
+      },
+      "Id": "b3cdff19494c44f987b4879648d86cc3",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "6490e1f07bee4e609af8bdbcc58af781",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     }
   ],
   "Connectors": [
@@ -204,28 +279,49 @@
       "Start": "c088f4b78e844c91b661cccd1c56b4dd",
       "End": "c6d9b45468ad4a0c90625c74a066ce45",
       "Id": "f19a575c79a14b0490064d9f30f34c4b"
+    },
+    {
+      "Start": "c9853cf2bdf94c279263e65cef8fe921",
+      "End": "f6bfeae25a2a4a3c94455ab9211814c9",
+      "Id": "ad4ef8a2077c49b38298f8e887aa9de8"
+    },
+    {
+      "Start": "6490e1f07bee4e609af8bdbcc58af781",
+      "End": "d6ad684965434e2cafaffec4d2b511c8",
+      "Id": "833f76faea9c452aa8bf12cbf0b5dd6d"
     }
   ],
-  "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "Dependencies": [
+    "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Crumple",
+      "Version": "2021.8.17",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "06345a26bdd441168e0464e09eb78fad"
+      ]
+    }
+  ],
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.3.1.11775",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -22.499469651426988,
-      "EyeY": 83.474008687746775,
-      "EyeZ": 25.340790306871632,
-      "LookX": 10.07099783483187,
-      "LookY": -10.910247654401203,
-      "LookZ": -48.676489535020693,
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
       "UpX": 0.0,
       "UpY": 1.0,
       "UpZ": 0.0
@@ -290,11 +386,31 @@
         "Excluded": false,
         "X": 606.4945100108821,
         "Y": 120.87922023940183
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "© GetDocument",
+        "Id": "06345a26bdd441168e0464e09eb78fad",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -34.3688647565524,
+        "Y": 89.83470635563674
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "b3cdff19494c44f987b4879648d86cc3",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -425.76820931783988,
+        "Y": 90.217030271317142
       }
     ],
     "Annotations": [],
-    "X": 215.69947717967216,
-    "Y": 254.8167073401803,
-    "Zoom": 1.130842140625
+    "X": 515.84139436661144,
+    "Y": 307.92218081301922,
+    "Zoom": 0.9540429248828125
   }
 }

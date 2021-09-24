@@ -1,8 +1,8 @@
 {
   "Uuid": "fb6059cc-3684-428f-9ae5-f5faf8952736",
   "IsCustomNode": true,
-  "Category": "Crumple.Revit.ProjectInformation",
-  "Description": "Returns all revisions in the current document.",
+  "Category": "Crumple.Revit.Revisions",
+  "Description": "Returns all revisions in a document.",
   "Name": "© Revisions",
   "ElementResolver": {
     "ResolutionMap": {
@@ -18,7 +18,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Collect revisions\r\nrevisions = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Revisions).WhereElementIsNotElementType().ToElements()\r\n\r\n# Preparing output to Dynamo\r\nOUT = revisions",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Collect revisions\r\nrevisions = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Revisions).WhereElementIsNotElementType().ToElements()\r\n\r\n# Preparing output to Dynamo\r\nOUT = revisions",
       "VariableInputPorts": true,
       "Id": "80a5f627ec784c889119aaa70357a416",
       "Inputs": [
@@ -68,20 +68,60 @@
       "Description": "A function output, use with custom nodes"
     },
     {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "76df5e716fc64ab9bcd008ea2b053f43",
+      "Inputs": [
+        {
+          "Id": "31f3bc3075b94c86b2bc3dfc80d7a072",
+          "Name": "docOrLink",
+          "Description": "var[]..[]\nDefault value : null",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "b7d27f934dae4536b56ed45e313c75d5",
+          "Name": "document",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "57164a66ff784095bc20d86ddf008df6",
+          "Name": "outcome",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
+    },
+    {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "Refresh",
-        "TypeName": "bool",
-        "TypeRank": 0,
-        "DefaultValue": "true",
-        "Description": ""
+        "Name": "docOrLink",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": "null",
+        "Description": "Uses current if none provided.\nAccepts document or link instance."
       },
-      "Id": "3ef724f74ed44dffa31b5ae1c59b28ce",
+      "Id": "22f5b2fd15314c4cac18040281a16d65",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "05b2141730614a37bffb41ce54568def",
+          "Id": "7b9b011697bc4105b1a85130e0037428",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -101,20 +141,36 @@
       "Id": "405877d72670422199bf4f0899602c2d"
     },
     {
-      "Start": "05b2141730614a37bffb41ce54568def",
+      "Start": "b7d27f934dae4536b56ed45e313c75d5",
       "End": "9ae17a9558e642e69bc30474010e7afb",
-      "Id": "22d44325f4d54c9a9149805cc181935e"
+      "Id": "26d3078c68384999a1fe98ac30fd98f8"
+    },
+    {
+      "Start": "7b9b011697bc4105b1a85130e0037428",
+      "End": "31f3bc3075b94c86b2bc3dfc80d7a072",
+      "Id": "92d05c55ca86476d9c863eedda422e6f"
     }
   ],
-  "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "Dependencies": [
+    "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Crumple",
+      "Version": "2021.8.17",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "76df5e716fc64ab9bcd008ea2b053f43"
+      ]
+    }
+  ],
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.3.1.11775",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -153,18 +209,28 @@
       },
       {
         "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "3ef724f74ed44dffa31b5ae1c59b28ce",
+        "Name": "© GetDocument",
+        "Id": "76df5e716fc64ab9bcd008ea2b053f43",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 19.04089441508313,
-        "Y": -1.4533587215643138
+        "X": -29.214573056248184,
+        "Y": -4.3354271714338495
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "22f5b2fd15314c4cac18040281a16d65",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -420.61391761753578,
+        "Y": -3.9531032557534331
       }
     ],
     "Annotations": [],
-    "X": -28.492882015162692,
-    "Y": 364.82536826134992,
-    "Zoom": 3.0719608407065113
+    "X": 699.33048738030527,
+    "Y": 338.53043798586168,
+    "Zoom": 0.959644203253794
   }
 }

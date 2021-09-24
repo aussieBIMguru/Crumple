@@ -2,7 +2,7 @@
   "Uuid": "5f2214d0-b31a-464b-84e5-0d04455e013f",
   "IsCustomNode": true,
   "Category": "Crumple.Revit.Spaces",
-  "Description": "Collects all space types as well as their names from the current document.",
+  "Description": "Collects all space types as well as their names from a document.",
   "Name": "© SpaceTypes",
   "ElementResolver": {
     "ResolutionMap": {}
@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.DB.Analysis import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Collect all Space types\r\nspaces = FilteredElementCollector(doc).OfClass(HVACLoadSpaceType).ToElements()\r\n\r\n# Prepare empty lists\r\nids = []\r\n\r\n# Find space type Id and convert to element\r\nfor s in spaces:\r\n\tuw = UnwrapElement(s)\r\n\tid_uwr = uw.Id\r\n\tid_str = id_uwr.ToString()\r\n\tid_int = int(id_str)\r\n\tids.append(id_int)\r\n\t\r\n# Outputs\r\nOUT = [spaces, ids]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.DB.Analysis import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Collect all Space types\r\nspaces = FilteredElementCollector(doc).OfClass(HVACLoadSpaceType).ToElements()\r\n\r\n# Prepare empty lists\r\nids = []\r\n\r\n# Find space type Id and convert to element\r\nfor s in spaces:\r\n\tuw = UnwrapElement(s)\r\n\tid_uwr = uw.Id\r\n\tid_str = id_uwr.ToString()\r\n\tid_int = int(id_str)\r\n\tids.append(id_int)\r\n\t\r\n# Outputs\r\nOUT = [spaces, ids]",
       "VariableInputPorts": true,
       "Id": "aea509a2fedb4532a607681a2d1a60bf",
       "Inputs": [
@@ -61,32 +61,6 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
-      "Parameter": {
-        "Name": "refresh",
-        "TypeName": "bool",
-        "TypeRank": 0,
-        "DefaultValue": "false",
-        "Description": "Toggle to refresh"
-      },
-      "Id": "902fbb0b3e4b414b9d5f0cfe73119aa7",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "319ebad864d34483a50261b45ccc17e5",
-          "Name": "",
-          "Description": "Symbol",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
@@ -198,6 +172,72 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "d54ab9300d044e53ab91d6fb00c415ac",
+      "Inputs": [
+        {
+          "Id": "529fa8d1597b4c1495d2182b9b900fac",
+          "Name": "docOrLink",
+          "Description": "var[]..[]\nDefault value : null",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "e24a4a21e0994395ae52c849e388464c",
+          "Name": "document",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "4ff3a6e9221f4ae08cedc51144703b38",
+          "Name": "outcome",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "docOrLink",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": "null",
+        "Description": "Uses current if none provided.\nAccepts document or link instance."
+      },
+      "Id": "05f7066c79da4a45b83137d11a5d1cf3",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "f7bd2edecd054d3f9e68dc4b7eb5bc21",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     }
   ],
   "Connectors": [
@@ -205,11 +245,6 @@
       "Start": "4e03ed12795447239dbe004b0f5bf069",
       "End": "466ed8231aa94021adf4a03a0b9d5450",
       "Id": "27a0ceb1383f45dd96005a5c24da3569"
-    },
-    {
-      "Start": "319ebad864d34483a50261b45ccc17e5",
-      "End": "31a61c3f94e946748a76932cc7227836",
-      "Id": "7e0c275e1f834d68b241dd4b061b7bf9"
     },
     {
       "Start": "d24c6685b5524efb9bfe0b0306f4e300",
@@ -230,25 +265,46 @@
       "Start": "1832baf40c2b48f583129849dcdf15c0",
       "End": "c8d69a6ccf63489b88b6524016bba2e2",
       "Id": "89e45b58324445b2bd4d0cc82e0460c1"
+    },
+    {
+      "Start": "e24a4a21e0994395ae52c849e388464c",
+      "End": "31a61c3f94e946748a76932cc7227836",
+      "Id": "6d15e7e3ff954aadae99444e57e0a33a"
+    },
+    {
+      "Start": "f7bd2edecd054d3f9e68dc4b7eb5bc21",
+      "End": "529fa8d1597b4c1495d2182b9b900fac",
+      "Id": "38d4b739d13b486b99dceef4d310c609"
     }
   ],
-  "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "Dependencies": [
+    "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Crumple",
+      "Version": "2021.8.17",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "d54ab9300d044e53ab91d6fb00c415ac"
+      ]
+    }
+  ],
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.3.1.11775",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -16.657216786055237,
-      "EyeY": 114.57313150030453,
-      "EyeZ": 29.770046363161676,
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
       "LookX": 12.0,
       "LookY": -13.0,
       "LookZ": -58.0,
@@ -276,16 +332,6 @@
         "Excluded": false,
         "X": 760.29891541005577,
         "Y": -84.869125137801461
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "902fbb0b3e4b414b9d5f0cfe73119aa7",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": -29.844832371976736,
-        "Y": -0.21551676280233778
       },
       {
         "ShowGeometry": true,
@@ -326,11 +372,31 @@
         "Excluded": false,
         "X": 758.32712264965915,
         "Y": 96.050721717045974
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "© GetDocument",
+        "Id": "d54ab9300d044e53ab91d6fb00c415ac",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -59.054001460233394,
+        "Y": 2.4231028489147093
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "05f7066c79da4a45b83137d11a5d1cf3",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -450.45334602152093,
+        "Y": 2.8054267645950972
       }
     ],
     "Annotations": [],
-    "X": -38.565175105887079,
-    "Y": 337.39249546393694,
-    "Zoom": 0.78436932804482706
+    "X": 416.61536346065918,
+    "Y": 412.59482806598555,
+    "Zoom": 0.85828058971103338
   }
 }

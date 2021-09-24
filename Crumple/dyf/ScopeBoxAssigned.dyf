@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nelements = uwlist(IN[0])\r\nallBoxNames, usedBoxes, indBoxes, hasBox = [],[],[],[]\r\n\r\n# Get all scope boxes, make them a list and get their names\r\nallBoxes = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_VolumeOfInterest)\r\n\r\nfor s in allBoxes:\r\n\tn = s.Name\r\n\tallBoxNames.append(n)\r\n\tindBoxes.append(s)\r\n\r\n# Check if the element has a scope box and return it if so\r\nfor e in elements:\r\n\ttry:\r\n\t\tsn = e.GetParameters(\"Scope Box\")[0].AsValueString()\r\n\t\tsi = allBoxNames.index(sn)\r\n\t\tusedBoxes.append(indBoxes[si])\r\n\t\thasBox.append(True)\r\n\texcept:\r\n\t\tusedBoxes.append(None)\r\n\t\thasBox.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [usedBoxes, hasBox]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[1]\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nelements = uwlist(IN[0])\r\nallBoxNames, usedBoxes, indBoxes, hasBox = [],[],[],[]\r\n\r\n# Get all scope boxes, make them a list and get their names\r\nallBoxes = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_VolumeOfInterest)\r\n\r\nfor s in allBoxes:\r\n\tn = s.Name\r\n\tallBoxNames.append(n)\r\n\tindBoxes.append(s)\r\n\r\n# Check if the element has a scope box and return it if so\r\nfor e in elements:\r\n\ttry:\r\n\t\tsn = e.GetParameters(\"Scope Box\")[0].AsValueString()\r\n\t\tsi = allBoxNames.index(sn)\r\n\t\tusedBoxes.append(indBoxes[si])\r\n\t\thasBox.append(True)\r\n\texcept:\r\n\t\tusedBoxes.append(None)\r\n\t\thasBox.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [usedBoxes, hasBox]",
       "VariableInputPorts": true,
       "Id": "5b3b55e37aa4436c83e6514eff4a884c",
       "Inputs": [
@@ -21,6 +21,15 @@
           "Id": "e9c5dd18ef8e408bab3c2c5ee5d2dcd5",
           "Name": "IN[0]",
           "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "3bf41a74dee9473aadd6d787a499b3c4",
+          "Name": "IN[1]",
+          "Description": "Input #1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -147,6 +156,72 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "027da08cbca34344a388023b8a48a1fc",
+      "Inputs": [
+        {
+          "Id": "8eaaa321f9f84f29aa0a4de431a2fbfe",
+          "Name": "docOrLink",
+          "Description": "var[]..[]\nDefault value : null",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "05ab418bb4d742a9ad4eb4c064846ee5",
+          "Name": "document",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "15ed18a940454132986778ed4f3931ec",
+          "Name": "outcome",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "docOrLink",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": "null",
+        "Description": "Uses current if none provided.\nAccepts document or link instance."
+      },
+      "Id": "c0e2c597a28a473290bcea49ec3c67be",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "4021f835853d4e9097717d58ce00c2ef",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     }
   ],
   "Connectors": [
@@ -169,10 +244,31 @@
       "Start": "30e27de9bd2a4e4e87aef56700baa35d",
       "End": "21397bdc75f2471fa8ddbde08fe1f421",
       "Id": "5843a11db96042e4b180340db659cb97"
+    },
+    {
+      "Start": "05ab418bb4d742a9ad4eb4c064846ee5",
+      "End": "3bf41a74dee9473aadd6d787a499b3c4",
+      "Id": "bd507171ec444ebd8ad390a234a03fec"
+    },
+    {
+      "Start": "4021f835853d4e9097717d58ce00c2ef",
+      "End": "8eaaa321f9f84f29aa0a4de431a2fbfe",
+      "Id": "87d5ce2586674fbc89b8c07aa526ff0b"
     }
   ],
-  "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "Dependencies": [
+    "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Crumple",
+      "Version": "2021.8.17",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "027da08cbca34344a388023b8a48a1fc"
+      ]
+    }
+  ],
   "Bindings": [],
   "View": {
     "Dynamo": {
@@ -245,11 +341,31 @@
         "Excluded": false,
         "X": 625.17001486549157,
         "Y": 43.938608064765447
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "© GetDocument",
+        "Id": "027da08cbca34344a388023b8a48a1fc",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -55.789520618839788,
+        "Y": 75.219489306902915
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "c0e2c597a28a473290bcea49ec3c67be",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -447.18886518012732,
+        "Y": 75.601813222583317
       }
     ],
     "Annotations": [],
-    "X": 30.0,
-    "Y": 395.66151257107185,
-    "Zoom": 1.9968639456365651
+    "X": 573.73504419019378,
+    "Y": 364.54407943763971,
+    "Zoom": 1.2158957579839957
   }
 }
