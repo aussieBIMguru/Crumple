@@ -1,0 +1,165 @@
+{
+  "Uuid": "603a34a9-4ed4-401e-8ac1-5fb67665edf6",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.LinkedFiles",
+  "Description": "Given a Revit link instance, returns the coordinate system for transformation of location.",
+  "Name": "© PLinkGetTransform",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import RevitLinkInstance\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\n# Get link transform\r\nlink_instance = UnwrapElement(IN[0])\r\nlink_transform = link_instance.GetTotalTransform().ToCoordinateSystem(True)\r\n\r\n# Preparing output to Dynamo\r\nOUT = link_transform\r\n",
+      "VariableInputPorts": true,
+      "Id": "d12ec550035b4a50a6254ff17c4a3dfc",
+      "Inputs": [
+        {
+          "Id": "0d9ffc53136149b9bbc5e8cb97a947f6",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "06f8205a6825460583806504135e6f45",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "linkInstance",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "629fad2d0471454ea8cf7d435add99b7",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "87a59c98b8b549ff95f6a271d7f0ed1e",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "coordinateSystem",
+      "Id": "a9cf87601a304bd0ba30c2c19e4b977b",
+      "Inputs": [
+        {
+          "Id": "5335fb28ceb8497e8b352b557b6d0819",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "06f8205a6825460583806504135e6f45",
+      "End": "5335fb28ceb8497e8b352b557b6d0819",
+      "Id": "bb2adbc5e20c4a0984c792bdc59d4d8e"
+    },
+    {
+      "Start": "87a59c98b8b549ff95f6a271d7f0ed1e",
+      "End": "0d9ffc53136149b9bbc5e8cb97a947f6",
+      "Id": "d3413c2033ce46c4bd46dad268452e71"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.1.11775",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "d12ec550035b4a50a6254ff17c4a3dfc",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "629fad2d0471454ea8cf7d435add99b7",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -22.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "a9cf87601a304bd0ba30c2c19e4b977b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 428.0,
+        "Y": 0.0
+      }
+    ],
+    "Annotations": [],
+    "X": 53.58169934640523,
+    "Y": 271.59477124183007,
+    "Zoom": 1.0718954248366013
+  }
+}

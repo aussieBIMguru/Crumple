@@ -18,7 +18,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[1]\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nsheet_list = uwlist(IN[0])\r\nsheet_revs = []\r\n\r\n# Get revisions per sheet\r\nfor s in sheet_list:\r\n\tids = s.GetAdditionalRevisionIds()\r\n\trevs = [doc.GetElement(r) for r in ids]\r\n\tsheet_revs.append(revs)\r\n\r\n# Preparing output to Dynamo\r\nOUT = sheet_revs",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[1]\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nsheet_list = uwlist(IN[0])\r\nsheet_revs = []\r\n\r\n# Get revisions per sheet\r\nfor s in sheet_list:\r\n\tids = s.GetAllRevisionIds()\r\n\trevs = [doc.GetElement(r) for r in ids]\r\n\tsheet_revs.append(revs)\r\n\r\n# Preparing output to Dynamo\r\nOUT = sheet_revs",
       "VariableInputPorts": true,
       "Id": "8c704cc5b11e441883b776afdab12b4e",
       "Inputs": [
@@ -279,8 +279,8 @@
       }
     ],
     "Annotations": [],
-    "X": 687.25471529961521,
-    "Y": 314.4114448547557,
+    "X": 584.25471529961521,
+    "Y": 287.4114448547557,
     "Zoom": 1.4353440952990684
   }
 }

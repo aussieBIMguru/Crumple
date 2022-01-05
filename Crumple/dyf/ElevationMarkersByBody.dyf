@@ -1,0 +1,215 @@
+{
+  "Uuid": "b6db0fd9-4c23-48c5-a52a-b9f66bd0a1ae",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.Views",
+  "Description": "Given elevation bodies and an equal number of lists of indices between 0 and 3, will activate those markers on that body. Indices are as follows: 0 = Right, 1 = Down, 2 = Left, 3 = Up.",
+  "Name": "© ElevationMarkersByBody",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nelev_bodies  = uwlist(IN[0])\r\nelev_indices = IN[1]\r\n\r\nelev_pointers = []\r\n\r\n# Active pointers\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor eb,el in zip(elev_bodies,elev_indices):\r\n\tpointers = []\r\n\tfor i in el:\r\n\t\tep = eb.CreateElevation(doc, doc.ActiveView.Id, i)\r\n\t\tpointers.append(ep.ToDSType(True))\r\n\telev_pointers.append(pointers)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = elev_pointers",
+      "VariableInputPorts": true,
+      "Id": "3d4b4bfce10148a08806b6dfd731b61d",
+      "Inputs": [
+        {
+          "Id": "f83422a598c340799bf1434413337879",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "7999e46e245e40bfa4ce6ab2a67c8403",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "d54efe0840e54d918fa9275b333bbcfb",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "elevBody",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "330f45b098bc4026a079b458dbafb56e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "d4f771ee99584815bb1e0b2d7e18e433",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "indices",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": "None",
+        "Description": ""
+      },
+      "Id": "23817980e2674d458491beeb10d1a338",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "b391e621e341422291c3591dc28e2c66",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "elevMarkers",
+      "Id": "341534525a444e2f84a68e4dbf142465",
+      "Inputs": [
+        {
+          "Id": "beae7f987e5940f4856a823e64f21adc",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "d54efe0840e54d918fa9275b333bbcfb",
+      "End": "beae7f987e5940f4856a823e64f21adc",
+      "Id": "0dc8fcbbcf0f439ea50a593ad44a7c34"
+    },
+    {
+      "Start": "d4f771ee99584815bb1e0b2d7e18e433",
+      "End": "f83422a598c340799bf1434413337879",
+      "Id": "df2b8da66634438e830bf111aad27d45"
+    },
+    {
+      "Start": "b391e621e341422291c3591dc28e2c66",
+      "End": "7999e46e245e40bfa4ce6ab2a67c8403",
+      "Id": "8089a7a9730f40eaa0d23bda087a35eb"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.1.11775",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "3d4b4bfce10148a08806b6dfd731b61d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "330f45b098bc4026a079b458dbafb56e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 6.1819040181035234,
+        "Y": -25.905320669148978
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "23817980e2674d458491beeb10d1a338",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -45.285511417309777,
+        "Y": 52.7758737224118
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "341534525a444e2f84a68e4dbf142465",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 432.0,
+        "Y": 1.0
+      }
+    ],
+    "Annotations": [],
+    "X": 148.68527742570257,
+    "Y": 339.3367373957999,
+    "Zoom": 2.6208222831361621
+  }
+}
