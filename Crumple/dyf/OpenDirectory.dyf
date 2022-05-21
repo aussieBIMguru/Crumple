@@ -1,0 +1,165 @@
+{
+  "Uuid": "c12295c8-d8aa-4a21-878c-e212cdb7c66c",
+  "IsCustomNode": true,
+  "Category": "Crumple.Application.Windows",
+  "Description": "Attempts to open a directory path.",
+  "Name": "© OpenDirectory",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "directoryPath",
+        "TypeName": "string",
+        "TypeRank": 0,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "ff83c3876f0c493d8d8bc9c3f1c94642",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "506091ed94fb4641b9a39336bdf46edd",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "wasOpened",
+      "Id": "f07f44af446640158fd21ade2c185993",
+      "Inputs": [
+        {
+          "Id": "27b01f8d986f4082ae6a98e7936f4dfb",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport os\r\n\r\n# Define list/unwrap list functions\r\npartPath = IN[0]\r\n\r\n# Try to open path\r\ndirPath = partPath + \"\\\\\"\r\n\r\ntry:\r\n\tos.startfile(dirPath)\r\n\tOUT = True\r\nexcept:\r\n\tOUT = False",
+      "VariableInputPorts": true,
+      "Id": "70756ca6da21407899a9d1b37c3cd3a5",
+      "Inputs": [
+        {
+          "Id": "3356008da6714638b221dccc3de0bab0",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "27e1894f87b147da961ca61d2ed4e700",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "506091ed94fb4641b9a39336bdf46edd",
+      "End": "3356008da6714638b221dccc3de0bab0",
+      "Id": "8e99ff22a2da48b587a3ee29433d07f9"
+    },
+    {
+      "Start": "27e1894f87b147da961ca61d2ed4e700",
+      "End": "27b01f8d986f4082ae6a98e7936f4dfb",
+      "Id": "d65882d4a29249e1ad33a5ba490044bd"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.1.11775",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "ff83c3876f0c493d8d8bc9c3f1c94642",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 72.0,
+        "Y": 142.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "f07f44af446640158fd21ade2c185993",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 485.0,
+        "Y": 140.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "70756ca6da21407899a9d1b37c3cd3a5",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 324.0,
+        "Y": 142.0
+      }
+    ],
+    "Annotations": [],
+    "X": -150.62669245647967,
+    "Y": 19.292069632495156,
+    "Zoom": 2.5087040618955512
+  }
+}
