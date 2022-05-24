@@ -1,0 +1,330 @@
+{
+  "Uuid": "926ed637-1e27-49cc-bc71-99b2a87cd80d",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.Materials",
+  "Description": "Returns all materials in the given document.",
+  "Name": "© Materials",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Revit.Application.Document.Current": {
+        "Key": "Revit.Application.Document",
+        "Value": "RevitNodes.dll"
+      },
+      "Revit.Application.Document": {
+        "Key": "Revit.Application.Document",
+        "Value": "RevitNodes.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\n\r\n# Current document\r\ndoc = IN[0]\r\n\r\n# Get materials in document\r\nmats = FilteredElementCollector(doc).OfClass(Material).ToElements()\r\nnams = [m.Name for m in mats]\r\n\r\n# Outputs\r\nOUT = [mats,nams]",
+      "VariableInputPorts": true,
+      "Id": "a3f43e5237dd4ae28b27ec6c7d1d6b0a",
+      "Inputs": [
+        {
+          "Id": "1ff3162784ea41f2a55b1c06cc40cdae",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "0eb224ca70d14f8393b125c4dfbfe9ba",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "materials",
+      "Id": "df0469fcc99749e38c7b9ab37836726f",
+      "Inputs": [
+        {
+          "Id": "b5b75f689c2448368dc7a32c3ed18211",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "cca8607d60194cba9b7c128d315233f9",
+      "Inputs": [
+        {
+          "Id": "f994c98eca8249ca88cc4a84aa9de898",
+          "Name": "docOrLink",
+          "Description": "var[]..[]\nDefault value : null",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f41f33ef17e148fe83e320027447620e",
+          "Name": "document",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "0b4fbeeea82d4b1b967aa9fda206cff0",
+          "Name": "outcome",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "docOrLink",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": "null",
+        "Description": "Uses current if none provided.\nAccepts document or link instance."
+      },
+      "Id": "6c2b2de40acc45e19cc896c728dea871",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "ff44c8dbb2644780999210a2006fb674",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "x[0];\nx[1];",
+      "Id": "68ec29a30fe544c7b5512370e03febb2",
+      "Inputs": [
+        {
+          "Id": "ef8d4e4158f84e5ea45632d5c1e1302d",
+          "Name": "x",
+          "Description": "x",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f5dd892d1c9d474d86ce2aa305ba5827",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ce539f2b820c450a91cda33b5bef0781",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "names",
+      "Id": "7a902ce89bc74cbf81f23427e769f418",
+      "Inputs": [
+        {
+          "Id": "6ebdc699bfb7430c8c1a785f8276e615",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "0eb224ca70d14f8393b125c4dfbfe9ba",
+      "End": "ef8d4e4158f84e5ea45632d5c1e1302d",
+      "Id": "29422303710a4a7397df5b01c65a4f75"
+    },
+    {
+      "Start": "f41f33ef17e148fe83e320027447620e",
+      "End": "1ff3162784ea41f2a55b1c06cc40cdae",
+      "Id": "c2cc8f6ad12148db8a8ea7ca4c1f68e2"
+    },
+    {
+      "Start": "ff44c8dbb2644780999210a2006fb674",
+      "End": "f994c98eca8249ca88cc4a84aa9de898",
+      "Id": "ea7e159591a34fbbbaea8c265d58137b"
+    },
+    {
+      "Start": "f5dd892d1c9d474d86ce2aa305ba5827",
+      "End": "b5b75f689c2448368dc7a32c3ed18211",
+      "Id": "b18298b160784b9cb800baca369edca8"
+    },
+    {
+      "Start": "ce539f2b820c450a91cda33b5bef0781",
+      "End": "6ebdc699bfb7430c8c1a785f8276e615",
+      "Id": "f90e484110ca4630bae3e3a6e1cb7446"
+    }
+  ],
+  "Dependencies": [
+    "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Crumple",
+      "Version": "2022.2.13",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "cca8607d60194cba9b7c128d315233f9"
+      ]
+    }
+  ],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.1.11775",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "a3f43e5237dd4ae28b27ec6c7d1d6b0a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 530.26706231453977,
+        "Y": 0.14836795252216461
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "df0469fcc99749e38c7b9ab37836726f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 881.26706231453977,
+        "Y": -55.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "© GetDocument",
+        "Id": "cca8607d60194cba9b7c128d315233f9",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 246.39934456128753,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "6c2b2de40acc45e19cc896c728dea871",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -145.0,
+        "Y": 0.38232391568038793
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "68ec29a30fe544c7b5512370e03febb2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 696.0,
+        "Y": 4.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "7a902ce89bc74cbf81f23427e769f418",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 887.26706231453977,
+        "Y": 50.0
+      }
+    ],
+    "Annotations": [],
+    "X": 341.0,
+    "Y": 284.0,
+    "Zoom": 1.0
+  }
+}
