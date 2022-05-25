@@ -1,0 +1,350 @@
+{
+  "Uuid": "2d955c77-e83f-43d2-a2dd-c6ccdc5b9670",
+  "IsCustomNode": true,
+  "Category": "Crumple.Application.Excel",
+  "Description": "Imports a 2D matrix of data from an existing Excel file path from a given worksheet name. If a worksheet does not exist by that name it will take the data from the first worksheet instead. Credit to Cyril Poupin for most of the Python code (details in node body).",
+  "Name": "© ImportExcel",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "x[0];\nx[1];\nx[2];",
+      "Id": "3e4b3c064a5b4c55a229a23529819eae",
+      "Inputs": [
+        {
+          "Id": "5b4dcb324877454b976e3e32e1ae33e1",
+          "Name": "x",
+          "Description": "x",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "dc9a099edd1945d6b3ffd27e273f1afd",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "c8f729d684524446acd0bdc6ecf1e74e",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "b1b5d8fe27e54fa185a6da443404cfa8",
+          "Name": "",
+          "Description": "Value of expression at line 3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Copied and pasted/modified by Gavin Crump\r\n# Free for use (besides any terms by author below)\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Based mostly on code by Cyril Poupin\r\n# https://github.com/Cyril-Pop/IronPython-Samples/blob/master/Excel%20Interop/Import_Export_Xls_v2.0.py\r\n# Thankyou for your ongoing contributions to the community Cyril :)\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nimport System\r\nfrom System import Array\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference('System.Drawing')\r\nimport System.Drawing\r\nfrom System.Drawing import *\r\n\r\n# Try and get specific interop, if not just the general one\r\ntry:\r\n\tclr.AddReferenceByName('Microsoft.Office.Interop.Excel, Version=11.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c')\r\nexcept:\r\n\tclr.AddReference('Microsoft.Office.Interop.Excel')\r\n\r\nfrom Microsoft.Office.Interop import Excel\r\nfrom System.Runtime.InteropServices import Marshal\r\n\r\n## CYRIL'S CODE FROM HERE (minor edits) ##\r\n\r\n# Excel range parsers\r\nxlDirecDown = System.Enum.Parse(Excel.XlDirection, \"xlDown\")\r\nxlDirecRight = System.Enum.Parse(Excel.XlDirection, \"xlToRight\")\r\nxlDirecUp = System.Enum.Parse(Excel.XlDirection, \"xlUp\")\r\nxlDirecLeft = System.Enum.Parse(Excel.XlDirection, \"xlToLeft\")\r\n\r\nclass ExcelUtils():\r\n\tdef __init__(self, lstData, filepath):\r\n\t\tself.lstData = lstData\r\n\t\tself.filepath = filepath\r\n\r\n\tdef importXls(self,wsName):\r\n\t\t\tex = Excel.ApplicationClass()\r\n\t\t\tex.Visible = False\r\n\t\t\tlst_xls = []\r\n\t\t\tworkbook = ex.Workbooks.Open(self.filepath)\r\n\t\t\ttry:\r\n\t\t\t\tws = ex.Sheets(wsName)\r\n\t\t\t\twsFound = True\r\n\t\t\texcept:\r\n\t\t\t\tws = workbook.Worksheets[0]\r\n\t\t\t\twsFound = False\r\n\t\t\t##get number of Rows not empty ##\r\n\t\t\trowCountF = max(ws.Range(i).End(xlDirecUp).Row for i in [\"A65536\", \"B65536\", \"C65536\", \"D65536\", \"E65536\", \"F65536\", \"G65536\", \"H65536\"])\r\n\t\t\t# other method if column A is empty\r\n\t\t\t# rowCountF = ws.Range(\"B65536\").End(xlDirecUp).Row\r\n\t\t\t# rowCountF = ws.Columns[1].End(xlDirecDown).Row\r\n\t\t\t##get number of Coloun not empty ##\r\n\t\t\tcolCountF = max(ws.Range(i).End(xlDirecLeft).Column for i in [\"ZZ1\", \"ZZ2\", \"ZZ3\", \"ZZ4\", \"ZZ5\", \"ZZ6\", \"ZZ7\", \"ZZ8\", \"ZZ9\"])\r\n\t\t\t# other methods\r\n\t\t\t#colCountF = ws.Range(\"ZZ9\").End(xlDirecLeft).Column\r\n\t\t\t# colCountF = ws.Rows[1].End(xlDirecRight).Column\r\n\t\t\tself.fullrange = ws.Range[ws.Cells(1, 1), ws.Cells(rowCountF, colCountF)]\r\n\t\t\tself.fullvalue = list(self.fullrange.Value2)\r\n\t\t\t#split list into sublist with number of colum\r\n\t\t\tn = colCountF\t\t\t\t\t\r\n\t\t\t\r\n\t\t\t# close Excel\r\n\t\t\tex.Workbooks.Close()\r\n\t\t\tex.Quit()\r\n    \t\t#other proper way to make sure that you really closed and released all COM objects \r\n\t\t\tif workbook is not None:\r\n\t\t\t\tMarshal.ReleaseComObject(workbook)\r\n\t\t\tif ex is not None:\r\n\t\t\t\tMarshal.ReleaseComObject(ex)     \r\n\t\t\tworkbook = None        \r\n\t\t\tex = None\r\n\t\t\treturn [list(self.fullvalue [i:i+n] for i in range(0, len(self.fullvalue ), n)),wsFound]\r\n\t\r\n## GAVIN'S PACKAGING FROM HERE ##\r\n\r\n# Preparing input from dynamo to revit\t\r\nfilePath = IN[0]\r\nsheetName = IN[1]\r\n\r\n# Try to import the excel file\r\ntry:\r\n\txclObj = ExcelUtils([],filePath)\r\n\txclData = xclObj.importXls(sheetName)\r\n\tresult = \"Import successful\"\r\nexcept:\r\n\tresult = \"Import unsuccessful\"\r\n\txclData = [None,False]\r\n\r\n# Output\r\nOUT = [xclData[0],xclData[1],result]",
+      "VariableInputPorts": true,
+      "Id": "173fc14b3c6344dea72abee9f2dd0721",
+      "Inputs": [
+        {
+          "Id": "ecec7c02819944ebb3af342f89835bca",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "c641db1abd2f448ea1e105e29dd6d334",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c8786081a7e94c19ac486f8bfdd952e8",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "filePath",
+        "TypeName": "string",
+        "TypeRank": 0,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "13e9b526a7f54e17b2f43679e3eab4fc",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "e3b4fadb06104959a0b0a999e25367a5",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "sheetName",
+        "TypeName": "string",
+        "TypeRank": 0,
+        "DefaultValue": "\"Sheet1\"",
+        "Description": ""
+      },
+      "Id": "24e13c674aa4441089087e5e524be756",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "4209bc74ffc14f9bb03b06a569cdf551",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "dataRows",
+      "Id": "2fb08d0619c643818564b7a3bd24c53e",
+      "Inputs": [
+        {
+          "Id": "f369012c8ca446c3a74fa904b4ffed71",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "sheetFound",
+      "Id": "0e3e4d70956f48628c21b39ae365fa3f",
+      "Inputs": [
+        {
+          "Id": "4c859dc54da9457fb1190811e8f5ae29",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "report",
+      "Id": "d5a2384bac944ad8bcddfad55433a81f",
+      "Inputs": [
+        {
+          "Id": "66cd99c3fa4a40ea97f232c56c9d18a9",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "dc9a099edd1945d6b3ffd27e273f1afd",
+      "End": "f369012c8ca446c3a74fa904b4ffed71",
+      "Id": "d7aec97c9b12472e9ce19cf0101a0252"
+    },
+    {
+      "Start": "c8f729d684524446acd0bdc6ecf1e74e",
+      "End": "4c859dc54da9457fb1190811e8f5ae29",
+      "Id": "1ed4d12a487f437dba7ed9f78c95decb"
+    },
+    {
+      "Start": "b1b5d8fe27e54fa185a6da443404cfa8",
+      "End": "66cd99c3fa4a40ea97f232c56c9d18a9",
+      "Id": "bf8948be015141f2a09ac6b8ccc034dc"
+    },
+    {
+      "Start": "c8786081a7e94c19ac486f8bfdd952e8",
+      "End": "5b4dcb324877454b976e3e32e1ae33e1",
+      "Id": "a5d001bb3a064f8ca84e32be9dabcca7"
+    },
+    {
+      "Start": "e3b4fadb06104959a0b0a999e25367a5",
+      "End": "ecec7c02819944ebb3af342f89835bca",
+      "Id": "fff0511ef5b04520bd3fee3c26b4f261"
+    },
+    {
+      "Start": "4209bc74ffc14f9bb03b06a569cdf551",
+      "End": "c641db1abd2f448ea1e105e29dd6d334",
+      "Id": "87bacef093064647abf21d5e60ee40e5"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.1.11775",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -10.6392908959076,
+      "EyeY": 172.0157025654722,
+      "EyeZ": 18.140075446516825,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "3e4b3c064a5b4c55a229a23529819eae",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 460.26217404705926,
+        "Y": 2.6608073908382721
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "173fc14b3c6344dea72abee9f2dd0721",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "13e9b526a7f54e17b2f43679e3eab4fc",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 31.670404320388229,
+        "Y": -31.032706177549727
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "24e13c674aa4441089087e5e524be756",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -91.594632141723451,
+        "Y": 65.010607812718263
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "2fb08d0619c643818564b7a3bd24c53e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 655.39117157622172,
+        "Y": -48.676376993289352
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "0e3e4d70956f48628c21b39ae365fa3f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 653.52303052966272,
+        "Y": 15.618373315992528
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "d5a2384bac944ad8bcddfad55433a81f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 652.52303052966272,
+        "Y": 87.618373315992528
+      }
+    ],
+    "Annotations": [],
+    "X": 188.79922826276498,
+    "Y": 364.29927016687878,
+    "Zoom": 1.7337176267825012
+  }
+}

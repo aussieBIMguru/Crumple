@@ -1,101 +1,15 @@
 {
   "Uuid": "5fea20fa-9652-4d53-887c-1d8e6e71666a",
   "IsCustomNode": true,
-  "Category": "Crumple.Application.Import",
-  "Description": "The Import excel node, but with some streamlining features introduced. I mainly made this as I am constantly doing this setup and wanted to simplify it down to one node.",
-  "Name": "© QuickImportExcel",
+  "Category": "Crumple.Application.Excel",
+  "Description": "ImportExcel, with a few extra settings for quicker importing.",
+  "Name": "© ImportExcel+",
   "ElementResolver": {
     "ResolutionMap": {}
   },
   "Inputs": [],
   "Outputs": [],
   "Nodes": [
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
-      "NodeType": "FunctionNode",
-      "FunctionSignature": "DSOffice.Data.ImportExcel@var,string,bool,bool",
-      "Id": "5f68e07c26e04dc2b5d986a444930a9b",
-      "Inputs": [
-        {
-          "Id": "e8415c44fa4c4d4ebf6993627429747c",
-          "Name": "file",
-          "Description": "File representing the Microsoft Excel spreadsheet.\n\nvar",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "373baed693b74e32a0215325cd972484",
-          "Name": "sheetName",
-          "Description": "Name of the worksheet containing the data.\n\nstring",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "e215a521d32343afaa8b0c80e8d03948",
-          "Name": "readAsStrings",
-          "Description": "Toggle to switch between reading Excel file as strings.\n\nbool\nDefault value : false",
-          "UsingDefaultValue": true,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "3023013792614330a0ace8f0f4082af9",
-          "Name": "showExcel",
-          "Description": "Toggle to switch between showing and hiding the main Excel window.\n\nbool\nDefault value : true",
-          "UsingDefaultValue": true,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "224d221691fc47efbefab6d40e3aa47f",
-          "Name": "data",
-          "Description": "Rows of data from the Excel worksheet.",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Read data from a Microsoft Excel spreadsheet. Data is read by row and returned in a series of lists by row. Rows and columns are zero-indexed; for example, the value in cell A1 will appear in the data list at [0,0]. This node requires Microsoft Excel to be installed.\n\nData.ImportExcel (file: var, sheetName: string, readAsStrings: bool = false, showExcel: bool = true): var[][]"
-    },
-    {
-      "ConcreteType": "CoreNodeModels.Input.FileObject, CoreNodeModels",
-      "NodeType": "ExtensionNode",
-      "Id": "11ffb70051014b5195e82886b33fa2b7",
-      "Inputs": [
-        {
-          "Id": "b109917b03d04f78953e9b8583eb08b0",
-          "Name": "path",
-          "Description": "Path to the file.",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "c8e6d814da0149eb876e3428aab1ce1f",
-          "Name": "file",
-          "Description": "File object",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "Creates a file object from a path."
-    },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
@@ -325,7 +239,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "workSheet",
+        "Name": "sheetName",
         "TypeName": "string",
         "TypeRank": 0,
         "DefaultValue": "\"Sheet1\"",
@@ -336,58 +250,6 @@
       "Outputs": [
         {
           "Id": "7f14df69b6f44ca0841e4bf6fd365166",
-          "Name": "",
-          "Description": "Symbol",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
-      "Parameter": {
-        "Name": "asStrings",
-        "TypeName": "bool",
-        "TypeRank": 0,
-        "DefaultValue": "false",
-        "Description": ""
-      },
-      "Id": "0e58d147d156495d8fa39782578c421c",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "ce07e9cc7d89457abbe1c9a5945eccc7",
-          "Name": "",
-          "Description": "Symbol",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
-      "Parameter": {
-        "Name": "showExcel",
-        "TypeName": "bool",
-        "TypeRank": 0,
-        "DefaultValue": "false",
-        "Description": ""
-      },
-      "Id": "47059f8814d242c0bb7d8110177a027c",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "b690ac6cdabf43dbbe418db0e7f7c1e4",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -429,7 +291,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "transpose",
+        "Name": "dataAsColumns",
         "TypeName": "bool",
         "TypeRank": 0,
         "DefaultValue": "true",
@@ -535,7 +397,7 @@
         "Name": "nullReplace",
         "TypeName": "var",
         "TypeRank": 0,
-        "DefaultValue": "null",
+        "DefaultValue": "\"\"",
         "Description": ""
       },
       "Id": "f147afd0a56b4bea84b68855d3be70a8",
@@ -553,28 +415,113 @@
       ],
       "Replication": "Disabled",
       "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "2d955c77-e83f-43d2-a2dd-c6ccdc5b9670",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "e33f1839a46748b49516b3e9cd77676a",
+      "Inputs": [
+        {
+          "Id": "9acdbc64498b45389d1ef95b61287a7c",
+          "Name": "filePath",
+          "Description": "string",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "91ddf448106e44f9b71eded8cde0d3fd",
+          "Name": "sheetName",
+          "Description": "string\nDefault value : \"Sheet1\"",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "010faea733ed454380274a054514e5ad",
+          "Name": "dataRows",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d75bee7a93ba421886aa6531660c2c05",
+          "Name": "sheetFound",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "f8043effc0e94702a3b9da3cd59e6885",
+          "Name": "report",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Imports a 2D matrix of data from an existing Excel file path from a given worksheet name. If a worksheet does not exist by that name it will take the data from the first worksheet instead. Credit to Cyril Poupin for most of the Python code (details in node body)."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "sheetFound",
+      "Id": "d72872ad8d2f4b7b95caf50ea5f736c0",
+      "Inputs": [
+        {
+          "Id": "e436b914aa894c69bf331c9ebd47da54",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "report",
+      "Id": "fb13916977a84b1b80064b33cacc7615",
+      "Inputs": [
+        {
+          "Id": "93a3c88428c84976abc34e02383167ed",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
     }
   ],
   "Connectors": [
     {
-      "Start": "224d221691fc47efbefab6d40e3aa47f",
-      "End": "91d769da07864e5d830dc46048da25f7",
-      "Id": "8d223fddbe8347d7a257ae8e4f3e02b2"
-    },
-    {
-      "Start": "224d221691fc47efbefab6d40e3aa47f",
-      "End": "99937ce6d4624f2fb612fb9fdff398e1",
-      "Id": "1b35cfd6462c4264bf34824f5c413787"
-    },
-    {
-      "Start": "c8e6d814da0149eb876e3428aab1ce1f",
-      "End": "e8415c44fa4c4d4ebf6993627429747c",
-      "Id": "50aa11b4fb834f1894f99d0d7d86c3b3"
-    },
-    {
       "Start": "9c44f5c61ca64a9f97a8a259592cb0df",
-      "End": "b109917b03d04f78953e9b8583eb08b0",
-      "Id": "2b6a835a3ab14c33b8d10b2307faf540"
+      "End": "9acdbc64498b45389d1ef95b61287a7c",
+      "Id": "d2104e171b19497abb8fcf4763921e54"
     },
     {
       "Start": "8eff7826e3eb4adfae44fe9f4f99074d",
@@ -603,18 +550,8 @@
     },
     {
       "Start": "7f14df69b6f44ca0841e4bf6fd365166",
-      "End": "373baed693b74e32a0215325cd972484",
-      "Id": "67b39240cc8d479eb07f9105947d5b81"
-    },
-    {
-      "Start": "ce07e9cc7d89457abbe1c9a5945eccc7",
-      "End": "e215a521d32343afaa8b0c80e8d03948",
-      "Id": "f55bac11c4234730ab3af5b9c6d80e33"
-    },
-    {
-      "Start": "b690ac6cdabf43dbbe418db0e7f7c1e4",
-      "End": "3023013792614330a0ace8f0f4082af9",
-      "Id": "6c26edd1d07e456eafc2039bbc72b571"
+      "End": "91ddf448106e44f9b71eded8cde0d3fd",
+      "Id": "b772d9ebe9b548a6bd1b1ddc8b558def"
     },
     {
       "Start": "aa9fe049afcb437282a2d272f01b7f2b",
@@ -650,25 +587,56 @@
       "Start": "4a26a19988014a9e872e551522fc615f",
       "End": "0ca17a59706b443483c8ef57a5975fb3",
       "Id": "87169285c73644d7b47d18712bf93b2d"
+    },
+    {
+      "Start": "010faea733ed454380274a054514e5ad",
+      "End": "91d769da07864e5d830dc46048da25f7",
+      "Id": "0cb46d46c7bf49c782b4c431821746bd"
+    },
+    {
+      "Start": "010faea733ed454380274a054514e5ad",
+      "End": "99937ce6d4624f2fb612fb9fdff398e1",
+      "Id": "4a371f7e01bd44a2a6acdd700074e6f5"
+    },
+    {
+      "Start": "d75bee7a93ba421886aa6531660c2c05",
+      "End": "e436b914aa894c69bf331c9ebd47da54",
+      "Id": "53a645ae377c49e588aeb2e5bb6ba9a0"
+    },
+    {
+      "Start": "f8043effc0e94702a3b9da3cd59e6885",
+      "End": "93a3c88428c84976abc34e02383167ed",
+      "Id": "d6e574ec688049f8ba2b258da811b9e1"
     }
   ],
-  "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "Dependencies": [
+    "2d955c77-e83f-43d2-a2dd-c6ccdc5b9670"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Crumple",
+      "Version": "2022.2.13",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "e33f1839a46748b49516b3e9cd77676a"
+      ]
+    }
+  ],
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.3.1.11775",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -17.0,
-      "EyeY": 24.0,
-      "EyeZ": 50.0,
+      "EyeX": -10.6392908959076,
+      "EyeY": 172.0157025654722,
+      "EyeZ": 18.140075446516825,
       "LookX": 12.0,
       "LookY": -13.0,
       "LookZ": -58.0,
@@ -679,33 +647,13 @@
     "NodeViews": [
       {
         "ShowGeometry": true,
-        "Name": "Data.ImportExcel",
-        "Id": "5f68e07c26e04dc2b5d986a444930a9b",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 413.0,
-        "Y": 8.0
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "File From Path",
-        "Id": "11ffb70051014b5195e82886b33fa2b7",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 199.0,
-        "Y": -44.0
-      },
-      {
-        "ShowGeometry": true,
         "Name": "Input",
         "Id": "30adebac40d74545a01c7bb6a950fe2a",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -10.0,
-        "Y": -44.0
+        "X": -41.760405984854231,
+        "Y": -48.266974814224739
       },
       {
         "ShowGeometry": true,
@@ -714,8 +662,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1596.4596030141165,
-        "Y": -116.15830549057944
+        "X": 1554.8565985754256,
+        "Y": -196.16408325729287
       },
       {
         "ShowGeometry": true,
@@ -724,8 +672,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1293.6571585910197,
-        "Y": 75.84475003829192
+        "X": 1297.9241334052444,
+        "Y": -6.2945151355339135
       },
       {
         "ShowGeometry": true,
@@ -734,8 +682,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1294.6571585910197,
-        "Y": -115.15524996170808
+        "X": 1305.3245956265814,
+        "Y": -196.22777143197771
       },
       {
         "ShowGeometry": true,
@@ -744,8 +692,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 2070.6571585910197,
-        "Y": 23.84475003829192
+        "X": 2101.5927259941491,
+        "Y": -51.894052914196834
       },
       {
         "ShowGeometry": true,
@@ -754,8 +702,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1887.6571585910197,
-        "Y": 24.84475003829192
+        "X": 1883.3901837767949,
+        "Y": -53.027540321309118
       },
       {
         "ShowGeometry": true,
@@ -764,8 +712,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1556.6571585910197,
-        "Y": 23.84475003829192
+        "X": 1552.3901837767949,
+        "Y": -61.494746246202453
       },
       {
         "ShowGeometry": true,
@@ -774,28 +722,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 16.934106753250035,
+        "X": -141.76879995478947,
         "Y": 23.687798370397275
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "0e58d147d156495d8fa39782578c421c",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 56.331061904468356,
-        "Y": 91.3024314321301
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "47059f8814d242c0bb7d8110177a027c",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 59.89752409891787,
-        "Y": 153.86889362657962
       },
       {
         "ShowGeometry": true,
@@ -804,8 +732,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 458.08838955257283,
-        "Y": -87.048170867283375
+        "X": 899.72028282483086,
+        "Y": -168.120692337553
       },
       {
         "ShowGeometry": true,
@@ -814,8 +742,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1528.9347165751556,
-        "Y": -43.450181847377678
+        "X": 1553.469821756948,
+        "Y": -127.7229344283158
       },
       {
         "ShowGeometry": true,
@@ -824,8 +752,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1022.0471163805894,
-        "Y": 96.155078042071892
+        "X": 955.90900676010619,
+        "Y": -76.657401934029139
       },
       {
         "ShowGeometry": true,
@@ -834,8 +762,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 716.604649102251,
-        "Y": 4.4230325307847806
+        "X": 618.8939897137551,
+        "Y": -73.898360155293176
       },
       {
         "ShowGeometry": true,
@@ -844,13 +772,43 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 681.92339196075636,
-        "Y": 118.035797213136
+        "X": 614.273442353313,
+        "Y": 27.286780488231898
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "© ImportExcel",
+        "Id": "e33f1839a46748b49516b3e9cd77676a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 204.65312810222605,
+        "Y": -27.479526422160177
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "d72872ad8d2f4b7b95caf50ea5f736c0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 613.01981898643066,
+        "Y": 95.24442945047241
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "fb13916977a84b1b80064b33cacc7615",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 611.40042224115632,
+        "Y": 157.02905004163978
       }
     ],
     "Annotations": [],
-    "X": 73.460601412789174,
-    "Y": 353.54739756648894,
-    "Zoom": 0.69561644130111489
+    "X": 121.34233049007307,
+    "Y": 439.55388437952723,
+    "Zoom": 0.64430488597774993
   }
 }
