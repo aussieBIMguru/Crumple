@@ -1,9 +1,9 @@
 {
   "Uuid": "a2d6ac21-2b65-40ff-8a95-5c5989400566",
   "IsCustomNode": true,
-  "Category": "Crumple.Revit.Phases",
+  "Category": "Crumple.Revit.Query",
   "Description": "Returns all phases in a document.",
-  "Name": "© Phases",
+  "Name": "© Collect.Phases",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -118,46 +118,6 @@
       "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "bd1f9f012b4341eda81c65ea6c3c93ef",
-      "Inputs": [
-        {
-          "Id": "7a128b62b3a34d6686a2e83a05fbe22e",
-          "Name": "docOrLink",
-          "Description": "var[]..[]\nDefault value : null",
-          "UsingDefaultValue": true,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "958e472b728a4db890037d52f92de553",
-          "Name": "document",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "0b70759fde054f3588210194884fcd2c",
-          "Name": "outcome",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
-    },
-    {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Do some action in a Transaction\r\nphaselist, namelist = [],[]\r\n\r\nfor phase in doc.Phases:\r\n\tphaselist.append(phase.ToDSType(True))\r\n\tnamelist.append(phase.Name)\r\n\t\r\n# Preparing output to Dynamo\r\nOUT = [phaselist, namelist]",
@@ -187,6 +147,46 @@
       ],
       "Replication": "Disabled",
       "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "aef8cf165cab4f179aa98ffe30d8eab1",
+      "Inputs": [
+        {
+          "Id": "5f94ddc192204fe88c59a7b5a6ce006c",
+          "Name": "docOrLink",
+          "Description": "var[]..[]\nDefault value : null",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "0ef6a663308d4e168934cecd519477f2",
+          "Name": "document",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "cade604dea6e423ab7036803a16fe7e6",
+          "Name": "outcome",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
     }
   ],
   "Connectors": [
@@ -202,18 +202,18 @@
     },
     {
       "Start": "6a2e8a47582c491f9783ef2736e227fc",
-      "End": "7a128b62b3a34d6686a2e83a05fbe22e",
-      "Id": "d166b9b9dc514542b05a84eacbd43d78"
-    },
-    {
-      "Start": "958e472b728a4db890037d52f92de553",
-      "End": "27b2c977966c4ff6bbf65eebc0bb6434",
-      "Id": "7af7fd4161d94f469b9a7645a8baf56b"
+      "End": "5f94ddc192204fe88c59a7b5a6ce006c",
+      "Id": "18f531753cac4fac90dea90a343898d3"
     },
     {
       "Start": "5bd800f6596248ae870508c1ed5b391c",
       "End": "9dddb1958ad446069a7d9b6c1b8d459e",
       "Id": "94730f411e6c4077b103a041cac820fe"
+    },
+    {
+      "Start": "0ef6a663308d4e168934cecd519477f2",
+      "End": "27b2c977966c4ff6bbf65eebc0bb6434",
+      "Id": "52dc78747a2e406f894ffe918a42316b"
     }
   ],
   "Dependencies": [
@@ -222,10 +222,10 @@
   "NodeLibraryDependencies": [
     {
       "Name": "Crumple",
-      "Version": "2021.8.17",
+      "Version": "2022.2.13",
       "ReferenceType": "Package",
       "Nodes": [
-        "bd1f9f012b4341eda81c65ea6c3c93ef"
+        "aef8cf165cab4f179aa98ffe30d8eab1"
       ]
     }
   ],
@@ -294,16 +294,6 @@
       },
       {
         "ShowGeometry": true,
-        "Name": "© GetDocument",
-        "Id": "bd1f9f012b4341eda81c65ea6c3c93ef",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": -56.0,
-        "Y": 0.0
-      },
-      {
-        "ShowGeometry": true,
         "Name": "Python Script",
         "Id": "575ea05966a845e7a1f7ccdd7ef55823",
         "IsSetAsInput": false,
@@ -311,11 +301,21 @@
         "Excluded": false,
         "X": 249.98698245313835,
         "Y": 0.0782326709823451
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "© Revit.GetDocument",
+        "Id": "aef8cf165cab4f179aa98ffe30d8eab1",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -39.485572417111996,
+        "Y": 1.1518964615817993
       }
     ],
     "Annotations": [],
-    "X": 617.91030961012189,
-    "Y": 367.42869670446089,
+    "X": 454.91030961012189,
+    "Y": 184.42869670446089,
     "Zoom": 1.4021939475550489
   }
 }

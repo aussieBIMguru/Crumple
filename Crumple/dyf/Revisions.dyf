@@ -1,9 +1,9 @@
 {
   "Uuid": "fb6059cc-3684-428f-9ae5-f5faf8952736",
   "IsCustomNode": true,
-  "Category": "Crumple.Revit.Revisions",
+  "Category": "Crumple.Revit.Query",
   "Description": "Returns all revisions in a document.",
-  "Name": "© Revisions",
+  "Name": "© Collect.Revisions",
   "ElementResolver": {
     "ResolutionMap": {
       "DSCore.List": {
@@ -68,46 +68,6 @@
       "Description": "A function output, use with custom nodes"
     },
     {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "76df5e716fc64ab9bcd008ea2b053f43",
-      "Inputs": [
-        {
-          "Id": "31f3bc3075b94c86b2bc3dfc80d7a072",
-          "Name": "docOrLink",
-          "Description": "var[]..[]\nDefault value : null",
-          "UsingDefaultValue": true,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "b7d27f934dae4536b56ed45e313c75d5",
-          "Name": "document",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "57164a66ff784095bc20d86ddf008df6",
-          "Name": "outcome",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
-    },
-    {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
@@ -132,6 +92,46 @@
       ],
       "Replication": "Disabled",
       "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "8c1b246460a44b14b3816018c8f80418",
+      "Inputs": [
+        {
+          "Id": "7cf8abb898f5413c97c328b44eb33dd7",
+          "Name": "docOrLink",
+          "Description": "var[]..[]\nDefault value : null",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "cc1b3669d2a04424a1c244c1a6bf0a01",
+          "Name": "document",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "bd9481c8ed194b6880a8e2bd01305923",
+          "Name": "outcome",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
     }
   ],
   "Connectors": [
@@ -141,14 +141,14 @@
       "Id": "405877d72670422199bf4f0899602c2d"
     },
     {
-      "Start": "b7d27f934dae4536b56ed45e313c75d5",
-      "End": "9ae17a9558e642e69bc30474010e7afb",
-      "Id": "26d3078c68384999a1fe98ac30fd98f8"
+      "Start": "7b9b011697bc4105b1a85130e0037428",
+      "End": "7cf8abb898f5413c97c328b44eb33dd7",
+      "Id": "aa96e54384574fc6856085485ec3ccd0"
     },
     {
-      "Start": "7b9b011697bc4105b1a85130e0037428",
-      "End": "31f3bc3075b94c86b2bc3dfc80d7a072",
-      "Id": "92d05c55ca86476d9c863eedda422e6f"
+      "Start": "cc1b3669d2a04424a1c244c1a6bf0a01",
+      "End": "9ae17a9558e642e69bc30474010e7afb",
+      "Id": "6606eebcfe024272ad5a0a365bcc1471"
     }
   ],
   "Dependencies": [
@@ -157,10 +157,10 @@
   "NodeLibraryDependencies": [
     {
       "Name": "Crumple",
-      "Version": "2021.8.17",
+      "Version": "2022.2.13",
       "ReferenceType": "Package",
       "Nodes": [
-        "76df5e716fc64ab9bcd008ea2b053f43"
+        "8c1b246460a44b14b3816018c8f80418"
       ]
     }
   ],
@@ -209,16 +209,6 @@
       },
       {
         "ShowGeometry": true,
-        "Name": "© GetDocument",
-        "Id": "76df5e716fc64ab9bcd008ea2b053f43",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": -29.214573056248184,
-        "Y": -4.3354271714338495
-      },
-      {
-        "ShowGeometry": true,
         "Name": "Input",
         "Id": "22f5b2fd15314c4cac18040281a16d65",
         "IsSetAsInput": false,
@@ -226,11 +216,21 @@
         "Excluded": false,
         "X": -420.61391761753578,
         "Y": -3.9531032557534331
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "© Revit.GetDocument",
+        "Id": "8c1b246460a44b14b3816018c8f80418",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -28.17260409193932,
+        "Y": -1.6048073798204996
       }
     ],
     "Annotations": [],
-    "X": 699.33048738030527,
-    "Y": 338.53043798586168,
+    "X": 402.33048738030527,
+    "Y": 192.53043798586168,
     "Zoom": 0.959644203253794
   }
 }

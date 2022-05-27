@@ -1,9 +1,9 @@
 {
   "Uuid": "e717951d-73c1-432a-ac2e-e18ba511a9b7",
   "IsCustomNode": true,
-  "Category": "Crumple.Application.Excel",
+  "Category": "Crumple.Application.Query",
   "Description": "Given a file path to an Excel file, return its worksheet names.",
-  "Name": "© ExcelWorksheets",
+  "Name": "© Excel.Worksheets",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n# Boilerplate text\nimport clr\nclr.AddReferenceByName('Microsoft.Office.Interop.Excel, Version=11.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c')\nfrom Microsoft.Office.Interop import Excel\n\n# Set up conditions to read Excel\nxlApp = Excel.ApplicationClass()\nxlApp.Visible = False\nxlApp.DisplayAlerts = False\n\n# Open Excel file path and check worksheet names\nworkbk = xlApp.Workbooks.Open(IN[0])\nworksheets = workbk.Worksheets\nnames = [w.Name for w in worksheets]\n\n# Close Excel\nworkbk.Close()\nxlApp.Quit()\n\nOUT = names",
+      "Code": "# Made by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n# Boilerplate text\nimport clr\n\ntry:\n\tclr.AddReferenceByName('Microsoft.Office.Interop.Excel, Version=11.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c')\nexcept:\n\tclr.AddReference('Microsoft.Office.Interop.Excel')\n\nfrom Microsoft.Office.Interop import Excel\n\n# Set up conditions to read Excel\nxlApp = Excel.ApplicationClass()\nxlApp.Visible = False\nxlApp.DisplayAlerts = False\n\n# Open Excel file path and check worksheet names\nworkbk = xlApp.Workbooks.Open(IN[0])\nworksheets = workbk.Worksheets\nnames = [w.Name for w in worksheets]\n\n# Close Excel\nworkbk.Close()\nxlApp.Quit()\n\nOUT = names",
       "VariableInputPorts": true,
       "Id": "95898ed70e7c442ab57579512209ce3d",
       "Inputs": [
