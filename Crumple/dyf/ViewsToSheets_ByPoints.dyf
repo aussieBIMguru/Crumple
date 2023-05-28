@@ -112,7 +112,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nimport sys\r\nsys.path.append('C:\\Program Files (x86)\\IronPython 2.7\\Lib')\r\n\r\nimport System\r\nfrom System import Array\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Function for unwrapping and forcing lists\r\ndef uwlist(input):\r\n\ttolist = input if isinstance(input, list) else [input]\r\n\tunwrap = UnwrapElement(tolist)\r\n\treturn unwrap\r\n\r\n# Preparing input from dynamo to revit\r\nviews  = uwlist(IN[0])\r\nsheets = uwlist(IN[1])\r\npoints = uwlist(IN[2])\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nviewports = []\r\nreport = []\r\n\r\nfor v,s,p in zip(views,sheets,points):\r\n\r\n\tisUnplaced = Viewport.CanAddViewToSheet(doc, s.Id, v.Id)\r\n\t\r\n\tif isUnplaced:\r\n\t\treport.append(\"\")\r\n\t\tvp = Viewport.Create(doc, s.Id, v.Id, p.ToXyz())\r\n\t\tviewports.append(vp)\r\n\telse:\r\n\t\treport.append(\"View is already placed.\")\r\n\t\tviewports.append(None)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = [viewports, report]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nimport sys\r\nsys.path.append('C:\\Program Files (x86)\\IronPython 2.7\\Lib')\r\n\r\nimport System\r\nfrom System import Array\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Function for unwrapping and forcing lists\r\ndef uwlist(input):\r\n\ttolist = input if isinstance(input, list) else [input]\r\n\treturn UnwrapElement(tolist)\r\n\r\n# Preparing input from dynamo to revit\r\nviews  = uwlist(IN[0])\r\nsheets = uwlist(IN[1])\r\npoints = uwlist(IN[2])\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nviewports = []\r\nreport = []\r\n\r\nfor v,s,p in zip(views,sheets,points):\r\n\r\n\tisUnplaced = Viewport.CanAddViewToSheet(doc, s.Id, v.Id)\r\n\t\r\n\tif isUnplaced:\r\n\t\treport.append(\"\")\r\n\t\tvp = Viewport.Create(doc, s.Id, v.Id, p.ToXyz())\r\n\t\tviewports.append(vp)\r\n\telse:\r\n\t\treport.append(\"View is already placed.\")\r\n\t\tviewports.append(None)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = [viewports, report]",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "1a2ba4004e97464595a5e9ab64feb901",
       "Inputs": [
@@ -156,7 +157,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -253,13 +254,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
