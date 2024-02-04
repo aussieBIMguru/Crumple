@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Get view templates\r\nviews_all = FilteredElementCollector(doc).OfClass(View).ToElements()\r\n\r\nviewTemplates = []\r\n\r\nfor v in views_all:\r\n\tif v.IsTemplate and v.ViewType != ViewType.ThreeD:\r\n\t\tviewTemplates.append(v)\r\n\r\n# Preparing output to Dynamo\r\nOUT = viewTemplates",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Get view templates\r\nviews_all = FilteredElementCollector(doc).OfClass(View).ToElements()\r\n\r\nviewTemplates, ids = [],[]\r\n\r\nfor v in views_all:\r\n\tif v.IsTemplate and v.ViewType != ViewType.ThreeD:\r\n\t\tviewTemplates.append(v)\r\n\t\tids.append(v.Id)\r\n\r\n# Preparing output to Dynamo\r\nOUT = viewTemplates",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "d95dcb08b6ab4e5db0b0a5c5b5d2df73",
       "Inputs": [
@@ -39,7 +40,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -127,13 +128,73 @@
       ],
       "Replication": "Auto",
       "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "x[0];\nx[1];",
+      "Id": "88879acdeb884d5d9e2d82df1ddf7354",
+      "Inputs": [
+        {
+          "Id": "c227152a937c4fd0ad7f917dac93d261",
+          "Name": "x",
+          "Description": "x",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "8b26aa94b25e421aa8084d8c5ee84248",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "b50572f1e41845d9a9374cd8d635f000",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "ids",
+      "Id": "7ab8136907fc409eb344c5a258fa0c09",
+      "Inputs": [
+        {
+          "Id": "32032c5b2b664a3cbc1340fab09b9572",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
     }
   ],
   "Connectors": [
     {
       "Start": "9c650fb71067460d99ea5019778b4999",
-      "End": "06644fa832d74c09ba695b88c17e97af",
-      "Id": "b28e60292f8742bf92d440c15f4079fb"
+      "End": "c227152a937c4fd0ad7f917dac93d261",
+      "Id": "6bea484863a8409cbc728f46c6ad2579"
     },
     {
       "Start": "ccaef2910e9d4c8bbb4008056f6e838d",
@@ -144,6 +205,16 @@
       "Start": "0b83aa196d0e436b8f2e3a0f1dc2e294",
       "End": "5e1fca83e45e4ed3bc73c47fff889d5e",
       "Id": "09fb573c06a942ad93f71740a5daea61"
+    },
+    {
+      "Start": "8b26aa94b25e421aa8084d8c5ee84248",
+      "End": "06644fa832d74c09ba695b88c17e97af",
+      "Id": "cbe18ca45e454d348596e01730a3645c"
+    },
+    {
+      "Start": "b50572f1e41845d9a9374cd8d635f000",
+      "End": "32032c5b2b664a3cbc1340fab09b9572",
+      "Id": "0e802bcfb5d44de7990e3b6ab2bbac7d"
     }
   ],
   "Dependencies": [
@@ -159,13 +230,14 @@
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -199,8 +271,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 449.0,
-        "Y": 0.0
+        "X": 650.91079214266347,
+        "Y": -41.850600553206618
       },
       {
         "ShowGeometry": true,
@@ -221,11 +293,31 @@
         "Excluded": false,
         "X": -73.330513978588328,
         "Y": 0.96436915403546664
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "88879acdeb884d5d9e2d82df1ddf7354",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 442.7973368129891,
+        "Y": 3.2356831429346187
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "7ab8136907fc409eb344c5a258fa0c09",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 654.16617930646748,
+        "Y": 53.039947805163109
       }
     ],
     "Annotations": [],
-    "X": 334.87525248211216,
-    "Y": 83.68654114747676,
+    "X": 64.87525248211216,
+    "Y": 196.68654114747676,
     "Zoom": 1.3619876237506616
   }
 }
