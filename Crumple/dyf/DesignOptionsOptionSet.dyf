@@ -1,11 +1,16 @@
 {
-  "Uuid": "e72f013c-1a38-46e7-830c-735d8abbcd03",
+  "Uuid": "9291f277-e2e7-4318-bb0b-5cea695f4818",
   "IsCustomNode": true,
-  "Category": "Crumple.Revit.Other.Query",
-  "Description": "Given a warning element in Revit db format, will return the message associated with that warning in a generic string format.",
-  "Name": "© Warnings.Message",
+  "Category": "Crumple.Revit.Query",
+  "Description": "For a given design option, return its related set.",
+  "Name": "© DesignOptions.OptionSet",
   "ElementResolver": {
-    "ResolutionMap": {}
+    "ResolutionMap": {
+      "DSCore.List": {
+        "Key": "DSCore.List",
+        "Value": "DSCoreNodes.dll"
+      }
+    }
   },
   "Inputs": [],
   "Outputs": [],
@@ -13,12 +18,12 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nwarnings  = uwlist(IN[0])\r\n\r\nmessages = []\r\n\r\n# Get messages\r\nfor w in warnings:\r\n\tmessage = w.GetDescriptionText().ToString()\r\n\tmessages.append(message)\r\n\r\n# Preparing output to Dynamo\r\nOUT = messages",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('RevitAPI')\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\n# Define option set function\r\ndef GetDesignOptionSet(item):\r\n\ttry: return item.Document.GetElement(item.get_Parameter(BuiltInParameter.OPTION_SET_ID).AsElementId()).ToDSType(True)\r\n\texcept: return None\r\n\r\n# Collect and unwrap options\r\noptions = IN[0] if isinstance(IN[0], list) else [IN[0]]\r\noptions_uw = UnwrapElement(options)\r\n\r\nsets = []\r\n\r\n# Get option sets\r\nfor o in options_uw:\r\n\tsets.append(GetDesignOptionSet(o))\r\n\r\n# Preparing output to Dynamo\r\nOUT = sets",
       "VariableInputPorts": true,
-      "Id": "f0d92742b59d4f81881c8abd63b93070",
+      "Id": "77926edef4c34ce0845a3d39c197d9e8",
       "Inputs": [
         {
-          "Id": "64cc3f16da524d249453de1b5c91baa4",
+          "Id": "0b383b77c95640d1abc609ba025ed5fd",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -29,7 +34,7 @@
       ],
       "Outputs": [
         {
-          "Id": "3508a438fcf64e8f9f4557ddcbbf45c9",
+          "Id": "f8d8423ad3b44447ae672b22ceb34d82",
           "Name": "OUT",
           "Description": "Result of the python script",
           "UsingDefaultValue": false,
@@ -45,17 +50,17 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "warning",
+        "Name": "designOption",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
         "Description": ""
       },
-      "Id": "38e3994307d748aba1a3f2906fa9095d",
+      "Id": "d98d2000be354030ac4fb35c2f3b80b2",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "f12e4a7fa9da45a4ac340c91d6a3ce5d",
+          "Id": "698c2b435a434e389510bf9939b08768",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -71,11 +76,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "message",
-      "Id": "f3725ef9de094fe79d677ef0c77c3e2c",
+      "Symbol": "optionSet",
+      "Id": "cd90364f0c1842bd94f8588085be6744",
       "Inputs": [
         {
-          "Id": "fb5d6c15078c4291b1d445f652bbf149",
+          "Id": "e1f7d577decf4d37bdbc877a13aece50",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -91,14 +96,14 @@
   ],
   "Connectors": [
     {
-      "Start": "3508a438fcf64e8f9f4557ddcbbf45c9",
-      "End": "fb5d6c15078c4291b1d445f652bbf149",
-      "Id": "038a4efdd1a54e4882d6ea89984ec0a6"
+      "Start": "f8d8423ad3b44447ae672b22ceb34d82",
+      "End": "e1f7d577decf4d37bdbc877a13aece50",
+      "Id": "a531f87167d74085a14e1c3eb51a129e"
     },
     {
-      "Start": "f12e4a7fa9da45a4ac340c91d6a3ce5d",
-      "End": "64cc3f16da524d249453de1b5c91baa4",
-      "Id": "52b5225687d54ee6b0074e88a7ceef31"
+      "Start": "698c2b435a434e389510bf9939b08768",
+      "End": "0b383b77c95640d1abc609ba025ed5fd",
+      "Id": "08e18ce3efe9487a9edcfba608dc1655"
     }
   ],
   "Dependencies": [],
@@ -129,7 +134,7 @@
       {
         "ShowGeometry": true,
         "Name": "Python Script",
-        "Id": "f0d92742b59d4f81881c8abd63b93070",
+        "Id": "77926edef4c34ce0845a3d39c197d9e8",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
@@ -139,27 +144,27 @@
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "38e3994307d748aba1a3f2906fa9095d",
+        "Id": "d98d2000be354030ac4fb35c2f3b80b2",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 37.0,
+        "X": -3.0,
         "Y": -1.0
       },
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "f3725ef9de094fe79d677ef0c77c3e2c",
+        "Id": "cd90364f0c1842bd94f8588085be6744",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 404.00000000000023,
-        "Y": 0.0
+        "X": 412.5,
+        "Y": 1.0
       }
     ],
     "Annotations": [],
-    "X": -94.336263736263675,
-    "Y": 356.62857142857149,
-    "Zoom": 3.3604395604395587
+    "X": 120.8305419411447,
+    "Y": 206.46292598542118,
+    "Zoom": 1.33823125
   }
 }

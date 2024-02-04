@@ -1,9 +1,9 @@
 {
-  "Uuid": "cca59135-cd02-4be6-bea7-c1777346b7aa",
+  "Uuid": "4fe41391-f12e-4998-ba4a-1f598dad9f8e",
   "IsCustomNode": true,
-  "Category": "Crumple.Revit.Other.Query",
-  "Description": "Returns the element(s) associated with the provided warning.",
-  "Name": "© Warnings.RelatedElements",
+  "Category": "Crumple.Revit.Query",
+  "Description": "Checks if a scope box is applied to any views, levels or grids in a document.",
+  "Name": "© ScopeBoxes.Used",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -13,12 +13,12 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Current doc/app/ui\r\ndoc = IN[1]\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nwarnings  = uwlist(IN[0])\r\n\r\nfailingIds, failingElements = [],[]\r\n\r\n# Get messages\r\nfor w in warnings:\r\n\tids = w.GetFailingElements()\r\n\telements = [doc.GetElement(i) for i in ids]\r\n\tfailingElements.append(elements)\r\n\r\n# Preparing output to Dynamo\r\nOUT = failingElements",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[1]\r\n\r\n# Get scope boxes\r\nusedScopeBoxes, inUse = [],[]\r\n    \r\n# Check scopebox of elements\r\ndef checkSB(elements):\r\n\tfor e in elements:\r\n\t\ttry:\r\n\t\t\tif e.GetParameters(\"Scope Box\")[0].AsValueString() != \"None\":\r\n\t\t\t\tusedScopeBoxes.append(e.GetParameters(\"Scope Box\")[0].AsValueString())\r\n\t\texcept:\r\n\t\t\tpass\r\n\r\n# Get all used scopebox names\r\ngrids = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Grids).OfClass(Grid)\r\nlevels = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Levels).OfClass(Level)\r\nviews = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Views)\r\n\r\ncheckSB(grids)\r\ncheckSB(levels)\r\ncheckSB(views)\r\n\r\n# Get all scope boxes in model\r\nallScopeBoxes = IN[0]\r\n\r\n# Preparing output to Dynamo\r\nOUT = [s.Name in usedScopeBoxes for s in allScopeBoxes]",
       "VariableInputPorts": true,
-      "Id": "91decf398c4449d0b4043489d51c3aae",
+      "Id": "4a3db16fd2f745debc4938e000f52cc3",
       "Inputs": [
         {
-          "Id": "3782ec6119844982b9001fc19d2417c2",
+          "Id": "81299e942958461991b1fe5651cb86ad",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -27,7 +27,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "bc697adf1cf644a6aa837cbbb61ad748",
+          "Id": "4da093472e714ad5b33ec437f1196904",
           "Name": "IN[1]",
           "Description": "Input #1",
           "UsingDefaultValue": false,
@@ -38,7 +38,7 @@
       ],
       "Outputs": [
         {
-          "Id": "bd58ca56fbc147f9aab07e2f6f6b1d1a",
+          "Id": "c787989d6c3542a1bbfc4d7886d1fcfb",
           "Name": "OUT",
           "Description": "Result of the python script",
           "UsingDefaultValue": false,
@@ -54,17 +54,17 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "warning",
+        "Name": "scopeBoxes",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
         "Description": ""
       },
-      "Id": "cfc9999158734bfc99b3bd51b1cfdbdc",
+      "Id": "a2bd759fed574bf7953f011c6d701118",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "ceaec2a7a3fe4657ae25e8a5adf65401",
+          "Id": "80044979fe914246b6d2f9a13e577bea",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -80,11 +80,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "elements",
-      "Id": "782e0d53201a49ffa8f0d206a8835129",
+      "Symbol": "inUse",
+      "Id": "a13482bd62254a299d4ee89a5b9a9c51",
       "Inputs": [
         {
-          "Id": "66218287eea746389c4e75be65684072",
+          "Id": "ec6e3de9430543268e8b60c8f43b1cb6",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -107,11 +107,11 @@
         "DefaultValue": "null",
         "Description": "Uses current if none provided.\nAccepts document or link instance."
       },
-      "Id": "e8b7e2d7abd74caa8506c34500595679",
+      "Id": "d3390ebfb95642ef9dc4e266a24c28ab",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "a4588a7e56364f1bb359655e51d5cab0",
+          "Id": "6b3895080edd496da96db7888c116026",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -128,10 +128,10 @@
       "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
       "FunctionType": "Graph",
       "NodeType": "FunctionNode",
-      "Id": "518bf5d830404c4db90d5b94396d7fad",
+      "Id": "c615527b53dd435991186234cbcc262e",
       "Inputs": [
         {
-          "Id": "2f141634db334b0eb83668f71f0480c4",
+          "Id": "1be4ac0a26b24a27b33e883d01bbe1b0",
           "Name": "docOrLink",
           "Description": "var[]..[]\nDefault value : null",
           "UsingDefaultValue": true,
@@ -142,7 +142,7 @@
       ],
       "Outputs": [
         {
-          "Id": "caf29b41698840069f8b560ec6f40ea1",
+          "Id": "781b8fcb33514c1a9925a1b5ce9afc41",
           "Name": "document",
           "Description": "return value",
           "UsingDefaultValue": false,
@@ -151,7 +151,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "5082d393f4004426a687b3f36904242d",
+          "Id": "d1ab9cdc4fb54b50b146b35ba41b4063",
           "Name": "outcome",
           "Description": "return value",
           "UsingDefaultValue": false,
@@ -166,24 +166,24 @@
   ],
   "Connectors": [
     {
-      "Start": "bd58ca56fbc147f9aab07e2f6f6b1d1a",
-      "End": "66218287eea746389c4e75be65684072",
-      "Id": "bc261d721e934a528f4348be8882a951"
+      "Start": "c787989d6c3542a1bbfc4d7886d1fcfb",
+      "End": "ec6e3de9430543268e8b60c8f43b1cb6",
+      "Id": "60bdc3a0a19d44e09d8a0eb33eda802b"
     },
     {
-      "Start": "ceaec2a7a3fe4657ae25e8a5adf65401",
-      "End": "3782ec6119844982b9001fc19d2417c2",
-      "Id": "d498a75aa4b042949d2a8abc967d143f"
+      "Start": "80044979fe914246b6d2f9a13e577bea",
+      "End": "81299e942958461991b1fe5651cb86ad",
+      "Id": "fc455bb449a54b93af128b3b71c8df93"
     },
     {
-      "Start": "a4588a7e56364f1bb359655e51d5cab0",
-      "End": "2f141634db334b0eb83668f71f0480c4",
-      "Id": "06100dbc73c14c868f39f68a11669360"
+      "Start": "6b3895080edd496da96db7888c116026",
+      "End": "1be4ac0a26b24a27b33e883d01bbe1b0",
+      "Id": "05fcecda3aba4318902f37bcacab135b"
     },
     {
-      "Start": "caf29b41698840069f8b560ec6f40ea1",
-      "End": "bc697adf1cf644a6aa837cbbb61ad748",
-      "Id": "34e14f0c7fe24ddbb6c2086ce2de1790"
+      "Start": "781b8fcb33514c1a9925a1b5ce9afc41",
+      "End": "4da093472e714ad5b33ec437f1196904",
+      "Id": "d33ffd4764ae4cd1bbf189146c997416"
     }
   ],
   "Dependencies": [
@@ -195,7 +195,7 @@
       "Version": "2022.2.13",
       "ReferenceType": "Package",
       "Nodes": [
-        "518bf5d830404c4db90d5b94396d7fad"
+        "c615527b53dd435991186234cbcc262e"
       ]
     }
   ],
@@ -225,7 +225,7 @@
       {
         "ShowGeometry": true,
         "Name": "Python Script",
-        "Id": "91decf398c4449d0b4043489d51c3aae",
+        "Id": "4a3db16fd2f745debc4938e000f52cc3",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
@@ -235,47 +235,47 @@
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "cfc9999158734bfc99b3bd51b1cfdbdc",
+        "Id": "a2bd759fed574bf7953f011c6d701118",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 43.0,
-        "Y": -2.0
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "782e0d53201a49ffa8f0d206a8835129",
+        "Id": "a13482bd62254a299d4ee89a5b9a9c51",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 409.0,
-        "Y": -1.0
+        "X": 449.0,
+        "Y": 0.0
       },
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "e8b7e2d7abd74caa8506c34500595679",
+        "Id": "d3390ebfb95642ef9dc4e266a24c28ab",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -414.6813169806195,
-        "Y": 73.414946996482541
+        "X": -432.00497574283543,
+        "Y": 72.567976879923677
       },
       {
         "ShowGeometry": true,
         "Name": "© Revit.GetDocument",
-        "Id": "518bf5d830404c4db90d5b94396d7fad",
+        "Id": "c615527b53dd435991186234cbcc262e",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -23.610763860673046,
-        "Y": 77.37509784523229
+        "X": -39.822219751914304,
+        "Y": 73.355620230729755
       }
     ],
     "Annotations": [],
-    "X": 327.25118443670488,
-    "Y": 54.923727599439815,
-    "Zoom": 1.5777204268580103
+    "X": 398.4682654805801,
+    "Y": 239.64879456264975,
+    "Zoom": 1.0891617722536544
   }
 }

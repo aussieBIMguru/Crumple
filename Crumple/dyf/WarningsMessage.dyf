@@ -1,9 +1,9 @@
 {
-  "Uuid": "9cb4a0f7-6359-4ccb-9a64-96cd315a78c6",
+  "Uuid": "e72f013c-1a38-46e7-830c-735d8abbcd03",
   "IsCustomNode": true,
-  "Category": "Crumple.Revit.Other.Query",
-  "Description": "Return all views and sheets in the view sheet set(s).",
-  "Name": "© ViewSheetSets.Views",
+  "Category": "Crumple.Revit.Query",
+  "Description": "Given a warning element in Revit db format, will return the message associated with that warning in a generic string format.",
+  "Name": "© Warnings.Message",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -13,13 +13,12 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input):\r\n    if isinstance(input, list) and len(input) == 1:\r\n        return input[0]\r\n    else:\r\n        return input\r\n\r\n# Preparing input from dynamo to revit\r\nsheetSets = uwlist(IN[0])\r\nviewsOut = []\r\n\r\nfor vss in sheetSets:\r\n\tvssViews = [v.ToDSType(True) for v in vss.Views]\r\n\tviewsOut.append(vssViews)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(viewsOut)",
-      "Engine": "IronPython2",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nwarnings  = uwlist(IN[0])\r\n\r\nmessages = []\r\n\r\n# Get messages\r\nfor w in warnings:\r\n\tmessage = w.GetDescriptionText().ToString()\r\n\tmessages.append(message)\r\n\r\n# Preparing output to Dynamo\r\nOUT = messages",
       "VariableInputPorts": true,
-      "Id": "3f8b13395aff4adc934bf60e265eb3cc",
+      "Id": "f0d92742b59d4f81881c8abd63b93070",
       "Inputs": [
         {
-          "Id": "2f001edf2da84e029b163c66be9cd89b",
+          "Id": "64cc3f16da524d249453de1b5c91baa4",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -30,7 +29,7 @@
       ],
       "Outputs": [
         {
-          "Id": "587e5611046b4351a8e0bf77add20ddc",
+          "Id": "3508a438fcf64e8f9f4557ddcbbf45c9",
           "Name": "OUT",
           "Description": "Result of the python script",
           "UsingDefaultValue": false,
@@ -40,23 +39,23 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded Python script."
+      "Description": "Runs an embedded IronPython script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "viewSheetSet",
+        "Name": "warning",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
         "Description": ""
       },
-      "Id": "11310179043243858733bddbbe31a44d",
+      "Id": "38e3994307d748aba1a3f2906fa9095d",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "67a67e096009483d9b48e99510b11c7c",
+          "Id": "f12e4a7fa9da45a4ac340c91d6a3ce5d",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -72,11 +71,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "views",
-      "Id": "78fc71695e624dc4ba7c184a9f1d266a",
+      "Symbol": "message",
+      "Id": "f3725ef9de094fe79d677ef0c77c3e2c",
       "Inputs": [
         {
-          "Id": "d227b5ffb6434111b6123c10b1c63799",
+          "Id": "fb5d6c15078c4291b1d445f652bbf149",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -92,26 +91,25 @@
   ],
   "Connectors": [
     {
-      "Start": "587e5611046b4351a8e0bf77add20ddc",
-      "End": "d227b5ffb6434111b6123c10b1c63799",
-      "Id": "105936688dd74c3d861e11f17a2b7393"
+      "Start": "3508a438fcf64e8f9f4557ddcbbf45c9",
+      "End": "fb5d6c15078c4291b1d445f652bbf149",
+      "Id": "038a4efdd1a54e4882d6ea89984ec0a6"
     },
     {
-      "Start": "67a67e096009483d9b48e99510b11c7c",
-      "End": "2f001edf2da84e029b163c66be9cd89b",
-      "Id": "c9679946c7544cfeaa5bd636e99e69ae"
+      "Start": "f12e4a7fa9da45a4ac340c91d6a3ce5d",
+      "End": "64cc3f16da524d249453de1b5c91baa4",
+      "Id": "52b5225687d54ee6b0074e88a7ceef31"
     }
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
-  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.3.0.5885",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -131,7 +129,7 @@
       {
         "ShowGeometry": true,
         "Name": "Python Script",
-        "Id": "3f8b13395aff4adc934bf60e265eb3cc",
+        "Id": "f0d92742b59d4f81881c8abd63b93070",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
@@ -141,27 +139,27 @@
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "11310179043243858733bddbbe31a44d",
+        "Id": "38e3994307d748aba1a3f2906fa9095d",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -52.0,
-        "Y": 0.0
+        "X": 37.0,
+        "Y": -1.0
       },
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "78fc71695e624dc4ba7c184a9f1d266a",
+        "Id": "f3725ef9de094fe79d677ef0c77c3e2c",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 449.0,
+        "X": 404.00000000000023,
         "Y": 0.0
       }
     ],
     "Annotations": [],
-    "X": 193.0,
-    "Y": 189.0,
-    "Zoom": 1.0
+    "X": -94.336263736263675,
+    "Y": 356.62857142857149,
+    "Zoom": 3.3604395604395587
   }
 }

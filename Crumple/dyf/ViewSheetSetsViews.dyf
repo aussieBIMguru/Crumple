@@ -1,16 +1,11 @@
 {
-  "Uuid": "9291f277-e2e7-4318-bb0b-5cea695f4818",
+  "Uuid": "9cb4a0f7-6359-4ccb-9a64-96cd315a78c6",
   "IsCustomNode": true,
-  "Category": "Crumple.Revit.Other.Query",
-  "Description": "For a given design option, return its related set.",
-  "Name": "© DesignOptions.OptionSet",
+  "Category": "Crumple.Revit.Query",
+  "Description": "Return all views and sheets in the view sheet set(s).",
+  "Name": "© ViewSheetSets.Views",
   "ElementResolver": {
-    "ResolutionMap": {
-      "DSCore.List": {
-        "Key": "DSCore.List",
-        "Value": "DSCoreNodes.dll"
-      }
-    }
+    "ResolutionMap": {}
   },
   "Inputs": [],
   "Outputs": [],
@@ -18,12 +13,13 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('RevitAPI')\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\n# Define option set function\r\ndef GetDesignOptionSet(item):\r\n\ttry: return item.Document.GetElement(item.get_Parameter(BuiltInParameter.OPTION_SET_ID).AsElementId()).ToDSType(True)\r\n\texcept: return None\r\n\r\n# Collect and unwrap options\r\noptions = IN[0] if isinstance(IN[0], list) else [IN[0]]\r\noptions_uw = UnwrapElement(options)\r\n\r\nsets = []\r\n\r\n# Get option sets\r\nfor o in options_uw:\r\n\tsets.append(GetDesignOptionSet(o))\r\n\r\n# Preparing output to Dynamo\r\nOUT = sets",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input):\r\n    if isinstance(input, list) and len(input) == 1:\r\n        return input[0]\r\n    else:\r\n        return input\r\n\r\n# Preparing input from dynamo to revit\r\nsheetSets = uwlist(IN[0])\r\nviewsOut = []\r\n\r\nfor vss in sheetSets:\r\n\tvssViews = [v.ToDSType(True) for v in vss.Views]\r\n\tviewsOut.append(vssViews)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(viewsOut)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
-      "Id": "77926edef4c34ce0845a3d39c197d9e8",
+      "Id": "3f8b13395aff4adc934bf60e265eb3cc",
       "Inputs": [
         {
-          "Id": "0b383b77c95640d1abc609ba025ed5fd",
+          "Id": "2f001edf2da84e029b163c66be9cd89b",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -34,7 +30,7 @@
       ],
       "Outputs": [
         {
-          "Id": "f8d8423ad3b44447ae672b22ceb34d82",
+          "Id": "587e5611046b4351a8e0bf77add20ddc",
           "Name": "OUT",
           "Description": "Result of the python script",
           "UsingDefaultValue": false,
@@ -44,23 +40,23 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "designOption",
+        "Name": "viewSheetSet",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
         "Description": ""
       },
-      "Id": "d98d2000be354030ac4fb35c2f3b80b2",
+      "Id": "11310179043243858733bddbbe31a44d",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "698c2b435a434e389510bf9939b08768",
+          "Id": "67a67e096009483d9b48e99510b11c7c",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -76,11 +72,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "optionSet",
-      "Id": "cd90364f0c1842bd94f8588085be6744",
+      "Symbol": "views",
+      "Id": "78fc71695e624dc4ba7c184a9f1d266a",
       "Inputs": [
         {
-          "Id": "e1f7d577decf4d37bdbc877a13aece50",
+          "Id": "d227b5ffb6434111b6123c10b1c63799",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -96,25 +92,26 @@
   ],
   "Connectors": [
     {
-      "Start": "f8d8423ad3b44447ae672b22ceb34d82",
-      "End": "e1f7d577decf4d37bdbc877a13aece50",
-      "Id": "a531f87167d74085a14e1c3eb51a129e"
+      "Start": "587e5611046b4351a8e0bf77add20ddc",
+      "End": "d227b5ffb6434111b6123c10b1c63799",
+      "Id": "105936688dd74c3d861e11f17a2b7393"
     },
     {
-      "Start": "698c2b435a434e389510bf9939b08768",
-      "End": "0b383b77c95640d1abc609ba025ed5fd",
-      "Id": "08e18ce3efe9487a9edcfba608dc1655"
+      "Start": "67a67e096009483d9b48e99510b11c7c",
+      "End": "2f001edf2da84e029b163c66be9cd89b",
+      "Id": "c9679946c7544cfeaa5bd636e99e69ae"
     }
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -134,7 +131,7 @@
       {
         "ShowGeometry": true,
         "Name": "Python Script",
-        "Id": "77926edef4c34ce0845a3d39c197d9e8",
+        "Id": "3f8b13395aff4adc934bf60e265eb3cc",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
@@ -144,27 +141,27 @@
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "d98d2000be354030ac4fb35c2f3b80b2",
+        "Id": "11310179043243858733bddbbe31a44d",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -3.0,
-        "Y": -1.0
+        "X": -52.0,
+        "Y": 0.0
       },
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "cd90364f0c1842bd94f8588085be6744",
+        "Id": "78fc71695e624dc4ba7c184a9f1d266a",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 412.5,
-        "Y": 1.0
+        "X": 449.0,
+        "Y": 0.0
       }
     ],
     "Annotations": [],
-    "X": 120.8305419411447,
-    "Y": 206.46292598542118,
-    "Zoom": 1.33823125
+    "X": 193.0,
+    "Y": 189.0,
+    "Zoom": 1.0
   }
 }
