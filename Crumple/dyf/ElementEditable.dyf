@@ -1,0 +1,167 @@
+{
+  "Uuid": "455e85fd-ed2a-4d3d-8dd3-e8073caf06cb",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.Query",
+  "Description": "Given an element or list of elements, returns whether they are editable.",
+  "Name": "© Elements.Editable",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Constants\r\nOWNED_BYOTHERS = CheckoutStatus.OwnedByOtherUser\r\nOWNED_BYME     = CheckoutStatus.OwnedByCurrentUser\r\nUPDATE_CURRENT = ModelUpdatesStatus.CurrentWithCentral\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef isEditable(element, myDoc = doc):\r\n\tcheckout_status = WorksharingUtils.GetCheckoutStatus(myDoc, element.Id)\r\n\tupdate_status = WorksharingUtils.GetModelUpdatesStatus(myDoc, element.Id)\r\n\t# If owned by another user, it isn't editable\r\n\tif checkout_status == OWNED_BYOTHERS:\r\n\t\treturn False\r\n\t# If owned by us, it is editable\r\n\telif checkout_status == OWNED_BYME:\r\n\t\treturn True\r\n\t# Otherwise, if it is current, it is editable\r\n\telse:\r\n\t\treturn update_status == UPDATE_CURRENT\r\n\r\n# Preparing input from dynamo to revit\r\nelements = uwlist(IN[0])\r\n\r\nstatus,checkedOut = [],[]\r\n\r\n# Do some action in a Transaction\r\nif doc.IsWorkshared:\r\n\tOUT = [isEditable(e) for e in elements]\r\nelse:\r\n\tOUT = [True for e in elements]",
+      "Engine": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "ada09e07541345dfb5d3e4a353982eaf",
+      "Inputs": [
+        {
+          "Id": "b081f4a36cc74c22a5d77eff3ce9757e",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "39a88534f9a24708987ede19f02e865d",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "elements",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "131b58e29b7346ef94ec981c9c0afac0",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "8ec20e89bf52441eb173862c153290eb",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "editableByYou",
+      "Id": "2a4c3f19fcbc4aa78160edb585c62a6b",
+      "Inputs": [
+        {
+          "Id": "a616dde815474b05b5a7f2bdf3cbf9f9",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "39a88534f9a24708987ede19f02e865d",
+      "End": "a616dde815474b05b5a7f2bdf3cbf9f9",
+      "Id": "b59e071e27e5461d902f0fc3b31c2432"
+    },
+    {
+      "Start": "8ec20e89bf52441eb173862c153290eb",
+      "End": "b081f4a36cc74c22a5d77eff3ce9757e",
+      "Id": "108ffc1c54d34ff6b312f3dac03eb3b6"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.12.1.8246",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "ada09e07541345dfb5d3e4a353982eaf",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "131b58e29b7346ef94ec981c9c0afac0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 8.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "2a4c3f19fcbc4aa78160edb585c62a6b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 417.10583153347716,
+        "Y": -0.0161987041036582
+      }
+    ],
+    "Annotations": [],
+    "X": 156.8275,
+    "Y": 301.4575,
+    "Zoom": 0.82269535937499993
+  }
+}

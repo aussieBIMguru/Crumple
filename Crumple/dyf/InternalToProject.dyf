@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Return object or list\r\ndef objOrList(input):\r\n\tif isinstance(input, list) and len(input) == 1:\r\n\t\treturn input[0]\r\n\telse:\r\n\t\treturn input\r\n\r\n# Current doc/app/ui\r\nval = tolist(IN[0])\r\ndoc = IN[1]\r\n\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application\r\n\r\n# Get app version\r\nrvt_year = int(app.VersionNumber)\r\n\r\n# Get units\r\nif rvt_year < 2022:\r\n\tintUnits = doc.GetUnits().GetFormatOptions(UnitType.UT_Length).DisplayUnits\r\n\tconvertedVals = [UnitUtils.Convert(v,DisplayUnitType.DUT_DECIMAL_FEET,intUnits) for v in val]\r\nelse:\r\n\tintUnitsId = doc.GetUnits().GetFormatOptions(SpecTypeId.Length).GetUnitTypeId()\r\n\tconvertedVals = [UnitUtils.ConvertFromInternalUnits(v, intUnitsId) for v in val]\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(convertedVals)",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Current doc/app/ui\r\nvalues = tolist(IN[0])\r\ndoc    = IN[1]\r\n\r\n# Get app version\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application\r\nrvt_year = int(app.VersionNumber)\r\n\r\ndef interalToProject(val, ver = rvt_year, myDoc = doc):\r\n\tif rvt_year < 2022:\r\n\t\tintUnits = doc.GetUnits().GetFormatOptions(UnitType.UT_Length).DisplayUnits\r\n\t\treturn UnitUtils.Convert(val,DisplayUnitType.DUT_DECIMAL_FEET,intUnits)\r\n\telse:\r\n\t\tintUnitsId = doc.GetUnits().GetFormatOptions(SpecTypeId.Length).GetUnitTypeId()\r\n\t\treturn UnitUtils.ConvertFromInternalUnits(val, intUnitsId)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [interalToProject(v) for v in values]",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "37a190013cc84d8fbcca652e9e826452",
@@ -276,8 +276,8 @@
       }
     ],
     "Annotations": [],
-    "X": -192.80874798936438,
-    "Y": 364.24495616476952,
+    "X": -455.80874798936441,
+    "Y": 274.24495616476952,
     "Zoom": 0.94636815246289918
   }
 }

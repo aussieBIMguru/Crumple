@@ -11,47 +11,6 @@
   "Outputs": [],
   "Nodes": [
     {
-      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Return object or list\r\ndef objOrList(input):\r\n\tif isinstance(input, list) and len(input) == 1:\r\n\t\treturn input[0]\r\n\telse:\r\n\t\treturn input\r\n\r\n# Current doc/app/ui\r\nval = tolist(IN[0])\r\ndoc = IN[1]\r\n\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application\r\n\r\n# Get app version\r\nrvt_year = int(app.VersionNumber)\r\n\r\n# Get units\r\nif rvt_year < 2022:\r\n\tintUnits = doc.GetUnits().GetFormatOptions(UnitType.UT_Length).DisplayUnits\r\n\tconvertedVals = [UnitUtils.Convert(v,intUnits,DisplayUnitType.DUT_DECIMAL_FEET) for v in val]\r\nelse:\r\n\tintUnitsId = doc.GetUnits().GetFormatOptions(SpecTypeId.Length).GetUnitTypeId()\r\n\tconvertedVals = [UnitUtils.ConvertToInternalUnits(v, intUnitsId) for v in val]\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(convertedVals)",
-      "Engine": "IronPython2",
-      "VariableInputPorts": true,
-      "Id": "72031391bb524d8fa2f1d60c717d1f7a",
-      "Inputs": [
-        {
-          "Id": "38daf82c534843b7b93269200b6d0cde",
-          "Name": "IN[0]",
-          "Description": "Input #0",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "7c9e7fc062e544c08acfd5351d37266c",
-          "Name": "IN[1]",
-          "Description": "Input #1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "ef95c6d3525741b4983b769a78c99cad",
-          "Name": "OUT",
-          "Description": "Result of the python script",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "Runs an embedded Python script."
-    },
-    {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
       "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
       "FunctionType": "Graph",
@@ -163,28 +122,69 @@
       ],
       "Replication": "Disabled",
       "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Current doc/app/ui\r\nvalues = tolist(IN[0])\r\ndoc    = IN[1]\r\n\r\n# Get app version\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application\r\nrvt_year = int(app.VersionNumber)\r\n\r\ndef projectToInternal(val, ver = rvt_year, myDoc = doc):\r\n\tif rvt_year < 2022:\r\n\t\tintUnits = doc.GetUnits().GetFormatOptions(UnitType.UT_Length).DisplayUnits\r\n\t\treturn UnitUtils.Convert(val, units_length, DisplayUnitType.DUT_DECIMAL_FEET)\r\n\telse:\r\n\t\tintUnitsId = doc.GetUnits().GetFormatOptions(SpecTypeId.Length).GetUnitTypeId()\r\n\t\treturn UnitUtils.ConvertToInternalUnits(val, intUnitsId)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [projectToInternal(v) for v in values]",
+      "Engine": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "0a8073f4ce574ac490bf1c416d008c0d",
+      "Inputs": [
+        {
+          "Id": "1cb8c551fdfe4fa38802f4d7e0a040c6",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "f55f2fd5322b4e04bbb03d19df0dd1f1",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "ec46feeed05545e3b9cbd6fd927387f3",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
     }
   ],
   "Connectors": [
     {
-      "Start": "ef95c6d3525741b4983b769a78c99cad",
-      "End": "7b0adafe8d524be2a60bc48003eb079c",
-      "Id": "4b6656871e7049ad9c92bbc3ca8befb5"
-    },
-    {
       "Start": "8af49f226b4e4f979a026f05a23b9f88",
-      "End": "7c9e7fc062e544c08acfd5351d37266c",
-      "Id": "84f0623a34c4478eb87e1120a02275e2"
+      "End": "f55f2fd5322b4e04bbb03d19df0dd1f1",
+      "Id": "0cb801c0b39e43608f1fb4167a283204"
     },
     {
       "Start": "846b9d0e1b7e44eeaee6af99e19ac3da",
-      "End": "38daf82c534843b7b93269200b6d0cde",
-      "Id": "25279a69932c40c6af0304dbdf6798a6"
+      "End": "1cb8c551fdfe4fa38802f4d7e0a040c6",
+      "Id": "5b92b865562b40ada0eff9cca03218c5"
     },
     {
       "Start": "d45f15c62db5443a9c826539b6649b6f",
       "End": "48a97919c7414bd8959ec8be64c4425c",
       "Id": "d30ab809aff64f0cbc9f7d511d01e583"
+    },
+    {
+      "Start": "ec46feeed05545e3b9cbd6fd927387f3",
+      "End": "7b0adafe8d524be2a60bc48003eb079c",
+      "Id": "899186aab2ac435680a0b6c4f3265e98"
     }
   ],
   "Dependencies": [
@@ -226,16 +226,6 @@
     "NodeViews": [
       {
         "ShowGeometry": true,
-        "Name": "Python Script",
-        "Id": "72031391bb524d8fa2f1d60c717d1f7a",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 591.45705373709939,
-        "Y": 126.1244475967076
-      },
-      {
-        "ShowGeometry": true,
         "Name": "© Revit.GetDocument",
         "Id": "9e96896905e940f7a2d7339afb27a00e",
         "IsSetAsInput": false,
@@ -273,11 +263,21 @@
         "Excluded": false,
         "X": -164.0,
         "Y": 186.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "0a8073f4ce574ac490bf1c416d008c0d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 584.83984007043068,
+        "Y": 125.63804009632838
       }
     ],
     "Annotations": [],
-    "X": 262.85497759643914,
-    "Y": 161.63816745178039,
+    "X": 108.85497759643914,
+    "Y": 147.63816745178039,
     "Zoom": 0.822695359375
   }
 }

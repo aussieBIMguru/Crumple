@@ -1,9 +1,9 @@
 {
-  "Uuid": "5420f192-e4eb-4cc4-8c30-cede3aae32ab",
+  "Uuid": "07ce4bc6-be34-451f-b84c-a5b5ab96866a",
   "IsCustomNode": true,
   "Category": "Crumple.Revit.Query",
-  "Description": "Returns the checkout and model update status of elements if the model is workshared.",
-  "Name": "© Elements.Status",
+  "Description": "Returns the names and numbers of rooms. Typically the name property of a room in the API returns name and number, so this node works around this.",
+  "Name": "© Rooms.NameNumber",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -13,13 +13,13 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nelements = uwlist(IN[0])\r\n\r\ncheckout_status, update_status = [],[]\r\n\r\n# Do some action in a Transaction\r\nif doc.IsWorkshared:\r\n\tfor e in elements:\r\n\t\tcheckout_status.append(WorksharingUtils.GetCheckoutStatus(doc, e.Id))\r\n\t\tupdate_status.append(WorksharingUtils.GetModelUpdatesStatus(doc, e.Id))\r\nelse:\r\n\tfor e in elements:\r\n\t\tcheckout_status.append(None)\r\n\t\tupdate_status.append(None)\r\n\r\nOUT = checkout_status, update_status",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application\r\nver = int(app.VersionNumber)\r\nbip_roomName = BuiltInParameter.ROOM_NAME\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef getBip(element, bip):\r\n\t# RVT < 2022\r\n\tif ver < 2022:\r\n\t\treturn element.get_Parameter(bip)\r\n\t# RVT >= 2022\r\n\telse:\r\n\t\tid_forgeType = ParameterUtils.GetParameterTypeId(bip)\r\n\t\treturn element.GetParameter(id_forgeType)\r\n\r\ndef getRoomName(room):\r\n\ttry:\r\n\t\tbip = getBip(room, bip_roomName)\r\n\t\treturn bip.AsString()\r\n\texcept:\r\n\t\treturn \"\"\r\n\r\n# Preparing input from dynamo to revit\r\nrooms = uwlist(IN[0])\r\n\r\n# Preparing output to Dynamo\r\nOUT = [[r.Number for r in rooms], [getRoomName(r) for r in rooms]]",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
-      "Id": "f63edb24c5554c91b2816c2328803d8f",
+      "Id": "3066c0da9a7343d4aca21641133ce711",
       "Inputs": [
         {
-          "Id": "770fb97551d74e9cab0d8825b3801328",
+          "Id": "2f2a148b167b45448e674ae30139e06b",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -30,7 +30,7 @@
       ],
       "Outputs": [
         {
-          "Id": "4e1474c37b29475c9a4b6a978ceeddf0",
+          "Id": "bf70015b8d0f4960bd7b7e39e25ed83e",
           "Name": "OUT",
           "Description": "Result of the python script",
           "UsingDefaultValue": false,
@@ -46,11 +46,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "checkoutStatus",
-      "Id": "821d247d40cf4572a005db81cebbfd1e",
+      "Symbol": "numbers",
+      "Id": "98c82be943564619a587e608d3e00adf",
       "Inputs": [
         {
-          "Id": "f95b49b4715643da99bbf2cf71e0c251",
+          "Id": "1e6f4b5839cc46e8b394c2475f2f9149",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -67,17 +67,17 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "elements",
+        "Name": "room",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
-        "Description": ""
+        "Description": "A room or list of rooms."
       },
-      "Id": "e0e4779541bb4dafb89fbfb1ff7e5d8f",
+      "Id": "0c65f7730a1d445b8747f2f72890931d",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "163eaa6741534cc9a4b5afb56a9d3e4e",
+          "Id": "87a612f613234040a5d5508e858c0660",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -92,13 +92,13 @@
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
-      "Code": "out[0];\nout[1];",
-      "Id": "2881d89374544f8399fe0848ba7414ce",
+      "Code": "X[0];\nX[1];",
+      "Id": "6236ceaa127741258fd4353b0eead763",
       "Inputs": [
         {
-          "Id": "6e51a431d8da4278bdb196116f9780cb",
-          "Name": "out",
-          "Description": "out",
+          "Id": "666211f58a934ca091a488a61f6ec90b",
+          "Name": "X",
+          "Description": "X",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -107,7 +107,7 @@
       ],
       "Outputs": [
         {
-          "Id": "a755ed0c855d4094ae1165c5bcba0792",
+          "Id": "2d96e0bb863e4e508e02c075a94ae6cd",
           "Name": "",
           "Description": "Value of expression at line 1",
           "UsingDefaultValue": false,
@@ -116,7 +116,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "2b14b76bfca04a72bcd87f80467c5510",
+          "Id": "ac469414c82449b495ccd5b067e45209",
           "Name": "",
           "Description": "Value of expression at line 2",
           "UsingDefaultValue": false,
@@ -132,11 +132,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "modelUpdateStatus",
-      "Id": "a3cb9504fa844399ab88efa9e6e37f42",
+      "Symbol": "names",
+      "Id": "288e6d9f168845d1808609ad428f0a94",
       "Inputs": [
         {
-          "Id": "72272d84eaf24bc49a3886d0f11205b5",
+          "Id": "9f186405bca74e72998f6cdb2c8399b6",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -152,24 +152,24 @@
   ],
   "Connectors": [
     {
-      "Start": "4e1474c37b29475c9a4b6a978ceeddf0",
-      "End": "6e51a431d8da4278bdb196116f9780cb",
-      "Id": "29c920f700d44b918636e4d5a427632d"
+      "Start": "bf70015b8d0f4960bd7b7e39e25ed83e",
+      "End": "666211f58a934ca091a488a61f6ec90b",
+      "Id": "cb44c9443e474ed89937993749f0d212"
     },
     {
-      "Start": "163eaa6741534cc9a4b5afb56a9d3e4e",
-      "End": "770fb97551d74e9cab0d8825b3801328",
-      "Id": "2d910141ceb4412d83639fb8dedc1178"
+      "Start": "87a612f613234040a5d5508e858c0660",
+      "End": "2f2a148b167b45448e674ae30139e06b",
+      "Id": "3324d8f62433445085e9d3a9621debed"
     },
     {
-      "Start": "a755ed0c855d4094ae1165c5bcba0792",
-      "End": "f95b49b4715643da99bbf2cf71e0c251",
-      "Id": "1ca9294223db4f6b8d61146be91fee36"
+      "Start": "2d96e0bb863e4e508e02c075a94ae6cd",
+      "End": "1e6f4b5839cc46e8b394c2475f2f9149",
+      "Id": "09253f3227844459958531be621ae660"
     },
     {
-      "Start": "2b14b76bfca04a72bcd87f80467c5510",
-      "End": "72272d84eaf24bc49a3886d0f11205b5",
-      "Id": "745508db4c164fa1a3081d0f6b688d3d"
+      "Start": "ac469414c82449b495ccd5b067e45209",
+      "End": "9f186405bca74e72998f6cdb2c8399b6",
+      "Id": "0688eeabb8b4402d9ba6bfab3de23491"
     }
   ],
   "Dependencies": [],
@@ -201,57 +201,57 @@
       {
         "ShowGeometry": true,
         "Name": "Python Script",
-        "Id": "f63edb24c5554c91b2816c2328803d8f",
+        "Id": "3066c0da9a7343d4aca21641133ce711",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 260.0,
-        "Y": 3.0
+        "X": 250.0,
+        "Y": 0.0
       },
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "821d247d40cf4572a005db81cebbfd1e",
+        "Id": "98c82be943564619a587e608d3e00adf",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 669.15756332863975,
-        "Y": -36.13689697366172
+        "X": 652.44647850467425,
+        "Y": -80.8568492926764
       },
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "e0e4779541bb4dafb89fbfb1ff7e5d8f",
+        "Id": "0c65f7730a1d445b8747f2f72890931d",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -17.5,
-        "Y": 4.0
+        "X": -91.5,
+        "Y": -0.7710363217252052
       },
       {
         "ShowGeometry": true,
         "Name": "Code Block",
-        "Id": "2881d89374544f8399fe0848ba7414ce",
+        "Id": "6236ceaa127741258fd4353b0eead763",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 453.0,
-        "Y": 8.0
+        "X": 421.81334036998453,
+        "Y": 3.4617755712997678
       },
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "a3cb9504fa844399ab88efa9e6e37f42",
+        "Id": "288e6d9f168845d1808609ad428f0a94",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 669.5,
-        "Y": 64.0
+        "X": 653.95155750353933,
+        "Y": 64.967676550670888
       }
     ],
     "Annotations": [],
-    "X": -45.0,
-    "Y": 204.0,
-    "Zoom": 1.0
+    "X": -275.8808,
+    "Y": 252.17632500000002,
+    "Zoom": 1.33823125
   }
 }

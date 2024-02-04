@@ -1,0 +1,225 @@
+{
+  "Uuid": "7e25384b-26be-4c76-ad31-009e21d5c28c",
+  "IsCustomNode": true,
+  "Category": "Crumple.Geometry.Create",
+  "Description": "Given a list of bounding boxes, form the overall bounding box of those boxes.",
+  "Name": "© BoundingBox.Union",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "DSCore.List": {
+        "Key": "DSCore.List",
+        "Value": "DSCoreNodes.dll"
+      },
+      "Autodesk.Point": {
+        "Key": "Autodesk.DesignScript.Geometry.Point",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Autodesk.DesignScript.Geometry.Point": {
+        "Key": "Autodesk.DesignScript.Geometry.Point",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Autodesk.BoundingBox": {
+        "Key": "Autodesk.DesignScript.Geometry.BoundingBox",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Autodesk.DesignScript.Geometry.BoundingBox": {
+        "Key": "Autodesk.DesignScript.Geometry.BoundingBox",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Revit.Elements.Element": {
+        "Key": "Revit.Elements.Element",
+        "Value": "RevitNodes.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "//Get the min and max points for each bb\nmin = Autodesk.BoundingBox.MinPoint(bbs);\nmax = Autodesk.BoundingBox.MaxPoint(bbs);\n\n//Find the min and max values, build points from them\nmin_bb = Autodesk.Point.ByCoordinates(DSCore.List.MinimumItem(min.X),DSCore.List.MinimumItem(min.Y),DSCore.List.MinimumItem(min.Z));\nmax_bb = Autodesk.Point.ByCoordinates(DSCore.List.MaximumItem(max.X),DSCore.List.MaximumItem(max.Y),DSCore.List.MaximumItem(max.Z));\n\n//Make a new bb by the min/max results\nAutodesk.BoundingBox.ByCorners(min_bb, max_bb);",
+      "Id": "f5b19c2f84d149edacd39e5e0ab3f61f",
+      "Inputs": [
+        {
+          "Id": "dffebfac0ede454ebe6ec96ad7a31c46",
+          "Name": "bbs",
+          "Description": "bbs",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "4b5c3f03200549a19cf8233a2bdd71ef",
+          "Name": "",
+          "Description": "min",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e93cff60228549c880f6206e50627ee6",
+          "Name": "",
+          "Description": "max",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "4e5a3b99c54349a88bc736e9bb48698f",
+          "Name": "",
+          "Description": "min_bb",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "7bc324b6f4d44f03a63835b5dda11b19",
+          "Name": "",
+          "Description": "max_bb",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "cad683979bbd4de7a464e04883a86137",
+          "Name": "",
+          "Description": "Value of expression at line 10",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "boundingBoxes",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "5224a0c04df84c82af26f6d964f8f014",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "c6c84d6961aa44c1a1305705804280cd",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "unionBox",
+      "Id": "051e7454bbfe4bcd9022acb771a9d74c",
+      "Inputs": [
+        {
+          "Id": "94ee45f15cad482a871713b602a80f6f",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "cad683979bbd4de7a464e04883a86137",
+      "End": "94ee45f15cad482a871713b602a80f6f",
+      "Id": "d8c5b25bacbd4961b0c53105311f41dc"
+    },
+    {
+      "Start": "c6c84d6961aa44c1a1305705804280cd",
+      "End": "dffebfac0ede454ebe6ec96ad7a31c46",
+      "Id": "af89d9f88f494f44b17f957be6b1962b"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.0.5885",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -7766.879349244753,
+      "EyeY": 8707.9661031949217,
+      "EyeZ": 7358.2944778966921,
+      "LookX": -11692.4173014161,
+      "LookY": -6333.7819937204767,
+      "LookZ": -29217.405622725302,
+      "UpX": 0.0064842688870732105,
+      "UpY": 0.999847695156396,
+      "UpZ": 0.016203109190903002
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "f5b19c2f84d149edacd39e5e0ab3f61f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "5224a0c04df84c82af26f6d964f8f014",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -34.290438579258534,
+        "Y": -3.8819364429349292
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "051e7454bbfe4bcd9022acb771a9d74c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1065.7542564966661,
+        "Y": 154.2387711011562
+      }
+    ],
+    "Annotations": [],
+    "X": 73.836221843162861,
+    "Y": 305.85946037836987,
+    "Zoom": 1.2783803199787107
+  }
+}
