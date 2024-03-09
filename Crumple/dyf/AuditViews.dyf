@@ -1,0 +1,373 @@
+{
+  "Uuid": "214adb49-f4e1-4e97-bc00-40ac296cc627",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.Actions",
+  "Description": "Returns all views in the document which are not placed on sheets or dependent upon views placed on sheets (callout, dependent views). If you set the purge to true, it will attempt to delete them also.",
+  "Name": "© Audit.Views",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "x[0];\nx[1];",
+      "Id": "b77f00f4c6884c68ab9c0d7cd56140da",
+      "Inputs": [
+        {
+          "Id": "fc6fe2614749403c9d7e66ab2e73832a",
+          "Name": "x",
+          "Description": "x",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "bcf68caa6dbc4ca994f4825029c25268",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "8e9fc01965314bcab874e4120b91de30",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Transactions import TransactionManager \r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\npurge = IN[1]\r\n\r\n# Get revit version\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application \r\nREVIT_VER = int(app.VersionNumber)\r\n\r\n# get all views in document\r\nviews_used, vp_views, views_unused = [],[],[]\r\n\r\nviews = FilteredElementCollector(doc).OfClass(View).ToElements()\r\n\r\ntypes_views = [ViewType.FloorPlan,\r\n               ViewType.CeilingPlan,\r\n               ViewType.Elevation,\r\n               ViewType.ThreeD,\r\n               ViewType.DraftingView,\r\n               ViewType.EngineeringPlan,\r\n               ViewType.AreaPlan,\r\n               ViewType.Section,\r\n               ViewType.Detail,\r\n               ViewType.Rendering]\r\n\r\nviews_valid = []\r\n\r\nfor v in views:\r\n\tif v.ViewType in types_views and not v.IsTemplate:\r\n\t\tviews_valid.append(v)\r\n\r\n# get all viewports and views in them\r\nviewports_all = FilteredElementCollector(doc).OfClass(Viewport).WhereElementIsNotElementType().ToElements()\r\n\r\nfor vp in viewports_all:\r\n    # Get viewport view\r\n    vp_view = doc.GetElement(vp.ViewId)\r\n    vp_views.append(vp_view)\r\n    views_used.append(vp_view)\r\n\r\n# Function: Get all callout views to any depth\r\nBIP_PARENT = BuiltInParameter.SECTION_PARENT_VIEW_NAME\r\n\r\ndef getBip(element, bip):\r\n    # RVT < 2022\r\n    if REVIT_VER < 2022:\r\n        return element.get_Parameter(bip)\r\n    # RVT >= 2022\r\n    else:\r\n        id_forgeType = ParameterUtils.GetParameterTypeId(bip)\r\n        return element.GetParameter(id_forgeType)\r\n\r\n# Function: Exhaust view ancestry\r\ndef viewAncestry(view, myDoc = doc):\r\n    # Set the base variables\r\n    views_out       = []\r\n    circuit_breaker = 0\r\n    view_check   = view\r\n    run_continue = True\r\n    # While we keep going...\r\n    while run_continue and circuit_breaker < 99:\r\n        # Uptick the breaker\r\n        circuit_breaker += 1\r\n        # Try to get a parent view\r\n        try:\r\n            # Get the next view\r\n            safe_bip   = getBip(view_check, BIP_PARENT)\r\n            parent_id  = safe_bip.AsElementId()\r\n            view_check = myDoc.GetElement(parent_id)\r\n            # if a parent is found, append and then check it\r\n            if view_check:\r\n                views_out.append(view_check)\r\n            # otherwise, stop\r\n            else:\r\n                run_continue = False\r\n        # If it fails, stop\r\n        except:\r\n            run_continue = False\r\n    # Return the views\r\n    return views_out\r\n\r\n# Exhaust viewport view ancestry\r\nfor v in vp_views:\r\n    # Get primary view\r\n    view_primary = doc.GetElement(v.GetPrimaryViewId())\r\n    # If it exists, add it\r\n    if view_primary:\r\n        views_used.append(view_primary)\r\n    # Add the dependent views\r\n    views_used.extend(viewAncestry(v, doc))\r\n\r\n# Get used view Ids\r\nviewsIds_used = [v.Id for v in views_used]\r\n\r\n# Assess unused views\r\nfor v in views_valid:\r\n\t# If view Id not used, append it\r\n\tif v.Id not in viewsIds_used:\r\n\t\tviews_unused.append(v)\r\n\r\nviewIds_unused = [v.Id for v in views_unused]\r\n\r\n# Preparing output to Dynamo\r\nif purge:\r\n\t# Do some action in a Transaction\r\n\toutList = []\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\tfor i,v in zip(viewIds_unused, views_unused):\r\n\t\ttry:\r\n\t\t\tdoc.Delete(i)\r\n\t\t\toutList.append(None)\r\n\t\texcept:\r\n\t\t\toutList.append(v)\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\n\tOUT = outList, viewIds_unused\r\nelse:\r\n\tOUT = views_unused, viewIds_unused",
+      "Engine": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "9581c598e5574058850b0d47ec499c5e",
+      "Inputs": [
+        {
+          "Id": "f387aae64c6046a4991da6ed00f8ad8e",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "5cffea935a444a2c934a7c7783009413",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "62becff379c74864ac07e9452232d36a",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "37d4877627d5478b9f670a78a3651fa9",
+      "Inputs": [
+        {
+          "Id": "9d0b2bd70108406d91656f270b42a960",
+          "Name": "docOrLink",
+          "Description": "var[]..[]\nDefault value : null",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "4d79eecb2cd94e35805bf6b3e329634e",
+          "Name": "document",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "11c1c1b457264352a410ebe8f63d67d1",
+          "Name": "outcome",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "docOrLink",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": "null",
+        "Description": "Uses current if none provided.\nAccepts document or link instance."
+      },
+      "Id": "d101082be5e142a59fc33f3f272886a6",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "1a941e57521b4d7b96a4e4f8bd906464",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "purge",
+        "TypeName": "bool",
+        "TypeRank": 0,
+        "DefaultValue": "false",
+        "Description": ""
+      },
+      "Id": "ae61f9e6833b4bd18ec7747eb7d8773c",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "5a3a9b1e612c4db9aefe73fcbdf67bcf",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "views",
+      "Id": "f6d7e894417547be9276a5f299ad46f6",
+      "Inputs": [
+        {
+          "Id": "a1ac9bef4fdf4b79a6374c89672e968b",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "ids",
+      "Id": "dfaec1a245134a5a91b2695da0942a85",
+      "Inputs": [
+        {
+          "Id": "90f241de71424790a5963230c2a1d13d",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "bcf68caa6dbc4ca994f4825029c25268",
+      "End": "a1ac9bef4fdf4b79a6374c89672e968b",
+      "Id": "7306e2a507d7487a98d4d48350d0fde5"
+    },
+    {
+      "Start": "8e9fc01965314bcab874e4120b91de30",
+      "End": "90f241de71424790a5963230c2a1d13d",
+      "Id": "c12f93dacf854c0bb6ff4b7e8a5b1dac"
+    },
+    {
+      "Start": "62becff379c74864ac07e9452232d36a",
+      "End": "fc6fe2614749403c9d7e66ab2e73832a",
+      "Id": "734b3e9285774f51b10f8bd58aa6e755"
+    },
+    {
+      "Start": "4d79eecb2cd94e35805bf6b3e329634e",
+      "End": "f387aae64c6046a4991da6ed00f8ad8e",
+      "Id": "82b3e394a0da4d14bd72320493cadc55"
+    },
+    {
+      "Start": "1a941e57521b4d7b96a4e4f8bd906464",
+      "End": "9d0b2bd70108406d91656f270b42a960",
+      "Id": "7158682ffb10427b942a36fb5e97b65b"
+    },
+    {
+      "Start": "5a3a9b1e612c4db9aefe73fcbdf67bcf",
+      "End": "5cffea935a444a2c934a7c7783009413",
+      "Id": "d9c56cebd7824ecd9cb1f1bd922b4b19"
+    }
+  ],
+  "Dependencies": [
+    "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Crumple",
+      "Version": "2022.5.27",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "37d4877627d5478b9f670a78a3651fa9"
+      ]
+    }
+  ],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.12.1.8246",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "b77f00f4c6884c68ab9c0d7cd56140da",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 759.780169167637,
+        "Y": 39.562758509587013
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "9581c598e5574058850b0d47ec499c5e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 587.33194752855,
+        "Y": 35.401454001110096
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "© Revit.GetDocument",
+        "Id": "37d4877627d5478b9f670a78a3651fa9",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "d101082be5e142a59fc33f3f272886a6",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -174.075606707048,
+        "Y": 0.98518886737457478
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "ae61f9e6833b4bd18ec7747eb7d8773c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 281.6929361356199,
+        "Y": 143.83678648768233
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "f6d7e894417547be9276a5f299ad46f6",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 959.86545967201914,
+        "Y": -4.5283648150557667
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "dfaec1a245134a5a91b2695da0942a85",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 965.15237421627376,
+        "Y": 132.58521873628825
+      }
+    ],
+    "Annotations": [],
+    "X": 193.27220555824618,
+    "Y": 199.68604780236262,
+    "Zoom": 0.565293988808902
+  }
+}

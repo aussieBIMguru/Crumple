@@ -1,9 +1,9 @@
 {
-  "Uuid": "cd386e57-c114-4f64-92fc-ec55292c9c16",
+  "Uuid": "04df4a8c-b1f3-4c8a-ade7-79eec0074768",
   "IsCustomNode": true,
   "Category": "Crumple.Revit.Actions",
-  "Description": "Returns all view templates in the document which are not in use by views or view types. If you set the purge to true, it will attempt to delete them also.",
-  "Name": "© Audit.ViewTemplates",
+  "Description": "Returns all view filters in the document which are not in use by views or view templates. If you set the purge to true, it will attempt to delete them also.",
+  "Name": "© Audit.ViewFilters",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -11,15 +11,54 @@
   "Outputs": [],
   "Nodes": [
     {
-      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\npurge = IN[1]\r\n\r\n# get all views and view types\r\nviews = FilteredElementCollector(doc).OfClass(View).ToElements()\r\nvfts  = FilteredElementCollector(doc).OfClass(ViewFamilyType).ToElements()\r\n\r\nignoreTypes = [ViewType.ProjectBrowser, ViewType.SystemBrowser, ViewType.Undefined]\r\n\r\n# Get relevant templates and views\r\ntemplates_used, templates_all, templates_unused, ids_unused = [],[],[],[]\r\n\r\nfor v in views:\r\n\tif v.IsTemplate:\r\n\t\ttemplates_all.append(v)\r\n\telif v.ViewType in ignoreTypes:\r\n\t\tpass\r\n\telse:\r\n\t\ttid = v.ViewTemplateId.ToString()\r\n\t\tif tid not in templates_used and tid != -1:\r\n\t\t\ttemplates_used.append(tid)\r\n\r\n# Get view type templates\r\nfor vft in vfts:\r\n\ttid = vft.DefaultTemplateId.ToString()\r\n\tif tid not in templates_used and tid != -1:\r\n\t\ttemplates_used.append(tid)\r\n\r\n# Get unused templates\r\nfor vt in templates_all:\r\n\tif vt.Id.ToString() not in templates_used:\r\n\t\ttemplates_unused.append(vt)\r\n\t\tids_unused.append(vt.Id)\r\n\r\n# Preparing output to Dynamo\r\nif purge:\r\n\t# Do some action in a Transaction\r\n\toutList = []\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\tfor i,t in zip(ids_unused,templates_unused):\r\n\t\ttry:\r\n\t\t\tdoc.Delete(i)\r\n\t\t\toutList.append(None)\r\n\t\texcept:\r\n\t\t\toutList.append(t)\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\n\tOUT = outList, ids_unused\r\nelse:\r\n\tOUT = templates_unused, ids_unused",
-      "Engine": "IronPython2",
-      "VariableInputPorts": true,
-      "Id": "800efd6fd93e4b42bc904e807c7ee206",
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "x[0];\nx[1];",
+      "Id": "95397723fed142d7a541d4fecfff0732",
       "Inputs": [
         {
-          "Id": "58ff0be3eb38450e83a494005c3fd50e",
+          "Id": "4d0f4d87a1d84b2daeff2cff6e9121a5",
+          "Name": "x",
+          "Description": "x",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "194e9b995104460d8034c66572190d42",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a356704da6cb4806b1193d42c17a9262",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\npurge = IN[1]\r\n\r\n# get all views and view types\r\nviews = FilteredElementCollector(doc).OfClass(View).ToElements()\r\nfilterIds_all = FilteredElementCollector(doc).OfClass(FilterElement).ToElementIds()\r\n\r\nignoreTypes = [ViewType.ProjectBrowser, ViewType.SystemBrowser, ViewType.Undefined]\r\n\r\n# Get relevant templates and views\r\nfilterIds_used, filterIds_unused, filters_unused = [],[],[]\r\n\r\nfor v in views:\r\n\tif v.ViewType in ignoreTypes:\r\n\t\tpass\r\n\telse:\r\n\t\t# Get its filters\r\n\t\ttry:\r\n\t\t\tview_filterIds = v.GetFilters()\r\n\t\t\tfor f in view_filterIds:\r\n\t\t\t\tif f not in filterIds_used:\r\n\t\t\t\t\tfilterIds_used.append(f)\r\n\t\texcept:\r\n\t\t\tpass\r\n\r\nfor f in filterIds_all:\r\n\tif f not in filterIds_used:\r\n\t\tfilterIds_unused.append(f)\r\n\t\tfilters_unused.append(doc.GetElement(f).Name)\r\n\r\n# Preparing output to Dynamo\r\nif purge:\r\n\t# Do some action in a Transaction\r\n\toutList = []\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\tfor i,f in zip(filterIds_unused,filters_unused):\r\n\t\ttry:\r\n\t\t\tdoc.Delete(i)\r\n\t\t\toutList.append(None)\r\n\t\texcept:\r\n\t\t\toutList.append(f)\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\n\tOUT = outList, filterIds_unused\r\nelse:\r\n\tOUT = filters_unused, filterIds_unused",
+      "Engine": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "1886e25dc24848c7abe2c7429cd62abe",
+      "Inputs": [
+        {
+          "Id": "c0f4283d7c2a4eb3bc8176a2314cc5a4",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -28,7 +67,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "b86e8b26f02f4dc1bc2404b495035c18",
+          "Id": "debd1e68a1814038857e45bcc18b8da9",
           "Name": "IN[1]",
           "Description": "Input #1",
           "UsingDefaultValue": false,
@@ -39,7 +78,7 @@
       ],
       "Outputs": [
         {
-          "Id": "5507ac577c8e48c0b3407553c843e1b1",
+          "Id": "435207f074dc4cad9efced15c90eb8f0",
           "Name": "OUT",
           "Description": "Result of the python script",
           "UsingDefaultValue": false,
@@ -56,10 +95,10 @@
       "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
       "FunctionType": "Graph",
       "NodeType": "FunctionNode",
-      "Id": "2426c9790e0a4668a7d582180a4ced83",
+      "Id": "f9262505cbd946f695a4880c415e70d5",
       "Inputs": [
         {
-          "Id": "2cc0523778614e7bbfad63de4301f5df",
+          "Id": "d2d2c43575834768ae15ae59d1eaa3e2",
           "Name": "docOrLink",
           "Description": "var[]..[]\nDefault value : null",
           "UsingDefaultValue": true,
@@ -70,7 +109,7 @@
       ],
       "Outputs": [
         {
-          "Id": "0b2dd5eaaf8646db9419d24a263bf5e3",
+          "Id": "e4006b7344a746718eb4a30d1cea6e19",
           "Name": "document",
           "Description": "return value",
           "UsingDefaultValue": false,
@@ -79,7 +118,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "3da95247e0c24d26b1dd156efdbddc2b",
+          "Id": "6fc545b6e7154824929f75135bf5b946",
           "Name": "outcome",
           "Description": "return value",
           "UsingDefaultValue": false,
@@ -101,11 +140,11 @@
         "DefaultValue": "null",
         "Description": "Uses current if none provided.\nAccepts document or link instance."
       },
-      "Id": "ee08cbbd55c342cc8a2e0e346a514f66",
+      "Id": "5a83ca1f763a45638a3c0a04d4a6eabb",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "3e598c46ad804dc98b96fce86d67d9cc",
+          "Id": "a0125042c91e426a8eb6ab748df4406c",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -121,11 +160,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "viewTemplates",
-      "Id": "17d842bb30fc4565bc7d796de0e64c5d",
+      "Symbol": "viewFilters",
+      "Id": "a2423db86f3c451e8acb85326e45da75",
       "Inputs": [
         {
-          "Id": "a8d2c33890ba43f294a9dafa843fba6e",
+          "Id": "997c612f558c41f6b5ed0ac79ed011e9",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -143,10 +182,10 @@
       "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "ids",
-      "Id": "1b651f071e044262ac00bf1433a6502b",
+      "Id": "76124086029c4c2ca9f3a516a69ab5b3",
       "Inputs": [
         {
-          "Id": "5242723f7f774614b8314c3771fe5d72",
+          "Id": "388e2bbe510847deba60bd647776236d",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -160,45 +199,6 @@
       "Description": "A function output, use with custom nodes"
     },
     {
-      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
-      "NodeType": "CodeBlockNode",
-      "Code": "x[0];\nx[1];",
-      "Id": "eff0b1fc39f04bc598e4d0d4f5717d07",
-      "Inputs": [
-        {
-          "Id": "3918f99cc5344ebfa43cb12356836510",
-          "Name": "x",
-          "Description": "x",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "7e5d0e4f9aa74dd7916d75cf6e1a42bd",
-          "Name": "",
-          "Description": "Value of expression at line 1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "fc35fa8f308a4ec88d7555dffbb4cca3",
-          "Name": "",
-          "Description": "Value of expression at line 2",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "Allows for DesignScript code to be authored directly"
-    },
-    {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
@@ -208,11 +208,11 @@
         "DefaultValue": "false",
         "Description": ""
       },
-      "Id": "f635c679a88a4655b4be2e9b93da3705",
+      "Id": "5d2ef7f6fc1043edbf018abf8df91c89",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "4b5472890b2f453a88eac666d78f1ab0",
+          "Id": "5ef0f34eedb04500b580236d8e8d7530",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -227,34 +227,34 @@
   ],
   "Connectors": [
     {
-      "Start": "5507ac577c8e48c0b3407553c843e1b1",
-      "End": "3918f99cc5344ebfa43cb12356836510",
-      "Id": "d879a5db7791461d83d6885b8a92de79"
+      "Start": "194e9b995104460d8034c66572190d42",
+      "End": "997c612f558c41f6b5ed0ac79ed011e9",
+      "Id": "7699c5ef872546ff8f76c72418cd8d96"
     },
     {
-      "Start": "0b2dd5eaaf8646db9419d24a263bf5e3",
-      "End": "58ff0be3eb38450e83a494005c3fd50e",
-      "Id": "b411841aa51a4d2986f9038cba45876e"
+      "Start": "a356704da6cb4806b1193d42c17a9262",
+      "End": "388e2bbe510847deba60bd647776236d",
+      "Id": "90bd9a88cf98472a9a35b617436bf043"
     },
     {
-      "Start": "3e598c46ad804dc98b96fce86d67d9cc",
-      "End": "2cc0523778614e7bbfad63de4301f5df",
-      "Id": "c58767c2630746ff8e55f52e020b626f"
+      "Start": "435207f074dc4cad9efced15c90eb8f0",
+      "End": "4d0f4d87a1d84b2daeff2cff6e9121a5",
+      "Id": "3a233aab794b4d53b40dac409109d425"
     },
     {
-      "Start": "7e5d0e4f9aa74dd7916d75cf6e1a42bd",
-      "End": "a8d2c33890ba43f294a9dafa843fba6e",
-      "Id": "4c59079c618747fb91b10ba993d5b3e0"
+      "Start": "e4006b7344a746718eb4a30d1cea6e19",
+      "End": "c0f4283d7c2a4eb3bc8176a2314cc5a4",
+      "Id": "c6c48f2aae6f477b97bfcbd7786c40f9"
     },
     {
-      "Start": "fc35fa8f308a4ec88d7555dffbb4cca3",
-      "End": "5242723f7f774614b8314c3771fe5d72",
-      "Id": "f37af5e8850f4192810bec75f9e776de"
+      "Start": "a0125042c91e426a8eb6ab748df4406c",
+      "End": "d2d2c43575834768ae15ae59d1eaa3e2",
+      "Id": "f9766414ad0c4af5b46191ee2aa48957"
     },
     {
-      "Start": "4b5472890b2f453a88eac666d78f1ab0",
-      "End": "b86e8b26f02f4dc1bc2404b495035c18",
-      "Id": "3ddf87c62331480692fbad10a29af012"
+      "Start": "5ef0f34eedb04500b580236d8e8d7530",
+      "End": "debd1e68a1814038857e45bcc18b8da9",
+      "Id": "2dcdf26fc78a47f9a2759d6aaa9d9476"
     }
   ],
   "Dependencies": [
@@ -266,7 +266,7 @@
       "Version": "2022.5.27",
       "ReferenceType": "Package",
       "Nodes": [
-        "2426c9790e0a4668a7d582180a4ced83"
+        "f9262505cbd946f695a4880c415e70d5"
       ]
     }
   ],
@@ -296,18 +296,28 @@
     "NodeViews": [
       {
         "ShowGeometry": true,
-        "Name": "Python Script",
-        "Id": "800efd6fd93e4b42bc904e807c7ee206",
+        "Name": "Code Block",
+        "Id": "95397723fed142d7a541d4fecfff0732",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 687.09405373585082,
-        "Y": 44.022702405252005
+        "X": 759.78016916763693,
+        "Y": 39.562758509587013
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "1886e25dc24848c7abe2c7429cd62abe",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 587.33194752854956,
+        "Y": 35.401454001110096
       },
       {
         "ShowGeometry": true,
         "Name": "© Revit.GetDocument",
-        "Id": "2426c9790e0a4668a7d582180a4ced83",
+        "Id": "f9262505cbd946f695a4880c415e70d5",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
@@ -317,57 +327,47 @@
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "ee08cbbd55c342cc8a2e0e346a514f66",
+        "Id": "5a83ca1f763a45638a3c0a04d4a6eabb",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -163.00000000000006,
-        "Y": -1.0
+        "X": -169.37530997114288,
+        "Y": -1.2106568299548144
       },
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "17d842bb30fc4565bc7d796de0e64c5d",
+        "Id": "a2423db86f3c451e8acb85326e45da75",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1107.1661793064675,
-        "Y": 10.039947805163109
+        "X": 981.84406592865844,
+        "Y": 13.163303120497432
       },
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "1b651f071e044262ac00bf1433a6502b",
+        "Id": "76124086029c4c2ca9f3a516a69ab5b3",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1103.4215664702715,
-        "Y": 115.93049616353281
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Code Block",
-        "Id": "eff0b1fc39f04bc598e4d0d4f5717d07",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 880.0,
-        "Y": 48.0
+        "X": 984.17703690647,
+        "Y": 92.312482697216069
       },
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "f635c679a88a4655b4be2e9b93da3705",
+        "Id": "5d2ef7f6fc1043edbf018abf8df91c89",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 280.99999999999994,
-        "Y": 165.0
+        "X": 277.52082931069407,
+        "Y": 150.63203871320161
       }
     ],
     "Annotations": [],
-    "X": -309.0,
-    "Y": 263.0,
-    "Zoom": 1.0
+    "X": -23.519623151078349,
+    "Y": 196.33749307865412,
+    "Zoom": 0.822695359375
   }
 }
