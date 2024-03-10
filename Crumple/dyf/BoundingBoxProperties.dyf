@@ -13,6 +13,14 @@
       "BoundingBox": {
         "Key": "Autodesk.DesignScript.Geometry.BoundingBox",
         "Value": "ProtoGeometry.dll"
+      },
+      "Autodesk.DesignScript.BoundingBox": {
+        "Key": "Autodesk.DesignScript.Geometry.BoundingBox",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Autodesk.DesignScript.Geometry.BoundingBox": {
+        "Key": "Autodesk.DesignScript.Geometry.BoundingBox",
+        "Value": "ProtoGeometry.dll"
       }
     }
   },
@@ -22,11 +30,11 @@
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
-      "Code": "bbMax = BoundingBox.MaxPoint(bb);\nbbMin = BoundingBox.MinPoint(bb);\n\nbbMax.X - bbMin.X;\nbbMax.Y - bbMin.Y;\nbbMax.Z - bbMin.Z;\n\nPoint.ByCoordinates((bbMin.X + bbMax.X)/2, (bbMin.Y + bbMax.Y)/2, (bbMin.Z + bbMax.Z)/2);",
+      "Code": "bbMax = Autodesk.DesignScript.BoundingBox.MaxPoint(bb);\nbbMin = Autodesk.DesignScript.BoundingBox.MinPoint(bb);\n\nbbMax.X - bbMin.X;\nbbMax.Y - bbMin.Y;\nbbMax.Z - bbMin.Z;\n\nPoint.ByCoordinates((bbMin.X + bbMax.X)/2, (bbMin.Y + bbMax.Y)/2, (bbMin.Z + bbMax.Z)/2);",
       "Id": "90758af2074c4726bcc7b5ee71cfcc77",
       "Inputs": [
         {
-          "Id": "60235ec19a894dd18ced3eb0dc81f8a5",
+          "Id": "04bd0c7ed4314ca583d3f013259ec064",
           "Name": "bb",
           "Description": "bb",
           "UsingDefaultValue": false,
@@ -37,7 +45,7 @@
       ],
       "Outputs": [
         {
-          "Id": "e6d637ef656e4731b084c63a7500640e",
+          "Id": "3babd9c6c64e459cb41d773a177d1665",
           "Name": "",
           "Description": "bbMax",
           "UsingDefaultValue": false,
@@ -46,7 +54,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "7e94d836fb8c4ff1ac3c9dc3afae9f79",
+          "Id": "72c5c8d3cf5f47e89196fe4524eb49c9",
           "Name": "",
           "Description": "bbMin",
           "UsingDefaultValue": false,
@@ -55,7 +63,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "a11942c054074c08a8ed9a522f884d6b",
+          "Id": "81a9c7d930f44599985d844e8d563a5b",
           "Name": "",
           "Description": "Value of expression at line 4",
           "UsingDefaultValue": false,
@@ -64,7 +72,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "efd4ae1b05c34984b08b100407dc4d06",
+          "Id": "ed7ee9673d904ff9a27c3197ccad563c",
           "Name": "",
           "Description": "Value of expression at line 5",
           "UsingDefaultValue": false,
@@ -73,7 +81,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "4a3507e6535c4269b63cdedc19b53b09",
+          "Id": "aa4d361be9dd4984ae574be46abbf199",
           "Name": "",
           "Description": "Value of expression at line 6",
           "UsingDefaultValue": false,
@@ -82,7 +90,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "b9813cc765ed44a1adeb43402b7e4b18",
+          "Id": "1b5da86b9aae41c4941fba37003a7700",
           "Name": "",
           "Description": "Value of expression at line 8",
           "UsingDefaultValue": false,
@@ -207,29 +215,29 @@
   ],
   "Connectors": [
     {
-      "Start": "a11942c054074c08a8ed9a522f884d6b",
+      "Start": "81a9c7d930f44599985d844e8d563a5b",
       "End": "e3d99d143bb349e98ae56acee80d4431",
-      "Id": "7255e4414cdf4df08f23ba3333d934ad"
+      "Id": "c63eefb8690741d49fb323c56d4bb00b"
     },
     {
-      "Start": "efd4ae1b05c34984b08b100407dc4d06",
+      "Start": "ed7ee9673d904ff9a27c3197ccad563c",
       "End": "1bf2f8b5d0604dd3bfc54c9333edac3e",
-      "Id": "734e1c97c094402184bce44f82642f90"
+      "Id": "68a1fc88f56745a6b0a5f3d002960028"
     },
     {
-      "Start": "4a3507e6535c4269b63cdedc19b53b09",
+      "Start": "aa4d361be9dd4984ae574be46abbf199",
       "End": "e8f020a86a894749949071e78bd02288",
-      "Id": "1dad4b53d336403a92be0d96257b7421"
+      "Id": "1560a0999bb14ab7b8013fb62adbf998"
     },
     {
-      "Start": "b9813cc765ed44a1adeb43402b7e4b18",
+      "Start": "1b5da86b9aae41c4941fba37003a7700",
       "End": "14186a0b55a348d8b65cc3420ec1d1a7",
-      "Id": "b31deb48bfde425d8818cb82a5f51ec4"
+      "Id": "aecd5204f8854fb09b2be49036e35070"
     },
     {
       "Start": "888b38c85a6a4b139c0e786396bb5356",
-      "End": "60235ec19a894dd18ced3eb0dc81f8a5",
-      "Id": "1186704f12884d42816812eab34cb48e"
+      "End": "04bd0c7ed4314ca583d3f013259ec064",
+      "Id": "cebb68895a614eb5ace48e92e2ca113d"
     }
   ],
   "Dependencies": [],
@@ -247,15 +255,15 @@
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -17.0,
-      "EyeY": 24.0,
-      "EyeZ": 50.0,
-      "LookX": 12.0,
-      "LookY": -13.0,
-      "LookZ": -58.0,
-      "UpX": 0.0,
-      "UpY": 1.0,
-      "UpZ": 0.0
+      "EyeX": -19177.32421875,
+      "EyeY": 17003.115234375,
+      "EyeZ": 16749.59375,
+      "LookX": 11034.255859375,
+      "LookY": -17215.615234375,
+      "LookZ": -16548.0,
+      "UpX": 0.26467055082321167,
+      "UpY": 0.87881672382354736,
+      "UpZ": -0.39702725410461426
     },
     "NodeViews": [
       {
@@ -285,8 +293,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -30.038052542866353,
-        "Y": -8.0034593220788111
+        "X": -40.997694922929782,
+        "Y": -5.2635487270629824
       },
       {
         "ShowGeometry": true,
@@ -320,8 +328,8 @@
       }
     ],
     "Annotations": [],
-    "X": -237.59774293505859,
-    "Y": 158.3474460495211,
-    "Zoom": 0.822695359375
+    "X": 140.67896913270857,
+    "Y": 151.9544807889985,
+    "Zoom": 0.729950825270786
   }
 }

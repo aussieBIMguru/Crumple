@@ -26,7 +26,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Revit services and API\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[1]\r\n\r\n# Get project position\r\nori = doc.ActiveProjectLocation.GetProjectPosition(XYZ(0,0,0))\r\n\r\n# Get EW, NS, Elev\r\n# Thanks for letting me know about the rounding issue Ruben Romero Vivancos!\r\nori_ns = ori.NorthSouth * IN[0]\r\nori_ew = ori.EastWest * IN[0]\r\nori_el = ori.Elevation * IN[0]\r\n\r\n# Preparing output to Dynamo\r\nOUT = [ori_ns, ori_ew, ori_el]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\n# Revit services and API\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Get app version\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application\r\nrvt_year = int(app.VersionNumber)\r\n\r\ndef interalToProject(val, ver = rvt_year, myDoc = doc):\r\n\tif rvt_year < 2022:\r\n\t\tintUnits = doc.GetUnits().GetFormatOptions(UnitType.UT_Length).DisplayUnits\r\n\t\treturn UnitUtils.Convert(val,DisplayUnitType.DUT_DECIMAL_FEET,intUnits)\r\n\telse:\r\n\t\tintUnitsId = doc.GetUnits().GetFormatOptions(SpecTypeId.Length).GetUnitTypeId()\r\n\t\treturn UnitUtils.ConvertFromInternalUnits(val, intUnitsId)\r\n\r\n# Get project position\r\nori = doc.ActiveProjectLocation.GetProjectPosition(XYZ(0,0,0))\r\n\r\n# Get EW, NS, Elev\r\nori_pt = XYZ(0,0,0).ToPoint()\r\nori_ns = interalToProject(ori.NorthSouth)\r\nori_ew = interalToProject(ori.EastWest)\r\nori_el = interalToProject(ori.Elevation)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [ori_pt, ori_ns, ori_ew, ori_el]",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "2245f95ce7ae41e9abe2e4bb5e71eaec",
       "Inputs": [
@@ -34,15 +35,6 @@
           "Id": "99f7962157ba464196e0d5ff048835ad",
           "Name": "IN[0]",
           "Description": "Input #0",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "a4a994681cce4223b02d15c85ddcc4d3",
-          "Name": "IN[1]",
-          "Description": "Input #1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -61,16 +53,16 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
-      "Code": "x[0];\nx[1];\nx[2];",
+      "Code": "x[0];\nx[1];\nx[2];\nx[3];",
       "Id": "cdf75c572a304e2aa0a414930053f6d8",
       "Inputs": [
         {
-          "Id": "ba8c0097506a40349167a0c0b0ebbcc6",
+          "Id": "e230754779c24e87b0662d4b66e3facb",
           "Name": "x",
           "Description": "x",
           "UsingDefaultValue": false,
@@ -81,7 +73,7 @@
       ],
       "Outputs": [
         {
-          "Id": "d7bae1e28d134fc3ba75c3d9341557b4",
+          "Id": "51766f9edb4c4a2ab05a7dc14c36cd92",
           "Name": "",
           "Description": "Value of expression at line 1",
           "UsingDefaultValue": false,
@@ -90,7 +82,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "b338b35e90cb4e29a5ae8aa6aa078f14",
+          "Id": "644e2e10d9494091a3a1366d3f549e0f",
           "Name": "",
           "Description": "Value of expression at line 2",
           "UsingDefaultValue": false,
@@ -99,9 +91,18 @@
           "KeepListStructure": false
         },
         {
-          "Id": "65152bd14f5049c7b31ce5b6fdf25bd3",
+          "Id": "7174e8fcf28f431eb9f45baedf6b2ffb",
           "Name": "",
           "Description": "Value of expression at line 3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "0a59f79b8d9a4310837498f4d4454085",
+          "Name": "",
+          "Description": "Value of expression at line 4",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -110,136 +111,6 @@
       ],
       "Replication": "Disabled",
       "Description": "Allows for DesignScript code to be authored directly"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
-      "NodeType": "FunctionNode",
-      "FunctionSignature": "Autodesk.DesignScript.Geometry.Point.Origin",
-      "Id": "1091914a1f424c9d8176bd8f0ed3e192",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "8e3dcd33a7034e659ef4dabef54d4568",
-          "Name": "Point",
-          "Description": "Point",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Get the Origin point (0,0,0)\n\nPoint.Origin ( ): Point"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
-      "ElementResolver": null,
-      "Symbol": "//The Revit internal origin\r\n//as a point in Dynamo.\r\n//\r\n//NB: This is the Dynamo origin too!\r\nPoint",
-      "Id": "68a9f3769fda467fb7b2d3ae701d6ed5",
-      "Inputs": [
-        {
-          "Id": "7ea8799413b94e9ea938204516b09171",
-          "Name": "",
-          "Description": "",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [],
-      "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
-      "ElementResolver": null,
-      "Symbol": "//The Northing value of the internal origin\r\n//returned in Revit coordinates.\r\nNS",
-      "Id": "4e23051bcb6a43ffb6d3032368f6bceb",
-      "Inputs": [
-        {
-          "Id": "13281715e20a4e1d98e927ff6d1039e9",
-          "Name": "",
-          "Description": "",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [],
-      "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
-      "ElementResolver": null,
-      "Symbol": "//The Easting value of the internal origin\r\n//returned in Revit coordinates.\r\nEW",
-      "Id": "2926cf7885d5419ca11f6a9bcdbe77f7",
-      "Inputs": [
-        {
-          "Id": "a7a9b0cc1cdf4c2fa3b7a7fe5086c361",
-          "Name": "",
-          "Description": "",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [],
-      "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
-      "ElementResolver": null,
-      "Symbol": "//The elevation value of the internal origin\r\n//returned in Revit coordinates.\r\nElevation",
-      "Id": "f000ed31b777458092072119c46821f5",
-      "Inputs": [
-        {
-          "Id": "9403fa31165c4b329061ee84fb8a622b",
-          "Name": "",
-          "Description": "",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [],
-      "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
-      "Parameter": {
-        "Name": "unitFactor",
-        "TypeName": "double",
-        "TypeRank": 0,
-        "DefaultValue": "304.8",
-        "Description": "Because imperial units are silly"
-      },
-      "Id": "0cd7f2e35df54a5198a5eef961770a7a",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "35dbcc8d3e37401681f7bfdbdf7853ab",
-          "Name": "",
-          "Description": "Symbol",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -306,38 +177,117 @@
       ],
       "Replication": "Auto",
       "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//The point of the base point.\r\npoint",
+      "Id": "d43589933dc745708a471372bcdb9b37",
+      "Inputs": [
+        {
+          "Id": "ef9fcf7f067844db86c9b917a6489dcd",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//The Northing value of the internal origin\r\n//returned in Revit coordinates.\r\nnorthSouth",
+      "Id": "d2e056ce6dc647ac915ef9cb4fe6207c",
+      "Inputs": [
+        {
+          "Id": "a23f934e7ce64ac5bceec8a52eca31ad",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//The Easting value of the internal origin\r\n//returned in Revit coordinates.\r\neastWest",
+      "Id": "5c9716f1912a44949ba63333d76ae897",
+      "Inputs": [
+        {
+          "Id": "b86c6f7b700e49b7bd40c65ba726f5d1",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//The elevation value of the internal origin\r\n//returned in Revit coordinates.\r\nelevation",
+      "Id": "876d772dffbb47bd8a492f1708965e0c",
+      "Inputs": [
+        {
+          "Id": "1e9bee85a6fc431e921ff097728cd320",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
     }
   ],
   "Connectors": [
     {
       "Start": "cae07f6246af40fab0e6e8f8b152b192",
-      "End": "ba8c0097506a40349167a0c0b0ebbcc6",
-      "Id": "b78913340cd94677be7d129ccebbaec5"
+      "End": "e230754779c24e87b0662d4b66e3facb",
+      "Id": "b7720e821dfc4a7da0401a9d68e6e18d"
     },
     {
-      "Start": "d7bae1e28d134fc3ba75c3d9341557b4",
-      "End": "13281715e20a4e1d98e927ff6d1039e9",
-      "Id": "a614c13705454c12851d8cc7bfda15b9"
+      "Start": "51766f9edb4c4a2ab05a7dc14c36cd92",
+      "End": "ef9fcf7f067844db86c9b917a6489dcd",
+      "Id": "9f08141b28fa4a04aee507199cbdd82a"
     },
     {
-      "Start": "b338b35e90cb4e29a5ae8aa6aa078f14",
-      "End": "a7a9b0cc1cdf4c2fa3b7a7fe5086c361",
-      "Id": "77350601a5eb4eefa6ee1d55e1c17400"
+      "Start": "644e2e10d9494091a3a1366d3f549e0f",
+      "End": "a23f934e7ce64ac5bceec8a52eca31ad",
+      "Id": "0610c4d6da7f4529bd3d3a690e1da22f"
     },
     {
-      "Start": "65152bd14f5049c7b31ce5b6fdf25bd3",
-      "End": "9403fa31165c4b329061ee84fb8a622b",
-      "Id": "57264c837f9b4ee8b6963b5d0f40fe16"
+      "Start": "7174e8fcf28f431eb9f45baedf6b2ffb",
+      "End": "b86c6f7b700e49b7bd40c65ba726f5d1",
+      "Id": "ac952120ab0d4aa28106f59cbf7b9671"
     },
     {
-      "Start": "8e3dcd33a7034e659ef4dabef54d4568",
-      "End": "7ea8799413b94e9ea938204516b09171",
-      "Id": "47ddd02a946549308f8f7f962c8d8265"
-    },
-    {
-      "Start": "35dbcc8d3e37401681f7bfdbdf7853ab",
-      "End": "99f7962157ba464196e0d5ff048835ad",
-      "Id": "8f41f7fede8043b5b14385603eaba171"
+      "Start": "0a59f79b8d9a4310837498f4d4454085",
+      "End": "1e9bee85a6fc431e921ff097728cd320",
+      "Id": "d4abaffb41154198af21c8e8b9cdc998"
     },
     {
       "Start": "83fefb5202c64216a0898db186c769b9",
@@ -346,8 +296,8 @@
     },
     {
       "Start": "0b2a2ac938474681ab9bb2da087fd318",
-      "End": "a4a994681cce4223b02d15c85ddcc4d3",
-      "Id": "60a7839e50774e2e879ab4c3a1d1a5b3"
+      "End": "99f7962157ba464196e0d5ff048835ad",
+      "Id": "f5b8e895933f4b95b83aadf6671872a6"
     }
   ],
   "Dependencies": [
@@ -363,27 +313,28 @@
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -17.0,
-      "EyeY": 24.0,
-      "EyeZ": 50.0,
-      "LookX": 12.0,
-      "LookY": -13.0,
-      "LookZ": -58.0,
-      "UpX": 0.0,
-      "UpY": 1.0,
-      "UpZ": 0.0
+      "EyeX": -19177.32421875,
+      "EyeY": 17003.115234375,
+      "EyeZ": 16749.59375,
+      "LookX": 11034.255859375,
+      "LookY": -17215.615234375,
+      "LookZ": -16548.0,
+      "UpX": 0.26467055082321167,
+      "UpY": 0.87881672382354736,
+      "UpZ": -0.39702725410461426
     },
     "NodeViews": [
       {
@@ -408,73 +359,13 @@
       },
       {
         "ShowGeometry": true,
-        "Name": "Point.Origin",
-        "Id": "1091914a1f424c9d8176bd8f0ed3e192",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 425.47255005440945,
-        "Y": -182.54961539718937
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Output",
-        "Id": "68a9f3769fda467fb7b2d3ae701d6ed5",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 601.47255005440945,
-        "Y": -181.54961539718937
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Output",
-        "Id": "4e23051bcb6a43ffb6d3032368f6bceb",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 595.75823498367708,
-        "Y": -54.681375136023746
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Output",
-        "Id": "2926cf7885d5419ca11f6a9bcdbe77f7",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 596.74725500544093,
-        "Y": 35.450590097937152
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Output",
-        "Id": "f000ed31b777458092072119c46821f5",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 594.4615700761733,
-        "Y": 130.34079031557508
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "0cd7f2e35df54a5198a5eef961770a7a",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": -229.73663972248005,
-        "Y": -24.349905842821556
-      },
-      {
-        "ShowGeometry": true,
         "Name": "Input",
         "Id": "4acdf9a2b5304c77b0f2125fd1002e65",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -525.91384479923454,
-        "Y": 60.76891172081713
+        "X": -490.45225685591004,
+        "Y": 5.4905540444582925
       },
       {
         "ShowGeometry": true,
@@ -483,13 +374,53 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -148.35223199089705,
-        "Y": 58.744066328691474
+        "X": -112.89064404757255,
+        "Y": 3.465708652332637
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "d43589933dc745708a471372bcdb9b37",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 688.50077829084694,
+        "Y": -135.71074523537357
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "d2e056ce6dc647ac915ef9cb4fe6207c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 690.00536256907174,
+        "Y": -52.47011277763977
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "5c9716f1912a44949ba63333d76ae897",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 694.63959426760346,
+        "Y": 56.920093325008395
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "876d772dffbb47bd8a492f1708965e0c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 690.221290136417,
+        "Y": 162.08254750788734
       }
     ],
     "Annotations": [],
-    "X": 534.23773328345851,
-    "Y": 430.67713430183562,
-    "Zoom": 0.95878391160428422
+    "X": 431.43946468684157,
+    "Y": 353.25627344512395,
+    "Zoom": 0.75608315869973
   }
 }

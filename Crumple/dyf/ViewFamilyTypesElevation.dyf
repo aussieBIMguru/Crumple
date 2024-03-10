@@ -1,9 +1,9 @@
 {
-  "Uuid": "ae9104cd-892e-4ce7-b692-e65283cb537d",
+  "Uuid": "b779c071-446c-45ea-9c22-7fd726ba5333",
   "IsCustomNode": true,
-  "Category": "Crumple.Revit.Actions",
-  "Description": "Tries to return an floor plan type with the given name, if one exists in the model.",
-  "Name": "© ViewTypes.GetByNameFloorPlan",
+  "Category": "Crumple.Revit.Query",
+  "Description": "Tries to return an elevation type with the given name, if one exists in the model.",
+  "Name": "© ViewFamilyTypes.GetByNameElevation",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -13,12 +13,12 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Preparing input from dynamo to revit\r\nn = IN[0]\r\n\r\n# Get Family View Type\r\ncollector = FilteredElementCollector(doc).OfClass(ViewFamilyType).ToElements()\r\n\r\nvfts,vfnms = [],[]\r\n\r\n# Filter to plan views only\r\nfor i in collector:\r\n\tif i.ViewFamily == ViewFamily.FloorPlan:\t\r\n\t\tvfts.append(i)\r\n\t\tvfnms.append(i.ToDSType(True).Name)\r\n\telse:\r\n\t\tpass\r\n\r\n# Try to get the related name\r\ntry:\r\n\ti = vfnms.index(n)\r\n\ttype_out = vfts[i]\r\n\tresult = True\r\nexcept:\r\n\ttype_out = vfts[0]\r\n\tresult = False\r\n\r\n# Preparing output to Dynamo\r\nOUT = [type_out,result]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Preparing input from dynamo to revit\r\nn = IN[0]\r\n\r\n# Get Family View Type\r\ncollector = FilteredElementCollector(doc).OfClass(ViewFamilyType).ToElements()\r\n\r\nvfts,vfnms = [],[]\r\n\r\n# Filter to elevation views only\r\nfor i in collector:\r\n\tif i.ViewFamily == ViewFamily.Elevation:\t\r\n\t\tvfts.append(i)\r\n\t\tvfnms.append(i.ToDSType(True).Name)\r\n\telse:\r\n\t\tpass\r\n\r\n# Try to get the related name\r\ntry:\r\n\ti = vfnms.index(n)\r\n\ttype_out = vfts[i]\r\n\tresult = True\r\nexcept:\r\n\ttype_out = vfts[0]\r\n\tresult = False\r\n\r\n# Preparing output to Dynamo\r\nOUT = [type_out,result]",
       "VariableInputPorts": true,
-      "Id": "57c0d2c77a2b499295a0ec6663f127cd",
+      "Id": "0eac501262cd4fa9a5f22ee91b4a1af5",
       "Inputs": [
         {
-          "Id": "88cc4b93d939494aba7483c1abf696f0",
+          "Id": "7b798cdb06b648909b6ed5780e3b7d23",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -29,7 +29,7 @@
       ],
       "Outputs": [
         {
-          "Id": "86c2580e8ebd4e77a350ebe2110b0cd0",
+          "Id": "10eb7967cf48418f860f722f6fc2278d",
           "Name": "OUT",
           "Description": "Result of the python script",
           "UsingDefaultValue": false,
@@ -51,11 +51,11 @@
         "DefaultValue": "\"\"",
         "Description": ""
       },
-      "Id": "1de4ba02c60d427a9b74bdd6ec874067",
+      "Id": "415fed1a751a4296b1f52cd4c43c9dd3",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "620c48976f6a41d891f415ca8ad078ee",
+          "Id": "b3edbce926864b3a8ef4015638da2a01",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -72,10 +72,10 @@
       "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "viewFamilyType",
-      "Id": "41470d41e35d41baaa22109404607464",
+      "Id": "f76c9ae8fc7a4685946f5ea10d156ccd",
       "Inputs": [
         {
-          "Id": "7a08d297df034c4f9ccea72dade64cc5",
+          "Id": "76ace5f8c5db4ad7abc5def0e65f837c",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -92,10 +92,10 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
       "Code": "x[0];\nx[1];",
-      "Id": "70e2e87e89934704a4e8f353d6cb5a86",
+      "Id": "06d136127f054566874d01a4cc8bcda9",
       "Inputs": [
         {
-          "Id": "e15b7ce2006942199ee66bf2f3847adc",
+          "Id": "3c74e162b34445e09e926170469caa84",
           "Name": "x",
           "Description": "x",
           "UsingDefaultValue": false,
@@ -106,7 +106,7 @@
       ],
       "Outputs": [
         {
-          "Id": "b7b38d28a44843ce9919d06d5c7c25b3",
+          "Id": "551905cdb597414f9af3b1813b7b6e27",
           "Name": "",
           "Description": "Value of expression at line 1",
           "UsingDefaultValue": false,
@@ -115,7 +115,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "17991c34f48440ac8704795cf5fdfe86",
+          "Id": "e932f1034f7343cdafa42f0b95f0612a",
           "Name": "",
           "Description": "Value of expression at line 2",
           "UsingDefaultValue": false,
@@ -132,10 +132,10 @@
       "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "foundMatch",
-      "Id": "212a2de184824dfd86abc766fa614333",
+      "Id": "6a25cc4a608b4658aeded0014a5854e5",
       "Inputs": [
         {
-          "Id": "0780879ec32545d18c53015ab1695afa",
+          "Id": "724e94eb305c4bb0abeef319a9e6a63a",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -151,24 +151,24 @@
   ],
   "Connectors": [
     {
-      "Start": "86c2580e8ebd4e77a350ebe2110b0cd0",
-      "End": "e15b7ce2006942199ee66bf2f3847adc",
-      "Id": "585cab51a8374a59b904660694c055ad"
+      "Start": "10eb7967cf48418f860f722f6fc2278d",
+      "End": "3c74e162b34445e09e926170469caa84",
+      "Id": "d87f278ff0434099974b6c96de94587b"
     },
     {
-      "Start": "620c48976f6a41d891f415ca8ad078ee",
-      "End": "88cc4b93d939494aba7483c1abf696f0",
-      "Id": "6b24a1289aef4f65afdf8ea15f270825"
+      "Start": "b3edbce926864b3a8ef4015638da2a01",
+      "End": "7b798cdb06b648909b6ed5780e3b7d23",
+      "Id": "024361160ca34d63b96e9ee6dbbd4a9b"
     },
     {
-      "Start": "b7b38d28a44843ce9919d06d5c7c25b3",
-      "End": "7a08d297df034c4f9ccea72dade64cc5",
-      "Id": "273bf5e9ad7d4c9695bacf06e82246b5"
+      "Start": "551905cdb597414f9af3b1813b7b6e27",
+      "End": "76ace5f8c5db4ad7abc5def0e65f837c",
+      "Id": "ea5009fc9daf4de18fab007a5a11dcc1"
     },
     {
-      "Start": "17991c34f48440ac8704795cf5fdfe86",
-      "End": "0780879ec32545d18c53015ab1695afa",
-      "Id": "fa7f88f1a0a64e06bc1a9a4c3adc48e9"
+      "Start": "e932f1034f7343cdafa42f0b95f0612a",
+      "End": "724e94eb305c4bb0abeef319a9e6a63a",
+      "Id": "e674cf325e3148a6b92ce2278961e52e"
     }
   ],
   "Dependencies": [],
@@ -199,7 +199,7 @@
       {
         "ShowGeometry": true,
         "Name": "Python Script",
-        "Id": "57c0d2c77a2b499295a0ec6663f127cd",
+        "Id": "0eac501262cd4fa9a5f22ee91b4a1af5",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
@@ -209,47 +209,47 @@
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "1de4ba02c60d427a9b74bdd6ec874067",
+        "Id": "415fed1a751a4296b1f52cd4c43c9dd3",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 9.7095614207414087,
-        "Y": -0.75561233741267841
+        "X": 34.709561420741409,
+        "Y": 1.2443876625873216
       },
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "41470d41e35d41baaa22109404607464",
+        "Id": "f76c9ae8fc7a4685946f5ea10d156ccd",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 664.15689036965284,
-        "Y": -42.293940637357565
+        "X": 628.52370952577,
+        "Y": -44.200471471486452
       },
       {
         "ShowGeometry": true,
         "Name": "Code Block",
-        "Id": "70e2e87e89934704a4e8f353d6cb5a86",
+        "Id": "06d136127f054566874d01a4cc8bcda9",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 468.94554490089388,
-        "Y": 5.8831546982401051
+        "X": 433.312364057011,
+        "Y": 3.9766238641111613
       },
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "212a2de184824dfd86abc766fa614333",
+        "Id": "6a25cc4a608b4658aeded0014a5854e5",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 673.57872574477688,
-        "Y": 42.789685532368935
+        "X": 634.94554490089388,
+        "Y": 42.883154698240048
       }
     ],
     "Annotations": [],
-    "X": 10.956103352375507,
-    "Y": 391.53792716672007,
-    "Zoom": 1.9613549801480452
+    "X": -43.664794383425516,
+    "Y": 386.88102328787875,
+    "Zoom": 2.1223199420608494
   }
 }

@@ -1,9 +1,9 @@
 {
-  "Uuid": "fe01ef7b-8161-4735-be7f-240056edca72",
+  "Uuid": "17fb90e6-6909-4d73-8f0e-bd084827d94c",
   "IsCustomNode": true,
-  "Category": "Crumple.Revit.Create",
-  "Description": "Given a view and a list of points, will create new areas at them. Note that you will need to provide a single view and list of points, or apply @levels to your inputs to have them work.",
-  "Name": "© Areas.Create",
+  "Category": "Crumple.Application.Actions",
+  "Description": "ChatGPT for dummies.",
+  "Name": "© Web.LMGTFY",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -13,13 +13,13 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Get inputs\r\nview = UnwrapElement(IN[0])\r\npoint_lst = IN[1]\r\n\r\n# Start Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nif v.ViewType == ViewType.AreaPlan:\r\n\tarea_list=[]\r\n\tfor v, pts in zip(view,point_lst):\r\n\t\tfor pt in pts:\r\n\t\t\tp = UnwrapElement(pt).ToXyz()\r\n\t\t\tu = UV(p.X,p.Y)\r\n\t\t\ta = doc.Create.NewArea(v,u)\r\n\t\t\tarea_list.append(a)\r\nelse:\r\n\tarea_list = [None for p in point_lst]\r\n\r\n# End Transaction\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = area_list",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport os\r\nimport webbrowser\r\n\r\n# Open URL\r\nif IN[1]:\r\n    try:\r\n        no_spaces = IN[0].replace(\"+\", \" \")\r\n        new_path  = 'https://www.google.com/search?q='\r\n        webbrowser.open(new_path + no_spaces)\r\n        OUT = \"URL Opened.\"\r\n    except:\r\n        OUT = \"Invalid query.\"\r\nelse:\r\n\tOUT = \"Set runMe to True!\"",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
-      "Id": "4df796cf6d4a4939bacc30adbd9f1c26",
+      "Id": "99be887a0a7f4d34a8a5e5adf3c8706c",
       "Inputs": [
         {
-          "Id": "c9752c52f2f64951b667749469e5dd33",
+          "Id": "e2ac9da27121455b8e09a4538fe689ee",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -28,7 +28,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "6c837dc8b499401491aef0e97bbaf315",
+          "Id": "4d27f83fd96f45f2b5dc536d74085a12",
           "Name": "IN[1]",
           "Description": "Input #1",
           "UsingDefaultValue": false,
@@ -39,7 +39,7 @@
       ],
       "Outputs": [
         {
-          "Id": "ec708a1f2b394af198028f4c65097ff1",
+          "Id": "d029f20da80c44bfb2b252389d319185",
           "Name": "OUT",
           "Description": "Result of the python script",
           "UsingDefaultValue": false,
@@ -55,17 +55,17 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "view",
-        "TypeName": "var",
-        "TypeRank": -1,
+        "Name": "query",
+        "TypeName": "string",
+        "TypeRank": 0,
         "DefaultValue": null,
         "Description": ""
       },
-      "Id": "70e1be6d39a74acfa7a85bfc3d70eaa2",
+      "Id": "d956a0042d1e41a39ae4aa1ddbf308a6",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "253397ab18c14c148e18555906e4db10",
+          "Id": "e702661e9bc4408db5de3da321af8a9b",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -81,17 +81,17 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "points",
-        "TypeName": "var",
-        "TypeRank": -1,
-        "DefaultValue": null,
+        "Name": "runMe",
+        "TypeName": "bool",
+        "TypeRank": 0,
+        "DefaultValue": "false",
         "Description": ""
       },
-      "Id": "3d4a4a7fd8e24e6f8e1ff3baffb1449a",
+      "Id": "9383ee8fbd264c38ae0bf314821fda5a",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "64e6db6dc9cf46ec8716087389977a13",
+          "Id": "c5b7fb5971674c9a8b8e9e27793221ec",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -107,11 +107,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "areas",
-      "Id": "8b0b0a2c2d8f4b17bb2342bc4948ac17",
+      "Symbol": "result",
+      "Id": "ed5b7c952170467a87842e0c235cd22b",
       "Inputs": [
         {
-          "Id": "ff97cd50f8014808896151dabf21dfd0",
+          "Id": "c122f767451545bd89b14f804d2268ea",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -127,19 +127,19 @@
   ],
   "Connectors": [
     {
-      "Start": "ec708a1f2b394af198028f4c65097ff1",
-      "End": "ff97cd50f8014808896151dabf21dfd0",
-      "Id": "c030aec1c60c4700994c5b5ec5617641"
+      "Start": "d029f20da80c44bfb2b252389d319185",
+      "End": "c122f767451545bd89b14f804d2268ea",
+      "Id": "08300c39359345c5bcee7f780036e020"
     },
     {
-      "Start": "253397ab18c14c148e18555906e4db10",
-      "End": "c9752c52f2f64951b667749469e5dd33",
-      "Id": "e9fb1a65f2a341d5942c2451d76cd6ea"
+      "Start": "e702661e9bc4408db5de3da321af8a9b",
+      "End": "e2ac9da27121455b8e09a4538fe689ee",
+      "Id": "a50e1c5a56ef42909f2fd04901c62a34"
     },
     {
-      "Start": "64e6db6dc9cf46ec8716087389977a13",
-      "End": "6c837dc8b499401491aef0e97bbaf315",
-      "Id": "dcf2c3f560de49eea8f822b706e21016"
+      "Start": "c5b7fb5971674c9a8b8e9e27793221ec",
+      "End": "4d27f83fd96f45f2b5dc536d74085a12",
+      "Id": "c4f3bc34dc4c4a90ae3d09b05c534799"
     }
   ],
   "Dependencies": [],
@@ -171,7 +171,7 @@
       {
         "ShowGeometry": true,
         "Name": "Python Script",
-        "Id": "4df796cf6d4a4939bacc30adbd9f1c26",
+        "Id": "99be887a0a7f4d34a8a5e5adf3c8706c",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
@@ -181,37 +181,37 @@
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "70e1be6d39a74acfa7a85bfc3d70eaa2",
+        "Id": "d956a0042d1e41a39ae4aa1ddbf308a6",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 38.965827094532585,
-        "Y": -16.318419368849817
+        "X": -9.5,
+        "Y": -22.5
       },
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "3d4a4a7fd8e24e6f8e1ff3baffb1449a",
+        "Id": "9383ee8fbd264c38ae0bf314821fda5a",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 22.064441403531873,
-        "Y": 52.19825609363096
+        "X": -56.532466085143767,
+        "Y": 77.244387662587314
       },
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "8b0b0a2c2d8f4b17bb2342bc4948ac17",
+        "Id": "ed5b7c952170467a87842e0c235cd22b",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 415.89081670301755,
-        "Y": 1.9892255168902864
+        "X": 450.23966734918315,
+        "Y": -0.47225422826028307
       }
     ],
     "Annotations": [],
-    "X": 175.78028396643305,
-    "Y": 254.5710895050812,
-    "Zoom": 1.2777169841077238
+    "X": 231.73167055885528,
+    "Y": 261.4117,
+    "Zoom": 1.33823125
   }
 }

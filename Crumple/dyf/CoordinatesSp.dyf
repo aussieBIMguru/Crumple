@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Credit to Genius Loci for much of the workflow\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport math\r\n\r\n# Revit nodes\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\n# Revit services and API\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[1]\r\n\r\n# Get project base point\r\nbps     = FilteredElementCollector(doc).OfClass(BasePoint).ToElements()\r\nsvp     = bps[0]\r\n\r\n# Get pbp values\r\nsvp_ew = svp.get_Parameter(BuiltInParameter.BASEPOINT_EASTWEST_PARAM).AsDouble() * IN[0]\r\nsvp_ns = svp.get_Parameter(BuiltInParameter.BASEPOINT_NORTHSOUTH_PARAM).AsDouble() * IN[0]\r\nsvp_el = svp.get_Parameter(BuiltInParameter.BASEPOINT_ELEVATION_PARAM).AsDouble() * IN[0]\r\n\r\n# Preparing output to Dynamo\r\nOUT = [svp_ns, svp_ew, svp_el]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Credit to Genius Loci for much of the workflow\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport math\r\n\r\n# Revit nodes\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\n# Revit services and API\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Get app version\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application\r\nrvt_year = int(app.VersionNumber)\r\n\r\ndef interalToProject(val, ver = rvt_year, myDoc = doc):\r\n\tif rvt_year < 2022:\r\n\t\tintUnits = doc.GetUnits().GetFormatOptions(UnitType.UT_Length).DisplayUnits\r\n\t\treturn UnitUtils.Convert(val,DisplayUnitType.DUT_DECIMAL_FEET,intUnits)\r\n\telse:\r\n\t\tintUnitsId = doc.GetUnits().GetFormatOptions(SpecTypeId.Length).GetUnitTypeId()\r\n\t\treturn UnitUtils.ConvertFromInternalUnits(val, intUnitsId)\r\n\r\n# Get survey point\r\nsvp = BasePoint.GetSurveyPoint(doc)\r\n\r\n# Get svp values\r\nsvp_pt = svp.Position.ToPoint()\r\nsvp_ew = interalToProject(svp.get_Parameter(BuiltInParameter.BASEPOINT_EASTWEST_PARAM).AsDouble())\r\nsvp_ns = interalToProject(svp.get_Parameter(BuiltInParameter.BASEPOINT_NORTHSOUTH_PARAM).AsDouble())\r\nsvp_el = interalToProject(svp.get_Parameter(BuiltInParameter.BASEPOINT_ELEVATION_PARAM).AsDouble())\r\n\r\n# Preparing output to Dynamo\r\nOUT = [svp_pt, svp_ns, svp_ew, svp_el]",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "bd5b1544b45e4f53af91e80922859b83",
       "Inputs": [
@@ -21,15 +22,6 @@
           "Id": "9bd5d55520da4f138538882d6dd7f6d2",
           "Name": "IN[0]",
           "Description": "Input #0",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "b65a3c29a05644c5b06601a6ce971729",
-          "Name": "IN[1]",
-          "Description": "Input #1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -48,37 +40,16 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
-      "ElementResolver": null,
-      "Symbol": "//The Northing value of the survey point\r\n//returned in Revit coordinates.\r\nNS",
-      "Id": "7c0cb65f6d6741ebb730ca8207df1363",
-      "Inputs": [
-        {
-          "Id": "7f7b04ef5d7a470da1f394e5175c1a2c",
-          "Name": "",
-          "Description": "",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [],
-      "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
-      "Code": "x[0];\nx[1];\nx[2];",
+      "Code": "x[0];\nx[1];\nx[2];\nx[3];",
       "Id": "99ed78201665459f80b02371a97e1c12",
       "Inputs": [
         {
-          "Id": "72837c518f3a41ceb7caf459f74e298f",
+          "Id": "8f72460d1d134ca290c8b26b2e39b797",
           "Name": "x",
           "Description": "x",
           "UsingDefaultValue": false,
@@ -89,7 +60,7 @@
       ],
       "Outputs": [
         {
-          "Id": "1a66554c06a840e0a3f9f8c5bd1724a7",
+          "Id": "680505ed0aaa40c7a03000d2aac8cda1",
           "Name": "",
           "Description": "Value of expression at line 1",
           "UsingDefaultValue": false,
@@ -98,7 +69,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "34f0106629b7423a956fdae1764a4d31",
+          "Id": "daddf719cd08441b8e500ada0573876d",
           "Name": "",
           "Description": "Value of expression at line 2",
           "UsingDefaultValue": false,
@@ -107,9 +78,18 @@
           "KeepListStructure": false
         },
         {
-          "Id": "133470696ea84d01a787ddd48d3ed4e2",
+          "Id": "479b776fcd22402cb48f6a97831b475a",
           "Name": "",
           "Description": "Value of expression at line 3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "12c4d15967ce4f97b76e409187f80ebc",
+          "Name": "",
+          "Description": "Value of expression at line 4",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -118,74 +98,6 @@
       ],
       "Replication": "Disabled",
       "Description": "Allows for DesignScript code to be authored directly"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
-      "ElementResolver": null,
-      "Symbol": "//The Easting value of the survey point\r\n//returned in Revit coordinates.\r\nEW",
-      "Id": "2b761e8c719b49d680b713cb6c81fcb0",
-      "Inputs": [
-        {
-          "Id": "ae486606d61b4d52add8554f3d871b5d",
-          "Name": "",
-          "Description": "",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [],
-      "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
-      "ElementResolver": null,
-      "Symbol": "//The Elevation value of the survey point\r\n//returned in Revit coordinates.\r\nElevation",
-      "Id": "e83807d8d67b423d80220a68cb23c06f",
-      "Inputs": [
-        {
-          "Id": "88157fd94a8948f89da117bb0697dc28",
-          "Name": "",
-          "Description": "",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [],
-      "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
-      "Parameter": {
-        "Name": "unitFactor",
-        "TypeName": "double",
-        "TypeRank": 0,
-        "DefaultValue": "304.8",
-        "Description": "Because imperial units are silly"
-      },
-      "Id": "fa5bd284068b43c183a5db5c9d90aafa",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "d023546132254351b3baadd37b0e7b5d",
-          "Name": "",
-          "Description": "Symbol",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -252,33 +164,117 @@
       ],
       "Replication": "Auto",
       "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//The point of the base point.\r\npoint",
+      "Id": "ef844d0c1ec64c9eb7454621ff20b5b2",
+      "Inputs": [
+        {
+          "Id": "e5ba8d35d3714c5c8597d606842f205e",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//The Northing value of the survey point\r\n//returned in Revit coordinates.\r\nnorthSouth",
+      "Id": "ffb3a227c0ab42d0844510fb164a5216",
+      "Inputs": [
+        {
+          "Id": "1f6f25a8bd144ea08f720caac03736a1",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//The Easting value of the survey point\r\n//returned in Revit coordinates.\r\neastWest",
+      "Id": "46b9898406b44fb5a2708a416ea7bf47",
+      "Inputs": [
+        {
+          "Id": "082054614e144dd18aaa8bffc7e7f92f",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//The Elevation value of the survey point\r\n//returned in Revit coordinates.\r\nelevation",
+      "Id": "41aef46f874b40bf96709e9d1e4ba892",
+      "Inputs": [
+        {
+          "Id": "9701e737fbbb4d8ba99e1cce49ee7189",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
     }
   ],
   "Connectors": [
     {
       "Start": "a168da2693cd4712992880fd134ed3c7",
-      "End": "72837c518f3a41ceb7caf459f74e298f",
-      "Id": "9e1cee0e67fc4cd69a51622f62ab43c7"
+      "End": "8f72460d1d134ca290c8b26b2e39b797",
+      "Id": "6d6345c5fefb49c3baf8640692a6310f"
     },
     {
-      "Start": "1a66554c06a840e0a3f9f8c5bd1724a7",
-      "End": "7f7b04ef5d7a470da1f394e5175c1a2c",
-      "Id": "8860c1210f7c4a568583adf931e3a810"
+      "Start": "680505ed0aaa40c7a03000d2aac8cda1",
+      "End": "e5ba8d35d3714c5c8597d606842f205e",
+      "Id": "fb19c92b228e400cbcf9aecbfc88e2b9"
     },
     {
-      "Start": "34f0106629b7423a956fdae1764a4d31",
-      "End": "ae486606d61b4d52add8554f3d871b5d",
-      "Id": "a8228d197a754534b665b52e99ed45ca"
+      "Start": "daddf719cd08441b8e500ada0573876d",
+      "End": "1f6f25a8bd144ea08f720caac03736a1",
+      "Id": "62e0862571434119941a4a0856388a9f"
     },
     {
-      "Start": "133470696ea84d01a787ddd48d3ed4e2",
-      "End": "88157fd94a8948f89da117bb0697dc28",
-      "Id": "40e86f35ca684110bd3343769b78e373"
+      "Start": "479b776fcd22402cb48f6a97831b475a",
+      "End": "082054614e144dd18aaa8bffc7e7f92f",
+      "Id": "6d5cb863aaf1488ab9f341b448bff191"
     },
     {
-      "Start": "d023546132254351b3baadd37b0e7b5d",
-      "End": "9bd5d55520da4f138538882d6dd7f6d2",
-      "Id": "c2e7a5db06f941028dbb4610bfe94bc7"
+      "Start": "12c4d15967ce4f97b76e409187f80ebc",
+      "End": "9701e737fbbb4d8ba99e1cce49ee7189",
+      "Id": "467bbcf2c23a44dc92e27dea9531f8a8"
     },
     {
       "Start": "8021065c186746b2942894f87f5f5957",
@@ -287,8 +283,8 @@
     },
     {
       "Start": "a9e048041b414010a0e83d9e4980962d",
-      "End": "b65a3c29a05644c5b06601a6ce971729",
-      "Id": "32bcdaa0309a49f99ea509cdaa3ba792"
+      "End": "9bd5d55520da4f138538882d6dd7f6d2",
+      "Id": "95358b07f63b44548a699139da36125d"
     }
   ],
   "Dependencies": [
@@ -304,27 +300,28 @@
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -17.0,
-      "EyeY": 24.0,
-      "EyeZ": 50.0,
-      "LookX": 12.0,
-      "LookY": -13.0,
-      "LookZ": -58.0,
-      "UpX": 0.0,
-      "UpY": 1.0,
-      "UpZ": 0.0
+      "EyeX": -19177.32421875,
+      "EyeY": 17003.115234375,
+      "EyeZ": 16749.59375,
+      "LookX": 11034.255859375,
+      "LookY": -17215.615234375,
+      "LookZ": -16548.0,
+      "UpX": 0.26467055082321167,
+      "UpY": 0.87881672382354736,
+      "UpZ": -0.39702725410461426
     },
     "NodeViews": [
       {
@@ -339,16 +336,6 @@
       },
       {
         "ShowGeometry": true,
-        "Name": "Output",
-        "Id": "7c0cb65f6d6741ebb730ca8207df1363",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 610.08650015407886,
-        "Y": -79.375487012769611
-      },
-      {
-        "ShowGeometry": true,
         "Name": "Code Block",
         "Id": "99ed78201665459f80b02371a97e1c12",
         "IsSetAsInput": false,
@@ -359,43 +346,13 @@
       },
       {
         "ShowGeometry": true,
-        "Name": "Output",
-        "Id": "2b761e8c719b49d680b713cb6c81fcb0",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 608.64886384618126,
-        "Y": 16.308855291576606
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Output",
-        "Id": "e83807d8d67b423d80220a68cb23c06f",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 606.844786956379,
-        "Y": 113.73007057206874
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "fa5bd284068b43c183a5db5c9d90aafa",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": -229.33062183366474,
-        "Y": -40.112212592161995
-      },
-      {
-        "ShowGeometry": true,
         "Name": "Input",
         "Id": "bafacb43ab0542349ae713ac377b8c87",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -525.57254065451423,
-        "Y": 50.917481199956
+        "X": -471.07143316646523,
+        "Y": -2.2543309835062928
       },
       {
         "ShowGeometry": true,
@@ -404,13 +361,53 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -145.9146440972936,
-        "Y": 50.645765352947933
+        "X": -91.4135366092446,
+        "Y": -2.5260468305143604
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "ef844d0c1ec64c9eb7454621ff20b5b2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 714.27177519989459,
+        "Y": -101.91516875194182
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "ffb3a227c0ab42d0844510fb164a5216",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 715.341941620902,
+        "Y": -24.852609090331669
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "46b9898406b44fb5a2708a416ea7bf47",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 715.99881249157681,
+        "Y": 77.709415918595482
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "41aef46f874b40bf96709e9d1e4ba892",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 719.54911919168728,
+        "Y": 180.58499943700292
       }
     ],
     "Annotations": [],
-    "X": 534.50062546067818,
-    "Y": 366.769972938211,
-    "Zoom": 0.695616441301115
+    "X": 265.444993769573,
+    "Y": 249.26650457220796,
+    "Zoom": 0.775230660981312
   }
 }

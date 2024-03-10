@@ -1,16 +1,11 @@
 {
-  "Uuid": "828952be-244c-49c5-a717-77de0b7e9168",
+  "Uuid": "793109ba-7282-4d40-a589-58bc4f2feeca",
   "IsCustomNode": true,
-  "Category": "Crumple.Query",
-  "Description": "Opens the BIM Guru website. Here you can access custom content built by the package author, as well as consult his services.",
-  "Name": "© About.BIMGuru",
+  "Category": "Crumple.Revit.Query",
+  "Description": "Given a name or list of names of spec type Ids, returns them if found.",
+  "Name": "© Parameters.SpecTypeIdByName",
   "ElementResolver": {
-    "ResolutionMap": {
-      "DSCore.List": {
-        "Key": "DSCore.List",
-        "Value": "DSCoreNodes.dll"
-      }
-    }
+    "ResolutionMap": {}
   },
   "Inputs": [],
   "Outputs": [],
@@ -18,12 +13,13 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport os\r\n\r\n# Open URL\r\nif IN[0]:\r\n\tos.system(\"start \\\"\\\" https://www.bimguru.com.au\")\r\n\tOUT = \"Enjoy!\"\r\nelse:\r\n\tOUT = \"Set runMe to True!\"",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Inputs\r\nnames = IN[0]\r\n\r\n# Get forgetypeids and names\r\nspec_ids   = SpecUtils.GetAllSpecs()\r\nspec_names = [LabelUtils.GetLabelForSpec(s) for s in spec_ids]\r\n\r\n# Get elements\r\nelements_out = []\r\n\r\nfor n in names:\r\n\tif n in spec_names:\r\n\t\tind = spec_names.index(n)\r\n\t\telements_out.append(spec_ids[ind])\r\n\telse:\r\n\t\telements_out.append(None)\r\n\r\n# Return output\r\nOUT = elements_out",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
-      "Id": "791b9776f2b8414aad9cb3179624a706",
+      "Id": "18708e91ac6b44728cc9f75d690a62e5",
       "Inputs": [
         {
-          "Id": "8d0f8a36757f40fd9cfec5c68fba064b",
+          "Id": "5efe7b5b6d364f5ba9a6ff6257cb50a1",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -34,7 +30,7 @@
       ],
       "Outputs": [
         {
-          "Id": "08d5b2e8ba754fc59f43b3d9c4e178d1",
+          "Id": "646c76913c6645dabff1782dbf35ba1b",
           "Name": "OUT",
           "Description": "Result of the python script",
           "UsingDefaultValue": false,
@@ -44,23 +40,23 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "runMe",
-        "TypeName": "bool",
-        "TypeRank": 0,
-        "DefaultValue": "false",
+        "Name": "names",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
         "Description": ""
       },
-      "Id": "52308cdde79249a49075515379123158",
+      "Id": "7fd3fbc1dadc47b9a320c9aa6b3e9be4",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "cc5e0f6d5d474e75a3a105efd876ed8a",
+          "Id": "2d096709ade346b49b478f39e363f2ef",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -76,11 +72,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "=)",
-      "Id": "db282bef8d1348118c5c151aef88d005",
+      "Symbol": "specTypeIds",
+      "Id": "35da5336fc664fe8942fe9a58263aec0",
       "Inputs": [
         {
-          "Id": "a3d42dd5bd8b44fb830c56aecfaba6df",
+          "Id": "24bf2626c384492582b8cc803cdad671",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -96,45 +92,46 @@
   ],
   "Connectors": [
     {
-      "Start": "08d5b2e8ba754fc59f43b3d9c4e178d1",
-      "End": "a3d42dd5bd8b44fb830c56aecfaba6df",
-      "Id": "31f62a9b1e204904bbb4e00df6d8fa44"
+      "Start": "646c76913c6645dabff1782dbf35ba1b",
+      "End": "24bf2626c384492582b8cc803cdad671",
+      "Id": "e11210c8473a44a39aac40e14c67f436"
     },
     {
-      "Start": "cc5e0f6d5d474e75a3a105efd876ed8a",
-      "End": "8d0f8a36757f40fd9cfec5c68fba064b",
-      "Id": "9672bd60664b4a449c798e3329d2e403"
+      "Start": "2d096709ade346b49b478f39e363f2ef",
+      "End": "5efe7b5b6d364f5ba9a6ff6257cb50a1",
+      "Id": "cde3331e93d243d8b49fa8945b075ba3"
     }
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -17.0,
-      "EyeY": 24.0,
-      "EyeZ": 50.0,
-      "LookX": 12.0,
-      "LookY": -13.0,
-      "LookZ": -58.0,
-      "UpX": 0.0,
-      "UpY": 1.0,
-      "UpZ": 0.0
+      "EyeX": -19177.32421875,
+      "EyeY": 17003.115234375,
+      "EyeZ": 16749.59375,
+      "LookX": 11034.255859375,
+      "LookY": -17215.615234375,
+      "LookZ": -16548.0,
+      "UpX": 0.26467055082321167,
+      "UpY": 0.87881672382354736,
+      "UpZ": -0.39702725410461426
     },
     "NodeViews": [
       {
         "ShowGeometry": true,
         "Name": "Python Script",
-        "Id": "791b9776f2b8414aad9cb3179624a706",
+        "Id": "18708e91ac6b44728cc9f75d690a62e5",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
@@ -144,27 +141,27 @@
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "52308cdde79249a49075515379123158",
+        "Id": "7fd3fbc1dadc47b9a320c9aa6b3e9be4",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 13.494725830323432,
-        "Y": -0.090151123227940388
+        "X": 0.0,
+        "Y": 0.0
       },
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "db282bef8d1348118c5c151aef88d005",
+        "Id": "35da5336fc664fe8942fe9a58263aec0",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 452.2184039606301,
-        "Y": 0.28480660074117736
+        "X": 449.0,
+        "Y": 0.0
       }
     ],
     "Annotations": [],
-    "X": -11.455604185988889,
-    "Y": 362.29339069154759,
-    "Zoom": 3.0719856562654826
+    "X": 173.80666499361007,
+    "Y": 314.70355477993462,
+    "Zoom": 1.1047642563030273
   }
 }
