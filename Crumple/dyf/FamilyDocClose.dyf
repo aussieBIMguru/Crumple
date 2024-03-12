@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\ncurrDoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication\r\napp = uiapp.Application\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Current doc/app/ui\r\ndocs = tolist(IN[0])\r\nsaveOpt = IN[1]\r\noutcomes = []\r\n\r\n# Do some action in a Transaction\r\nfor doc in docs:\r\n\ttry:\r\n\t\tdoc.Close(saveOpt)\r\n\t\toutcomes.append(True)\r\n\texcept:\r\n\t\toutcomes.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = outcomes",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Current doc/app/ui\r\ndocs     = tolist(IN[0])\r\nsaveOpt  = IN[1]\r\noutcomes = []\r\n\r\n# Do some action in a Transaction\r\nfor doc in docs:\r\n\ttry:\r\n\t\tdoc.Close(saveOpt)\r\n\t\toutcomes.append(True)\r\n\texcept:\r\n\t\toutcomes.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = outcomes",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "f9651213f34541d5a1656a5b36742f59",
       "Inputs": [
@@ -48,17 +49,17 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "familyDoc",
+        "Name": "familyDocs",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
-        "Description": ""
+        "Description": "A family document or list\nof family documents."
       },
       "Id": "38c00d7b973f4095b68b0b8703bd8180",
       "Inputs": [],
@@ -81,9 +82,9 @@
       "NodeType": "InputNode",
       "Parameter": {
         "Name": "saveOption",
-        "TypeName": "var",
-        "TypeRank": -1,
-        "DefaultValue": null,
+        "TypeName": "bool",
+        "TypeRank": 0,
+        "DefaultValue": "false",
         "Description": ""
       },
       "Id": "1b4baa80507f46029a3afbee17c502e4",
@@ -143,13 +144,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -173,8 +175,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 250.0,
-        "Y": 0.0
+        "X": 255.17591525724663,
+        "Y": -13.586777550272274
       },
       {
         "ShowGeometry": true,
@@ -183,8 +185,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -53.053131386777409,
-        "Y": -22.644629250453761
+        "X": -104.81228395924319,
+        "Y": -44.642269093751707
       },
       {
         "ShowGeometry": true,
@@ -193,8 +195,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 25.879576286232975,
-        "Y": 60.715461812496528
+        "X": -78.932707673010214,
+        "Y": 73.655249955612987
       },
       {
         "ShowGeometry": true,
@@ -203,8 +205,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 448.35301059284416,
-        "Y": 0.0
+        "X": 471.6446292504537,
+        "Y": -12.939788143116431
       }
     ],
     "Annotations": [],
