@@ -1,0 +1,167 @@
+{
+  "Uuid": "afc11f16-427e-4af1-9ee8-4ca905d8c870",
+  "IsCustomNode": true,
+  "Category": "Crumple.Data.Actions",
+  "Description": "This node is just here as an example of how one can use recursion in Python. Crumple generally works with assumed list shapes/structures, but that doesn't mean you have to!\r\n\r\nThis node is just here as....\r\n\r\n(sorry, typical obligatory recursion joke).",
+  "Name": "© List.RecursiveSquared",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# If I could see further, it is because I have stood on the shoulders of giants\r\n# https://stackoverflow.com/questions/30060970/how-to-apply-a-function-to-each-sublist-of-a-list-in-python\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Function to apply function recursively\r\n# Inputs are a = input value/object\r\n#            f = lambda function to recur\r\ndef apply_f(a,f):\r\n\t# If input is a list\r\n\tif isinstance(a, list):\r\n\t\t# Return the recursive function\r\n\t\treturn map(lambda t: apply_f(t,f), a)\r\n\t# Otherwise function on lowest item\r\n\telse:\r\n\t\treturn f(a)\r\n\r\n# Function to apply recursively\r\ndef my_function(num):\r\n\treturn num ** 2\r\n\r\n# Preparing input from dynamo to revit\r\nnumbers = IN[0]\r\n\r\n# Preparing output to Dynamo\r\nOUT = apply_f(numbers, lambda n:my_function(n))",
+      "Engine": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "efbb4a73e4a74c748e4c3c78b70487ea",
+      "Inputs": [
+        {
+          "Id": "546a431616464ffcbf32230d80bce7d8",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "9ec92007608746acb507ef2b28cff179",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "numbers",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "fadf790735cd44468735459ca12b7f2e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "22962e588aff416a89ab06b9c11b1731",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "squared",
+      "Id": "07ce210cc96440a5af173e389028bcc3",
+      "Inputs": [
+        {
+          "Id": "5c22932b901c482481805f3119fa839e",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "9ec92007608746acb507ef2b28cff179",
+      "End": "5c22932b901c482481805f3119fa839e",
+      "Id": "b77dfe0f00b0487385398a8a3695d09b"
+    },
+    {
+      "Start": "22962e588aff416a89ab06b9c11b1731",
+      "End": "546a431616464ffcbf32230d80bce7d8",
+      "Id": "feac52d5c73547ff90544d0dbf269821"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.12.1.8246",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "efbb4a73e4a74c748e4c3c78b70487ea",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "fadf790735cd44468735459ca12b7f2e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 0.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "07ce210cc96440a5af173e389028bcc3",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 449.0,
+        "Y": 0.0
+      }
+    ],
+    "Annotations": [],
+    "X": 18.622269453124886,
+    "Y": 247.169713765625,
+    "Zoom": 1.545620359375
+  }
+}

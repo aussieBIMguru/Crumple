@@ -1,9 +1,9 @@
 {
-  "Uuid": "62ea8109-1a89-446e-bdef-47ee44906e0a",
+  "Uuid": "b9b02990-edbb-44b9-926a-5a946727d0a6",
   "IsCustomNode": true,
-  "Category": "Crumple.Revit.Query",
-  "Description": "Returns the title of a family document in the unwrapped state. Can be used in conjunction with nodes like 'FamilyDocOpen'.",
-  "Name": "© FamilyDoc.Title",
+  "Category": "Crumple.Application.Query",
+  "Description": "Given a file path or list of file paths, attempts to return their version as an integer.",
+  "Name": "© Revit.GetFileVersions",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -13,13 +13,13 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Current doc/app/ui\r\ndocs = tolist(IN[0])\r\n\r\n# Preparing output to Dynamo\r\nOUT = [d.Title for d in docs]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport os\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import BasicFileInfo\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef getVersion(filePath):\r\n\tif os.path.exists(filePath):\r\n\t\ttry:\r\n\t\t\tinfo_file = BasicFileInfo.Extract(filePath)\r\n\t\t\treturn int(info_file.Format)\r\n\t\texcept:\r\n\t\t\treturn None\t\r\n\r\nfile_paths = tolist(IN[0])\r\n\t\r\nOUT = [getVersion(fp) for fp in file_paths]",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
-      "Id": "26e5f2ec700545aa9c20bdf94f232694",
+      "Id": "f2c67bc66f3d4d478a2470bc366a10f2",
       "Inputs": [
         {
-          "Id": "902123ac2c594f0797582266481d71bd",
+          "Id": "c390bcfa8f6c462995e46178c8b605eb",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -30,7 +30,7 @@
       ],
       "Outputs": [
         {
-          "Id": "0800f9428b1e450cb09d6757276a0ec1",
+          "Id": "c8388cefee7b4712af2fc255bf971f43",
           "Name": "OUT",
           "Description": "Result of the python script",
           "UsingDefaultValue": false,
@@ -46,11 +46,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "titles",
-      "Id": "6f7d2dfdebf44ef4a286b0f66ffd237b",
+      "Symbol": "versions",
+      "Id": "239765f968364910950ffb0142c7db30",
       "Inputs": [
         {
-          "Id": "830f0cda0bf443c88f035053916d49af",
+          "Id": "09c64b2fe23543b0a4e0854e17645cf1",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -67,17 +67,17 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "familyDocs",
+        "Name": "filePaths",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
-        "Description": "A family document or list\nof family documents."
+        "Description": ""
       },
-      "Id": "7b12495016a148438f8948f0cd436a4d",
+      "Id": "ede4ce46c36b4c38a9ecc24ebabef560",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "abbaf1821e3645ae805a498427dc7f22",
+          "Id": "015bc985fe5a47c8a208807fb790e57d",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -92,14 +92,14 @@
   ],
   "Connectors": [
     {
-      "Start": "0800f9428b1e450cb09d6757276a0ec1",
-      "End": "830f0cda0bf443c88f035053916d49af",
-      "Id": "bb5f7bb54eb74b92a6c2a7337e525269"
+      "Start": "c8388cefee7b4712af2fc255bf971f43",
+      "End": "09c64b2fe23543b0a4e0854e17645cf1",
+      "Id": "78d6e60010a84bdfa262e666c2359ab5"
     },
     {
-      "Start": "abbaf1821e3645ae805a498427dc7f22",
-      "End": "902123ac2c594f0797582266481d71bd",
-      "Id": "0a0d2feaa9744f6b8056fc808bc1921f"
+      "Start": "015bc985fe5a47c8a208807fb790e57d",
+      "End": "c390bcfa8f6c462995e46178c8b605eb",
+      "Id": "566516a1d299462ea619c0e36c7387ae"
     }
   ],
   "Dependencies": [],
@@ -131,7 +131,7 @@
       {
         "ShowGeometry": true,
         "Name": "Python Script",
-        "Id": "26e5f2ec700545aa9c20bdf94f232694",
+        "Id": "f2c67bc66f3d4d478a2470bc366a10f2",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
@@ -141,7 +141,7 @@
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "6f7d2dfdebf44ef4a286b0f66ffd237b",
+        "Id": "239765f968364910950ffb0142c7db30",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
@@ -151,17 +151,17 @@
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "7b12495016a148438f8948f0cd436a4d",
+        "Id": "ede4ce46c36b4c38a9ecc24ebabef560",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -66.016150740242352,
-        "Y": -1.0067294751009541
+        "X": -36.0,
+        "Y": 0.0
       }
     ],
     "Annotations": [],
-    "X": -203.0,
-    "Y": 371.74495412844038,
-    "Zoom": 2.7266055045871558
+    "X": 71.339881249999962,
+    "Y": 266.1260532937365,
+    "Zoom": 1.33823125
   }
 }
