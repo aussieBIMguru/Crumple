@@ -1,0 +1,167 @@
+{
+  "Uuid": "cd5e81d4-c1ed-4ead-82d5-7a4c9708b64e",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.Query",
+  "Description": "For a family parameter of list of them, returns their parmater groups. If using Revit 2024+ the node will return ForgeTypeIds instead.",
+  "Name": "© FamilyParam.ParameterGroup",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "familyParams",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "Lists of family parameters."
+      },
+      "Id": "5a85ec51fda14385b95db5b46233358d",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "2ef8316b99804f97a192913affa922b6",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "/*Parameter groups.\r\n\r\nWill return as GroupTypeIds\r\nif you are using Revit 2024+.*/\r\n\r\nparameterGroups",
+      "Id": "d84981a568bd400c9a670698bdf1df0d",
+      "Inputs": [
+        {
+          "Id": "2926160258394d9ea87359f0debfa605",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference('RevitAPI')\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FamilyManager, Parameter\r\n\r\n# Get Revit build version\r\nuiapp = DocumentManager.Instance.CurrentUIApplication\r\napp = uiapp.Application\r\nver = int(app.VersionNumber)\r\n\r\nif ver > 2023:\r\n\tfrom Autodesk.Revit.DB import ParameterUtils\r\n\r\n# Function: Get param group\r\ndef parameterGroup(par):\r\n\tparGrp = param.Definition.ParameterGroup\r\n\tif ver > 2023:\r\n\t\treturn ParameterUtils.GetParameterGroupTypeId(parGrp)\r\n\telse:\r\n\t\treturn parGrp\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n#Inputdoc\r\nparams_list = tolist(IN[0])\r\n\r\n# Output the lists\r\nOUT = [parameterGroup(param) for param in params_list]",
+      "Engine": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "0e427ce17aad4eb79dbc2db4668da371",
+      "Inputs": [
+        {
+          "Id": "169166432d8f4a93b0d0f26840059b8c",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "0860f6e47c154736bd06e4915260b4c4",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "2ef8316b99804f97a192913affa922b6",
+      "End": "169166432d8f4a93b0d0f26840059b8c",
+      "Id": "a641c7370489484f9c0be548337ad122"
+    },
+    {
+      "Start": "0860f6e47c154736bd06e4915260b4c4",
+      "End": "2926160258394d9ea87359f0debfa605",
+      "Id": "8c199a065c5c413e83bd0f521175d158"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.12.1.8246",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "5a85ec51fda14385b95db5b46233358d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -127.0,
+        "Y": 3.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "d84981a568bd400c9a670698bdf1df0d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 561.0,
+        "Y": 5.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script (get data)",
+        "Id": "0e427ce17aad4eb79dbc2db4668da371",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 261.0,
+        "Y": -4.0
+      }
+    ],
+    "Annotations": [],
+    "X": 228.0,
+    "Y": 153.0,
+    "Zoom": 1.0
+  }
+}
