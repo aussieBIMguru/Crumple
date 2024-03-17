@@ -1,0 +1,257 @@
+{
+  "Uuid": "cac9d4f6-2079-450f-998e-7f674949d1f4",
+  "IsCustomNode": true,
+  "Category": "Crumple.Application.Actions",
+  "Description": "Given a filepath or list of filepaths, separate out any backup file paths.",
+  "Name": "© Windows.FilterBackups",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Preparing input from dynamo to revit\r\nfilePaths = tolist(IN[0])\r\n\r\n# Return only non-backup\r\ndef isBackup(fp):\r\n\tfp1 = fp.rsplit(\".\", 1)[0]\r\n\tfp2 = fp1.rsplit(\".\",1)[-1]\r\n\ttry:\r\n\t\tint(fp2)\r\n\t\treturn True\r\n\texcept:\r\n\t\treturn False\r\n\r\npathsOut, bkpPaths = [],[]\r\n\r\nfor fp in filePaths:\r\n\tbkp = isBackup(fp)\r\n\tif bkp:\r\n\t\tbkpPaths.append(fp)\r\n\telse:\r\n\t\tpathsOut.append(fp)\r\n\r\n# Preparing output to Dynamo\r\nOUT = pathsOut, bkpPaths",
+      "Engine": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "5a3bbe454af64fca969970915c94abc2",
+      "Inputs": [
+        {
+          "Id": "068ca25d52f842b9a6932483b19544e0",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "6e5b14effc8b4f4d95c99bb203f9bf60",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "filePaths",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "f93b74f1db6e450889bce0f5fe240b62",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "422daa960d114a1a9711983070fee2bf",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "validPaths",
+      "Id": "6f621d3125764d6e92ef2479f1bfa95f",
+      "Inputs": [
+        {
+          "Id": "8d963afdfb554ca4b876829130d93634",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "fps = out[0];\nbkp = out[1];",
+      "Id": "c7a7b2a77df44e3e98607464a99a203a",
+      "Inputs": [
+        {
+          "Id": "2b14cc7f63b94eb0872985a1321aadc7",
+          "Name": "out",
+          "Description": "out",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "7ff0ff10274045209002825fb7797e41",
+          "Name": "",
+          "Description": "fps",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d5fa340da1c145a3a75f44312e1ce670",
+          "Name": "",
+          "Description": "bkp",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "backupPaths",
+      "Id": "6ddbd2dec8d1448ab003c5c8871da3cb",
+      "Inputs": [
+        {
+          "Id": "1e284a9c68074151af49450bce6b3f2f",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "6e5b14effc8b4f4d95c99bb203f9bf60",
+      "End": "2b14cc7f63b94eb0872985a1321aadc7",
+      "Id": "f27c315e2c024b5583a125b5ec5befa1"
+    },
+    {
+      "Start": "422daa960d114a1a9711983070fee2bf",
+      "End": "068ca25d52f842b9a6932483b19544e0",
+      "Id": "3e2f8c0705ea40dca110e33208a2c263"
+    },
+    {
+      "Start": "7ff0ff10274045209002825fb7797e41",
+      "End": "8d963afdfb554ca4b876829130d93634",
+      "Id": "dc10b34b7b244c4483fd732b18b97d4c"
+    },
+    {
+      "Start": "d5fa340da1c145a3a75f44312e1ce670",
+      "End": "1e284a9c68074151af49450bce6b3f2f",
+      "Id": "42ab4ed33c764c30bdd2808166678fea"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.12.1.8246",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "5a3bbe454af64fca969970915c94abc2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "f93b74f1db6e450889bce0f5fe240b62",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -39.807145874478806,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "6f621d3125764d6e92ef2479f1bfa95f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 745.591269966187,
+        "Y": -56.627066666512093
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "c7a7b2a77df44e3e98607464a99a203a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 448.30140726076911,
+        "Y": 2.8544198022235321
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "6ddbd2dec8d1448ab003c5c8871da3cb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 749.45463894349177,
+        "Y": 63.171130032885458
+      }
+    ],
+    "Annotations": [],
+    "X": 255.30382995201887,
+    "Y": 273.3809880950455,
+    "Zoom": 1.0792537289518345
+  }
+}
