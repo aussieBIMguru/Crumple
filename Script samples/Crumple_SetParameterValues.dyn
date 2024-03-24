@@ -24,7 +24,15 @@
       "SelectedIndex": 0
     }
   ],
-  "Outputs": [],
+  "Outputs": [
+    {
+      "Id": "bebf0934860640178f9192f865aa1333",
+      "Name": "Failed to set values",
+      "Type": "unknown",
+      "InitialValue": "",
+      "Description": "Visualize the node's output"
+    }
+  ],
   "Nodes": [
     {
       "ConcreteType": "CoreNodeModels.Input.Directory, CoreNodeModels",
@@ -247,77 +255,6 @@
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "66f0417f-21ab-4c57-b40f-dfd11f57200b",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "87bb3524941c45668d0c3f7e9afb1a05",
-      "Inputs": [
-        {
-          "Id": "653fe0ac006848fc918db5e77fb832bc",
-          "Name": "familyDocs",
-          "Description": "A family document or list\nof family documents.\n\nvar[]..[]",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "1ab489799cb54b1ca80f4f87591a46d4",
-          "Name": "wasClosed",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Attempts to close a family document or list of family documents, without saving them."
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "8a176012-6eba-46df-8f41-6a40b2bb13a5",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "7c1dacc267da45b2b1cd84613e3f6512",
-      "Inputs": [
-        {
-          "Id": "51beb2ae944944d9bd24a54ec97264ad",
-          "Name": "data",
-          "Description": "Data to pass through\n\nvar[]..[]",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "57564145f50e4652a0ce0d6f35fbba89",
-          "Name": "waitFor",
-          "Description": "Data to wait for until\nthe upper stream can be\npassed.\n\nvar[]..[]",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "4f72306df9eb4506ac063e9886de8682",
-          "Name": "data",
-          "Description": "Passed through data",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Tells the first input to wait for the second input to arrive, then passes on the first input. Really useful for scripts which have branching paths that rely on their outputs to carry each other forward.\r\n\r\nQuite a few custom packages have a 'passthrough' or 'waitfor' node. I use these all the time, so find it useful to have them contained in this package also."
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
       "FunctionSignature": "2d955c77-e83f-43d2-a2dd-c6ccdc5b9670",
       "FunctionType": "Graph",
       "NodeType": "FunctionNode",
@@ -499,6 +436,306 @@
       ],
       "Replication": "Auto",
       "Description": "Given an input from the typical valuesreport structure, attempts to prepare this data into its equivalent data structure for a SetValues node. Missing values will become nulls and Blank values will become empty strings."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "e0d1e10d-0973-478e-b32d-e696714e8341",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "74059d7330324280b3c331995777eedf",
+      "Inputs": [
+        {
+          "Id": "079f671878e745e5ad78d2d0ac1b84a4",
+          "Name": "familyDocs",
+          "Description": "A family document or list\nof family documents.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "a4728a653d3a41ac81fb515897b4b374",
+          "Name": "wasClosed",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Attempts to close a family document or list of family documents, and save the families in the process to their current location."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.Flatten@var[]..[],int",
+      "Id": "8a04fac78a0244e5af346c4435ccf4e5",
+      "Inputs": [
+        {
+          "Id": "fb6a088fa51445cc8e8d2962d9b1ab92",
+          "Name": "list",
+          "Description": "List to flatten.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "586c6ced8a9b46bc91cc801022678f62",
+          "Name": "amount",
+          "Description": "Layers of list nesting to remove (-1 will remove all list nestings)\n\nint\nDefault value : -1",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "da2ad344cfed4eefba3744be121636e0",
+          "Name": "list",
+          "Description": "Flattened list by amount",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Flattens a nested list of lists by a certain amount.\n\nList.Flatten (list: var[]..[], amount: int = -1): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "148c3c86-02c0-4e94-80fa-a241265b95d1",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "f867f5e4c36949c9954d1a65ce493e99",
+      "Inputs": [
+        {
+          "Id": "75331c47886942e6a2729d1df1032bed",
+          "Name": "familyDocs",
+          "Description": "A list of family documents\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d2e57a845df54ef4aaac2c4c421f1ce5",
+          "Name": "paramLists",
+          "Description": "Lists of family parameters or\nparameter names.\n(per family document, ideally)\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "fa9db6e602b24b2ba8702d18cebcd5a6",
+          "Name": "typeLists",
+          "Description": "Lists of family types or\ntype names.\n(per family document, ideally)\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "565be49b80ed49aa97d6487b45b9be37",
+          "Name": "valueLists",
+          "Description": "Lists of parameter values.\n(per type, family document)\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "4498443925364c68a736f2a3bcbffa6e",
+          "Name": "familyDocs",
+          "Description": " The original family document(s).",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a79abc0c46fd4ee897a0329e037b7fa6",
+          "Name": "resultLists",
+          "Description": "Lists of outcomes\n(list per family document).\n\nTrue if success, false if not.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "8d54c8b46e0f4c75a4bbfeccecb5c6ab",
+          "Name": "outcomeLists",
+          "Description": "Lists of outcomes\n(list per family document).\n\nText descriptions.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Given a list of family documents, parmeters, types and value lists by type the node will attempt to set the parameter values. ElementId based values should be provided in the form of elements (not Ids) respective to the family document. For best results, combine this with the ReportToValues node."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.String.StartsWith@string,string,bool",
+      "Id": "0abf3522d57d454bb5226a019ef2d651",
+      "Inputs": [
+        {
+          "Id": "fc2e30ebe18f46a7ac96b413f247904a",
+          "Name": "string",
+          "Description": "String to search the start of\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "b7679fa9e63d4c64911304b4d0e6c1c4",
+          "Name": "searchFor",
+          "Description": "Substring to search the start for.\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "84e899fcebd5498f85206552f0cc8920",
+          "Name": "ignoreCase",
+          "Description": "True to ignore case in comparison, false to take case into account\n\nbool\nDefault value : false",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "ab50c833b1144f6bb7d5d2b51c71a824",
+          "Name": "bool",
+          "Description": "True if string starts with substring, false if it doesn’t",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Determines if the given string starts with the given substring.\n\nString.StartsWith (string: string, searchFor: string, ignoreCase: bool = false): bool"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"FAILURE\";\ntrue;",
+      "Id": "037be48ab44b42e59a5b4c2be40fb42a",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "4691a2d2fb534fa2aa41e61f325f7458",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "c808177c9435416790541d4349e1b724",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "bebf0934860640178f9192f865aa1333",
+      "Inputs": [
+        {
+          "Id": "ae938dac575e4d0eb1c786adeb43503f",
+          "Name": "",
+          "Description": "Node to show output from",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "3d4d3c7c93ad49f8b65bb3abd27e6fc5",
+          "Name": "",
+          "Description": "Node output",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.FilterByBoolMask@var[]..[],var[]..[]",
+      "Id": "31828253f23d43928f1d9d1fa8599ae3",
+      "Inputs": [
+        {
+          "Id": "b3af0f7add014f94895f3e7d3aece865",
+          "Name": "list",
+          "Description": "List to filter.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "9fb4518c99884d65878a0d110f84c270",
+          "Name": "mask",
+          "Description": "List of booleans representing a mask.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f832242c0baa446a98ee3872987a8d9d",
+          "Name": "in",
+          "Description": "Items whose mask index is true.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ddc3daba0f8f4d9e863e129e45d8a17a",
+          "Name": "out",
+          "Description": "Items whose mask index is false.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Filters a sequence by looking up corresponding indices in a separate list of booleans.\n\nList.FilterByBoolMask (list: var[]..[], mask: var[]..[]): var[]..[]"
     }
   ],
   "Connectors": [
@@ -529,11 +766,6 @@
     },
     {
       "Start": "8546e0687ac34d498129580d1a183fed",
-      "End": "51beb2ae944944d9bd24a54ec97264ad",
-      "Id": "99cc52a3629641fd94c2e227ad0bc759"
-    },
-    {
-      "Start": "8546e0687ac34d498129580d1a183fed",
       "End": "6aa01234b28c46f98f0ecdc95a52558a",
       "Id": "54618aa665264f2c992e60d56891f718"
     },
@@ -546,11 +778,6 @@
       "Start": "bd5b8a07cfa1455d9441345d8efb35c1",
       "End": "05d5e5c6ba50409fa15d3095e7e58836",
       "Id": "6bef4eb6dad04fc9ada01bc43f3d7549"
-    },
-    {
-      "Start": "4f72306df9eb4506ac063e9886de8682",
-      "End": "653fe0ac006848fc918db5e77fb832bc",
-      "Id": "15c5857dd32541d1827e879ea5f18d15"
     },
     {
       "Start": "96251eeebf0b47b4b2bc0d60b0ed5af4",
@@ -569,18 +796,73 @@
     },
     {
       "Start": "a93cf14e262344ac9cd210239dc30194",
-      "End": "57564145f50e4652a0ce0d6f35fbba89",
-      "Id": "aa044241662043abaf22ab140019910a"
+      "End": "75331c47886942e6a2729d1df1032bed",
+      "Id": "78008829ef434fd0bb1a73f54a75350a"
+    },
+    {
+      "Start": "904e313cfb4c4c4d8a57b789d0965f87",
+      "End": "d2e57a845df54ef4aaac2c4c421f1ce5",
+      "Id": "82bc0a5811f4408183851033c6051114"
+    },
+    {
+      "Start": "79a7f17e4d304dac9f81ec6272303299",
+      "End": "fa9db6e602b24b2ba8702d18cebcd5a6",
+      "Id": "8b45bcb8a80440708db13cc8034c3b99"
+    },
+    {
+      "Start": "936f2cdccf81424aa4953196e2dc66ac",
+      "End": "565be49b80ed49aa97d6487b45b9be37",
+      "Id": "77c29130d6e24936b95036711fcdbfb3"
+    },
+    {
+      "Start": "da2ad344cfed4eefba3744be121636e0",
+      "End": "fc2e30ebe18f46a7ac96b413f247904a",
+      "Id": "a097741bd3064b7f8da1330fe3962f59"
+    },
+    {
+      "Start": "da2ad344cfed4eefba3744be121636e0",
+      "End": "b3af0f7add014f94895f3e7d3aece865",
+      "Id": "4c3accc3ec30414ebdf0eb497f3dccf7"
+    },
+    {
+      "Start": "4498443925364c68a736f2a3bcbffa6e",
+      "End": "079f671878e745e5ad78d2d0ac1b84a4",
+      "Id": "0d137bb32d7d45d6a954ae1dbb515478"
+    },
+    {
+      "Start": "8d54c8b46e0f4c75a4bbfeccecb5c6ab",
+      "End": "fb6a088fa51445cc8e8d2962d9b1ab92",
+      "Id": "78131125a90c4559a71ecf696b27a66b"
+    },
+    {
+      "Start": "ab50c833b1144f6bb7d5d2b51c71a824",
+      "End": "9fb4518c99884d65878a0d110f84c270",
+      "Id": "ba91ec157be94c5c9a80fb18c1d52302"
+    },
+    {
+      "Start": "4691a2d2fb534fa2aa41e61f325f7458",
+      "End": "b7679fa9e63d4c64911304b4d0e6c1c4",
+      "Id": "f346a2c63e88484580e1fa74e7614a9e"
+    },
+    {
+      "Start": "c808177c9435416790541d4349e1b724",
+      "End": "84e899fcebd5498f85206552f0cc8920",
+      "Id": "9c0ff63f41ae49de875826cb18e05cf9"
+    },
+    {
+      "Start": "f832242c0baa446a98ee3872987a8d9d",
+      "End": "ae938dac575e4d0eb1c786adeb43503f",
+      "Id": "d3133c372ecd4a67a4ab301b213e4a9a"
     }
   ],
   "Dependencies": [
     "a32b54a3-50b7-4246-b937-030bad2c9f35",
     "cac9d4f6-2079-450f-998e-7f674949d1f4",
     "46bde950-4617-4547-8719-6b676b7ebbec",
-    "66f0417f-21ab-4c57-b40f-dfd11f57200b",
-    "8a176012-6eba-46df-8f41-6a40b2bb13a5",
     "2d955c77-e83f-43d2-a2dd-c6ccdc5b9670",
-    "bc9fe653-d16b-497d-9a03-b7414e60ed42"
+    "bc9fe653-d16b-497d-9a03-b7414e60ed42",
+    "e0d1e10d-0973-478e-b32d-e696714e8341",
+    "148c3c86-02c0-4e94-80fa-a241265b95d1"
   ],
   "NodeLibraryDependencies": [
     {
@@ -591,10 +873,10 @@
         "303fdda086b84bffb7d59c918f721fc0",
         "db12609b761944ea8c879a47fe49539d",
         "68b7725cd0944a7fbfd0180ac39aa167",
-        "87bb3524941c45668d0c3f7e9afb1a05",
-        "7c1dacc267da45b2b1cd84613e3f6512",
         "91ac4f300c3c4d0a931a50e151bf1272",
-        "d86d1954ce674862a137d63e6fff24e1"
+        "d86d1954ce674862a137d63e6fff24e1",
+        "74059d7330324280b3c331995777eedf",
+        "f867f5e4c36949c9954d1a65ce493e99"
       ]
     }
   ],
@@ -716,26 +998,6 @@
       },
       {
         "ShowGeometry": true,
-        "Name": "© FamilyDoc.CloseWithoutSave",
-        "Id": "87bb3524941c45668d0c3f7e9afb1a05",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 4298.4370849740653,
-        "Y": 479.45955726089477
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "© Flow.WaitFor",
-        "Id": "7c1dacc267da45b2b1cd84613e3f6512",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 3955.7255717177168,
-        "Y": 480.17913767020929
-      },
-      {
-        "ShowGeometry": true,
         "Name": "© Excel.Import",
         "Id": "91ac4f300c3c4d0a931a50e151bf1272",
         "IsSetAsInput": false,
@@ -773,6 +1035,76 @@
         "Excluded": false,
         "X": 3384.3272492696742,
         "Y": 758.59687689742316
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "© FamilyDoc.CloseAndSave",
+        "Id": "74059d7330324280b3c331995777eedf",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 4275.9044918544523,
+        "Y": 664.397611632987
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.Flatten",
+        "Id": "8a04fac78a0244e5af346c4435ccf4e5",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 4275.9569130391328,
+        "Y": 874.327609975489
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "© FamilyDoc.SetParameterValues",
+        "Id": "f867f5e4c36949c9954d1a65ce493e99",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 3749.9070634224227,
+        "Y": 757.71443159056
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "String.StartsWith",
+        "Id": "0abf3522d57d454bb5226a019ef2d651",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 4537.88007994493,
+        "Y": 965.469458435019
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "037be48ab44b42e59a5b4c2be40fb42a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 4317.3609750187361,
+        "Y": 1007.8852453323161
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Failed to set values",
+        "Id": "bebf0934860640178f9192f865aa1333",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": true,
+        "Excluded": false,
+        "X": 5058.0569017453372,
+        "Y": 876.853845507898
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.FilterByBoolMask",
+        "Id": "31828253f23d43928f1d9d1fa8599ae3",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 4820.7808969321068,
+        "Y": 877.24276442036592
       }
     ],
     "Annotations": [
@@ -797,23 +1129,6 @@
         "Background": "#FFC1D676"
       },
       {
-        "Id": "1d40306ebc0c4b01ad1a3ca95ca98748",
-        "Title": "Close family documents",
-        "Nodes": [
-          "87bb3524941c45668d0c3f7e9afb1a05",
-          "7c1dacc267da45b2b1cd84613e3f6512"
-        ],
-        "Left": 3945.7255717177168,
-        "Top": 426.45955726089477,
-        "Width": 612.71151325634855,
-        "Height": 172.71958040931446,
-        "FontSize": 36.0,
-        "InitialTop": 479.45955726089477,
-        "InitialHeight": 145.71958040931446,
-        "TextblockHeight": 43.0,
-        "Background": "#FF48B9FF"
-      },
-      {
         "Id": "a621c7603b3347bcac4a57d195a9a264",
         "Title": "Get Excel report",
         "Nodes": [
@@ -829,13 +1144,66 @@
         "Height": 375.25786077870976,
         "FontSize": 36.0,
         "InitialTop": 754.488282159167,
-        "InitialHeight": 352.25786077870976,
+        "InitialHeight": 399.25786077870976,
         "TextblockHeight": 43.0,
         "Background": "#FFC1D676"
+      },
+      {
+        "Id": "1e2e7263bb6e4def8f880952628aaebd",
+        "Title": "Process report, set values",
+        "Nodes": [
+          "d86d1954ce674862a137d63e6fff24e1",
+          "f867f5e4c36949c9954d1a65ce493e99"
+        ],
+        "Left": 3374.3272492696742,
+        "Top": 704.71443159056,
+        "Width": 652.57981415274844,
+        "Height": 224.88244530686313,
+        "FontSize": 36.0,
+        "InitialTop": 757.71443159056,
+        "InitialHeight": 145.88244530686313,
+        "TextblockHeight": 43.0,
+        "Background": "#FF48B9FF"
+      },
+      {
+        "Id": "d9eba005dca34effa33cc1a802f6569c",
+        "Title": "Close docs",
+        "Nodes": [
+          "74059d7330324280b3c331995777eedf"
+        ],
+        "Left": 4265.9044918544523,
+        "Top": 611.397611632987,
+        "Width": 270.0,
+        "Height": 146.0,
+        "FontSize": 36.0,
+        "InitialTop": 664.397611632987,
+        "InitialHeight": 145.0,
+        "TextblockHeight": 43.0,
+        "Background": "#FF48B9FF"
+      },
+      {
+        "Id": "ca3de9f5c40a4d078db409d30d2adb1c",
+        "Title": "Report failures (ignore errors)",
+        "Nodes": [
+          "8a04fac78a0244e5af346c4435ccf4e5",
+          "0abf3522d57d454bb5226a019ef2d651",
+          "037be48ab44b42e59a5b4c2be40fb42a",
+          "bebf0934860640178f9192f865aa1333",
+          "31828253f23d43928f1d9d1fa8599ae3"
+        ],
+        "Left": 4265.9569130391328,
+        "Top": 821.327609975489,
+        "Width": 1012.0999887062044,
+        "Height": 333.5262355324088,
+        "FontSize": 36.0,
+        "InitialTop": 874.327609975489,
+        "InitialHeight": 278.55763535682706,
+        "TextblockHeight": 43.0,
+        "Background": "#FFFF7BAC"
       }
     ],
-    "X": -1565.028305294436,
-    "Y": -190.24540694025947,
-    "Zoom": 0.83194034227605729
+    "X": -1792.8452588532568,
+    "Y": -77.473902964526587,
+    "Zoom": 0.63918660873496069
   }
 }
