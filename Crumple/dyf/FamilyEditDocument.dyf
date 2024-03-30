@@ -1,0 +1,373 @@
+{
+  "Uuid": "48061904-365b-4f32-9b83-f86dacbb3298",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.Actions",
+  "Description": "Attempts to edit (open) a copy of a family in the project as a background document.",
+  "Name": "© Family.EditDocument",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[1]\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nfamilies = uwlist(IN[0])\r\nfamDocs, results = [],[]\r\n\r\n# Do some action in a Transaction\r\nfor f in families:\r\n\ttry:\r\n\t\tfamDoc = doc.EditFamily(f)\r\n\t\tfamDocs.append(famDoc)\r\n\t\tresults.append(True)\r\n\texcept:\r\n\t\tfamDocs.append(None)\r\n\t\tresults.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = famDocs, results",
+      "Engine": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "9f5860553c8b472192b5c4db3ed28a98",
+      "Inputs": [
+        {
+          "Id": "d66197fd20bf46c1a51097fa7f830d88",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d688c42ec1f34732b3a1e2c45326e616",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c484bbae90cc4d6190ed488f65afb6ab",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "families",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "d7091dc6c8ab4761af6a5ada8485f11d",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "c809ce652646435cad300d2ad1badfed",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "09eb40a65dec48508570dfda2cf18e9f",
+      "Inputs": [
+        {
+          "Id": "4d8ec82b39a448b28f2fd98bc7eb96fe",
+          "Name": "docOrLink",
+          "Description": "var[]..[]\nDefault value : null",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "67d04a46383243ce837f69b09b7377c2",
+          "Name": "document",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a095a8c54759444b899aed7156867d23",
+          "Name": "outcome",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "docOrLink",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": "null",
+        "Description": "Uses current if none provided.\nAccepts document or link instance."
+      },
+      "Id": "48e963717d6d4703a76a1c292c805965",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "57ad85f6efba4fd39391a35523c6e12d",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "out[0];\nout[1];",
+      "Id": "6fec9b6075404d07aa59c6a265e4a224",
+      "Inputs": [
+        {
+          "Id": "db5d3929d4b14dd387828efb33130b08",
+          "Name": "out",
+          "Description": "out",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "273d6cac3cbb43e9bb1219814581fcf1",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "978f286ddd084d4793f624f86071fa83",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "familyDocs",
+      "Id": "ca0236cb7bd1474fab93d4d7e7639416",
+      "Inputs": [
+        {
+          "Id": "68104c723b0b4d799427935c6536a2b5",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "wasEdited",
+      "Id": "73a36f622e014d29850f1b02990eb64d",
+      "Inputs": [
+        {
+          "Id": "9d54c3e9ddfc42cebcd6fa2b96170ec1",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "c484bbae90cc4d6190ed488f65afb6ab",
+      "End": "db5d3929d4b14dd387828efb33130b08",
+      "Id": "a4c46249af154ad8bd553662487f872d"
+    },
+    {
+      "Start": "c809ce652646435cad300d2ad1badfed",
+      "End": "d66197fd20bf46c1a51097fa7f830d88",
+      "Id": "c6f4f9f5b87b4978abae2d12b2cc569f"
+    },
+    {
+      "Start": "67d04a46383243ce837f69b09b7377c2",
+      "End": "d688c42ec1f34732b3a1e2c45326e616",
+      "Id": "5a98c010bc1d42fbb3a1990cdf13fa4a"
+    },
+    {
+      "Start": "57ad85f6efba4fd39391a35523c6e12d",
+      "End": "4d8ec82b39a448b28f2fd98bc7eb96fe",
+      "Id": "dc1fa7bb10884f25aa7fd5dbc2ec85f2"
+    },
+    {
+      "Start": "273d6cac3cbb43e9bb1219814581fcf1",
+      "End": "68104c723b0b4d799427935c6536a2b5",
+      "Id": "7604fef554e949499a03621ffa52f2fe"
+    },
+    {
+      "Start": "978f286ddd084d4793f624f86071fa83",
+      "End": "9d54c3e9ddfc42cebcd6fa2b96170ec1",
+      "Id": "b8c0b7d5d10241f189f86de10f0da575"
+    }
+  ],
+  "Dependencies": [
+    "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Crumple",
+      "Version": "2024.3.1",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "09eb40a65dec48508570dfda2cf18e9f"
+      ]
+    }
+  ],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.12.1.8246",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "9f5860553c8b472192b5c4db3ed28a98",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 605.5738644547132,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "d7091dc6c8ab4761af6a5ada8485f11d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 279.56970269244687,
+        "Y": -19.767554735829549
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "© Revit.GetDocument",
+        "Id": "09eb40a65dec48508570dfda2cf18e9f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 251.82781327035639,
+        "Y": 64.62365752711429
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "48e963717d6d4703a76a1c292c805965",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -135.09340169612676,
+        "Y": 65.4364019208432
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "6fec9b6075404d07aa59c6a265e4a224",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 825.47180917249852,
+        "Y": 3.7537174475144752
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "ca0236cb7bd1474fab93d4d7e7639416",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1121.868056809019,
+        "Y": -62.022224453328988
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "73a36f622e014d29850f1b02990eb64d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1120.989074003324,
+        "Y": 68.408574971934456
+      }
+    ],
+    "Annotations": [],
+    "X": 162.36905983339989,
+    "Y": 327.22604659513144,
+    "Zoom": 0.55152031146487845
+  }
+}
