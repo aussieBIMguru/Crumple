@@ -3,7 +3,7 @@
   "IsCustomNode": true,
   "Category": "Crumple.Application.Query",
   "Description": "Returns the unit type or forgetypeId of the document's units.",
-  "Name": "© Revit.GetUnits",
+  "Name": "© Revit.GetUnitTypes",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application\r\n\r\n# Get app version\r\nrvt_year = int(app.VersionNumber)\r\n\r\n# Get units\r\nif rvt_year < 2022:\r\n\tintUnits = doc.GetUnits().GetFormatOptions(UnitType.UT_Length).DisplayUnits\r\nelse:\r\n\tintUnits = doc.GetUnits().GetFormatOptions(SpecTypeId.Length).GetUnitTypeId()\r\n\r\n# Preparing output to Dynamo\r\nOUT = intUnits",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Get app version\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application\r\nrvt_year = int(app.VersionNumber)\r\n\r\n# Import API references by version\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\n\r\nif rvt_year < 2022:\r\n\tfrom Autodesk.Revit.DB import UnitType\r\nelse:\r\n\tfrom Autodesk.Revit.DB import SpecTypeId\r\n\r\n# Get units\r\nif rvt_year < 2022:\r\n\tintLenUnits  = doc.GetUnits().GetFormatOptions(UnitType.UT_Length).DisplayUnits\r\n\tintAreaUnits = doc.GetUnits().GetFormatOptions(UnitType.UT_Area).DisplayUnits\r\n\tintVolUnits  = doc.GetUnits().GetFormatOptions(UnitType.UT_Volume).DisplayUnits\r\nelse:\r\n\tintLenUnits  = doc.GetUnits().GetFormatOptions(SpecTypeId.Length).GetUnitTypeId()\r\n\tintAreaUnits = doc.GetUnits().GetFormatOptions(SpecTypeId.Area).GetUnitTypeId()\r\n\tintVolUnits  = doc.GetUnits().GetFormatOptions(SpecTypeId.Volume).GetUnitTypeId()\r\n\r\n# Preparing output to Dynamo\r\nOUT = intLenUnits, intAreaUnits, intVolUnits",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "e2836d27dcd447bda3a62ec066f6e9e0",
@@ -46,7 +46,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "unitType",
+      "Symbol": "lengthType",
       "Id": "ab9a9a7747644ed78e0f62dbbda632e8",
       "Inputs": [
         {
@@ -128,13 +128,103 @@
       ],
       "Replication": "Disabled",
       "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "x[0];\nx[1];\nx[2];",
+      "Id": "66e857bab5804eeebfff2086f22998ab",
+      "Inputs": [
+        {
+          "Id": "5d43cd88a432469ea487b38ed738dcde",
+          "Name": "x",
+          "Description": "x",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "2d4ed08aa7534f71ba5cb9436f251a9c",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ca82b4440b294d7cb8637357861c476c",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "faf73e6062ea443e9918d385ed0b1153",
+          "Name": "",
+          "Description": "Value of expression at line 3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "areaType",
+      "Id": "5a83f6afbb6143b598101ddd852283c9",
+      "Inputs": [
+        {
+          "Id": "f92c9bfc1ef04a1d8bf10455ef17231e",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "volumeType",
+      "Id": "88af116bc9c74ba7b301a37fb57e04fb",
+      "Inputs": [
+        {
+          "Id": "9d13c030c8db43c19c9f634c3088bfd3",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
     }
   ],
   "Connectors": [
     {
       "Start": "86de75d807a347ca9381de9e046f6657",
-      "End": "30fcc3c960834c9b8bb41f4c665e8bd6",
-      "Id": "86d3f2ecbb894664ae961d9216d0a51d"
+      "End": "5d43cd88a432469ea487b38ed738dcde",
+      "Id": "3c26b79b705045dfaa5433d322bceb0a"
     },
     {
       "Start": "9d4bb96059554748b412cea9ea9bb996",
@@ -145,6 +235,21 @@
       "Start": "79f181c3988b41e5bcc764aa01aff782",
       "End": "df0a428109c040e69a982a24050de9be",
       "Id": "6072ec89b1214a6cb766fac1490872d8"
+    },
+    {
+      "Start": "2d4ed08aa7534f71ba5cb9436f251a9c",
+      "End": "30fcc3c960834c9b8bb41f4c665e8bd6",
+      "Id": "c75bd8e9ded846d0bd7066c8e923f61a"
+    },
+    {
+      "Start": "ca82b4440b294d7cb8637357861c476c",
+      "End": "f92c9bfc1ef04a1d8bf10455ef17231e",
+      "Id": "1d45f93425e44494b0f05bca77dd3016"
+    },
+    {
+      "Start": "faf73e6062ea443e9918d385ed0b1153",
+      "End": "9d13c030c8db43c19c9f634c3088bfd3",
+      "Id": "f051d35c2dce4c7fbcbd33f9007ac738"
     }
   ],
   "Dependencies": [
@@ -201,8 +306,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 604.5,
-        "Y": -147.0
+        "X": 852.5,
+        "Y": -224.0
       },
       {
         "ShowGeometry": true,
@@ -223,11 +328,41 @@
         "Excluded": false,
         "X": -230.99999999999994,
         "Y": -149.67103139060549
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "66e857bab5804eeebfff2086f22998ab",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 620.0,
+        "Y": -145.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "5a83f6afbb6143b598101ddd852283c9",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 856.5,
+        "Y": -132.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "88af116bc9c74ba7b301a37fb57e04fb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 859.5,
+        "Y": -32.0
       }
     ],
     "Annotations": [],
-    "X": 234.0,
-    "Y": 258.0,
-    "Zoom": 1.0
+    "X": 132.89419608791491,
+    "Y": 438.16279146185991,
+    "Zoom": 0.49618648738281262
   }
 }

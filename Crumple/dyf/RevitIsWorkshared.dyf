@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Large in part borrows from Clockwork\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Inputs\r\ndoc = IN[0]\r\n\r\nif doc.IsWorkshared:\r\n\tws = True\r\nelse:\r\n\tws = False\r\n\r\n# Preparing output to Dynamo\r\nOUT = ws",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Large in part borrows from Clockwork\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Inputs\r\ndoc = IN[0]\r\n\r\nif doc.IsWorkshared:\r\n\tOUT = True\r\nelse:\r\n\tOUT = False",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "605756a61e34480db940fdac0e7bfb59",
       "Inputs": [
@@ -39,13 +40,13 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "workshared",
+      "Symbol": "isWorkshared",
       "Id": "efb55f58da44433d9b9ad8696e449909",
       "Inputs": [
         {
@@ -159,13 +160,14 @@
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -224,8 +226,8 @@
       }
     ],
     "Annotations": [],
-    "X": 673.39637467334728,
-    "Y": 364.257328765939,
+    "X": 187.39637467334728,
+    "Y": 337.257328765939,
     "Zoom": 0.96856124695672285
   }
 }

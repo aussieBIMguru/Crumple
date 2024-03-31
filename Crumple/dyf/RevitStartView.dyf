@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\nuidoc = uiapp.ActiveUIDocument\r\n\r\n# Preparing input from dynamo to revit\r\ndoc = IN[0]\r\n\r\n# Get start view\r\ntry:\r\n\tstartSettings = StartingViewSettings.GetStartingViewSettings(doc)\r\n\tstartViewId = startSettings.ViewId\r\n\tOUT = doc.GetElement(startViewId)\r\nexcept:\r\n\tOUT = None",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import StartingViewSettings\r\n\r\n# Preparing input from dynamo to revit\r\ndoc = IN[0]\r\n\r\n# Get start view\r\ntry:\r\n\tstartSettings = StartingViewSettings.GetStartingViewSettings(doc)\r\n\tstartViewId = startSettings.ViewId\r\n\tOUT = doc.GetElement(startViewId)\r\nexcept:\r\n\tOUT = None",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "b25af5387a5f4fc6a47a5d634e1ddbe5",

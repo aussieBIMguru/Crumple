@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\nuidoc = uiapp.ActiveUIDocument\r\n\r\n# Get selection\r\nselected = uidoc.Selection.GetElementIds()\r\n\r\n# Return elements\r\nresult = []\r\n\r\nfor id in selected:\r\n\te = doc.GetElement(id).ToDSType(True)\r\n\tresult.append(e)\r\n\r\n# Preparing output to Dynamo\r\nOUT = result",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\nuidoc = uiapp.ActiveUIDocument\r\n\r\n# Get selection\r\nselected = uidoc.Selection.GetElementIds()\r\n\r\n# Return elements\r\nresult = []\r\n\r\nfor id in selected:\r\n\te = doc.GetElement(id).ToDSType(True)\r\n\tresult.append(e)\r\n\r\n# Preparing output to Dynamo\r\nOUT = result",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "0f9e3b0cb6424e338826bda3feadd136",
       "Inputs": [
@@ -39,7 +40,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -103,13 +104,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -158,8 +160,8 @@
       }
     ],
     "Annotations": [],
-    "X": 153.98250000000002,
-    "Y": 223.6425,
+    "X": 29.982500000000016,
+    "Y": 244.6425,
     "Zoom": 1.1575
   }
 }

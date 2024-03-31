@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\nuidoc = uiapp.ActiveUIDocument\r\n\r\n# Preparing input from dynamo to revit\r\ndoc = IN[0]\r\n\r\n# Get views\r\nviews = []\r\n\r\nuiViews = uidoc.GetOpenUIViews()\r\n\r\nfor v in uiViews:\r\n\ttry:\r\n\t\tview = doc.GetElement(v.ViewId)\r\n\t\tviews.append(view)\r\n\texcept:\r\n\t\tpass\r\n\r\n# Preparing output to Dynamo\r\nOUT = views",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Current doc/app/ui\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\nuidoc = uiapp.ActiveUIDocument\r\n\r\n# Preparing input from dynamo to revit\r\ndoc = IN[0]\r\n\r\n# Get views\r\nviews = []\r\n\r\nuiViews = uidoc.GetOpenUIViews()\r\n\r\nfor v in uiViews:\r\n\ttry:\r\n\t\tview = doc.GetElement(v.ViewId)\r\n\t\tviews.append(view)\r\n\texcept:\r\n\t\tpass\r\n\r\n# Preparing output to Dynamo\r\nOUT = views",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "c56cdeadcf7744d3a3068c51c98a5228",
@@ -107,7 +107,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "doc",
+        "Name": "document",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": "null",
@@ -226,8 +226,8 @@
       }
     ],
     "Annotations": [],
-    "X": 81.0,
-    "Y": 214.0,
-    "Zoom": 1.0
+    "X": 54.648577082387931,
+    "Y": 290.76257241404591,
+    "Zoom": 0.8033215934625979
   }
 }

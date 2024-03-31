@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "def tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\nstrings = tolist(IN[0])\r\nreplace = IN[1]\r\nstrlist,changed = [],[]\r\n\r\nfor str in strings:\r\n\t\r\n\toriginal = str + \"\"\r\n\t\r\n\tstr = str.replace('\\\\', replace)\r\n\tstr = str.replace(':', replace)\r\n\tstr = str.replace('{', replace)\r\n\tstr = str.replace('}', replace)\r\n\tstr = str.replace('[', replace)\r\n\tstr = str.replace(']', replace)\r\n\tstr = str.replace('|', replace)\r\n\tstr = str.replace(';', replace)\r\n\tstr = str.replace('<', replace)\r\n\tstr = str.replace('>', replace)\r\n\tstr = str.replace('?', replace)\r\n\tstr = str.replace('`', replace)\r\n\tstr = str.replace('~', replace)\r\n\tstrlist.append(str)\r\n\t\r\n\tif original == str:\r\n\t\tchanged.append(False)\r\n\telse:\r\n\t\tchanged.append(True)\r\n\r\nOUT = [strlist, changed]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Inputs from Dynamo\r\nstrings = tolist(IN[0])\r\nreplace = IN[1]\r\n\r\nnewStrings, stringsChanged = [],[]\r\n\r\nCHARS_ILLEGAL = ['\\\\',':','{','}','[',']','|',';','<','>','?','`','~']\r\n\r\n# Function: Replace or remove illegal characters for windows\r\ndef legalizeString(string_check):\r\n\t# New string to build\r\n\tstring_legal  = \"\"\r\n\t# Check each character\r\n\tfor c in string_check:\r\n\t\tif c in CHARS_ILLEGAL:\r\n\t\t\tstring_legal += replace\r\n\t\telse:\r\n\t\t\tstring_legal += c\r\n\t# Return new string\r\n\treturn string_legal, string_check == string_legal\r\n\r\n# Legalize strings\r\nfor s in strings:\r\n\tsl, wc = legalizeString(s)\r\n\tnewStrings.append(sl)\r\n\tstringsChanged.append(wc)\r\n\r\n# Output to Dynamo\r\nOUT = newStrings, stringsChanged",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "03d3f63b201a4962a5d1c015d81617d7",
       "Inputs": [
@@ -48,13 +49,13 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "strings",
+        "Name": "checkStrings",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -80,11 +81,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "replacement",
+        "Name": "replaceChar",
         "TypeName": "string",
         "TypeRank": 0,
         "DefaultValue": "\"\"",
-        "Description": ""
+        "Description": " Character to replace illegal characters with"
       },
       "Id": "d0a7f87f3ee34bf5996e1167cb294f22",
       "Inputs": [],
@@ -106,28 +107,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "changed",
-      "Id": "edb4a25e49a24e40b931e7368e5f354b",
-      "Inputs": [
-        {
-          "Id": "a8239a5eebb547eab18112104005e535",
-          "Name": "",
-          "Description": "",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [],
-      "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
-      "ElementResolver": null,
-      "Symbol": "strings",
+      "Symbol": "legalStrings",
       "Id": "7ceb4de5cba94b8f8c89d41dfd70f3ad",
       "Inputs": [
         {
@@ -182,6 +162,27 @@
       ],
       "Replication": "Disabled",
       "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "wasChanged",
+      "Id": "4a0f7ee64e534fe19eff5d4c628f207f",
+      "Inputs": [
+        {
+          "Id": "0f79cdc97baa47fa8647f25017cd263f",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
     }
   ],
   "Connectors": [
@@ -207,19 +208,20 @@
     },
     {
       "Start": "9c3cdc7a56294d1bb43ccccd0f7c93c8",
-      "End": "a8239a5eebb547eab18112104005e535",
-      "Id": "f6ffb94cfd244fd08240d72aa19542f5"
+      "End": "0f79cdc97baa47fa8647f25017cd263f",
+      "Id": "67c3ea7ef675476aa339c1f8fd559ffc"
     }
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -253,8 +255,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -46.0,
-        "Y": -52.0
+        "X": -91.047914873614673,
+        "Y": -53.155074740349079
       },
       {
         "ShowGeometry": true,
@@ -263,18 +265,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -90.7594698581072,
-        "Y": 48.0672923269897
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Output",
-        "Id": "edb4a25e49a24e40b931e7368e5f354b",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 659.247254265161,
-        "Y": 54.706572208656723
+        "X": -281.92433938588232,
+        "Y": 60.773114470829768
       },
       {
         "ShowGeometry": true,
@@ -295,11 +287,21 @@
         "Excluded": false,
         "X": 426.24176582914106,
         "Y": 5.0583192648144291
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "4a0f7ee64e534fe19eff5d4c628f207f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 667.562608363052,
+        "Y": 69.322462950007036
       }
     ],
     "Annotations": [],
-    "X": 187.14908600750326,
-    "Y": 395.77232237645444,
-    "Zoom": 1.7314896864557405
+    "X": 225.0205812301092,
+    "Y": 325.74620351069586,
+    "Zoom": 1.2398459514422497
   }
 }

@@ -52,7 +52,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n#Inputdoc by Andreas Dieckmann\r\nif isinstance(IN[0], list):\r\n\tinputdoc = UnwrapElement(IN[0])\r\nelse:\r\n\tinputdoc = [UnwrapElement(IN[0])]\r\n\r\nif inputdoc[0] == None:\r\n\tdoc = DocumentManager.Instance.CurrentDBDocument\r\n\ttest = \"No input detected\"\r\nelif inputdoc[0].GetType().ToString() == \"Autodesk.Revit.DB.Document\":\r\n\tdoc = inputdoc[0]\r\n\ttest = \"A document was provided.\"\r\nelif inputdoc[0].GetType().ToString() == \"Autodesk.Revit.DB.RevitLinkInstance\":\r\n\tdoc = inputdoc[0].GetLinkDocument()\r\n\ttest = \"From linked instance.\"\r\nelse:\r\n\tdoc = DocumentManager.Instance.CurrentDBDocument\r\n\ttest = \"Invalid input, current document used.\"\r\n\r\n# Preparing output to Dynamo\r\nOUT = doc,test",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Get input to document\r\ninputdoc = uwlist(IN[0])\r\n\r\n# If no document, return current document\r\nif inputdoc[0] == None:\r\n\tdoc = DocumentManager.Instance.CurrentDBDocument\r\n\ttest = \"Null input, current document used.\"\r\n# If a document was provided, return it\r\nelif inputdoc[0].GetType().ToString() == \"Autodesk.Revit.DB.Document\":\r\n\tdoc = inputdoc[0]\r\n\ttest = \"Document was provided and used.\"\r\n# If a link instance, return it\r\nelif inputdoc[0].GetType().ToString() == \"Autodesk.Revit.DB.RevitLinkInstance\":\r\n\tdoc = inputdoc[0].GetLinkDocument()\r\n\ttest = \"Document from provided linked instance used.\"\r\n# Otherwise, just return current document\r\nelse:\r\n\tdoc = DocumentManager.Instance.CurrentDBDocument\r\n\ttest = \"Invalid input, current document used.\"\r\n\r\n# Preparing output to Dynamo\r\nOUT = doc, test",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "13e8798271fc4eb7af03140aa45cc811",
       "Inputs": [
@@ -78,7 +79,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -173,13 +174,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -248,8 +250,8 @@
       }
     ],
     "Annotations": [],
-    "X": 162.07820512820513,
-    "Y": 370.51987179487179,
-    "Zoom": 1.8602564102564103
+    "X": 52.134050001416455,
+    "Y": 290.44753750184714,
+    "Zoom": 0.65619307783356151
   }
 }

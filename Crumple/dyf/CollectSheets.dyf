@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[1]\r\n\r\n# Preparing input from dynamo to revit\r\ninclude = IN[0]\r\n\r\n# Collect all sheets\r\nsheets = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Sheets).WhereElementIsNotElementType().ToElements()\r\n\r\n# Build output\r\nsheetsout = []\r\n\r\nfor s in sheets:\r\n\tif not(s.IsPlaceholder) or include:\r\n\t\tsheetsout.append(s)\r\n\r\n# Preparing output to Dynamo\r\nOUT = sheetsout",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory\r\n\r\n# Inputs from Dynamo\r\ndoc     = IN[1]\r\ninclude = IN[0]\r\n\r\n# Collect all sheets\r\nsheets = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Sheets).WhereElementIsNotElementType().ToElements()\r\n\r\n# Preparing output to Dynamo\r\nif include:\r\n\tOUT = sheets\r\nelse:\r\n\tsheetsOut = []\r\n\tfor s in sheets:\r\n\t\tif not(s.IsPlaceholder):\r\n\t\t\tsheetsOut.append(s)\r\n\tOUT = sheetsOut",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "9f2e5957d7524086838658f7f56c7bce",
       "Inputs": [
@@ -48,7 +49,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -57,7 +58,7 @@
         "Name": "includePlaceholders",
         "TypeName": "bool",
         "TypeRank": 0,
-        "DefaultValue": "true",
+        "DefaultValue": "false",
         "Description": ""
       },
       "Id": "b6408d5623014fc5bdd4746b46ef6883",
@@ -199,13 +200,14 @@
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -229,8 +231,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 250.0,
-        "Y": 0.0
+        "X": 325.06288116493056,
+        "Y": 1.1038658994842763
       },
       {
         "ShowGeometry": true,
@@ -239,8 +241,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -84.60235782829,
-        "Y": -0.48622044728904257
+        "X": -120.33392904666562,
+        "Y": -36.217791665664492
       },
       {
         "ShowGeometry": true,
@@ -249,8 +251,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 415.93700958434647,
-        "Y": 0.0
+        "X": 571.582101411629,
+        "Y": 2.2077317989685525
       },
       {
         "ShowGeometry": true,
@@ -259,8 +261,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -426.62999608528094,
-        "Y": 68.874824349234544
+        "X": -443.0069662270364,
+        "Y": 71.852455284099179
       },
       {
         "ShowGeometry": true,
@@ -274,8 +276,8 @@
       }
     ],
     "Annotations": [],
-    "X": 358.67689609841295,
-    "Y": 87.994736693240043,
-    "Zoom": 1.125746997871456
+    "X": -81.483103303909161,
+    "Y": 93.07123076191435,
+    "Zoom": 0.90590714004953021
   }
 }

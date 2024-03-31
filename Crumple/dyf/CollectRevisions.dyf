@@ -18,7 +18,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Collect revisions\r\nrevisions = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Revisions).WhereElementIsNotElementType().ToElements()\r\n\r\n# Preparing output to Dynamo\r\nOUT = revisions",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\ngetSorted = IN[1]\r\n\r\n# Collect revisions\r\nrevisions = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Revisions).WhereElementIsNotElementType().ToElements()\r\n\r\n# Preparing output to Dynamo\r\nif getSorted:\r\n\trevSorted = sorted(revisions, key = lambda r: r.SequenceNumber)\r\n\tOUT = revSorted\r\nelse:\r\n\tOUT = revisions",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "80a5f627ec784c889119aaa70357a416",
       "Inputs": [
@@ -26,6 +27,15 @@
           "Id": "9ae17a9558e642e69bc30474010e7afb",
           "Name": "IN[0]",
           "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "afb318791d0e4a36868cce63634a6c3f",
+          "Name": "IN[1]",
+          "Description": "Input #1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -44,7 +54,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -66,32 +76,6 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
-      "Parameter": {
-        "Name": "docOrLink",
-        "TypeName": "var",
-        "TypeRank": -1,
-        "DefaultValue": "null",
-        "Description": "Uses current if none provided.\nAccepts document or link instance."
-      },
-      "Id": "22f5b2fd15314c4cac18040281a16d65",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "7b9b011697bc4105b1a85130e0037428",
-          "Name": "",
-          "Description": "Symbol",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
@@ -132,6 +116,58 @@
       ],
       "Replication": "Auto",
       "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "sortBySequence",
+        "TypeName": "bool",
+        "TypeRank": 0,
+        "DefaultValue": "true",
+        "Description": ""
+      },
+      "Id": "ffe9b8edac6547dba4c1863b22625cf0",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "3b929f853f6b476a993ebf147bda22ce",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "docOrLink",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": "null",
+        "Description": "Uses current if none provided.\nAccepts document or link instance."
+      },
+      "Id": "79626b025d6e4cb996d5f228c888648a",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "a8a1af88ef684a84adc312b69181ac9a",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     }
   ],
   "Connectors": [
@@ -141,14 +177,19 @@
       "Id": "405877d72670422199bf4f0899602c2d"
     },
     {
-      "Start": "7b9b011697bc4105b1a85130e0037428",
-      "End": "7cf8abb898f5413c97c328b44eb33dd7",
-      "Id": "aa96e54384574fc6856085485ec3ccd0"
+      "Start": "cc1b3669d2a04424a1c244c1a6bf0a01",
+      "End": "afb318791d0e4a36868cce63634a6c3f",
+      "Id": "378622047ebf42d9bd13b4b728ff2ed2"
     },
     {
-      "Start": "cc1b3669d2a04424a1c244c1a6bf0a01",
+      "Start": "3b929f853f6b476a993ebf147bda22ce",
       "End": "9ae17a9558e642e69bc30474010e7afb",
-      "Id": "6606eebcfe024272ad5a0a365bcc1471"
+      "Id": "1e55546b30ba454c80acae7e7d0acaaf"
+    },
+    {
+      "Start": "a8a1af88ef684a84adc312b69181ac9a",
+      "End": "7cf8abb898f5413c97c328b44eb33dd7",
+      "Id": "6583a354ec674033b59c08ba1d86903a"
     }
   ],
   "Dependencies": [
@@ -164,13 +205,14 @@
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -194,8 +236,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 250.0,
-        "Y": 0.0
+        "X": 267.71489885768005,
+        "Y": -82.32217704451358
       },
       {
         "ShowGeometry": true,
@@ -204,18 +246,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 412.76859319927394,
-        "Y": 0.0
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "22f5b2fd15314c4cac18040281a16d65",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": -420.61391761753578,
-        "Y": -3.9531032557534331
+        "X": 430.483492056954,
+        "Y": -82.32217704451358
       },
       {
         "ShowGeometry": true,
@@ -226,11 +258,31 @@
         "Excluded": false,
         "X": -28.17260409193932,
         "Y": -1.6048073798204996
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "ffe9b8edac6547dba4c1863b22625cf0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -57.824181987441648,
+        "Y": -123.58818836923217
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "79626b025d6e4cb996d5f228c888648a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -433.38374536047985,
+        "Y": -2.0885308532454019
       }
     ],
     "Annotations": [],
-    "X": 402.33048738030527,
-    "Y": 192.53043798586168,
+    "X": 406.33048738030527,
+    "Y": 331.53043798586168,
     "Zoom": 0.959644203253794
   }
 }
