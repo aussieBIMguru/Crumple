@@ -1,0 +1,167 @@
+{
+  "Uuid": "1d157339-7d4f-4d70-9eda-40e336e853d7",
+  "IsCustomNode": true,
+  "Category": "Crumple.Application.Query",
+  "Description": "Returns all print driver names installed on the machine.",
+  "Name": "© Windows.Printers",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nclr.AddReference('System.Drawing')\r\n\r\nimport System\r\nfrom System import Drawing\r\n\r\n# Preparing output to Dynamo\r\nOUT = list(Drawing.Printing.PrinterSettings.InstalledPrinters)",
+      "Engine": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "07faf33fce9e4304bef18565da2938be",
+      "Inputs": [
+        {
+          "Id": "bfbf6c9a0fc54d1cbfa9bd95172a4a2e",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "6e61bee67e174a37a31b7d4a64a2ff60",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "printerNames",
+      "Id": "edab99c658d343ccaf2a4187c6b1bbdd",
+      "Inputs": [
+        {
+          "Id": "a95ba6f8d4bc4af682cd1bbc1fb9283e",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "refresh",
+        "TypeName": "bool",
+        "TypeRank": 0,
+        "DefaultValue": "true",
+        "Description": ""
+      },
+      "Id": "7a1f7dd9eac44b93a6e6f12022490480",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "ac290d6c47264ca69ea32a9e98fb6167",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "6e61bee67e174a37a31b7d4a64a2ff60",
+      "End": "a95ba6f8d4bc4af682cd1bbc1fb9283e",
+      "Id": "e240128eb8b14194b49a0ebd18b9b591"
+    },
+    {
+      "Start": "ac290d6c47264ca69ea32a9e98fb6167",
+      "End": "bfbf6c9a0fc54d1cbfa9bd95172a4a2e",
+      "Id": "a73c50754fd74076bde39c66d18980a2"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.12.1.8246",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "07faf33fce9e4304bef18565da2938be",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "edab99c658d343ccaf2a4187c6b1bbdd",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 449.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "7a1f7dd9eac44b93a6e6f12022490480",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -43.0,
+        "Y": -1.0
+      }
+    ],
+    "Annotations": [],
+    "X": 45.0,
+    "Y": 220.0,
+    "Zoom": 1.0
+  }
+}
