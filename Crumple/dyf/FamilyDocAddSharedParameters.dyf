@@ -238,7 +238,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nclr.AddReference('RevitAPI')\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FamilyManager, Transaction\r\n\r\n# Get Revit build version\r\nuiapp = DocumentManager.Instance.CurrentUIApplication\r\napp = uiapp.Application\r\nver = int(app.VersionNumber)\r\n\r\nif ver > 2023:\r\n\tfrom Autodesk.Revit.DB import ParameterUtils\r\n\r\n# Function to add parameter to document\r\ndef familyDoc_addSharedParameter(exDef, parGrp, isInst, famDoc):\r\n\t# Convert bipg if higher build\r\n\tif ver > 2023:\r\n\t\ttry:\r\n\t\t\tparGrp = ParameterUtils.GetParameterGroupTypeId(parGrp)\r\n\t\texcept:\r\n\t\t\tpass\r\n\t# Try to add the parameter\r\n\ttry:\r\n\t\tnewPar = famDoc.FamilyManager.AddParameter(exDef, parGrp, isInst)\r\n\t\treturn newPar\r\n\t# Except return None\r\n\texcept:\r\n\t\treturn None\r\n\r\n#unwrap all elements to use with API\r\ndocs_list = IN[0]\r\ndefs_list = IN[1]\r\nbipg_list = IN[2]\r\ninst_list = IN[3]\r\n\r\npars_out, results = [],[]\r\n\r\n# Collect values\r\nfor doc, defs, bipgs, inst in zip(docs_list, defs_list, bipg_list, inst_list):\r\n\r\n\tpars, result = [],[]\r\n\t\r\n\tfor d,b,i in zip(defs, bipgs, inst):\r\n\t\t\r\n\t\twith Transaction(doc, 'Replace parameters') as t:\r\n\t\t\tt.Start()\r\n\t\t\tpar = familyDoc_addSharedParameter(d, b, i, doc)\r\n\t\t\tpars.append(par)\r\n\t\t\t# Report outcome\r\n\t\t\tif par:\r\n\t\t\t\tresult.append(True)\r\n\t\t\telse:\r\n\t\t\t\tresult.append(False)\r\n\t\t\tt.Commit()\r\n\r\n\tpars_out.append(pars)\r\n\tresults.append(result)\r\n\r\n# Outputs to Dynamo\r\nOUT = docs_list, pars_out, results",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nclr.AddReference('RevitAPI')\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FamilyManager, Transaction\r\n\r\n# Get Revit build version\r\nuiapp = DocumentManager.Instance.CurrentUIApplication\r\napp = uiapp.Application\r\nver = int(app.VersionNumber)\r\n\r\nif ver > 2023:\r\n\tfrom Autodesk.Revit.DB import ParameterUtils\r\n\r\n# Function to add parameter to document\r\ndef familyDoc_addSharedParameter(exDef, parGrp, isInst, famDoc):\r\n\t# Convert bipg if higher build\r\n\tif ver > 2023:\r\n\t\ttry:\r\n\t\t\tparGrp = ParameterUtils.GetParameterGroupTypeId(parGrp)\r\n\t\texcept:\r\n\t\t\tpass\r\n\t# Try to add the parameter\r\n\ttry:\r\n\t\tnewPar = famDoc.FamilyManager.AddParameter(exDef, parGrp, isInst)\r\n\t\treturn newPar\r\n\t# Except return None\r\n\texcept:\r\n\t\treturn None\r\n\r\n# Function to get all parameter names\r\ndef familyDoc_getParamNames(famDoc):\r\n\tpars = famDoc.FamilyManager.Parameters\r\n\tnams = [p.Definition.Name for p in pars]\r\n\treturn nams\r\n\r\n#unwrap all elements to use with API\r\ndocs_list = IN[0]\r\ndefs_list = IN[1]\r\nbipg_list = IN[2]\r\ninst_list = IN[3]\r\n\r\npars_out, results, outcomes = [],[],[]\r\n\r\n# Collect values\r\nfor doc, defs, bipgs, inst in zip(docs_list, defs_list, bipg_list, inst_list):\r\n\t# Try to get family title\r\n\ttry:\r\n\t\tfamTitle = doc.Title\r\n\texcept:\r\n\t\tfamTitle = \"N/A\"\r\n\t# Get param names\r\n\tparNames = familyDoc_getParamNames(doc)\r\n\t# Variables per family doc\r\n\tpars, result, outcome = [],[],[]\r\n\t# For each parameter and settings...\r\n\tfor d,b,i in zip(defs, bipgs, inst):\r\n\t\t# Try to get def name\r\n\t\ttry:\r\n\t\t\tdefName = d.Name\r\n\t\texcept:\r\n\t\t\tdefName = \"N/A\"\r\n\t\t# Preliminary error checks\r\n\t\toutc = \"\"\r\n\t\tif not doc:\r\n\t\t\toutc = 'ERROR: No document provided.'\r\n\t\telif not d:\r\n\t\t\toutc = 'ERROR: No definition provided for {}.'.format(famTitle)\r\n\t\telif not b or not i:\r\n\t\t\toutc = 'ERROR: Invalid settings provided.'\r\n\t\tif defName in parNames:\r\n\t\t\toutc = 'ERROR: {} already in {}.'.format(defName, famTitle)\r\n\t\t# If we did not hit an error, try to add parameter\r\n\t\tif outc == \"\":\r\n\t\t\twith Transaction(doc, 'Replace parameters') as t:\r\n\t\t\t\tt.Start()\r\n\t\t\t\tpar = familyDoc_addSharedParameter(d, b, i, doc)\r\n\t\t\t\tpars.append(par)\r\n\t\t\t\t# Report outcome if successful\r\n\t\t\t\tif par:\r\n\t\t\t\t\tresult.append(True)\r\n\t\t\t\t\toutc = 'SUCCESS: {} added to {}.'.format(defName, famTitle)\r\n\t\t\t\t# Otherwise report if not\r\n\t\t\t\telse:\r\n\t\t\t\t\tresult.append(False)\r\n\t\t\t\t\toutc = 'FAILURE: {} not added to {}.'.format(defName, famTitle)\r\n\t\t\t\tt.Commit()\r\n\t\t# If we hit an error, append no param and false result\r\n\t\telse:\r\n\t\t\tpars.append(None)\r\n\t\t\tresult.append(False)\r\n\t\t# Append outcome\r\n\t\toutcome.append(outc)\r\n\t# Append to list structure\r\n\tpars_out.append(pars)\r\n\tresults.append(result)\r\n\toutcomes.append(outcome)\r\n\r\n# Outputs to Dynamo\r\nOUT = docs_list, pars_out, results, outcomes",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "4c3397ca6fba495fac2071acaa8c046b",
@@ -297,11 +297,11 @@
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
-      "Code": "docs = OUT[0];\npars = OUT[1];\nrslt = OUT[2];",
+      "Code": "docs = OUT[0];\npars = OUT[1];\nrslt = OUT[2];\nouts = OUT[3];",
       "Id": "f4d572555d444c0a8715deb95410de37",
       "Inputs": [
         {
-          "Id": "29136e9d8afb42419608c1b1d7b1258d",
+          "Id": "74de5dbbb4f6438795e60f7f2e91ebad",
           "Name": "OUT",
           "Description": "OUT",
           "UsingDefaultValue": false,
@@ -312,7 +312,7 @@
       ],
       "Outputs": [
         {
-          "Id": "91356c5ccbc3411b8a4171de2a164bf0",
+          "Id": "2f7347f2889e4213b0c9049d2d03b5e6",
           "Name": "",
           "Description": "docs",
           "UsingDefaultValue": false,
@@ -321,7 +321,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "5fedbf6b0ca64c87b6306f13f06de918",
+          "Id": "5cc0c1826e0d4cb3a56aaffae11a7296",
           "Name": "",
           "Description": "pars",
           "UsingDefaultValue": false,
@@ -330,9 +330,18 @@
           "KeepListStructure": false
         },
         {
-          "Id": "3a3e62b103a34bada05e1b3cc5085d14",
+          "Id": "ba65e9c779bc43e1a58f4b043027ab35",
           "Name": "",
           "Description": "rslt",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "02e0653506534c4fb2c334390018d4da",
+          "Name": "",
+          "Description": "outs",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -404,6 +413,27 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "/*Lists of outcomes\r\n(list per family document).*/\r\n\r\noutcomeLists",
+      "Id": "68c71b766ded4e559f824ab557bceb15",
+      "Inputs": [
+        {
+          "Id": "1810999610e74d25ae34277f13067c76",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
     }
   ],
   "Connectors": [
@@ -449,23 +479,28 @@
     },
     {
       "Start": "284b760f2ea5498f8136b755c2cafd1f",
-      "End": "29136e9d8afb42419608c1b1d7b1258d",
-      "Id": "03bb64fe8f824a9caf87245f3ede898d"
+      "End": "74de5dbbb4f6438795e60f7f2e91ebad",
+      "Id": "758c3f70ccbd436e9fca418a5bb2ec2d"
     },
     {
-      "Start": "91356c5ccbc3411b8a4171de2a164bf0",
+      "Start": "2f7347f2889e4213b0c9049d2d03b5e6",
       "End": "75fbf556a8b2436baaa815f4671bd851",
-      "Id": "567df79f20fa438f9f88d6bc34ef972d"
+      "Id": "ea41f08b5b384e599d1b100abda574ce"
     },
     {
-      "Start": "5fedbf6b0ca64c87b6306f13f06de918",
+      "Start": "5cc0c1826e0d4cb3a56aaffae11a7296",
       "End": "9103dbbc720c499d98c815b41314029f",
-      "Id": "b5057616ea4a47f786746ae80236dc26"
+      "Id": "219c670df7ce491cac64ece57466bead"
     },
     {
-      "Start": "3a3e62b103a34bada05e1b3cc5085d14",
+      "Start": "ba65e9c779bc43e1a58f4b043027ab35",
       "End": "c725b6d43f784b579fa402fc19fbcf7a",
-      "Id": "c3003266173b49fc8674653522368320"
+      "Id": "e22436900f39489f9487ce771f953a56"
+    },
+    {
+      "Start": "02e0653506534c4fb2c334390018d4da",
+      "End": "1810999610e74d25ae34277f13067c76",
+      "Id": "9e0ea2aceee849b3905b6448dd89eead"
     }
   ],
   "Dependencies": [
@@ -582,8 +617,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 960.51853616242227,
-        "Y": -455.86982062902445
+        "X": 1100.5437771607758,
+        "Y": -531.88352288527358
       },
       {
         "ShowGeometry": true,
@@ -592,8 +627,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 960.20498248933632,
-        "Y": -314.59050470315884
+        "X": 1098.8966497638958,
+        "Y": -422.6099763304602
       },
       {
         "ShowGeometry": true,
@@ -602,13 +637,23 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 955.907858407063,
-        "Y": -166.46914260646258
+        "X": 1094.5995256816227,
+        "Y": -274.48861423376394
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "68c71b766ded4e559f824ab557bceb15",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1097.4986075940799,
+        "Y": -115.80463301014163
       }
     ],
     "Annotations": [],
-    "X": 393.1706145411722,
-    "Y": 479.55480121145752,
-    "Zoom": 0.47335059702394144
+    "X": 434.2407493976998,
+    "Y": 553.35837562360928,
+    "Zoom": 0.526443933500334
   }
 }

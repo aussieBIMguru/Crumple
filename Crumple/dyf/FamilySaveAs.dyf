@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Preparing input from dynamo to revit\r\nfamilies = uwlist(IN[0])\r\nfilePaths = tolist(IN[1])\r\n\r\noutcomes = []\r\n\r\n# Make save options\r\noptions = SaveAsOptions()\r\noptions.OverwriteExistingFile = True\r\n\r\n# For each family and file path...\r\nfor fam,fp in zip(families,filePaths):\r\n\t# Try to open save and close\r\n\ttry:\r\n\t\tfamDoc = doc.EditFamily(fam)\r\n\t\tfamDoc.SaveAs(fp, options)\r\n\t\tfamDoc.Close(False)\r\n\t\toutcomes.append(True)\r\n\texcept:\r\n\t\toutcomes.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = outcomes",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import SaveAsOptions\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Function to activate family\r\ndef activateFamily(fam, myDoc = doc):\r\n\tTransactionManager.Instance.EnsureInTransaction(myDoc)\r\n\tfamSymbolIds = fam.GetFamilySymbolIds()\r\n\tfor i in famSymbolIds:\r\n\t\tfs = myDoc.GetElement(i)\r\n\t\tfs.Activate()\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\n\tTransactionManager.Instance.ForceCloseTransaction()\r\n\treturn None\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Preparing input from dynamo to revit\r\nfamilies  = uwlist(IN[0])\r\nfilePaths = tolist(IN[1])\r\n\r\noutcomes = []\r\n\r\n# Make save options\r\noptions = SaveAsOptions()\r\noptions.OverwriteExistingFile = True\r\n\r\n# For each family and file path...\r\nfor fam,fp in zip(families,filePaths):\r\n\tactivateFamily(f, doc)\r\n\t# Try to open save and close\r\n\ttry:\r\n\t\tfamDoc = doc.EditFamily(fam)\r\n\t\tfamDoc.SaveAs(fp, options)\r\n\t\tfamDoc.Close(False)\r\n\t\toutcomes.append(True)\r\n\texcept:\r\n\t\toutcomes.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = outcomes",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "517da8827a524e7d95286ca83b458fad",
@@ -210,8 +210,8 @@
       }
     ],
     "Annotations": [],
-    "X": 190.64500000000004,
-    "Y": 273.97,
-    "Zoom": 1.1575
+    "X": 74.0416237595258,
+    "Y": 311.35515273701316,
+    "Zoom": 1.5105184564313476
   }
 }

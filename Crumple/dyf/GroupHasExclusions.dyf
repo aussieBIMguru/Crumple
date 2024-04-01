@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Boilerplate text\r\nimport clr\r\n\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\ngroups = uwlist(IN[0])\r\nexcluded = []\r\n\r\n# Check for excluded elements\r\nfor group in groups:\r\n\thasexcluded = False\r\n\tif \"excluded\" in group.Name:\r\n\t\t\thasexcluded = True\r\n\texcluded.append(hasexcluded)\r\n\r\n# Preparing output to Dynamo\r\nOUT = excluded",
+      "Code": "# Boilerplate text\r\nimport clr\r\n\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input):\r\n    if isinstance(input, list) and len(input) == 1:\r\n        return input[0]\r\n    else:\r\n        return input\r\n\r\n# Preparing input from dynamo to revit\r\ngroups = uwlist(IN[0])\r\n\r\nexcluded = []\r\n\r\n# Check for excluded elements\r\nfor group in groups:\r\n\tif \"excluded\" in group.Name:\r\n\t\texcluded.append(True)\r\n\telse:\r\n\t\texcluded.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(excluded)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "c1adc7efc66a46fe8ee93f62afab866f",
       "Inputs": [
@@ -39,13 +40,13 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "group",
+        "Name": "groups",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -103,13 +104,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -143,8 +145,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 47.0,
-        "Y": 0.0
+        "X": 6.8968343271170056,
+        "Y": -0.70356431005058084
       },
       {
         "ShowGeometry": true,
@@ -153,13 +155,13 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 398.0,
-        "Y": 0.0
+        "X": 442.32455153318642,
+        "Y": 0.70356431005058084
       }
     ],
     "Annotations": [],
-    "X": -122.25211864406779,
-    "Y": 358.15572033898309,
-    "Zoom": 3.2394067796610169
+    "X": 153.4690536016347,
+    "Y": 340.60452655693376,
+    "Zoom": 1.4213341775794619
   }
 }

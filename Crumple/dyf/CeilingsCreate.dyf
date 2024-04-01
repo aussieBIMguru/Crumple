@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import CurveLoop, Ceiling\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application\r\n# Get revit version\r\nrevit_version = int(app.VersionNumber)\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n\tresult = input if isinstance(input, list) else [input]\r\n\treturn UnwrapElement(result)\r\n\r\ndef listpad(lst,count):\r\n\tpadded = []\r\n\tlength = len(lst)\r\n\tfor i in range(0,count):\r\n\t\tif i < length:\r\n\t\t\tpadded.append(lst[i])\r\n\t\telse:\r\n\t\t\tpadded.append(lst[-1])\r\n\treturn padded\r\n\r\n# If we are in Revit 2022 or higher, print\r\nif revit_version > 2021:\r\n    # Preparing input from dynamo to revit\r\n    roomset = IN[0]\r\n    maxlst = len(roomset)\r\n    \r\n    types  = listpad(uwlist(IN[1]),maxlst)\r\n    levels = listpad(uwlist(IN[2]),maxlst)\r\n    \r\n    ceilings = []\r\n    \r\n    TransactionManager.Instance.EnsureInTransaction(doc)\r\n    \r\n    for rm,f,l in zip(roomset,types,levels):\r\n    \tcurveloops = []\r\n    \tfor crv_setd in rm:\r\n    \t\tcrv_setr = []\r\n    \t\tfor crv_d in crv_setd:\r\n    \t\t\tcrv_setr.append(crv_d.ToRevitType())\r\n    \t\tcurveloop = CurveLoop.Create(crv_setr)\r\n    \t\tcurveloops.append(curveloop)\r\n    \tclg = Ceiling.Create(doc, curveloops, f.Id, l.Id)\r\n    \tceilings.append(clg)\r\n    \r\n    TransactionManager.Instance.TransactionTaskDone()\r\n    # Preparing output to Dynamo\r\n    OUT = ceilings, \"SUCCESS: Version is 2022 or higher.\"\r\n# Otherwise tell the user we can't proceed\r\nelse:\r\n\tOUT = [], \"ERROR: Only works in Revit 2022 or higher.\\n\\nUse Revit.PrintToPdf node instead.\"",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import CurveLoop, Ceiling\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application\r\n# Get revit version\r\nrevit_version = int(app.VersionNumber)\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n\tresult = input if isinstance(input, list) else [input]\r\n\treturn UnwrapElement(result)\r\n\r\ndef listpad(lst,count):\r\n\tpadded = []\r\n\tlength = len(lst)\r\n\tfor i in range(0,count):\r\n\t\tif i < length:\r\n\t\t\tpadded.append(lst[i])\r\n\t\telse:\r\n\t\t\tpadded.append(lst[-1])\r\n\treturn padded\r\n\r\n# If we are in Revit 2022 or higher, print\r\nif revit_version > 2021:\r\n    # Preparing input from dynamo to revit\r\n    roomset = IN[0]\r\n    maxlst = len(roomset)\r\n    \r\n    types  = listpad(uwlist(IN[1]),maxlst)\r\n    levels = listpad(uwlist(IN[2]),maxlst)\r\n    \r\n    ceilings = []\r\n    \r\n    TransactionManager.Instance.EnsureInTransaction(doc)\r\n    \r\n    for rm,f,l in zip(roomset,types,levels):\r\n    \tcurveloops = []\r\n    \tfor crv_setd in rm:\r\n    \t\tcrv_setr = []\r\n    \t\tfor crv_d in crv_setd:\r\n    \t\t\tcrv_setr.append(crv_d.ToRevitType())\r\n    \t\tcurveloop = CurveLoop.Create(crv_setr)\r\n    \t\tcurveloops.append(curveloop)\r\n    \tclg = Ceiling.Create(doc, curveloops, f.Id, l.Id)\r\n    \tceilings.append(clg)\r\n    \r\n    TransactionManager.Instance.TransactionTaskDone()\r\n    # Preparing output to Dynamo\r\n    OUT = ceilings, \"SUCCESS: Version is 2022 or higher.\"\r\n# Otherwise tell the user we can't proceed\r\nelse:\r\n\tOUT = [], \"ERROR: Only works in Revit 2022 or higher.\"",
       "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "c7e62c401fbd46618c14b598726d2ceb",
@@ -254,65 +254,6 @@
       "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
-      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Credit to Sean Page for sharing these methods via the forums\r\n# https://forum.dynamobim.com/t/export-pdf-in-revit-2022-quick-example/62697\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('System')\r\nfrom System.Collections.Generic import List\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application\r\n# Get revit version\r\nrevit_version = int(app.VersionNumber)\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\ndirectoryPath = IN[0]\r\nsheets        = uwlist(IN[1])\r\nfileNames     = tolist(IN[2])\r\noptions       = IN[3]\r\n\r\n# If we are in Revit 2022 or higher, print\r\nif revit_version > 2021:\r\n\t# Import the references\r\n\tclr.AddReference(\"RevitAPI\")\r\n\timport Autodesk\r\n\tfrom Autodesk.Revit.DB import PDFExportOptions, ElementId, ExportPaperFormat\r\n\t# Collect and set export options\r\n\topts                          = PDFExportOptions()\r\n\topts.HideCropBoundaries       = options[0]\r\n\topts.HideScopeBoxes           = options[1]\r\n\topts.HideReferencePlane       = options[2]\r\n\topts.HideUnreferencedViewTags = options[3]\r\n\topts.MaskCoincidentLines      = options[4]\r\n\t# This will uses the Sheet Size for Paper size, or default to Letter\r\n\topts.PaperFormat = ExportPaperFormat.Default\r\n\t# Variables to append to\r\n\tresults = []\r\n\tsheetList = List[ElementId]()\r\n\t# Execute the batch export\r\n\tfor s, n in zip(sheets, fileNames):\r\n\t\t# Set file name\r\n\t\topts.FileName = n\r\n\t\t# Add sheet to a list\r\n\t\tsheetList.Add(s.Id)\r\n\t\t# Export and append the result\r\n\t\tresult = doc.Export(directoryPath, sheetList, opts)\r\n\t\tresults.append(result)\r\n\t\tsheetList.Clear()\r\n\t# Preparing output to Dynamo\r\n\tOUT = results, \"SUCCESS: Version is 2022 or higher.\"\r\n# Otherwise tell the user we can't proceed\r\nelse:\r\n\tOUT = [False for s in sheets], \"ERROR: Only works in Revit 2022 or higher.\\n\\nUse Revit.PrintToPdf node instead.\"",
-      "Engine": "IronPython2",
-      "VariableInputPorts": true,
-      "Id": "ac6506d3543644868b99a47f9c32d17d",
-      "Inputs": [
-        {
-          "Id": "2891db1f62584be58a03b0d0e080d4c8",
-          "Name": "IN[0]",
-          "Description": "Input #0",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "92267ebc17274d6a8877908da8198e56",
-          "Name": "IN[1]",
-          "Description": "Input #1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "86bc62bfddfb4874ba241cdca77cdd78",
-          "Name": "IN[2]",
-          "Description": "Input #2",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "e73ab2aeb53841a4a4176cae9e4f8650",
-          "Name": "IN[3]",
-          "Description": "Input #3",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "4a27da8d036d44f2a968fcfbb7a65092",
-          "Name": "OUT",
-          "Description": "Result of the python script",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "Runs an embedded Python script."
-    },
-    {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
@@ -528,16 +469,6 @@
       },
       {
         "ShowGeometry": true,
-        "Name": "Python Script",
-        "Id": "ac6506d3543644868b99a47f9c32d17d",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 583.054589787281,
-        "Y": -270.50034491895474
-      },
-      {
-        "ShowGeometry": true,
         "Name": "Output",
         "Id": "7c17f334d3c6468797eef1dc7883301f",
         "IsSetAsInput": false,
@@ -558,8 +489,8 @@
       }
     ],
     "Annotations": [],
-    "X": -251.68397958272703,
-    "Y": 228.87433439687084,
+    "X": -59.683979582727034,
+    "Y": 237.87433439687084,
     "Zoom": 0.75688954891333726
   }
 }

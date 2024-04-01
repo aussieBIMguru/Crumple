@@ -5,7 +5,16 @@
   "Description": "Given a family type, list of views and list of points, attempts to create family instances at those points in those views.",
   "Name": "© Family.InstanceByViewAndPoint",
   "ElementResolver": {
-    "ResolutionMap": {}
+    "ResolutionMap": {
+      "View": {
+        "Key": "Revit.Elements.Views.View",
+        "Value": "RevitNodes.dll"
+      },
+      "FamilyType": {
+        "Key": "Revit.Elements.FamilyType",
+        "Value": "RevitNodes.dll"
+      }
+    }
   },
   "Inputs": [],
   "Outputs": [],
@@ -13,7 +22,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n    \r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Preparing input from dynamo to revit\r\nfamtype  = UnwrapElement(IN[0])\r\nviews    = tolist(IN[1])\r\npoints   = uwlist(IN[2])\r\n\r\nelementlist = []\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nif famtype.IsActive == False:\r\n\tfamtype.Activate()\r\n\tdoc.Regenerate()\r\n\r\nfor v,p in zip(views,points):\r\n\tuwview = UnwrapElement(v)\r\n\tnewobj = doc.Create.NewFamilyInstance(p.ToXyz(),famtype,uwview)\r\n\telementlist.append(newobj.ToDSType(True))\r\n    \r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = elementlist",
+      "Code": "# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nfamtype  = UnwrapElement(IN[0])\r\nview    =  UnwrapElement(IN[1])\r\npoints   = uwlist(IN[2])\r\n\r\nelementlist = []\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nif famtype.IsActive == False:\r\n\tfamtype.Activate()\r\n\tdoc.Regenerate()\r\n\r\nfor p in points:\r\n\tnewFam = doc.Create.NewFamilyInstance(p.ToXyz(), famtype, view)\r\n\telementlist.append(newFam.ToDSType(True))\r\n    \r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = elementlist",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "ba39136fcb654e228d17e70dc22e8be6",
       "Inputs": [
@@ -57,14 +67,14 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
         "Name": "familyType",
-        "TypeName": "var",
+        "TypeName": "Revit.Elements.FamilyType",
         "TypeRank": 0,
         "DefaultValue": null,
         "Description": ""
@@ -90,8 +100,8 @@
       "NodeType": "InputNode",
       "Parameter": {
         "Name": "view",
-        "TypeName": "var",
-        "TypeRank": -1,
+        "TypeName": "Revit.Elements.Views.View",
+        "TypeRank": 0,
         "DefaultValue": null,
         "Description": ""
       },
@@ -115,7 +125,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "point",
+        "Name": "points",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -183,13 +193,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -223,8 +234,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 19.586374276289916,
-        "Y": -48.971670569895792
+        "X": -38.427641943783669,
+        "Y": -49.524185010086967
       },
       {
         "ShowGeometry": true,
@@ -233,8 +244,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 20.064669726568354,
-        "Y": 24.189247656085769
+        "X": 59.017223105387146,
+        "Y": 21.406922414741558
       },
       {
         "ShowGeometry": true,
@@ -243,8 +254,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 12.241765016322915,
-        "Y": 93.362133786668039
+        "X": -5.9912115099859307,
+        "Y": 97.782249308197436
       },
       {
         "ShowGeometry": true,
@@ -258,8 +269,8 @@
       }
     ],
     "Annotations": [],
-    "X": -0.79882748461881192,
-    "Y": 321.48857818864371,
-    "Zoom": 2.5158812837488953
+    "X": 95.826298159836824,
+    "Y": 299.04592643959108,
+    "Zoom": 1.8099074472225332
   }
 }

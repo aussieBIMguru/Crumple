@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n\tresult = input if isinstance(input, list) else [input]\r\n\treturn UnwrapElement(result)\r\n\r\ndef listpad(lst,count):\r\n\tpadded = []\r\n\tlength = len(lst)\r\n\tfor i in range(0,count):\r\n\t\tif i < length:\r\n\t\t\tpadded.append(lst[i])\r\n\t\telse:\r\n\t\t\tpadded.append(lst[-1])\r\n\treturn padded\r\n\r\n# Preparing input from dynamo to revit\r\nroomset = IN[0]\r\nmaxlst = len(roomset)\r\n\r\ntypes  = listpad(uwlist(IN[1]),maxlst)\r\nlevels = listpad(uwlist(IN[2]),maxlst)\r\n\r\nfloors = []\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor rm,f,l in zip(roomset,types,levels):\r\n\tcurveloops = []\r\n\tfor crv_setd in rm:\r\n\t\tcrv_setr = []\r\n\t\tfor crv_d in crv_setd:\r\n\t\t\tcrv_setr.append(crv_d.ToRevitType())\r\n\t\tcurveloop = CurveLoop.Create(crv_setr)\r\n\t\tcurveloops.append(curveloop)\r\n\tflr = Floor.Create(doc, curveloops, f.Id, l.Id)\r\n\tfloors.append(flr)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = floors",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import CurveLoop, Floor\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application\r\n# Get revit version\r\nrevit_version = int(app.VersionNumber)\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n\tresult = input if isinstance(input, list) else [input]\r\n\treturn UnwrapElement(result)\r\n\r\ndef listpad(lst,count):\r\n\tpadded = []\r\n\tlength = len(lst)\r\n\tfor i in range(0,count):\r\n\t\tif i < length:\r\n\t\t\tpadded.append(lst[i])\r\n\t\telse:\r\n\t\t\tpadded.append(lst[-1])\r\n\treturn padded\r\n\r\n# If we are in Revit 2022 or higher, print\r\nif revit_version > 2021:\r\n    # Preparing input from dynamo to revit\r\n    roomset = IN[0]\r\n    maxlst = len(roomset)\r\n    \r\n    types  = listpad(uwlist(IN[1]),maxlst)\r\n    levels = listpad(uwlist(IN[2]),maxlst)\r\n    \r\n    floors = []\r\n    \r\n    TransactionManager.Instance.EnsureInTransaction(doc)\r\n    \r\n    for rm,f,l in zip(roomset,types,levels):\r\n    \tcurveloops = []\r\n    \tfor crv_setd in rm:\r\n    \t\tcrv_setr = []\r\n    \t\tfor crv_d in crv_setd:\r\n    \t\t\tcrv_setr.append(crv_d.ToRevitType())\r\n    \t\tcurveloop = CurveLoop.Create(crv_setr)\r\n    \t\tcurveloops.append(curveloop)\r\n    \tflr = Floor.Create(doc, curveloops, f.Id, l.Id)\r\n    \tfloors.append(flr)\r\n    \r\n    TransactionManager.Instance.TransactionTaskDone()\r\n    \r\n    # Preparing output to Dynamo\r\n    OUT = floors, \"SUCCESS: Version is 2022 or higher.\"\r\n# Otherwise tell the user we can't proceed\r\nelse:\r\n\tOUT = [], \"ERROR: Only works in Revit 2022 or higher..\"",
       "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "cf27e808db944dcab7707f87813b9cde",
@@ -252,13 +252,73 @@
       ],
       "Replication": "Disabled",
       "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "x[0];\nx[1];",
+      "Id": "aec4e4a21a5447dca82aeddae1cfb06b",
+      "Inputs": [
+        {
+          "Id": "7e72a482e3964050abef37a920251522",
+          "Name": "x",
+          "Description": "x",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "4167d7e55b4e4a4f993c60b6f9ccc9a3",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "300e3791dcb64453b083215c1fd22341",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "versionCheck",
+      "Id": "d0dd78ee86c943cd887e064ce54b4c32",
+      "Inputs": [
+        {
+          "Id": "92eac43851cd46a9ae5b128f94b42262",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
     }
   ],
   "Connectors": [
     {
       "Start": "cbbca5198a7a41588002941bc18b2fcd",
-      "End": "66fcbb6e9dfa463b8b327ace25eec7c6",
-      "Id": "68659f2af1174beea18dbaab37dd3840"
+      "End": "7e72a482e3964050abef37a920251522",
+      "Id": "949186f1a2a749349b0730ec29ef3639"
     },
     {
       "Start": "10efbe388bf04bf09e90c98ba06ef514",
@@ -289,31 +349,42 @@
       "Start": "e4a67be673aa4d3cace660a34e2f3399",
       "End": "fa6f421ff19d421587de4b088dddb940",
       "Id": "97d4518086824cbcad48e2afd8ad5f75"
+    },
+    {
+      "Start": "4167d7e55b4e4a4f993c60b6f9ccc9a3",
+      "End": "66fcbb6e9dfa463b8b327ace25eec7c6",
+      "Id": "b07abf68bf4d40f891aefdbdcb977fa9"
+    },
+    {
+      "Start": "300e3791dcb64453b083215c1fd22341",
+      "End": "92eac43851cd46a9ae5b128f94b42262",
+      "Id": "bee98f8e21604bcb8711c8448a4add16"
     }
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.10.1.3976",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": 11522.279296875,
-      "EyeY": 33475.0390625,
-      "EyeZ": 23271.171875,
-      "LookX": -12051.7353515625,
-      "LookY": -33475.0390625,
-      "LookZ": -23339.16015625,
-      "UpX": -0.29184222221374512,
-      "UpY": 0.77162426710128784,
-      "UpZ": -0.56517630815505981
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "NodeViews": [
       {
@@ -383,8 +454,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 477.31027112024128,
-        "Y": 136.48001933068309
+        "X": 491.08048881119362,
+        "Y": 187.80537617877837
       },
       {
         "ShowGeometry": true,
@@ -393,13 +464,33 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 446.39239115709012,
-        "Y": 70.808246269874218
+        "X": 460.16260884804245,
+        "Y": 122.1336031179695
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "aec4e4a21a5447dca82aeddae1cfb06b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 536.56765910257116,
+        "Y": 3.7808603700715935
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "d0dd78ee86c943cd887e064ce54b4c32",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1143.3077574675503,
+        "Y": 164.85194030764774
       }
     ],
     "Annotations": [],
-    "X": -511.83863091739192,
-    "Y": 69.544014432294489,
-    "Zoom": 0.94308467029363252
+    "X": -132.06293875872598,
+    "Y": 124.38895246253531,
+    "Zoom": 0.79882542504955834
   }
 }

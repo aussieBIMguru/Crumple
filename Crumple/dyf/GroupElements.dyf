@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\ngroups  = uwlist(IN[0])\r\nelementslist = []\r\n\r\n# Get elements in groups\r\nfor grp in groups:\r\n\ttry:\r\n\t\telementlist = []\r\n\t\tfor e in grp.GetMemberIds():\r\n\t\t\telementlist.append(grp.Document.GetElement(e))\r\n\t\telementslist.append(elementlist)\r\n\texcept:\r\n\t\telementslist.append([])\r\n\r\n# Preparing output to Dynamo\r\nOUT = elementslist",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input):\r\n    if isinstance(input, list) and len(input) == 1:\r\n        return input[0]\r\n    else:\r\n        return input\r\n\r\n# Preparing input from dynamo to revit\r\ngroups = uwlist(IN[0])\r\nelementslist = []\r\n\r\n# Get elements in groups\r\nfor grp in groups:\r\n\t\r\n\telements = []\r\n\tfor i in grp.GetMemberIds():\r\n\t\te = doc.GetElement(i)\r\n\t\telements.append(e)\r\n\t\r\n\telementslist.append(elements)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(elementslist)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "ca585d7f68544d1d9fe089179baea2dd",
       "Inputs": [
@@ -39,13 +40,13 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "group",
+        "Name": "groups",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -103,13 +104,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -158,8 +160,8 @@
       }
     ],
     "Annotations": [],
-    "X": 30.0,
-    "Y": 244.56880733944951,
-    "Zoom": 2.0917431192660558
+    "X": 116.64822956606116,
+    "Y": 280.19373756817242,
+    "Zoom": 1.072817523922019
   }
 }

@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FamilyManager, Parameter, Definition, Transaction\r\n\r\n# Function to get parameter or by name\r\ndef tryByName(var, params, names):\r\n\tif isinstance(var, str):\r\n\t\tfor p,n in zip(params, names):\r\n\t\t\tif n == var:\r\n\t\t\t\treturn p\r\n\t\treturn None\r\n\telse:\r\n\t\treturn var\r\n\r\n# Function to remove parameter\r\ndef famDoc_removeParameter(familyManager, famPar):\r\n\tif not famPar:\r\n\t\treturn False\r\n\telse:\r\n\t\ttry:\r\n\t\t\tfamilyManager.RemoveParameter(famPar)\r\n\t\t\treturn True\r\n\t\texcept:\r\n\t\t\treturn False\r\n\r\n# Inputs\r\ndoc_list   = IN[0]\r\nparamLists = IN[1]\r\n\r\nresults = []\r\n\r\n# For each document and its parameter lists...\r\nfor doc, paramList in zip(doc_list, paramLists):\r\n\t\r\n\tresult = []\r\n\tfamMan = doc.FamilyManager\r\n\t\r\n\t# Get all parameters and their names\r\n\tfamParams = famMan.Parameters\r\n\tparNames  = [p.Definition.Name for p in famParams]\r\n\t# Try to get parameters from names\r\n\tparsGet = [tryByName(p,famParams,parNames) for p in paramList]\r\n\t\r\n\t# For each parameter...\r\n\tfor p in parsGet:\r\n\t\t\r\n\t\t# Try to remove parameter\r\n\t\twith Transaction(doc, 'Replace parameters') as t:\r\n\t\t\tt.Start()\r\n\t\t\tremoved = famDoc_removeParameter(famMan, p)\r\n\t\t\tresult.append(removed)\r\n\t\t\tt.Commit()\r\n\t\r\n\t# Append to results\r\n\tresults.append(result)\r\n\r\n# Preparing output to Dynamo\r\nOUT = doc_list, results",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FamilyManager, Parameter, Definition, Transaction\r\n\r\n# Function to get parameter or by name\r\ndef tryByName(var, params, names):\r\n\tif isinstance(var, str):\r\n\t\tfor p,n in zip(params, names):\r\n\t\t\tif n == var:\r\n\t\t\t\treturn p\r\n\t\treturn None\r\n\telse:\r\n\t\treturn var\r\n\r\n# Function to remove parameter\r\ndef famDoc_removeParameter(famMan, famPar):\r\n\tif not famPar:\r\n\t\treturn False\r\n\telse:\r\n\t\ttry:\r\n\t\t\tfamMan.RemoveParameter(famPar)\r\n\t\t\treturn True\r\n\t\texcept:\r\n\t\t\treturn False\r\n\r\n# Inputs\r\ndoc_list   = IN[0]\r\nparamLists = IN[1]\r\n\r\nresults, outcomes = [],[]\r\n\r\n# For each document and its parameter lists...\r\nfor doc, paramList in zip(doc_list, paramLists):\r\n\tresult, outcome = [],[]\r\n\ttry:\r\n\t\tfamMan = doc.FamilyManager\r\n\t\tfamTitle = doc.Title\r\n\texcept:\r\n\t\tfamMan = None\r\n\t\tfamTitle = \"N/A\"\r\n\t# Get all parameters and their names\r\n\tfamParams = famMan.Parameters\r\n\tparNames  = [p.Definition.Name for p in famParams]\r\n\t# Try to get parameters from names\r\n\tparsGet = [tryByName(p,famParams,parNames) for p in paramList]\r\n\t# For each parameter...\r\n\tfor p in parsGet:\r\n\t\ttry:\r\n\t\t\tparName = p.Definition.Name\r\n\t\texcept:\r\n\t\t\tparName = \"N/A\"\r\n\t\toutc = \"\"\r\n\t\tif not doc:\r\n\t\t\toutc = 'ERROR: Document not provided.'\r\n\t\telif not p:\r\n\t\t\toutc = 'ERROR: Parameter not found.'\r\n\t\tif outc == \"\":\r\n\t\t\t# Try to remove parameter\r\n\t\t\twith Transaction(doc, 'Replace parameters') as t:\r\n\t\t\t\tt.Start()\r\n\t\t\t\tremoved = famDoc_removeParameter(famMan, p)\r\n\t\t\t\tresult.append(removed)\r\n\t\t\t\tif removed:\r\n\t\t\t\t\toutc = 'SUCCESS: {} removed from {}.'.format(parName, famTitle)\r\n\t\t\t\telse:\r\n\t\t\t\t\toutc = 'FAILURE: {} not removed from {}.'.format(parName, famTitle)\r\n\t\t\t\tt.Commit()\r\n\t\toutcome.append(outc)\r\n\t# Append to results\r\n\tresults.append(result)\r\n\toutcomes.append(outcome)\r\n\r\n# Preparing output to Dynamo\r\nOUT = doc_list, results, outcomes",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "552e9cfb4e8f4004a10f4163ac0e2dd5",
@@ -248,11 +248,11 @@
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
-      "Code": "docs = OUT[0];\nrslt = OUT[1];",
+      "Code": "docs = OUT[0];\nrslt = OUT[1];\nouts = OUT[2];",
       "Id": "0b97f76ae63a4891a3338a34695f82b1",
       "Inputs": [
         {
-          "Id": "a25abb14a1564a44bbefc23f8ba56a11",
+          "Id": "73aba3665c2444ceaf3b9d2c74180cbd",
           "Name": "OUT",
           "Description": "OUT",
           "UsingDefaultValue": false,
@@ -263,7 +263,7 @@
       ],
       "Outputs": [
         {
-          "Id": "e9567da9762545ba8eb211f6d48237b6",
+          "Id": "313780c3735b43b7add14bbe18c61f72",
           "Name": "",
           "Description": "docs",
           "UsingDefaultValue": false,
@@ -272,9 +272,18 @@
           "KeepListStructure": false
         },
         {
-          "Id": "0e2497b7fc38471bb6a549bcb5b4466b",
+          "Id": "ab6dd9c34a644b16b467a41dcee35ca7",
           "Name": "",
           "Description": "rslt",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d9a4a4f3af984927b6896e3abb00c1de",
+          "Name": "",
+          "Description": "outs",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -304,13 +313,34 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "/*Lists of outcomes\r\n(list per family document).*/\r\n\r\noutcomeLists",
+      "Id": "b327d7f20871400a8e94d16cea05e9f3",
+      "Inputs": [
+        {
+          "Id": "7ded5df2c0eb437cbfb6b58f741c549f",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
     }
   ],
   "Connectors": [
     {
       "Start": "f7df422e672a4d42b8b9b5af20ee03a9",
-      "End": "a25abb14a1564a44bbefc23f8ba56a11",
-      "Id": "c6921dceb4f144f984362124d308080b"
+      "End": "73aba3665c2444ceaf3b9d2c74180cbd",
+      "Id": "a729f835c6bf4eaf9aec5e837cf22982"
     },
     {
       "Start": "0ef0ae93ae584650ba456f739bb63d5e",
@@ -333,14 +363,19 @@
       "Id": "9a3fbbaea46e4700af674cbef54e6527"
     },
     {
-      "Start": "e9567da9762545ba8eb211f6d48237b6",
+      "Start": "313780c3735b43b7add14bbe18c61f72",
       "End": "7dfbc4b69818485a87cbf84ea84bf7ab",
-      "Id": "81259164910345ebb81bab8a66bbb7dc"
+      "Id": "2bc91cc5aa3641adad3ad5c2e6ef38d9"
     },
     {
-      "Start": "0e2497b7fc38471bb6a549bcb5b4466b",
+      "Start": "ab6dd9c34a644b16b467a41dcee35ca7",
       "End": "ce7727179c484ff2b11480b7917a05e3",
-      "Id": "7d358db708184c628e6b99de65a4a018"
+      "Id": "69aee10af7e641fe9681d420fc7c84be"
+    },
+    {
+      "Start": "d9a4a4f3af984927b6896e3abb00c1de",
+      "End": "7ded5df2c0eb437cbfb6b58f741c549f",
+      "Id": "f55a44aefe9149c097883622697fff4a"
     }
   ],
   "Dependencies": [
@@ -427,8 +462,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 350.27727244313769,
-        "Y": 20.582101326855309
+        "X": 443.523644860493,
+        "Y": -44.690359365293347
       },
       {
         "ShowGeometry": true,
@@ -447,13 +482,23 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 351.53723059947265,
-        "Y": 141.87036339081209
+        "X": 444.78360301682795,
+        "Y": 76.597902698663432
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "b327d7f20871400a8e94d16cea05e9f3",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 429.75587708527115,
+        "Y": 236.24944845460789
       }
     ],
     "Annotations": [],
-    "X": 1485.4531320950291,
-    "Y": 273.47046755945729,
+    "X": 633.4531320950291,
+    "Y": 199.47046755945729,
     "Zoom": 0.85794222258784891
   }
 }
