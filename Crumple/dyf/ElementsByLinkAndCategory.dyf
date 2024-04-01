@@ -1,7 +1,7 @@
 {
   "Uuid": "66a275ff-0619-4b34-a73e-57f7082da524",
   "IsCustomNode": true,
-  "Category": "Crumple.Revit.Query",
+  "Category": "Crumple.Revit.Actions",
   "Description": "Returns all elements of any number of categories in a single Revit Model link instance.",
   "Name": "© Elements.ByLinkAndCategory",
   "ElementResolver": {
@@ -18,7 +18,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport System\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Preparing input from dynamo to revit\r\nLinkInst  = UnwrapElement(IN[0])\r\nLinkDoc   = LinkInst.GetLinkDocument()\r\ncats      = IN[1]\r\n\r\nif not hasattr(cats, \"__iter__\"):\r\n    cats = [cats]\r\n\r\nelementlist = []\r\n\r\nfor cat in cats:\r\n\tcollector = FilteredElementCollector(LinkDoc)\r\n\tBuiltIn = System.Enum.ToObject(BuiltInCategory, cat.Id)\r\n\tfilter  = ElementCategoryFilter(BuiltIn)\r\n\tSubEles = collector.WherePasses(filter).WhereElementIsNotElementType().ToElements()\r\n\telementlist.append(SubEles)\r\n\r\n# Preparing output to Dynamo\r\nOUT = elementlist",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport System\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory, ElementCategoryFilter\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input):\r\n    if isinstance(input, list) and len(input) == 1:\r\n        return input[0]\r\n    else:\r\n        return input\r\n\r\n# Preparing input from dynamo to revit\r\nLinkInst  = UnwrapElement(IN[0])\r\nLinkDoc   = LinkInst.GetLinkDocument()\r\ncats      = tolist(IN[1])\r\n\r\nif not hasattr(cats, \"__iter__\"):\r\n    cats = [cats]\r\n\r\nelementlist = []\r\n\r\nfor cat in cats:\r\n\tcollector = FilteredElementCollector(LinkDoc)\r\n\tBuiltIn = System.Enum.ToObject(BuiltInCategory, cat.Id)\r\n\tfilter  = ElementCategoryFilter(BuiltIn)\r\n\tSubEles = collector.WherePasses(filter).WhereElementIsNotElementType().ToElements()\r\n\telementlist.append(SubEles)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(elementlist)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "c72e056de0624a138fd0900c0063a5e4",
       "Inputs": [
@@ -53,7 +54,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -148,27 +149,28 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -17.0,
-      "EyeY": 24.0,
-      "EyeZ": 50.0,
-      "LookX": 12.0,
-      "LookY": -13.0,
-      "LookZ": -58.0,
-      "UpX": 0.0,
-      "UpY": 1.0,
-      "UpZ": 0.0
+      "EyeX": 0.23855733577588106,
+      "EyeY": 78.987985222705078,
+      "EyeZ": 44.000550597987569,
+      "LookX": -0.23855733577588106,
+      "LookY": -78.987985222705078,
+      "LookZ": -44.000550597987569,
+      "UpX": -0.0040604653768241405,
+      "UpY": 0.66261970996856689,
+      "UpZ": -0.74894499778747559
     },
     "NodeViews": [
       {
@@ -213,8 +215,8 @@
       }
     ],
     "Annotations": [],
-    "X": 364.00110827483803,
-    "Y": 262.06875785637146,
-    "Zoom": 1.33823125
+    "X": 70.898975022978846,
+    "Y": 226.50252764158614,
+    "Zoom": 0.9540429248828125
   }
 }

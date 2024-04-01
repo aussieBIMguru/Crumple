@@ -39,7 +39,7 @@
         {
           "Id": "5db904e434a24ea9913270006ba92c74",
           "Name": "int",
-          "Description": "The index of the element in the list.",
+          "Description": "The index of the element in the list. Invalid index -1 will be returned if strict match not found.",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -47,52 +47,13 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Returns the index of the element in the given list.\n\nList.IndexOf (list: var[]..[], element: var): int"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
-      "NodeType": "FunctionNode",
-      "FunctionSignature": "DSCore.List.GetItemAtIndex@var[]..[],int",
-      "Id": "96abf82b66474b6d938a8a829816049b",
-      "Inputs": [
-        {
-          "Id": "91556cfb41e447d083b64d00d6712af3",
-          "Name": "list",
-          "Description": "List to fetch an item from.\n\nvar[]..[]",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "9ca6aa823e9c494a95678ea43b13445a",
-          "Name": "index",
-          "Description": "Index of the item to be fetched.\n\nint",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "2f1463b4f47b4041a94ada7a09a69608",
-          "Name": "item",
-          "Description": "Item in the list at the given index.",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Returns an item from the given list that's located at the specified index.\n\nList.GetItemAtIndex (list: var[]..[], index: int): var[]..[]"
+      "Description": "Returns the index of the element in the given list. Match between given list and target element must be a strict match (i.e. int to int, double to double, string to string, object to object etc.)\n\nList.IndexOf (list: var[]..[], element: var): int"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "elementType",
+      "Symbol": "elementTypes",
       "Id": "4239b83fdb7c45b8a132a6fbb37b9b66",
       "Inputs": [
         {
@@ -113,7 +74,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "name",
+        "Name": "typeNames",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -174,18 +135,111 @@
       ],
       "Replication": "Auto",
       "Description": "Returns all element types and their names in the active document."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.AddItemToEnd@var[]..[],var[]..[]",
+      "Id": "2bdddc06fa1e4ec39cf929d57b4e8dac",
+      "Inputs": [
+        {
+          "Id": "f55c502a86e34cf18d1ce21c53eadac4",
+          "Name": "item",
+          "Description": "Item to be added.Item could be an object or a list.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e49e2fc426ba4a61bfda4caa26ba0905",
+          "Name": "list",
+          "Description": "List to add on to.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c07ac1f9f1e34366b704638b05675066",
+          "Name": "list",
+          "Description": "List with added items",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Adds an item to the end of a list.\n\nList.AddItemToEnd (item: var[]..[], list: var[]..[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "null;",
+      "Id": "f0fa740f3cb642a59484afd766d61e0f",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "4b464d5a91894da8b21e902da5276f90",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "t[i];",
+      "Id": "3f001c182f1444c19292bd788e0a4beb",
+      "Inputs": [
+        {
+          "Id": "9a88238a1d40475ea34400803df5a0ff",
+          "Name": "t",
+          "Description": "t",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "91a232b6412e4bca92fae922b89774a1",
+          "Name": "i",
+          "Description": "i",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "9b0f3f6a63b24839a3d8180441bcfc97",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
     }
   ],
   "Connectors": [
     {
       "Start": "5db904e434a24ea9913270006ba92c74",
-      "End": "9ca6aa823e9c494a95678ea43b13445a",
-      "Id": "7464e50c624c410aac14f4dce5b23bea"
-    },
-    {
-      "Start": "2f1463b4f47b4041a94ada7a09a69608",
-      "End": "fa66f4ddd0f848ce98699700c7607265",
-      "Id": "f3724516dc6e466fa850d3ce90862baa"
+      "End": "91a232b6412e4bca92fae922b89774a1",
+      "Id": "db6e4b78b1f64dda803e77908f4aa6d1"
     },
     {
       "Start": "88ed412cd7d5404b9334b0f8cfd7deea",
@@ -194,13 +248,28 @@
     },
     {
       "Start": "db3897f6082d400a83f4ce089705c39c",
-      "End": "91556cfb41e447d083b64d00d6712af3",
-      "Id": "0724416cb4dd4fde9e96e641454b891a"
+      "End": "e49e2fc426ba4a61bfda4caa26ba0905",
+      "Id": "4914932a97864881997948cf1949a28f"
     },
     {
       "Start": "e776b2fec302419c8cb12cb516bd6897",
       "End": "6be7946d43654251b222b4bac95a9f9e",
       "Id": "f752bfd8bdeb4853a5499f96c406acb7"
+    },
+    {
+      "Start": "c07ac1f9f1e34366b704638b05675066",
+      "End": "9a88238a1d40475ea34400803df5a0ff",
+      "Id": "265495e057e84890b84a97c655f8c957"
+    },
+    {
+      "Start": "4b464d5a91894da8b21e902da5276f90",
+      "End": "f55c502a86e34cf18d1ce21c53eadac4",
+      "Id": "a3bff70014e146f69b772a8ed6b8cb54"
+    },
+    {
+      "Start": "9b0f3f6a63b24839a3d8180441bcfc97",
+      "End": "fa66f4ddd0f848ce98699700c7607265",
+      "Id": "d298c80c4263433cab1465a248871680"
     }
   ],
   "Dependencies": [
@@ -216,27 +285,28 @@
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -17.0,
-      "EyeY": 24.0,
-      "EyeZ": 50.0,
-      "LookX": 12.0,
-      "LookY": -13.0,
-      "LookZ": -58.0,
-      "UpX": 0.0,
-      "UpY": 1.0,
-      "UpZ": 0.0
+      "EyeX": 0.23855733577588106,
+      "EyeY": 78.987985222705078,
+      "EyeZ": 44.000550597987569,
+      "LookX": -0.23855733577588106,
+      "LookY": -78.987985222705078,
+      "LookZ": -44.000550597987569,
+      "UpX": -0.0040604653768241405,
+      "UpY": 0.66261970996856689,
+      "UpZ": -0.74894499778747559
     },
     "NodeViews": [
       {
@@ -248,16 +318,6 @@
         "Excluded": false,
         "X": 669.7556648301545,
         "Y": 104.21037409681361
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "List.GetItemAtIndex",
-        "Id": "96abf82b66474b6d938a8a829816049b",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 1012.4061426119019,
-        "Y": 2.9494866329541196
       },
       {
         "ShowGeometry": true,
@@ -276,8 +336,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 427.0,
-        "Y": 184.0
+        "X": 389.0,
+        "Y": 185.0
       },
       {
         "ShowGeometry": true,
@@ -286,13 +346,43 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 226.0,
-        "Y": -1.0
+        "X": 144.0,
+        "Y": -17.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.AddItemToEnd",
+        "Id": "2bdddc06fa1e4ec39cf929d57b4e8dac",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 484.0,
+        "Y": -96.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "f0fa740f3cb642a59484afd766d61e0f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 295.0,
+        "Y": -94.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "3f001c182f1444c19292bd788e0a4beb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 966.0,
+        "Y": 2.0
       }
     ],
     "Annotations": [],
-    "X": 45.0,
-    "Y": 261.0,
+    "X": -507.0,
+    "Y": 205.0,
     "Zoom": 1.0
   }
 }

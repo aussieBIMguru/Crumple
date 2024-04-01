@@ -1,9 +1,9 @@
 {
   "Uuid": "5fcf80e7-d3e7-4e12-a6b9-f7365efae60f",
   "IsCustomNode": true,
-  "Category": "Crumple.Revit.Query",
-  "Description": "For a list of points, returns the nearest level as well as the pulled point at the plane of the level. If you force the values to be below, it is recommended to apply some tolerance when you are analyzing elements at or just below the level you want them to be associated to.",
-  "Name": "© Elements.ClosestLevel",
+  "Category": "Crumple.Revit.Actions",
+  "Description": "For a list of points, returns the first provided level below that point.",
+  "Name": "© Elements.GetLevelBelow",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -19,7 +19,7 @@
         {
           "Id": "c90d0c31f2464224bd9337daf212c768",
           "Name": "x",
-          "Description": "double\nDefault value : 0",
+          "Description": "X coordinate\n\ndouble\nDefault value : 0",
           "UsingDefaultValue": true,
           "Level": 2,
           "UseLevels": false,
@@ -28,7 +28,7 @@
         {
           "Id": "1d27a6223d724abb8a57e701ab504a4c",
           "Name": "y",
-          "Description": "double\nDefault value : 0",
+          "Description": "Y coordinate\n\ndouble\nDefault value : 0",
           "UsingDefaultValue": true,
           "Level": 2,
           "UseLevels": false,
@@ -37,7 +37,7 @@
         {
           "Id": "0c26ac287b9e408c895941f49d667041",
           "Name": "z",
-          "Description": "double\nDefault value : 0",
+          "Description": "Z coordinate\n\ndouble\nDefault value : 0",
           "UsingDefaultValue": true,
           "Level": 2,
           "UseLevels": false,
@@ -48,7 +48,7 @@
         {
           "Id": "c3cf5d8aca3e40beb8ca582d8dde9f3b",
           "Name": "Point",
-          "Description": "Point",
+          "Description": "Point created by coordinates",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -61,11 +61,11 @@
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
-      "Code": "X[1];\nX[0]+tol;",
+      "Code": "X[0];\nX[1]+tol;",
       "Id": "5f2f40f370904ee5b66c58f3e4aafbc7",
       "Inputs": [
         {
-          "Id": "74ba3bb5fe6f4953b01dc88ad3461b60",
+          "Id": "b02192b3b5374b4ba552b6f2c1600415",
           "Name": "X",
           "Description": "X",
           "UsingDefaultValue": false,
@@ -74,7 +74,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "9b77916bb2ac4ce0b1bc371b433f81bc",
+          "Id": "0b7dead53de14685b13d06bb233ed729",
           "Name": "tol",
           "Description": "tol",
           "UsingDefaultValue": false,
@@ -85,7 +85,7 @@
       ],
       "Outputs": [
         {
-          "Id": "64073189fdec4d5cae67e69fa051ea08",
+          "Id": "0305504b9baf4f939775fdb8bac1ef02",
           "Name": "",
           "Description": "Value of expression at line 1",
           "UsingDefaultValue": false,
@@ -94,7 +94,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "1c77408d1d9c4489a8189fa237a1e348",
+          "Id": "76c733f9f0ba44cf93b7000ff1e94767",
           "Name": "",
           "Description": "Value of expression at line 2",
           "UsingDefaultValue": false,
@@ -109,7 +109,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Declare inputs, ensure values and range are iterable\r\nvalues_in = IN[0] if isinstance(IN[0], list) else [IN[0]]\r\nrange_in  = IN[1] if isinstance(IN[0], list) else [IN[1]]\r\nforcedown = IN[2]\r\n\r\n# Define function for finding closest number\r\n# Note we find absolute value, then find the floor later on\r\ndef closest(list, number):\r\n\tdiff = []\r\n\tfor i in list:\r\n\t\tdiff.append(abs(number-i))\r\n\treturn diff.index(min(diff))\r\n\r\n# Build empty lists\r\nindices = []\r\nvalues_out  = []\r\n\r\n# Test all values on the range using our function 'closest'\r\nfor i in values_in:\r\n\tindex = closest(range_in, i)\r\n\t# Test if the value is under the nearest\r\n\tif i - range_in[index] >= 0 and forcedown == False:\r\n\t\tindices.append(index)\r\n\t\tvalues_out.append(range_in[index])\r\n\telse:\r\n\t\t# Test if the value is the first item (can't reduce index)\r\n\t\tif index != 0:\r\n\t\t\tindices.append(index-1)\r\n\t\t\tvalues_out.append(range_in[index-1])\r\n\t\telse:\r\n\t\t\tindices.append(0)\r\n\t\t\tvalues_out.append(range_in[0])\r\n\r\n# Outputs\r\nOUT = [values_out, indices]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Declare inputs, ensure values and range are iterable\r\nelev_lvls = tolist(IN[0])\r\nelev_eles = tolist(IN[1])\r\n\r\nind_lvls, ind_elevs = [],[]\r\n\r\n# For each elevation\r\nfor e in elev_eles:\r\n\tif elev_lvls[0] > e:\r\n\t\tind = 0\r\n\telse:\r\n\t\tind = -1\r\n\tfor l in elev_lvls:\r\n\t\tif l > e:\r\n\t\t\tbreak\r\n\t\telse:\r\n\t\t\tind += 1\r\n\tind_lvls.append(ind)\r\n\tind_elevs.append(elev_lvls[ind])\r\n\r\n# Outputs\r\nOUT = ind_lvls, ind_elevs",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "38932afc75e34dc7acf53b1d21da534e",
       "Inputs": [
@@ -130,15 +131,6 @@
           "Level": 2,
           "UseLevels": false,
           "KeepListStructure": false
-        },
-        {
-          "Id": "2a3bde9387d64ac9a48c75fc868699c0",
-          "Name": "IN[2]",
-          "Description": "Input #2",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
         }
       ],
       "Outputs": [
@@ -153,7 +145,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
@@ -367,7 +359,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//Nearest level to the point(s).\r\nnearestLevel",
+      "Symbol": "//Nearest level to the point(s).\r\nlevelsBelow",
       "Id": "01b7a93457ca4566931c771dff869e20",
       "Inputs": [
         {
@@ -383,32 +375,6 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
-      "Parameter": {
-        "Name": "forceDown",
-        "TypeName": "bool",
-        "TypeRank": 0,
-        "DefaultValue": "false",
-        "Description": "Forces points to only consider\nlevels below them, even if they\ncould be rounded up."
-      },
-      "Id": "be156eab991a4f0e9608110a49fdc4af",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "ff3283c8f75741d4a0aada3e7e0835a5",
-          "Name": "",
-          "Description": "Symbol",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -440,7 +406,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//Point(s) pulled to the level's\r\n//reference plane.\r\npointAtLevel",
+      "Symbol": "//Point(s) pulled to the level's\r\n//reference plane.\r\npointsAtLevel",
       "Id": "89076dbf02634a7887478a1825e2f6b1",
       "Inputs": [
         {
@@ -456,6 +422,54 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.SortByKey@var[]..[],var[]..[]",
+      "Id": "b5b7325c791c477f930e2dfde2f25113",
+      "Inputs": [
+        {
+          "Id": "411b2c831c2b450db3c0145ca506384a",
+          "Name": "list",
+          "Description": "list to be sorted\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "6b33fe70933a49b59a660510383a35ac",
+          "Name": "keys",
+          "Description": "list of keys, keys have to be sortable (e.g. numbers,strings)\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "2b37be129c3f406888261c33a0353538",
+          "Name": "sortedList",
+          "Description": "type: var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "88585b4e18e642988ecf04c786db763b",
+          "Name": "sortedKeys",
+          "Description": "type: var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Sort list based on its keys\n\nList.SortByKey (list: var[]..[], keys: var[]..[]): var[]..[]"
     }
   ],
   "Connectors": [
@@ -465,24 +479,24 @@
       "Id": "faf39a2b90cb4a0793374e43443c79c5"
     },
     {
-      "Start": "64073189fdec4d5cae67e69fa051ea08",
+      "Start": "0305504b9baf4f939775fdb8bac1ef02",
       "End": "7032d38058a5416599e5c452473f73e5",
-      "Id": "1e9ff249950b46a0b1c5cc2fa631f39c"
+      "Id": "6e0f19fa1a01438e99a7301bc381a419"
     },
     {
-      "Start": "1c77408d1d9c4489a8189fa237a1e348",
+      "Start": "76c733f9f0ba44cf93b7000ff1e94767",
       "End": "0c26ac287b9e408c895941f49d667041",
-      "Id": "f0cd5983acae4181be142b8371397ea5"
+      "Id": "5f3aa3234e1b4f009d31920150053e3d"
     },
     {
       "Start": "858c1437f6be4bbb9979179fecf6a82e",
-      "End": "74ba3bb5fe6f4953b01dc88ad3461b60",
-      "Id": "32426e06989e4deaa3c74d97c8b5f7a4"
+      "End": "b02192b3b5374b4ba552b6f2c1600415",
+      "Id": "15ac9507cd7c4a7785bb35c2cbf9a59a"
     },
     {
       "Start": "92f1199a919c4ef8827d070b2053e518",
-      "End": "60f6815cc1474986b7db34d94337a226",
-      "Id": "170ee9d97e064176b46894686de5e619"
+      "End": "a180370e12034083a86732638e30a99b",
+      "Id": "fa59dc11597143ccba7ac4ec8e13e3e3"
     },
     {
       "Start": "8fadcd14a6cb49978b6ed0f75063b848",
@@ -496,13 +510,13 @@
     },
     {
       "Start": "eeffc09a1e654dcf9d7ace237831c5c9",
-      "End": "a180370e12034083a86732638e30a99b",
-      "Id": "22f826a6ee804c9695dae4fee519d5ea"
+      "End": "60f6815cc1474986b7db34d94337a226",
+      "Id": "96dafaa678354389bd21f05ce384b731"
     },
     {
       "Start": "f3009da984ef462c83cecf89b0804e5f",
-      "End": "f7f5d00576c7478489b53de466c230fd",
-      "Id": "17f7fa49ca69497a90ae34f25ca9af1b"
+      "End": "6b33fe70933a49b59a660510383a35ac",
+      "Id": "4112faa91e8b4c1d88615ec9614582c1"
     },
     {
       "Start": "f983178b989f4a35adcc6f1fd063b4ff",
@@ -521,13 +535,8 @@
     },
     {
       "Start": "7e3180bbe3cc458baacd9976eb893441",
-      "End": "24cf685580c84a9db8c505fa7e79ac70",
-      "Id": "f61118e7d00e4146876e57d5e8db00fe"
-    },
-    {
-      "Start": "ff3283c8f75741d4a0aada3e7e0835a5",
-      "End": "2a3bde9387d64ac9a48c75fc868699c0",
-      "Id": "9c30de2e11dd4b978e0be05f8315247f"
+      "End": "411b2c831c2b450db3c0145ca506384a",
+      "Id": "2403e4a50bf1415392f9b9eb68f9c683"
     },
     {
       "Start": "66eb2034f65049e0845dc8eb2c6ee1bc",
@@ -536,33 +545,44 @@
     },
     {
       "Start": "66eb2034f65049e0845dc8eb2c6ee1bc",
-      "End": "9b77916bb2ac4ce0b1bc371b433f81bc",
-      "Id": "7558b730a01c45f783ac24f0b1d295ff"
+      "End": "0b7dead53de14685b13d06bb233ed729",
+      "Id": "bb9843bdc4c34cbfb0565c82ec89dd29"
+    },
+    {
+      "Start": "2b37be129c3f406888261c33a0353538",
+      "End": "24cf685580c84a9db8c505fa7e79ac70",
+      "Id": "8bcaf2f923f9482d8c443c5e164acc69"
+    },
+    {
+      "Start": "88585b4e18e642988ecf04c786db763b",
+      "End": "f7f5d00576c7478489b53de466c230fd",
+      "Id": "8e9e46ae18d04b149ab1aa30ab8dc4e7"
     }
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -22.499469651426988,
-      "EyeY": 83.474008687746775,
-      "EyeZ": 25.340790306871632,
-      "LookX": 10.07099783483187,
-      "LookY": -10.910247654401203,
-      "LookZ": -48.676489535020693,
-      "UpX": 0.0,
-      "UpY": 1.0,
-      "UpZ": 0.0
+      "EyeX": 0.23855733577588106,
+      "EyeY": 78.987985222705078,
+      "EyeZ": 44.000550597987569,
+      "LookX": -0.23855733577588106,
+      "LookY": -78.987985222705078,
+      "LookZ": -44.000550597987569,
+      "UpX": -0.0040604653768241405,
+      "UpY": 0.66261970996856689,
+      "UpZ": -0.74894499778747559
     },
     "NodeViews": [
       {
@@ -582,7 +602,7 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1098.5634845533996,
+        "X": 1114.8297446563961,
         "Y": 194.70785211023076
       },
       {
@@ -592,8 +612,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 913.6301754899705,
-        "Y": 119.22358819108319
+        "X": 924.80893186935532,
+        "Y": 114.9089768613922
       },
       {
         "ShowGeometry": true,
@@ -602,8 +622,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 680.8661163289521,
-        "Y": 104.32612044205473
+        "X": 674.13271396431082,
+        "Y": 106.00947103321505
       },
       {
         "ShowGeometry": true,
@@ -612,8 +632,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 679.79947048630675,
-        "Y": 334.18936221920222
+        "X": 506.41435959679188,
+        "Y": 342.60611517500382
       },
       {
         "ShowGeometry": true,
@@ -622,8 +642,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 433.80592418381411,
-        "Y": 66.4368906291927
+        "X": 113.96931186334984,
+        "Y": 54.653436491070295
       },
       {
         "ShowGeometry": true,
@@ -632,8 +652,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1341.3797355446359,
-        "Y": 0.0
+        "X": 1334.6463331799946,
+        "Y": -6.7334023646413357
       },
       {
         "ShowGeometry": true,
@@ -643,7 +663,7 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "X": -11.01039877877281,
-        "Y": 324.59321505229013
+        "Y": 338.06001978157281
       },
       {
         "ShowGeometry": true,
@@ -652,8 +672,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 91.160341381641217,
-        "Y": 4.0968164730952026
+        "X": -191.64255793329556,
+        "Y": -7.6866376650272059
       },
       {
         "ShowGeometry": true,
@@ -662,18 +682,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1569.3797355446359,
-        "Y": 0.0
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "be156eab991a4f0e9608110a49fdc4af",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": -12.53733901232664,
-        "Y": 474.57924604229925
+        "X": 1562.6463331799946,
+        "Y": -6.7334023646413357
       },
       {
         "ShowGeometry": true,
@@ -682,8 +692,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -9.2476396115766875,
-        "Y": 212.82024325456518
+        "X": -15.98104197621808,
+        "Y": 211.13689266340481
       },
       {
         "ShowGeometry": true,
@@ -694,11 +704,21 @@
         "Excluded": false,
         "X": 1570.2729106188199,
         "Y": 260.52225519287828
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.SortByKey",
+        "Id": "b5b7325c791c477f930e2dfde2f25113",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 351.09022119163433,
+        "Y": -5.820418622964894
       }
     ],
     "Annotations": [],
-    "X": 54.337832123440649,
-    "Y": 179.98903567740018,
-    "Zoom": 0.68742956431334057
+    "X": -693.248410471633,
+    "Y": 123.81015569796205,
+    "Zoom": 0.92708234748145768
   }
 }

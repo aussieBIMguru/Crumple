@@ -54,7 +54,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Credit to Cyril Poupin for contributing the below Python code\r\n# Shared here via the package for others to use :)\r\n\r\n# ORIGINAL THREAD AND USER PROFILE OF C.POUPIN\r\n# https://forum.dynamobim.com/u/c.poupin\r\n# https://forum.dynamobim.com/t/covid-chair-spacing-iteration-challenge/57031/6\r\n\r\n# Thanks also to Vikram Subbaiah for his Design script alternative\r\n# https://forum.dynamobim.com/u/Vikram_Subbaiah\r\n\r\n# Boilerplate\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\nclr.AddReference('RevitAPI')\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Function for reviewing chairs\r\ndef nextSpaceChair(group = [], elemA = None, startIdx = 0):\r\n    global margin\r\n    group = list(group)\r\n    if elemA is None: \r\n        elemA = group.pop(startIdx)\r\n        return [elemA] + nextSpaceChair(group, elemA )\r\n    else:   \r\n        locPt = elemA.Location.Point\r\n        lstPair = [[x, x.Location.Point.DistanceTo(locPt)] for x in group if x.Location.Point.DistanceTo(locPt) > margin]\r\n        lstPair.sort(key = lambda x : x[1])\r\n        if len(lstPair) > 0:\r\n            #get the nearest chair >= 1.50m\r\n            nearElem = lstPair[0][0]\r\n            #get the rest\r\n            group = [x[0] for x in lstPair[1:] ]\r\n            return [nearElem] + nextSpaceChair(group = group, elemA = nearElem )\r\n        else:\r\n            return []   \r\n\r\n# Declare inputs\r\nallGroup = list(UnwrapElement(IN[0]))\r\nmargin = IN[1] * 0.00328084 #simple convert in feet\r\n\r\n# Build outputs\r\nout = []\r\nfor g in allGroup:\r\n    # test with change first element, for each chair in group\r\n    testLst = [nextSpaceChair(group = g, elemA = None, startIdx = i) for i in range(len(g))]\r\n    maxlst = max(testLst, key = len)\r\n    out.append(maxlst)\r\n\r\n# Declare output\r\nOUT = out",
+      "Code": "# Credit to Cyril Poupin for contributing the below Python code\r\n# Shared here via the package for others to use :)\r\n\r\n# ORIGINAL THREAD AND USER PROFILE OF C.POUPIN\r\n# https://forum.dynamobim.com/u/c.poupin\r\n# https://forum.dynamobim.com/t/covid-chair-spacing-iteration-challenge/57031/6\r\n\r\n# Thanks also to Vikram Subbaiah for his Design script alternative\r\n# https://forum.dynamobim.com/u/Vikram_Subbaiah\r\n\r\n# Boilerplate\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n# Get app version\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application\r\nrvt_year = int(app.VersionNumber)\r\n\r\n# Imports by version\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\n\r\nif rvt_year < 2022:\r\n\tfrom Autodesk.Revit.DB import UnitType, UnitUtils, DisplayUnitType\r\nelse:\r\n\tfrom Autodesk.Revit.DB import SpecTypeId, UnitUtils\r\n\r\n# Function: Convert from project to internal\r\ndef projectToInternal(val, ver = rvt_year, myDoc = doc):\r\n\tif rvt_year < 2022:\r\n\t\tintUnits = myDoc.GetUnits().GetFormatOptions(UnitType.UT_Length).DisplayUnits\r\n\t\treturn UnitUtils.Convert(val, intUnits, DisplayUnitType.DUT_DECIMAL_FEET)\r\n\telse:\r\n\t\tintUnitsId = myDoc.GetUnits().GetFormatOptions(SpecTypeId.Length).GetUnitTypeId()\r\n\t\treturn UnitUtils.ConvertToInternalUnits(val, intUnitsId)\r\n\r\n# Function for reviewing chairs\r\ndef nextSpaceChair(group = [], elemA = None, startIdx = 0):\r\n    global margin\r\n    group = list(group)\r\n    if elemA is None: \r\n        elemA = group.pop(startIdx)\r\n        return [elemA] + nextSpaceChair(group, elemA)\r\n    else:   \r\n        locPt = elemA.Location.Point\r\n        lstPair = [[x, x.Location.Point.DistanceTo(locPt)] for x in group if x.Location.Point.DistanceTo(locPt) > margin]\r\n        lstPair.sort(key = lambda x : x[1])\r\n        if len(lstPair) > 0:\r\n            #get the nearest chair >= 1.50m\r\n            nearElem = lstPair[0][0]\r\n            #get the rest\r\n            group = [x[0] for x in lstPair[1:] ]\r\n            return [nearElem] + nextSpaceChair(group = group, elemA = nearElem )\r\n        else:\r\n            return []   \r\n\r\n# Force into a list of lists\r\nclusters = UnwrapElement(IN[0])\r\nmargin   = projectToInternal(IN[1])\r\n\r\n# Force list structure\r\ntry:\r\n\tclusters[0][0]\r\nexcept:\r\n\ttry:\r\n\t\tclusters[0]\r\n\t\tclusters = [clusters]\r\n\texcept:\r\n\t\tclusters = [[clusters]]\r\n\r\n# Build outputs\r\nout = []\r\n\r\nfor g in clusters:\r\n    # test with change first element, for each chair in group\r\n    testLst = [nextSpaceChair(group = g, elemA = None, startIdx = i) for i in range(len(g))]\r\n    maxlst = max(testLst, key = len)\r\n    out.append(maxlst)\r\n\r\n# Declare output\r\nOUT = out",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "8b96266f3385496b9d107584a6f907df",
       "Inputs": [
@@ -89,13 +90,13 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "elements",
+        "Name": "elementClusters",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -121,7 +122,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "count",
+        "Name": "minSeparation",
         "TypeName": "int",
         "TypeRank": 0,
         "DefaultValue": "1500",
@@ -147,7 +148,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//Best configuration.\r\nelements",
+      "Symbol": "//Best configuration.\r\nelementGroups",
       "Id": "63e6235e8c2b403f89c48d1107ebdd5c",
       "Inputs": [
         {
@@ -179,32 +180,33 @@
     {
       "Start": "59b981cbd5554c50a9c9e4c454ac2a0b",
       "End": "a15169e9a4d74c618b28616abb34aea2",
-      "Id": "6b38fc748d2f40c18ed0a43b64c9e6d8"
+      "Id": "2fc94e83787746d9b30184dc3a4468b6"
     }
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": 15074.1944443899,
-      "EyeY": 22427.546638550954,
-      "EyeZ": 6840.57052768032,
-      "LookX": -3979.1713079701967,
-      "LookY": -23185.119361437057,
-      "LookZ": -11394.596710872032,
-      "UpX": -0.29243917394561852,
-      "UpY": 0.46174861323505406,
-      "UpZ": -0.837417188573025
+      "EyeX": 5023.5458984375,
+      "EyeY": 16529.94921875,
+      "EyeZ": 7050.642578125,
+      "LookX": -49.3203125,
+      "LookY": -16330.296875,
+      "LookZ": -9096.8525390625,
+      "UpX": -0.0040604653768241405,
+      "UpY": 0.66261970996856689,
+      "UpZ": -0.74894499778747559
     },
     "NodeViews": [
       {
@@ -224,8 +226,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -174.0,
-        "Y": -82.0
+        "X": -271.83074151377264,
+        "Y": -89.043813388991623
       },
       {
         "ShowGeometry": true,
@@ -234,8 +236,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -135.45140542760564,
-        "Y": 21.741854759729591
+        "X": -248.1524196514718,
+        "Y": 39.742711198263834
       },
       {
         "ShowGeometry": true,
@@ -264,8 +266,8 @@
         "Background": "#FFC1D676"
       }
     ],
-    "X": 486.71995211034221,
-    "Y": 479.42579486454395,
-    "Zoom": 1.2777169841077238
+    "X": 158.03115815038677,
+    "Y": 375.41434702394383,
+    "Zoom": 0.88878922829715545
   }
 }

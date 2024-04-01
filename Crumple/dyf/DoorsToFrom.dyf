@@ -79,7 +79,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\ndoors = uwlist(IN[0])\r\nphase = UnwrapElement(IN[1])\r\n\r\nhasto, hasfrom, counter, torm, fromrm = [],[],[],[],[]\r\n\r\n# Do some action in a Transaction\r\nfor d in doors:\r\n\tif hasattr(d, \"FromRoom\") and str(phase.GetType()) == \"Autodesk.Revit.DB.Phase\":\r\n\t\ttry:\r\n\t\t\ttorm.append(d.ToRoom[phase])\r\n\t\t\tfromrm.append(d.FromRoom[phase])\r\n\t\texcept:\r\n\t\t\ttorm.append(None)\r\n\t\t\tfromrm.append(None)\r\n\r\nfor t,f in zip(torm, fromrm):\r\n\tc = 0\r\n\tif t == None:\r\n\t\thasto.append(False)\r\n\telse:\r\n\t\thasto.append(True)\r\n\t\tc+=1\r\n\tif f == None:\r\n\t\thasfrom.append(False)\r\n\telse:\r\n\t\thasfrom.append(True)\r\n\t\tc+=1\r\n\tcounter.append(c)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [torm, fromrm, hasto, hasfrom, counter]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\ndoors = uwlist(IN[0])\r\nphase = UnwrapElement(IN[1])\r\n\r\nhasto, hasfrom, counter, torm, fromrm = [],[],[],[],[]\r\n\r\n# Get to and from room values\r\nfor d in doors:\r\n\tif hasattr(d, \"FromRoom\") and str(phase.GetType()) == \"Autodesk.Revit.DB.Phase\":\r\n\t\ttry:\r\n\t\t\ttorm.append(d.ToRoom[phase])\r\n\t\t\tfromrm.append(d.FromRoom[phase])\r\n\t\texcept:\r\n\t\t\ttorm.append(None)\r\n\t\t\tfromrm.append(None)\r\n\r\nfor t,f in zip(torm, fromrm):\r\n\tc = 0\r\n\tif t == None:\r\n\t\thasto.append(False)\r\n\telse:\r\n\t\thasto.append(True)\r\n\t\tc+=1\r\n\tif f == None:\r\n\t\thasfrom.append(False)\r\n\telse:\r\n\t\thasfrom.append(True)\r\n\t\tc+=1\r\n\tcounter.append(c)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [torm, fromrm, hasto, hasfrom, counter]",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "d6066c777f594b31bbf2cbc0577ddb24",
       "Inputs": [
@@ -114,7 +115,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -318,13 +319,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -433,8 +435,8 @@
       }
     ],
     "Annotations": [],
-    "X": 10.410948395952051,
-    "Y": 322.2698745241845,
-    "Zoom": 1.8642235470800734
+    "X": 30.493362037016368,
+    "Y": 252.86228166088651,
+    "Zoom": 1.1292052248875646
   }
 }

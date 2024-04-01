@@ -24,7 +24,7 @@
         {
           "Id": "5e8a17ed74ab49789bf07586c2e9dcd0",
           "Name": "x",
-          "Description": "double\nDefault value : 0",
+          "Description": "X coordinate\n\ndouble\nDefault value : 0",
           "UsingDefaultValue": true,
           "Level": 2,
           "UseLevels": false,
@@ -33,7 +33,7 @@
         {
           "Id": "9b6c9d5be64440d5b797442cde66e393",
           "Name": "y",
-          "Description": "double\nDefault value : 0",
+          "Description": "Y coordinate\n\ndouble\nDefault value : 0",
           "UsingDefaultValue": true,
           "Level": 2,
           "UseLevels": false,
@@ -42,7 +42,7 @@
         {
           "Id": "a91addf73e0b459db253d4e7f9b985f6",
           "Name": "z",
-          "Description": "double\nDefault value : 0",
+          "Description": "Z coordinate\n\ndouble\nDefault value : 0",
           "UsingDefaultValue": true,
           "Level": 2,
           "UseLevels": false,
@@ -53,7 +53,7 @@
         {
           "Id": "a8aacdca6a904f8997700fc5640d561e",
           "Name": "Point",
-          "Description": "Point",
+          "Description": "Point created by coordinates",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -114,7 +114,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Import random package\r\nfrom random import seed\r\nfrom random import random\r\n\r\n# Preparing input from dynamo to revit\r\nele    = UnwrapElement(IN[0])\r\nrcount = IN[1]\r\nrseed  = IN[2]\r\n\r\n# Process element bounding box\r\nbb = ele.get_BoundingBox(None)\r\nbbmin = bb.Min.ToPoint()\r\nbbmax = bb.Max.ToPoint()\r\n\r\nbbminx = bbmin.X\r\nbbminy = bbmin.Y\r\nbbminz = bbmin.Z\r\n\r\nbbxrng = bbmax.X - bbminx\r\nbbyrng = bbmax.Y - bbminy\r\nbbzrng = bbmax.Z - bbminz\r\n\r\n# Generate random XYZ values\r\nxvals, yvals, zvals = [], [], []\r\n\r\nfor i in range(rcount):\r\n\txval, yval, zval = random(), random(), random()\r\n\txout = bbminx + (xval * bbxrng)\r\n\tyout = bbminy + (yval * bbyrng)\r\n\tzout = bbminz + (zval * bbzrng)\r\n\txvals.append(xout)\r\n\tyvals.append(yout)\r\n\tzvals.append(zout)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [xvals, yvals, zvals]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\n# Import random package\r\nfrom random import seed\r\nfrom random import random\r\n\r\n# Preparing input from dynamo to revit\r\nele    = UnwrapElement(IN[0])\r\nrcount = IN[1]\r\nrseed  = IN[2]\r\n\r\n# Process element bounding box\r\nbb = ele.get_BoundingBox(None)\r\nbbmin = bb.Min.ToPoint()\r\nbbmax = bb.Max.ToPoint()\r\n\r\nbbminx = bbmin.X\r\nbbminy = bbmin.Y\r\nbbminz = bbmin.Z\r\n\r\nbbxrng = bbmax.X - bbminx\r\nbbyrng = bbmax.Y - bbminy\r\nbbzrng = bbmax.Z - bbminz\r\n\r\n# Generate random XYZ values\r\nxvals, yvals, zvals = [], [], []\r\n\r\nfor i in range(rcount):\r\n\txval, yval, zval = random(), random(), random()\r\n\txout = bbminx + (xval * bbxrng)\r\n\tyout = bbminy + (yval * bbyrng)\r\n\tzout = bbminz + (zval * bbzrng)\r\n\txvals.append(xout)\r\n\tyvals.append(yout)\r\n\tzvals.append(zout)\r\n\r\n# Preparing output to Dynamo\r\nOUT = xvals, yvals, zvals",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "bfc04de27e26475db8c7e977360fb774",
       "Inputs": [
@@ -158,7 +159,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -304,27 +305,28 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -4.852500201896591,
-      "EyeY": 10.044396577961736,
-      "EyeZ": 6.8984872198701588,
-      "LookX": 4.9719378964461516,
-      "LookY": -9.2038184987381033,
-      "LookZ": -7.6009951925874439,
-      "UpX": 0.29813974222173972,
-      "UpY": 0.83867056794542527,
-      "UpZ": -0.45578983377216203
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "NodeViews": [
       {
@@ -334,7 +336,7 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 622.970853384408,
+        "X": 685.21704339099369,
         "Y": 0.0
       },
       {
@@ -344,7 +346,7 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 400.2905706169513,
+        "X": 462.536760623537,
         "Y": 9.15603547885587
       },
       {
@@ -364,7 +366,7 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 855.970853384408,
+        "X": 918.21704339099369,
         "Y": 0.0
       },
       {
@@ -399,8 +401,8 @@
       }
     ],
     "Annotations": [],
-    "X": 454.71713434869685,
-    "Y": 321.80542913677988,
-    "Zoom": 1.545620359375
+    "X": 215.45775911418855,
+    "Y": 328.43648495010859,
+    "Zoom": 0.65867485215821509
   }
 }

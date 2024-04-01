@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nitems  = uwlist(IN[0])\r\n\r\nitemgroup, hasgroup = [], []\r\n\t\r\n# Get group and check if has group\t\r\nfor i in items:\r\n\tif hasattr(i, \"GroupId\"):\r\n\t\tgrp = i.Document.GetElement(i.GroupId)\r\n\t\titemgroup.append(grp)\r\n\t\tif grp:\r\n\t\t\thasgroup.append(True)\r\n\t\telse:\r\n\t\t\thasgroup.append(False)\r\n\telse:\r\n\t\titemgroup.append(None)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [itemgroup, hasgroup]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nitems  = uwlist(IN[0])\r\n\r\nitemgroup, hasgroup = [], []\r\n\t\r\n# Get group and check if has group\t\r\nfor i in items:\r\n\tif hasattr(i, \"GroupId\"):\r\n\t\tgrp = i.Document.GetElement(i.GroupId)\r\n\t\titemgroup.append(grp)\r\n\t\tif grp:\r\n\t\t\thasgroup.append(True)\r\n\t\telse:\r\n\t\t\thasgroup.append(False)\r\n\telse:\r\n\t\titemgroup.append(None)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [itemgroup, hasgroup]",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "f71ac545c3c6489d80f16c944fb18ad6",
       "Inputs": [
@@ -39,13 +40,13 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "element",
+        "Name": "elements",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -173,13 +174,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -248,8 +250,8 @@
       }
     ],
     "Annotations": [],
-    "X": 215.0,
-    "Y": 273.0,
-    "Zoom": 1.0
+    "X": 76.66341875,
+    "Y": 308.69637319114474,
+    "Zoom": 1.33823125
   }
 }

@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(input)\r\n\r\n#unwrap all elements to use with API\r\nelements = uwlist(IN[0])\r\n\r\n# Check and delete\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nresults,fails = [],[]\r\n\r\nfor e in elements:\r\n\tid = None\r\n\ttry:\r\n\t\tid = e.Id\r\n\t\tdel_id = doc.Delete(id)\r\n\t\tresults.append(True)\r\n\texcept:\r\n\t\tif id is not None:\r\n\t\t\tfails.append(e)\t\t\r\n\t\tresults.append(False)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n   \r\n# Result of transaction\r\nOUT = [results,fails]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n#unwrap all elements to use with API\r\nelements = uwlist(IN[0])\r\n\r\n# Check and delete\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nresults, fails = [],[]\r\n\r\nfor e in elements:\r\n\ttry:\r\n\t\tdel_id = doc.Delete(e.Id)\r\n\t\tresults.append(True)\r\n\texcept:\r\n\t\tfails.append(e)\t\r\n\t\tresults.append(False)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n   \r\n# Result of transaction\r\nOUT = results, fails",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "c10aa140a9a54d44b64236876afbacc0",
       "Inputs": [
@@ -39,46 +40,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
-      "NodeType": "FunctionNode",
-      "FunctionSignature": "DSCore.List.Flatten@var[]..[],int",
-      "Id": "8a2237898fb740bdbc4fb40550d20ef0",
-      "Inputs": [
-        {
-          "Id": "6a47f5ad16524e138a2cc36d50aab6ec",
-          "Name": "list",
-          "Description": "List to flatten.\n\nvar[]..[]",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "2b4da1ff0bfb4e819d03a39bc94bdf2a",
-          "Name": "amt",
-          "Description": "Layers of nesting to remove.\n\nint\nDefault value : -1",
-          "UsingDefaultValue": true,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "beba5e8a586a4e1e9b263786b5561404",
-          "Name": "var[]..[]",
-          "Description": "var[]..[]",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Flattens a nested list of lists by a certain amount.\n\nList.Flatten (list: var[]..[], amt: int = -1): var[]..[]"
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -195,14 +157,9 @@
       "Id": "2793483940a1441e940dc2acaffd30c4"
     },
     {
-      "Start": "beba5e8a586a4e1e9b263786b5561404",
-      "End": "9395f69ec7f14b60a9876056ad71decf",
-      "Id": "e34ee3d9ccaf43cb89b028e986841a69"
-    },
-    {
       "Start": "55f06e68a0794515a81e69af19706b6d",
-      "End": "6a47f5ad16524e138a2cc36d50aab6ec",
-      "Id": "84b040060f9e4688838184f146a94fa4"
+      "End": "9395f69ec7f14b60a9876056ad71decf",
+      "Id": "e18d69d1474f42d0bc7b015fb3a14c42"
     },
     {
       "Start": "e7334c4afa6f4aa2a11c8b55ef8ae0aa",
@@ -217,13 +174,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -247,18 +205,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 489.9149202616918,
-        "Y": -15.0
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "List.Flatten",
-        "Id": "8a2237898fb740bdbc4fb40550d20ef0",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 229.76642133800408,
-        "Y": -15.0
+        "X": 311.51196638552136,
+        "Y": -13.017744956931438
       },
       {
         "ShowGeometry": true,
@@ -277,8 +225,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 987.49419405835852,
-        "Y": -62.042150495136752
+        "X": 862.35098426446325,
+        "Y": -52.03069371162519
       },
       {
         "ShowGeometry": true,
@@ -287,8 +235,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 708.07405412505739,
-        "Y": -11.347383498378953
+        "X": 529.67110024888689,
+        "Y": -9.36512845531039
       },
       {
         "ShowGeometry": true,
@@ -297,13 +245,13 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 991.96913313856362,
-        "Y": 23.67392970100326
+        "X": 866.82592334466835,
+        "Y": 33.685386484514822
       }
     ],
     "Annotations": [],
-    "X": 38.482708506805878,
-    "Y": 424.94370172332532,
-    "Zoom": 1.4137847511343122
+    "X": 67.4663526375694,
+    "Y": 389.50432933001,
+    "Zoom": 0.81062463834352239
   }
 }

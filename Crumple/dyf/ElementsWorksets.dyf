@@ -18,11 +18,11 @@
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
-      "Code": "wkst = data[0];\nnams = data[1];\nids = data[2];",
+      "Code": "wkst = data[0];\nnams = data[1];",
       "Id": "181a87712ba940d3a311117eb95ae0df",
       "Inputs": [
         {
-          "Id": "4589771cc2364000af249231fbe99526",
+          "Id": "709de7a0c8e349a3a69643e115baf77f",
           "Name": "data",
           "Description": "data",
           "UsingDefaultValue": false,
@@ -33,7 +33,7 @@
       ],
       "Outputs": [
         {
-          "Id": "8012ec9e3e1c46a699592c1980712f19",
+          "Id": "d3c1910355c842bcbea2bfdcf7a444bd",
           "Name": "",
           "Description": "wkst",
           "UsingDefaultValue": false,
@@ -42,18 +42,9 @@
           "KeepListStructure": false
         },
         {
-          "Id": "799e60b680f7433db3919d5bdf0271e2",
+          "Id": "5570d70676e64375b505936a7e0e61cc",
           "Name": "",
           "Description": "nams",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "e1ebf269c9ef4a358785cf18b1d28725",
-          "Name": "",
-          "Description": "ids",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -66,7 +57,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\n# Current doc/app/ui\r\ndoc = IN[1]\r\n\r\n# Preparing input from dynamo to revit\r\neles = IN[0] if isinstance(IN[0], list) else [IN[0]]\r\n\r\nworksets, names = [],[]\r\n\r\n# Get element workset properties\r\nfor e in eles:\r\n\tid = UnwrapElement(e).WorksetId\r\n\tworkset = doc.GetWorksetTable().GetWorkset(id)\r\n\tworksets.append(workset)\r\n\tnames.append(workset.Name)\r\n\r\nunique = set(names)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [worksets, names, unique]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Current doc/app/ui\r\ndoc = IN[1]\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\neles = uwlist(IN[0])\r\n\r\nif doc.IsWorkshared:\r\n\t# Variables to build\r\n\tworksets, names = [],[]\r\n\t# Get element workset properties\r\n\tfor e in eles:\r\n\t\tid = e.WorksetId\r\n\t\tworkset = doc.GetWorksetTable().GetWorkset(id)\r\n\t\tworksets.append(workset)\r\n\t\tnames.append(workset.Name)\r\n\t# Preparing output to Dynamo\r\n\tOUT = worksets, names\r\nelse:\r\n\tOUT = [None for e in eles], [\"\" for e in eles]",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "4a61fcc4a5f04863967a5e7611d85d2a",
       "Inputs": [
@@ -101,7 +93,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -159,27 +151,6 @@
       "Inputs": [
         {
           "Id": "b70683608f7b4a36b7da2f3e4b9b3696",
-          "Name": "",
-          "Description": "",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [],
-      "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
-      "ElementResolver": null,
-      "Symbol": "//The workset Ids.\r\nunique",
-      "Id": "21d465b8000e4e898513877a0f6a552d",
-      "Inputs": [
-        {
-          "Id": "c4b17c08fd7d4f7ca17fbf80714a1870",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -261,24 +232,19 @@
   ],
   "Connectors": [
     {
-      "Start": "8012ec9e3e1c46a699592c1980712f19",
+      "Start": "d3c1910355c842bcbea2bfdcf7a444bd",
       "End": "549c9508558c493fa3d16ef70ff88e0a",
-      "Id": "f46b2a7a9fc24cb9beec67f5583bd63d"
+      "Id": "5151fbd0116b47a4ac1a77b609c41443"
     },
     {
-      "Start": "799e60b680f7433db3919d5bdf0271e2",
+      "Start": "5570d70676e64375b505936a7e0e61cc",
       "End": "b70683608f7b4a36b7da2f3e4b9b3696",
-      "Id": "f4c6769b3ee74c828ee97ebdc6e72e51"
-    },
-    {
-      "Start": "e1ebf269c9ef4a358785cf18b1d28725",
-      "End": "c4b17c08fd7d4f7ca17fbf80714a1870",
-      "Id": "009bc3c61607433980ff46378fd09eac"
+      "Id": "cfbe32fcb1004367b0a7c1a95d8b7f2c"
     },
     {
       "Start": "dd910195bb654d5e81c01405e775f6f4",
-      "End": "4589771cc2364000af249231fbe99526",
-      "Id": "0920a3f50edc4893bb47e6a5a213f15a"
+      "End": "709de7a0c8e349a3a69643e115baf77f",
+      "Id": "9ee46bd462914857a45701eabe9f3525"
     },
     {
       "Start": "42c697167edf427fbf4ffdec9829be04",
@@ -309,13 +275,14 @@
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -369,8 +336,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 682.5,
-        "Y": -48.0
+        "X": 679.71632500361625,
+        "Y": -24.802708363467787
       },
       {
         "ShowGeometry": true,
@@ -379,18 +346,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 682.5,
-        "Y": 18.0
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Output",
-        "Id": "21d465b8000e4e898513877a0f6a552d",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 681.717590433909,
-        "Y": 87.423512010626041
+        "X": 679.71632500361625,
+        "Y": 41.197291636532213
       },
       {
         "ShowGeometry": true,
@@ -414,8 +371,8 @@
       }
     ],
     "Annotations": [],
-    "X": 508.36490304465258,
-    "Y": 364.85438038133083,
+    "X": -124.63509695534742,
+    "Y": 318.85438038133083,
     "Zoom": 1.0777120187870888
   }
 }

@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[1]\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nelements = uwlist(IN[0])\r\nwsu_creator, wsu_owner, wsu_change = [],[],[]\r\n\r\n# Find last used and creator\r\nfor e in elements:\r\n\ttry:\r\n\t\twsu = WorksharingUtils.GetWorksharingTooltipInfo(doc, e.Id)\r\n\t\twsu_creator.append(wsu.Creator)\r\n\t\twsu_owner.append(wsu.Owner)\r\n\t\twsu_change.append(wsu.LastChangedBy)\r\n\texcept:\r\n\t\twsu_creator.append(None)\r\n\t\twsu_owner.append(None)\r\n\t\twsu_change.append(None)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [wsu_creator, wsu_owner, wsu_change]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import WorksharingUtils\r\n\r\n# Current doc/app/ui\r\ndoc = IN[1]\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nelements = uwlist(IN[0])\r\nwsu_creator, wsu_owner, wsu_change = [],[],[]\r\n\r\n# Find last used and creator\r\nfor e in elements:\r\n\ttry:\r\n\t\twsu = WorksharingUtils.GetWorksharingTooltipInfo(doc, e.Id)\r\n\t\twsu_creator.append(wsu.Creator)\r\n\t\twsu_owner.append(wsu.Owner)\r\n\t\twsu_change.append(wsu.LastChangedBy)\r\n\texcept:\r\n\t\twsu_creator.append(None)\r\n\t\twsu_owner.append(None)\r\n\t\twsu_change.append(None)\r\n\r\n# Preparing output to Dynamo\r\nOUT = wsu_creator, wsu_owner, wsu_change",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "248aa56941ec4deeac3edf1e6b838f31",
       "Inputs": [
@@ -48,7 +49,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -304,13 +305,14 @@
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -409,8 +411,8 @@
       }
     ],
     "Annotations": [],
-    "X": 446.096666814287,
-    "Y": 254.71677049019274,
-    "Zoom": 1.165253636985202
+    "X": 317.507222223307,
+    "Y": 238.71407071545553,
+    "Zoom": 0.82833036351422673
   }
 }
