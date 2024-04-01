@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n# Boilerplate text\nimport clr\n\nclr.AddReference(\"RevitServices\")\nimport RevitServices\nfrom RevitServices.Persistence import DocumentManager\ndoc = IN[0]\n\nclr.AddReference(\"RevitAPI\")\nimport Autodesk\nfrom Autodesk.Revit.DB import *\n\n#Dimension types\ndTypes = FilteredElementCollector(doc).OfClass(DimensionType).ToElements()\nsTypes = FilteredElementCollector(doc).OfClass(SpotDimensionType).ToElements()\n\ndNames,sNames = [],[]\n\n#Get names\nfor i in dTypes:\n\tdNames.append(i.FamilyName)\n\t\nfor i in sTypes:\n\tsNames.append(i.FamilyName)\n\n#Set output\nOUT = [dTypes, dNames, sTypes, sNames]",
+      "Code": "# Made by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n# Boilerplate text\nimport clr\n\nclr.AddReference(\"RevitServices\")\nimport RevitServices\nfrom RevitServices.Persistence import DocumentManager\ndoc = IN[0]\n\nclr.AddReference(\"RevitAPI\")\nimport Autodesk\nfrom Autodesk.Revit.DB import FilteredElementCollector, DimensionType, SpotDimensionType\n\n#Dimension types\ndTypes = FilteredElementCollector(doc).OfClass(DimensionType).ToElements()\nsTypes = FilteredElementCollector(doc).OfClass(SpotDimensionType).ToElements()\n\ndNames,sNames = [],[]\n\n#Get names\nfor i in dTypes:\n\tdNames.append(i.FamilyName)\n\t\nfor i in sTypes:\n\tsNames.append(i.FamilyName)\n\n#Set output\nOUT = [dTypes, dNames, sTypes, sNames]",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "030b5f4d9cc74ae4b5097dd261bec757",
       "Inputs": [
@@ -39,7 +40,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -299,13 +300,14 @@
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -404,8 +406,8 @@
       }
     ],
     "Annotations": [],
-    "X": 619.38127590932,
-    "Y": 264.8386595770408,
-    "Zoom": 1.1338773957745405
+    "X": 105.91258400549975,
+    "Y": 282.00135341783005,
+    "Zoom": 0.95663047989779582
   }
 }

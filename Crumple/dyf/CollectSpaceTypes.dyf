@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.DB.Analysis import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Collect all Space types\r\nspaces = FilteredElementCollector(doc).OfClass(HVACLoadSpaceType).ToElements()\r\n\r\n# Prepare empty lists\r\nids = []\r\n\r\n# Find space type Id and convert to element\r\nfor s in spaces:\r\n\tuw = UnwrapElement(s)\r\n\tid_uwr = uw.Id\r\n\tid_str = id_uwr.ToString()\r\n\tid_int = int(id_str)\r\n\tids.append(id_int)\r\n\t\r\n# Outputs\r\nOUT = [spaces, ids]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import FilteredElementCollector\r\nfrom Autodesk.Revit.DB.Analysis import HVACLoadSpaceType\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Collect all Space types\r\nspaces = FilteredElementCollector(doc).OfClass(HVACLoadSpaceType).ToElements()\r\n\t\r\n# Outputs\r\nOUT = spaces, [s.Name for s in spaces]",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "aea509a2fedb4532a607681a2d1a60bf",
       "Inputs": [
@@ -39,13 +40,13 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//Space types as elements.\r\nspace_types",
+      "Symbol": "//Space types as elements.\r\nspaceTypes",
       "Id": "923afeb2cfe14a6b87dc333d9f231269",
       "Inputs": [
         {
@@ -63,40 +64,10 @@
       "Description": "A function output, use with custom nodes"
     },
     {
-      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
-      "NodeType": "FunctionNode",
-      "FunctionSignature": "Revit.Elements.Element.Name",
-      "Id": "e0c67d42172441fd9e1bbff02bba16b2",
-      "Inputs": [
-        {
-          "Id": "09e8ebf88f4f46b2bd3809aa781b04de",
-          "Name": "element",
-          "Description": "Revit.Elements.Element",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "d24c6685b5524efb9bfe0b0306f4e300",
-          "Name": "string",
-          "Description": "string",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Get the Name of the Element\n\nElement.Name: string"
-    },
-    {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//Type names as strings.\r\ntype_names",
+      "Symbol": "//Type names as strings.\r\ntypeNames",
       "Id": "ce5d128fbe3048e883d89a54fde3c676",
       "Inputs": [
         {
@@ -116,11 +87,11 @@
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
-      "Code": "styp = lst[0];\nstid = lst[1];",
+      "Code": "styp = lst[0];\nnams = lst[1];",
       "Id": "479f2ea4877042788988a0bbd18098ab",
       "Inputs": [
         {
-          "Id": "466ed8231aa94021adf4a03a0b9d5450",
+          "Id": "57e37d76e2f14c84aa78e44485e99eaf",
           "Name": "lst",
           "Description": "lst",
           "UsingDefaultValue": false,
@@ -131,7 +102,7 @@
       ],
       "Outputs": [
         {
-          "Id": "d4ddeb1d1ab74271aea8e42b971ec3aa",
+          "Id": "0e39cf6a63be4c1790e61eea1a83ab94",
           "Name": "",
           "Description": "styp",
           "UsingDefaultValue": false,
@@ -140,9 +111,9 @@
           "KeepListStructure": false
         },
         {
-          "Id": "1832baf40c2b48f583129849dcdf15c0",
+          "Id": "12fb1107ba6f4399a8ce0ba19d0664f5",
           "Name": "",
-          "Description": "stid",
+          "Description": "nams",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -151,27 +122,6 @@
       ],
       "Replication": "Disabled",
       "Description": "Allows for DesignScript code to be authored directly"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
-      "ElementResolver": null,
-      "Symbol": "//Space types ids as integers.\r\ntype_ids",
-      "Id": "5adf82fe7f8c44988989f701a1b1c0df",
-      "Inputs": [
-        {
-          "Id": "c8d69a6ccf63489b88b6524016bba2e2",
-          "Name": "",
-          "Description": "",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [],
-      "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -243,28 +193,18 @@
   "Connectors": [
     {
       "Start": "4e03ed12795447239dbe004b0f5bf069",
-      "End": "466ed8231aa94021adf4a03a0b9d5450",
-      "Id": "27a0ceb1383f45dd96005a5c24da3569"
+      "End": "57e37d76e2f14c84aa78e44485e99eaf",
+      "Id": "fd0ea26dcbd7478b9388b49b8a2489b1"
     },
     {
-      "Start": "d24c6685b5524efb9bfe0b0306f4e300",
-      "End": "be36c4d44e7b49749fb2541c51ac2fd8",
-      "Id": "e116104572ae4968bd680d5f16e76b7f"
-    },
-    {
-      "Start": "d4ddeb1d1ab74271aea8e42b971ec3aa",
-      "End": "09e8ebf88f4f46b2bd3809aa781b04de",
-      "Id": "8a978f46852c482e9d22235275714ac1"
-    },
-    {
-      "Start": "d4ddeb1d1ab74271aea8e42b971ec3aa",
+      "Start": "0e39cf6a63be4c1790e61eea1a83ab94",
       "End": "a34e416981bf41cda771aa4eaef145e4",
-      "Id": "e4857e0e2cdf47e094dc1842e4e4b229"
+      "Id": "8a4f8aaec6574065965e7e232cce5879"
     },
     {
-      "Start": "1832baf40c2b48f583129849dcdf15c0",
-      "End": "c8d69a6ccf63489b88b6524016bba2e2",
-      "Id": "89e45b58324445b2bd4d0cc82e0460c1"
+      "Start": "12fb1107ba6f4399a8ce0ba19d0664f5",
+      "End": "be36c4d44e7b49749fb2541c51ac2fd8",
+      "Id": "cc02315835944446922e6034c274bb28"
     },
     {
       "Start": "f7bd2edecd054d3f9e68dc4b7eb5bc21",
@@ -290,13 +230,14 @@
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -320,8 +261,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 250.0,
-        "Y": 0.0
+        "X": 242.0006496836146,
+        "Y": -6.2217169127442276
       },
       {
         "ShowGeometry": true,
@@ -330,18 +271,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 760.29891541005577,
-        "Y": -84.869125137801461
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Element.Name",
-        "Id": "e0c67d42172441fd9e1bbff02bba16b2",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 760.273880883959,
-        "Y": -1.5762343814798214
+        "X": 768.29826572644129,
+        "Y": -94.646108857828011
       },
       {
         "ShowGeometry": true,
@@ -350,8 +281,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1012.1359756926331,
-        "Y": -3.0762343814798214
+        "X": 781.9324499210976,
+        "Y": 69.806735167809393
       },
       {
         "ShowGeometry": true,
@@ -360,18 +291,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 424.04410931201403,
-        "Y": 4.7589688558741727
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Output",
-        "Id": "5adf82fe7f8c44988989f701a1b1c0df",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 758.32712264965915,
-        "Y": 96.050721717045974
+        "X": 434.70990973386131,
+        "Y": -1.462748056869998
       },
       {
         "ShowGeometry": true,
@@ -380,8 +301,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -450.45334602152093,
-        "Y": 2.8054267645950972
+        "X": -474.45139697067714,
+        "Y": -6.971556955431538
       },
       {
         "ShowGeometry": true,
@@ -395,8 +316,8 @@
       }
     ],
     "Annotations": [],
-    "X": 394.61536346065918,
-    "Y": 325.59482806598555,
-    "Zoom": 0.85828058971103338
+    "X": 761.06656377734589,
+    "Y": 303.53985718576496,
+    "Zoom": 1.1250913691784354
   }
 }

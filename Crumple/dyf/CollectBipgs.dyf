@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport System\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Enumerate over all BIPG types\r\npgnms = [(a, a.ToString()) for a in System.Enum.GetValues(BuiltInParameterGroup)]\r\n\r\n# Preparing output to Dynamo\r\nOUT = zip(*pgnms)",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport System\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import BuiltInParameterGroup\r\n\r\n# Enumerate over all BIPG types\r\npgnms = [(a, a.ToString()) for a in System.Enum.GetValues(BuiltInParameterGroup)]\r\n\r\n# Preparing output to Dynamo\r\nOUT = zip(*pgnms)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "55513e760fca4552a90100b4701ab50d",
       "Inputs": [
@@ -39,7 +40,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -66,7 +67,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "Refresh",
+        "Name": "refresh",
         "TypeName": "bool",
         "TypeRank": 0,
         "DefaultValue": "true",
@@ -173,21 +174,22 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -22.020641205966292,
-      "EyeY": 107.30823585841793,
-      "EyeZ": 30.288711023603071,
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
       "LookX": 12.0,
       "LookY": -13.0,
       "LookZ": -58.0,
@@ -248,8 +250,8 @@
       }
     ],
     "Annotations": [],
-    "X": 614.97049966252712,
-    "Y": 353.30967154427645,
+    "X": 84.970499662527118,
+    "Y": 295.30967154427645,
     "Zoom": 1.33823125
   }
 }

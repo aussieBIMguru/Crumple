@@ -82,7 +82,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Unwrapped list function\r\ndef uwlist(input):\r\n\ttolist = input if isinstance(input, list) else [input]\r\n\tunwrap = UnwrapElement(tolist)\r\n\treturn unwrap\r\n\r\n# Preparing input from dynamo to revit\r\nrooms_list  = uwlist(IN[0])\r\nview_r      = UnwrapElement(IN[1])\r\n\r\n# Start making Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\n# Make areas from rooms, matching names and numbers\r\nareas, nums, nams = [], [], []\r\n\r\nfor room in rooms_list:\r\n\tloc = room.Location.Point\r\n\tarea = doc.Create.NewArea(view_r, UV(loc.X, loc.Y))\r\n\tnumb = room.GetParameters(\"Number\")[0].AsString()\r\n\tarea.Number = numb\r\n\tname = room.GetParameters(\"Name\")[0].AsString()\r\n\tarea.Name = name\r\n\tnums.append(numb)\r\n\tnams.append(name)\r\n\tareas.append(area.ToDSType(False))\r\n\t\t\r\n# Finish making transaction\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = [areas, nums, nams]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import UV\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Unwrapped list function\r\ndef uwlist(input):\r\n\ttolist = input if isinstance(input, list) else [input]\r\n\tunwrap = UnwrapElement(tolist)\r\n\treturn unwrap\r\n\r\n# Preparing input from dynamo to revit\r\nrooms_list  = uwlist(IN[0])\r\nview_r      = UnwrapElement(IN[1])\r\n\r\n# Start making Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\n# Make areas from rooms, matching names and numbers\r\nareas, nums, nams = [], [], []\r\n\r\nfor room in rooms_list:\r\n\tloc = room.Location.Point\r\n\tarea = doc.Create.NewArea(view_r, UV(loc.X, loc.Y))\r\n\tnumb = room.GetParameters(\"Number\")[0].AsString()\r\n\tarea.Number = numb\r\n\tname = room.GetParameters(\"Name\")[0].AsString()\r\n\tarea.Name = name\r\n\tnums.append(numb)\r\n\tnams.append(name)\r\n\tareas.append(area.ToDSType(False))\r\n\t\t\r\n# Finish making transaction\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = [areas, nums, nams]",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "60e525fd9e254062b47968d951d584dd",
       "Inputs": [
@@ -117,7 +118,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -269,27 +270,28 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -3466.6222642643252,
-      "EyeY": 21624.161165618305,
-      "EyeZ": 17258.394651081308,
-      "LookX": 6455.4791090061508,
-      "LookY": -24421.51507761153,
-      "LookZ": -8508.05715459134,
-      "UpX": 0.48901138529229637,
-      "UpY": 0.5877852522924748,
-      "UpZ": -0.64449698388897447
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "NodeViews": [
       {
@@ -349,8 +351,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -120.99884778263038,
-        "Y": 80.715461812496585
+        "X": -169.0844867279211,
+        "Y": 75.05832781893298
       },
       {
         "ShowGeometry": true,
@@ -359,13 +361,13 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -255.437449092556,
-        "Y": 152.13044051243287
+        "X": -361.0372836390768,
+        "Y": 157.78757450599647
       }
     ],
     "Annotations": [],
-    "X": 39.331656476992407,
-    "Y": 36.124737427724938,
+    "X": 248.33165647699241,
+    "Y": 38.124737427724938,
     "Zoom": 1.0606077223602068
   }
 }

@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Get forgetypeids and names\r\nspec_ids   = SpecUtils.GetAllSpecs()\r\nspec_names = [LabelUtils.GetLabelForSpec(s) for s in spec_ids]\r\n\r\n# Return output\r\nOUT = [spec_ids, spec_names]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import SpecUtils, LabelUtils\r\n\r\n# Get forgetypeids and names\r\nspec_ids   = SpecUtils.GetAllSpecs()\r\nspec_names = [LabelUtils.GetLabelForSpec(s) for s in spec_ids]\r\n\r\n# Return output\r\nOUT = [spec_ids, spec_names]",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "f634a31d52cc4c7d88a6a6c48bf696a2",

@@ -28,7 +28,7 @@
         {
           "Id": "1fe8902128cd4baf80a7d6bdaf19887f",
           "Name": "keys",
-          "Description": "list of keys\n\nvar[]..[]",
+          "Description": "list of keys, keys have to be sortable (e.g. numbers,strings)\n\nvar[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -38,8 +38,8 @@
       "Outputs": [
         {
           "Id": "7ccb1420d13d411095988810b5620705",
-          "Name": "sorted list",
-          "Description": "sorted list",
+          "Name": "sortedList",
+          "Description": "type: var[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -47,8 +47,8 @@
         },
         {
           "Id": "8806a4da350d4db896c919122e5d3405",
-          "Name": "sorted keys",
-          "Description": "sorted keys",
+          "Name": "sortedKeys",
+          "Description": "type: var[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -100,7 +100,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# This is all from the Clockwork package (document.elementtypes)\r\n# All credit for this part of the script goes to the author\r\n\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\nclr.AddReference('RevitNodes')\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nimport System.Reflection\r\nimport System.AppDomain\r\n\r\nrAssembly = [x for x in System.AppDomain.CurrentDomain.GetAssemblies() if x.GetName().Name == 'RevitAPI'][0]\r\nrElement = [x for x in rAssembly.GetTypes() if x.Name == 'Element' and x.Namespace == 'Autodesk.Revit.DB'][0]\r\n\r\netypes = [x for x in rAssembly.GetTypes() if x.IsClass and x.IsSubclassOf(rElement)]\r\nenames = [t.Name for t in etypes]\r\n\r\nOUT = [etypes, enames]",
+      "Code": "# Boilerplate text\r\nimport clr\r\n\r\nimport System.Reflection\r\nimport System.AppDomain\r\n\r\nclr.AddReference('RevitNodes')\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nrAssembly = [x for x in System.AppDomain.CurrentDomain.GetAssemblies() if x.GetName().Name == 'RevitAPI'][0]\r\nrElement = [x for x in rAssembly.GetTypes() if x.Name == 'Element' and x.Namespace == 'Autodesk.Revit.DB'][0]\r\n\r\netypes = [x for x in rAssembly.GetTypes() if x.IsClass and x.IsSubclassOf(rElement)]\r\nenames = [t.Name for t in etypes]\r\n\r\nOUT = [etypes, enames]",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "32e68d1520794d0d985d89cab2fe731f",
       "Inputs": [
@@ -126,7 +127,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -231,13 +232,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -281,7 +283,7 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 250.0,
+        "X": 228.96514595854057,
         "Y": 4.2988022227370948
       },
       {
@@ -301,8 +303,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 5.0,
-        "Y": 2.0
+        "X": -25.933608884499108,
+        "Y": 4.4746887107599491
       },
       {
         "ShowGeometry": true,
@@ -316,8 +318,8 @@
       }
     ],
     "Annotations": [],
-    "X": 24.312347118028725,
-    "Y": 253.36124636783552,
-    "Zoom": 1.1375305763942551
+    "X": -0.66901903272531626,
+    "Y": 245.93380101433516,
+    "Zoom": 0.67897554370643487
   }
 }

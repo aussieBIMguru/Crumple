@@ -18,7 +18,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Collect all worksets\r\ncollector = FilteredWorksetCollector(doc)\r\nworksets  = collector.OfKind(WorksetKind.UserWorkset).ToWorksets()\r\n\r\n# Ensure iterable\r\nif not hasattr(worksets, \"__iter__\"):\r\n    worksets = [worksets]\r\n\r\n# Get Workset names\r\nnames = []\r\n[names.append(w.Name) for w in worksets]\r\n\r\n# Output\r\nOUT = [worksets, names]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FilteredWorksetCollector, WorksetKind\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Collect all worksets\r\nif doc.IsWorkshared:\r\n\tworksets  = FilteredWorksetCollector(doc).OfKind(WorksetKind.UserWorkset).ToWorksets()\r\n\tworksets  = sorted(worksets, key = lambda w: w.Name)\r\n\tOUT = worksets, [w.Name for w in worksets]\r\nelse:\r\n\tOUT = [],[]",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "0da8dd4f1e6b42bea054b3794d49426f",
       "Inputs": [
@@ -44,7 +45,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -234,13 +235,14 @@
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },

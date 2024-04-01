@@ -14,6 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Define list function\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Create a lazy iterator to break list at value\r\ndef splitter(seq, splitval = 0):\r\n    # Add one instance of the splitter to the end\r\n    seq.append(splitval)\r\n    group = []\r\n    # Iterate across all values\r\n    for num in seq:\r\n        if num != splitval:\r\n            group.append(num)\r\n        # If a splitval is found, yield to group\r\n        elif group:\r\n            yield group\r\n            group = []\r\n\r\n# Preparing input from dynamo to revit\r\nvalues = tolist(IN[0])\r\nresult = []\r\n\r\n# Iterate across all sublists\r\nfor n in values:\r\n    result.append(list(splitter(n)))\r\n\r\n# Preparing output to Dynamo\r\nOUT = result",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "df5ce72f639448f383462fecc4031467",
       "Inputs": [
@@ -48,13 +49,13 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "elements",
+        "Name": "lsts",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -80,7 +81,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//The new lists.\r\nlist",
+      "Symbol": "//The new lists.\r\nlsts",
       "Id": "36196a58ee9343eca079ec534eb69697",
       "Inputs": [
         {
@@ -101,7 +102,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "splitter",
+        "Name": "splitValue",
         "TypeName": "int",
         "TypeRank": 0,
         "DefaultValue": "0",
@@ -143,21 +144,22 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -16.482665924124142,
-      "EyeY": 109.19608372079281,
-      "EyeZ": 31.011360698969106,
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
       "LookX": 12.0,
       "LookY": -13.0,
       "LookZ": -58.0,
@@ -183,8 +185,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -171.86972277211643,
-        "Y": -0.26690825057869461
+        "X": -229.45178000898463,
+        "Y": -12.559706986539339
       },
       {
         "ShowGeometry": true,
@@ -193,8 +195,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 293.0,
-        "Y": 19.0
+        "X": 298.82290466440236,
+        "Y": 20.293978814311657
       },
       {
         "ShowGeometry": true,
@@ -203,13 +205,13 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -132.09260305317355,
-        "Y": 73.199152752428034
+        "X": -191.61562851150921,
+        "Y": 92.6088349671027
       }
     ],
     "Annotations": [],
-    "X": 573.23724309375,
-    "Y": 254.31067167798324,
-    "Zoom": 1.545620359375
+    "X": 321.5778253738801,
+    "Y": 280.27088070728439,
+    "Zoom": 1.3076413563671876
   }
 }

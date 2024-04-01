@@ -120,7 +120,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Do some action in a Transaction\r\nphaselist, namelist = [],[]\r\n\r\nfor phase in doc.Phases:\r\n\tphaselist.append(phase.ToDSType(True))\r\n\tnamelist.append(phase.Name)\r\n\t\r\n# Preparing output to Dynamo\r\nOUT = [phaselist, namelist]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Do some action in a Transaction\r\nphaselist, namelist = [],[]\r\n\r\nfor phase in doc.Phases:\r\n\tphaselist.append(phase)\r\n\tnamelist.append(phase.Name)\r\n\t\r\n# Preparing output to Dynamo\r\nOUT = [phaselist, namelist]",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "575ea05966a845e7a1f7ccdd7ef55823",
       "Inputs": [
@@ -146,7 +147,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
@@ -229,13 +230,14 @@
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -314,8 +316,8 @@
       }
     ],
     "Annotations": [],
-    "X": 454.91030961012189,
-    "Y": 184.42869670446089,
+    "X": -111.08969038987811,
+    "Y": 161.42869670446089,
     "Zoom": 1.4021939475550489
   }
 }

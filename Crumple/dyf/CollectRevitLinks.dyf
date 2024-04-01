@@ -14,14 +14,15 @@
       "Name": "Python Script",
       "Type": "unknown",
       "InitialValue": "",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     }
   ],
   "Nodes": [
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\n\r\n# Import DocumentManager and TransactionManager\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\n# Import RevitAPI\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Import ToDSType(bool) extension method\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ncoll = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_RvtLinks).WhereElementIsNotElementType().ToElements()\r\n\r\ninsts, types = [], []\r\n\r\nfor c in coll:\r\n\tinsts.append(c.ToDSType(True))\r\n\ttypes.append(doc.GetElement(c.GetTypeId()))\r\n\r\nOUT = [insts,types]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory\r\n\r\ndoc = IN[0]\r\n\r\nlinkInstances = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_RvtLinks).WhereElementIsNotElementType().ToElements()\r\n\r\ntypes = []\r\n\r\nfor i in linkInstances:\r\n\ttypes.append(doc.GetElement(i.GetTypeId()))\r\n\r\nOUT = linkInstances, types",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "f17c828110534953bbb64b6e4c805bfb",
       "Inputs": [
@@ -47,7 +48,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
@@ -86,7 +87,7 @@
         },
         {
           "Id": "4e2b22626a3f4aaab7348cca523054b1",
-          "Name": "unique keys",
+          "Name": "uniqueKeys",
           "Description": "key value corresponding to each group",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -295,13 +296,14 @@
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -390,8 +392,8 @@
       }
     ],
     "Annotations": [],
-    "X": 434.0,
-    "Y": 260.0,
+    "X": 2.0,
+    "Y": 213.0,
     "Zoom": 1.0
   }
 }

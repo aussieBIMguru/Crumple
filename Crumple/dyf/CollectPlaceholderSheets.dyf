@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Collect all sheets\r\nsheets = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Sheets).WhereElementIsNotElementType().ToElements()\r\n\r\n# Build output\r\nsheetsout = []\r\n\r\nfor s in sheets:\r\n\tif s.IsPlaceholder:\r\n\t\tsheetsout.append(s)\r\n\r\n# Preparing output to Dynamo\r\nOUT = sheetsout",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Collect all sheets\r\nsheets = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Sheets).WhereElementIsNotElementType().ToElements()\r\n\r\n# Build output\r\nsheetsout = []\r\n\r\nfor s in sheets:\r\n\tif s.IsPlaceholder:\r\n\t\tsheetsout.append(s)\r\n\r\n# Preparing output to Dynamo\r\nOUT = sheetsout",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "44c8c0b25b094ecaaa00864ac1ccd0ac",
       "Inputs": [
@@ -39,7 +40,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -159,13 +160,14 @@
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -224,8 +226,8 @@
       }
     ],
     "Annotations": [],
-    "X": 375.68908994402409,
-    "Y": 123.32509037033833,
+    "X": -66.31091005597591,
+    "Y": 134.32509037033833,
     "Zoom": 0.87074071442556955
   }
 }

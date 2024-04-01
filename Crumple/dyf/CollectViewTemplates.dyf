@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Get view templates\r\nviews_all = FilteredElementCollector(doc).OfClass(View).ToElements()\r\n\r\nviewTemplates, ids = [],[]\r\n\r\nfor v in views_all:\r\n\tif v.IsTemplate and v.ViewType != ViewType.ThreeD:\r\n\t\tviewTemplates.append(v)\r\n\t\tids.append(v.Id)\r\n\r\n# Preparing output to Dynamo\r\nOUT = viewTemplates",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FilteredElementCollector, View, ViewType\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Get view templates\r\nviews_all = FilteredElementCollector(doc).OfClass(View).ToElements()\r\n\r\nVIEWTYPE_3D = ViewType.ThreeD\r\n\r\nviewTemplates, ids = [],[]\r\n\r\nfor v in views_all:\r\n\tif v.IsTemplate:\r\n\t\tif v.ViewType != VIEWTYPE_3D:\r\n\t\t\tviewTemplates.append(v)\r\n\t\telse:\r\n\t\t\tviewTemplates.append(None)\r\n\t\tids.append(v.Id)\r\n\r\n# Preparing output to Dynamo\r\nOUT = viewTemplates, ids",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "d95dcb08b6ab4e5db0b0a5c5b5d2df73",
@@ -172,7 +172,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "ids",
+      "Symbol": "elementIds",
       "Id": "7ab8136907fc409eb344c5a258fa0c09",
       "Inputs": [
         {
@@ -316,8 +316,8 @@
       }
     ],
     "Annotations": [],
-    "X": 64.87525248211216,
-    "Y": 196.68654114747676,
+    "X": -232.12474751788784,
+    "Y": 178.68654114747676,
     "Zoom": 1.3619876237506616
   }
 }

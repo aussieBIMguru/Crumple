@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n# Boilerplate text\nimport clr\n\nclr.AddReference('RevitAPI')\nfrom Autodesk.Revit.DB import *\nimport Autodesk\n\n# Current document\ndoc = IN[0]\n\ncollector = FilteredElementCollector(doc)\nallLinePatterns = collector.OfClass(LinePatternElement).ToElements()\n\nNames = [UnwrapElement(p).Name for p in allLinePatterns]\n\nOUT = [allLinePatterns, Names]",
+      "Code": "# Made by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n# Boilerplate text\nimport clr\n\nclr.AddReference('RevitAPI')\nimport Autodesk\nfrom Autodesk.Revit.DB import FilteredElementCollector, LinePatternElement\n\n# Current document\ndoc = IN[0]\n\nallLinePatterns = FilteredElementCollector(doc).OfClass(LinePatternElement).ToElements()\nnames = [p.Name for p in allLinePatterns]\n\nOUT = allLinePatterns, names",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "902d8b7211cd4792910a88189ab03ccd",
       "Inputs": [
@@ -39,7 +40,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -229,13 +230,14 @@
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -314,8 +316,8 @@
       }
     ],
     "Annotations": [],
-    "X": 732.05791948494368,
-    "Y": 242.13243569201302,
+    "X": -58.942080515056318,
+    "Y": 182.13243569201302,
     "Zoom": 0.931811528498331
   }
 }

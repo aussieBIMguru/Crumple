@@ -105,7 +105,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Credit\r\n# Large in part borrows ideas from Genius Loci (Alban de Chasteigner)\r\n# twitter : @geniusloci_bim\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Collect the BIC\r\ncollector = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Lines).ToElements()\r\n\r\n# Isolate BIC from collection\r\nbic = collector[0].Category\r\nsubcats = bic.SubCategories\r\n\r\n# Collect subcategory data\r\nelements, styles, ids, names, user = [],[],[],[],[]\r\n\r\nfor subcat in subcats:\r\n\r\n\tsubcatid = subcat.Id.IntegerValue\r\n\tsubcatidasint = int(subcatid.ToString())\r\n\tids.append(subcatidasint)\r\n\t\r\n\tif subcatidasint > 0:\r\n\t\tuser.append(True)\r\n\telse:\r\n\t\tuser.append(False)\r\n\t\r\n\tsubcatele = Revit.Elements.Category.ById(subcatid)\r\n\telements.append(subcatele)\r\n\t\r\n\tstyle = subcat.GetGraphicsStyle(GraphicsStyleType.Projection)\r\n\tstyles.append(style)\r\n\t\r\n\tsubcatname = style.Name\r\n\tnames.append(subcatname)\r\n\r\n# Outputs for Dynamo\r\nOUT = elements, styles, ids, names, user",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Credit\r\n# Large in part borrows ideas from Genius Loci (Alban de Chasteigner)\r\n# twitter : @geniusloci_bim\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory, GraphicsStyleType\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Collect the BIC\r\ncollector = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Lines).ToElements()\r\n\r\n# Isolate BIC from collection\r\nbic = collector[0].Category\r\nsubcats = bic.SubCategories\r\n\r\n# Collect subcategory data\r\nelements, styles, ids, names, user = [],[],[],[],[]\r\n\r\nfor subcat in subcats:\r\n\r\n\tsubcatid = subcat.Id.IntegerValue\r\n\tsubcatidasint = int(subcatid.ToString())\r\n\tids.append(subcatidasint)\r\n\t\r\n\tif subcatidasint > 0:\r\n\t\tuser.append(True)\r\n\telse:\r\n\t\tuser.append(False)\r\n\t\r\n\tsubcatele = Revit.Elements.Category.ById(subcatid)\r\n\telements.append(subcatele)\r\n\t\r\n\tstyle = subcat.GetGraphicsStyle(GraphicsStyleType.Projection)\r\n\tstyles.append(style)\r\n\t\r\n\tsubcatname = style.Name\r\n\tnames.append(subcatname)\r\n\r\n# Outputs for Dynamo\r\nOUT = elements, styles, ids, names, user",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "8d27650b669e45f9b6f28956c0c7d5b6",
       "Inputs": [
@@ -131,7 +132,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -339,13 +340,14 @@
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -454,8 +456,8 @@
       }
     ],
     "Annotations": [],
-    "X": 372.29563757746172,
-    "Y": 297.80413272792623,
-    "Zoom": 0.90646724512634813
+    "X": 59.093448347200734,
+    "Y": 237.4396858916293,
+    "Zoom": 1.2150714104404008
   }
 }

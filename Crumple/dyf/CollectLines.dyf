@@ -52,7 +52,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n# Boilerplate text\nimport clr\n\nclr.AddReference(\"RevitNodes\")\nimport Revit\nclr.ImportExtensions(Revit.Elements)\n\nclr.AddReference(\"RevitAPI\")\nimport Autodesk \nfrom Autodesk.Revit.DB import *\n\n# Current doc/app/ui\ndoc = IN[2]\n\n# Collect all lines in project and build output lists\ncollector = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Lines)\n\ndetail, model, type, curveout = IN[0], IN[1], [], []\n\nfor i in collector:\n\tif i.Name == \"Detail Lines\":\n\t\tif detail:\n\t\t\tcurveout.append(i.ToDSType(True))\n\t\t\ttype.append(True)\n\telse:\n\t\tif model:\n\t\t\tcurveout.append(i.ToDSType(True))\n\t\t\ttype.append(False)\n\n# Preparing output to Dynamo\nOUT = [curveout, type]",
+      "Code": "# Made by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n# Boilerplate text\nimport clr\n\nclr.AddReference(\"RevitNodes\")\nimport Revit\nclr.ImportExtensions(Revit.Elements)\n\nclr.AddReference(\"RevitAPI\")\nimport Autodesk \nfrom Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory\n\n# Current doc/app/ui\ndetail = IN[0]\nmodel  = IN[1]\ndoc    = IN[2]\n\n# Collect all lines in project and build output lists\nallLines = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Lines).ToElements()\n\ncurvesOut, isDetail = [], []\n\nfor i in allLines:\n\tif i.Name == \"Detail Lines\":\n\t\tif detail:\n\t\t\tcurvesOut.append(i.ToDSType(True))\n\t\t\tisDetail.append(True)\n\telse:\n\t\tif model:\n\t\t\tcurvesOut.append(i.ToDSType(True))\n\t\t\tisDetail.append(False)\n\n# Preparing output to Dynamo\nOUT = curvesOut, isDetail",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "60760a58358343ab82f2c4ba158b50d5",
       "Inputs": [
@@ -96,7 +97,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -309,13 +310,14 @@
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -414,8 +416,8 @@
       }
     ],
     "Annotations": [],
-    "X": 585.84895407170973,
-    "Y": 219.05783212950331,
+    "X": 83.848954071709727,
+    "Y": 197.05783212950331,
     "Zoom": 1.0695016638546049
   }
 }

@@ -18,7 +18,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('RevitAPI')\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\n# Define option set function\r\ndef GetDesignOptionSet(item):\r\n\ttry: return item.Document.GetElement(item.get_Parameter(BuiltInParameter.OPTION_SET_ID).AsElementId()).ToDSType(True)\r\n\texcept: return None\r\n\r\n# Collect and unwrap options\r\noptions = IN[0] if isinstance(IN[0], list) else [IN[0]]\r\noptions_uw = UnwrapElement(options)\r\n\r\nsets = []\r\n\r\n# Get option sets\r\nfor o in options_uw:\r\n\tsets.append(GetDesignOptionSet(o))\r\n\r\n# Preparing output to Dynamo\r\nOUT = sets",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('RevitAPI')\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import BuiltInParameter\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\n# Define option set function\r\ndef GetDesignOptionSet(desOpt):\r\n\ttry:\r\n\t\tsetId = desOpt.get_Parameter(BuiltInParameter.OPTION_SET_ID).AsElementId()\r\n\t\tsetEl = desOpt.Document.GetElement(setId)\r\n\t\treturn setEl.ToDSType(True)\r\n\texcept:\r\n\t\treturn None\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Inputs\r\noptions_uw = uwlist(IN[0])\r\nsets = []\r\n\r\n# Get option sets\r\nfor o in options_uw:\r\n\tsets.append(GetDesignOptionSet(o))\r\n\r\n# Preparing output to Dynamo\r\nOUT = sets",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "77926edef4c34ce0845a3d39c197d9e8",
       "Inputs": [
@@ -44,7 +45,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -108,13 +109,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -163,8 +165,8 @@
       }
     ],
     "Annotations": [],
-    "X": 120.8305419411447,
-    "Y": 206.46292598542118,
+    "X": 47.8305419411447,
+    "Y": 239.46292598542118,
     "Zoom": 1.33823125
   }
 }

@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Import RevitAPI\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Get the project document.\r\ndoc = IN[0]\r\n\r\n# Get all views\r\nViews_doc = FilteredElementCollector(doc).OfClass(View).ToElements()\r\n\r\n# Create empty lists\r\nLegend_list = []\r\n\r\n# Find views that aren't legends, then non-template\r\nfor view in Views_doc:\r\n\tif view.ViewType == ViewType.Legend:\r\n\t\tLegend_list.append(view)\r\n\r\n# Output cleaned view lists\r\nOUT = Legend_list",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Import RevitAPI\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import FilteredElementCollector, View, ViewType\r\n\r\n# Get the project document.\r\ndoc = IN[0]\r\n\r\n# Get all views\r\nviews_doc = FilteredElementCollector(doc).OfClass(View).ToElements()\r\n\r\nVIEWTYPE_LEGEND = ViewType.Legend\r\n\r\n# Create empty lists\r\nlegends= []\r\n\r\n# Find views that aren't legends, then non-template\r\nfor view in views_doc:\r\n\tif view.ViewType == VIEWTYPE_LEGEND:\r\n\t\tlegends.append(view)\r\n\r\n# Output cleaned view lists\r\nOUT = legends",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "dd422e620c2c41ea8045f33361f32898",
       "Inputs": [
@@ -39,7 +40,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -159,13 +160,14 @@
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -224,8 +226,8 @@
       }
     ],
     "Annotations": [],
-    "X": 335.25149757159829,
-    "Y": 126.40055207382227,
+    "X": -25.748502428401707,
+    "Y": 176.40055207382227,
     "Zoom": 0.94838719898605839
   }
 }

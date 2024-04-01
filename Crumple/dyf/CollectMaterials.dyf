@@ -22,7 +22,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\n\r\n# Current document\r\ndoc = IN[0]\r\n\r\n# Get materials in document\r\nmats = FilteredElementCollector(doc).OfClass(Material).ToElements()\r\nnams = [m.Name for m in mats]\r\n\r\n# Outputs\r\nOUT = [mats,nams]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('RevitAPI')\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import FilteredElementCollector, Material\r\n\r\n# Current document\r\ndoc = IN[0]\r\n\r\n# Get materials in document\r\nmats = FilteredElementCollector(doc).OfClass(Material).ToElements()\r\nnams = [m.Name for m in mats]\r\n\r\n# Outputs\r\nOUT = [mats,nams]",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "a3f43e5237dd4ae28b27ec6c7d1d6b0a",
       "Inputs": [
@@ -48,7 +49,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -238,13 +239,14 @@
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -323,8 +325,8 @@
       }
     ],
     "Annotations": [],
-    "X": 266.0,
-    "Y": 170.0,
+    "X": -244.0,
+    "Y": 164.0,
     "Zoom": 1.0
   }
 }

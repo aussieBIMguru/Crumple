@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n# Boilerplate text\nimport clr\n\nclr.AddReference(\"RevitNodes\")\nimport Revit\nclr.ImportExtensions(Revit.Elements)\n\nclr.AddReference(\"RevitAPI\")\nimport Autodesk \nfrom Autodesk.Revit.DB import *\n\n# Current doc/app/ui\ndoc = IN[2]\n\n# Collect and construct list of regions\ncollector = FilteredElementCollector(doc).OfClass(FilledRegion)\n\nfilled, masking, type, regionout = IN[0], IN[1], [], []\n\nfor i in collector:\n\tif i.Name == \"Masking Region\":\n\t\tif masking:\n\t\t\tregionout.append(i.ToDSType(True))\n\t\t\ttype.append(False)\n\telse:\n\t\tif filled:\n\t\t\tregionout.append(i.ToDSType(True))\n\t\t\ttype.append(True)\n\n# Preparing output to Dynamo\nOUT = [regionout, type]",
+      "Code": "# Made by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n# Boilerplate text\nimport clr\n\nclr.AddReference(\"RevitNodes\")\nimport Revit\nclr.ImportExtensions(Revit.Elements)\n\nclr.AddReference(\"RevitAPI\")\nimport Autodesk \nfrom Autodesk.Revit.DB import FilteredElementCollector, FilledRegion\n\n# Current doc/app/ui\ndoc = IN[2]\n\n# Collect and construct list of regions\ncollector = FilteredElementCollector(doc).OfClass(FilledRegion)\n\nfilled, masking, type, regionout = IN[0], IN[1], [], []\n\nfor i in collector:\n\tif i.Name == \"Masking Region\":\n\t\tif masking:\n\t\t\tregionout.append(i.ToDSType(True))\n\t\t\ttype.append(False)\n\telse:\n\t\tif filled:\n\t\t\tregionout.append(i.ToDSType(True))\n\t\t\ttype.append(True)\n\n# Preparing output to Dynamo\nOUT = [regionout, type]",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "d5962e598cdf40d0a1f5e17d97a12ba8",
       "Inputs": [
@@ -57,7 +58,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -175,7 +176,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "types",
+      "Symbol": "isFilledRegion",
       "Id": "d7a0588df6344d5c8ea67e4beb93a5bb",
       "Inputs": [
         {
@@ -309,13 +310,14 @@
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -414,8 +416,8 @@
       }
     ],
     "Annotations": [],
-    "X": 502.42948358813658,
-    "Y": 129.14845249608447,
+    "X": -291.57051641186342,
+    "Y": 184.14845249608447,
     "Zoom": 1.023957967707904
   }
 }

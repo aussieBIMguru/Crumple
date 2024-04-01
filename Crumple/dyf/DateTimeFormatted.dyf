@@ -62,6 +62,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n#Import the datetime package, define alias to avoid confusion\r\nimport datetime as dt\r\n\r\n#Obtain the formatted datetimes\r\ndt_c = dt.datetime.now().strftime(\"%d/%m/%y %H:%M:%S\")\r\ndt_d = dt.datetime.now().strftime(\"%y%m%d\")\r\ndt_t = dt.datetime.now().strftime(\"%H%M%S\")\r\n\r\n#Output list\r\nOUT = [dt_c, dt_d, dt_t]",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "84589380d1b049e08300f8934f0ee977",
       "Inputs": [
@@ -87,13 +88,13 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//Complete date time in standard format.\r\nFull",
+      "Symbol": "//Complete date time in standard format.\r\ndateTime",
       "Id": "1d79a7aae605455bad413bc03a27b1f4",
       "Inputs": [
         {
@@ -114,7 +115,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//Prefix as YYMMDD\r\nDatePrefix",
+      "Symbol": "//Prefix as YYMMDD\r\ndatePrefix",
       "Id": "3a43c728195c4346ab1fc8a58429f770",
       "Inputs": [
         {
@@ -135,7 +136,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//Suffix as HHMMSS\r\nTimeSuffix",
+      "Symbol": "//Suffix as HHMMSS\r\ntimeSuffix",
       "Id": "dffe9c995028481e9cbe85f1ee3b5c4b",
       "Inputs": [
         {
@@ -156,7 +157,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "Refresh",
+        "Name": "refresh",
         "TypeName": "bool",
         "TypeRank": 0,
         "DefaultValue": "true",
@@ -208,24 +209,25 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -22.499469651426988,
-      "EyeY": 83.474008687746775,
-      "EyeZ": 25.340790306871632,
-      "LookX": 10.07099783483187,
-      "LookY": -10.910247654401203,
-      "LookZ": -48.676489535020693,
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
       "UpX": 0.0,
       "UpY": 1.0,
       "UpZ": 0.0

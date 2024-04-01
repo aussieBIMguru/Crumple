@@ -18,7 +18,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\ngetSorted = IN[1]\r\n\r\n# Collect revisions\r\nrevisions = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Revisions).WhereElementIsNotElementType().ToElements()\r\n\r\n# Preparing output to Dynamo\r\nif getSorted:\r\n\trevSorted = sorted(revisions, key = lambda r: r.SequenceNumber)\r\n\tOUT = revSorted\r\nelse:\r\n\tOUT = revisions",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory\r\n\r\n# Current doc/app/ui\r\ndoc = IN[1]\r\ngetSorted = IN[0]\r\n\r\n# Collect revisions\r\nrevisions = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Revisions).WhereElementIsNotElementType().ToElements()\r\n\r\n# Preparing output to Dynamo\r\nif getSorted:\r\n\trevSorted = sorted(revisions, key = lambda r: r.SequenceNumber)\r\n\tOUT = revSorted\r\nelse:\r\n\tOUT = revisions",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "80a5f627ec784c889119aaa70357a416",
@@ -281,8 +281,8 @@
       }
     ],
     "Annotations": [],
-    "X": 406.33048738030527,
-    "Y": 331.53043798586168,
-    "Zoom": 0.959644203253794
+    "X": 53.488180795509749,
+    "Y": 290.96214878188977,
+    "Zoom": 0.67890242249096522
   }
 }

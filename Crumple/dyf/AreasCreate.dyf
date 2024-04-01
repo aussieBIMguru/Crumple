@@ -5,7 +5,16 @@
   "Description": "Given a view and a list of points, will create new areas at them. Note that you will need to provide a single view and list of points, or apply @levels to your inputs to have them work.",
   "Name": "© Areas.Create",
   "ElementResolver": {
-    "ResolutionMap": {}
+    "ResolutionMap": {
+      "Revit.Application.Document.Current": {
+        "Key": "Revit.Application.Document",
+        "Value": "RevitNodes.dll"
+      },
+      "Revit.Application.Document": {
+        "Key": "Revit.Application.Document",
+        "Value": "RevitNodes.dll"
+      }
+    }
   },
   "Inputs": [],
   "Outputs": [],
@@ -13,7 +22,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Get inputs\r\nview = UnwrapElement(IN[0])\r\npoint_lst = IN[1]\r\n\r\n# Start Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nif v.ViewType == ViewType.AreaPlan:\r\n\tarea_list=[]\r\n\tfor v, pts in zip(view,point_lst):\r\n\t\tfor pt in pts:\r\n\t\t\tp = UnwrapElement(pt).ToXyz()\r\n\t\t\tu = UV(p.X,p.Y)\r\n\t\t\ta = doc.Create.NewArea(v,u)\r\n\t\t\tarea_list.append(a)\r\nelse:\r\n\tarea_list = [None for p in point_lst]\r\n\r\n# End Transaction\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = area_list",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import ViewType, UV\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Get inputs\r\nview = UnwrapElement(IN[0])\r\npoint_lst = IN[1]\r\n\r\n# Start Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nif v.ViewType == ViewType.AreaPlan:\r\n\tarea_list=[]\r\n\tfor v, pts in zip(view,point_lst):\r\n\t\tfor pt in pts:\r\n\t\t\tp = UnwrapElement(pt).ToXyz()\r\n\t\t\tu = UV(p.X,p.Y)\r\n\t\t\ta = doc.Create.NewArea(v,u)\r\n\t\t\tarea_list.append(a)\r\nelse:\r\n\tarea_list = [None for p in point_lst]\r\n\r\n# End Transaction\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = area_list",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "4df796cf6d4a4939bacc30adbd9f1c26",
@@ -50,32 +59,6 @@
       ],
       "Replication": "Disabled",
       "Description": "Runs an embedded Python script."
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
-      "Parameter": {
-        "Name": "view",
-        "TypeName": "var",
-        "TypeRank": -1,
-        "DefaultValue": null,
-        "Description": ""
-      },
-      "Id": "70e1be6d39a74acfa7a85bfc3d70eaa2",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "253397ab18c14c148e18555906e4db10",
-          "Name": "",
-          "Description": "Symbol",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -123,6 +106,32 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "view",
+        "TypeName": "var",
+        "TypeRank": 0,
+        "DefaultValue": "Revit.Application.Document.Current.ActiveView",
+        "Description": ""
+      },
+      "Id": "70bd27fd65f54f1ab5ce3107486071b5",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "498aec72f3d049dba6583c88f37d6eb1",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     }
   ],
   "Connectors": [
@@ -132,14 +141,14 @@
       "Id": "c030aec1c60c4700994c5b5ec5617641"
     },
     {
-      "Start": "253397ab18c14c148e18555906e4db10",
-      "End": "c9752c52f2f64951b667749469e5dd33",
-      "Id": "e9fb1a65f2a341d5942c2451d76cd6ea"
-    },
-    {
       "Start": "64e6db6dc9cf46ec8716087389977a13",
       "End": "6c837dc8b499401491aef0e97bbaf315",
       "Id": "dcf2c3f560de49eea8f822b706e21016"
+    },
+    {
+      "Start": "498aec72f3d049dba6583c88f37d6eb1",
+      "End": "c9752c52f2f64951b667749469e5dd33",
+      "Id": "28ade76e6fe34269909adf1bce102d6d"
     }
   ],
   "Dependencies": [],
@@ -181,16 +190,6 @@
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "70e1be6d39a74acfa7a85bfc3d70eaa2",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 38.965827094532585,
-        "Y": -16.318419368849817
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "3d4a4a7fd8e24e6f8e1ff3baffb1449a",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -207,6 +206,16 @@
         "Excluded": false,
         "X": 415.89081670301755,
         "Y": 1.9892255168902864
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "70bd27fd65f54f1ab5ce3107486071b5",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -308.97318332363125,
+        "Y": -26.27427663765863
       }
     ],
     "Annotations": [],

@@ -18,7 +18,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Filtered element collector (all rooms)\r\nfec   = FilteredElementCollector(doc)\r\nrooms = fec.OfCategory(BuiltInCategory.OST_Rooms).ToElements()\r\n\r\n# Filter rooms to those with area more than 0\r\nplaced, unplaced = [], []\r\n\r\nfor rm in rooms:\r\n\tif rm.Area > 0:\r\n\t\tplaced.append(rm)\r\n\telse:\r\n\t\tunplaced.append(rm)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [placed, unplaced]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Filtered element collector (all rooms)\r\nrooms = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Rooms).ToElements()\r\n\r\n# Filter rooms to those with area more than 0\r\nplaced, unplaced = [], []\r\n\r\nfor rm in rooms:\r\n\tif rm.Area > 0:\r\n\t\tplaced.append(rm)\r\n\telse:\r\n\t\tunplaced.append(rm)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [placed, unplaced]",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "7a14feeab8d949e89e859713d3cf8c76",
       "Inputs": [
@@ -44,7 +45,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -234,13 +235,14 @@
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -319,8 +321,8 @@
       }
     ],
     "Annotations": [],
-    "X": 435.68277613880161,
-    "Y": 252.62666871932043,
+    "X": 15.682776138801614,
+    "Y": 224.62666871932043,
     "Zoom": 0.80780495201413782
   }
 }

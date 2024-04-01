@@ -18,7 +18,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\n\r\ndoc = IN[0]\r\n\r\n# Collect all imports\r\ncol = FilteredElementCollector(doc).OfClass(ImportInstance).ToElements()\r\n\r\n# Get instance properties\r\ncadLnk, cadLnkType, cadLnkView = [], [], []\r\n\r\nfor i in col:\r\n\ttry:\r\n\t\tif i.IsLinked == True:\r\n\t\t\tcadLnk.append(i)\r\n\t\t\tcadLnkType.append(i.Document.GetElement(i.GetTypeId()))\r\n\t\t\tcadLnkView.append(doc.GetElement(i.OwnerViewId))\r\n\texcept:\r\n\t\tpass\r\n\r\n# Preparing output to Dynamo\r\nOUT = [cadLnk, cadLnkType, cadLnkView]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import FilteredElementCollector, ImportInstance\r\n\r\ndoc = IN[0]\r\n\r\n# Collect all imports\r\ncol = FilteredElementCollector(doc).OfClass(ImportInstance).ToElements()\r\n\r\n# Get instance properties\r\ncadLnk, cadLnkType, cadLnkView = [], [], []\r\n\r\nfor i in col:\r\n\ttry:\r\n\t\tif i.IsLinked == True:\r\n\t\t\tcadLnk.append(i)\r\n\t\t\tcadLnkType.append(i.Document.GetElement(i.GetTypeId()))\r\n\t\t\tcadLnkView.append(doc.GetElement(i.OwnerViewId))\r\n\texcept:\r\n\t\tpass\r\n\r\n# Preparing output to Dynamo\r\nOUT = [cadLnk, cadLnkType, cadLnkView]",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "a6eb24181ac044268ef0a14691cc8b21",
       "Inputs": [
@@ -44,7 +45,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -269,13 +270,14 @@
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
