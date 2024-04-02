@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nscheds = uwlist(IN[0])\r\n\r\n# Get all fields and their column headings\r\nfields_all, names_all, headings_all = [],[],[]\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor s in scheds:\r\n\tfields,names,headings = [],[],[]\r\n\tdefinition  = s.Definition\r\n\tcount_field = definition.GetFieldCount()\t\r\n\tfor i in range(0, count_field, 1):\r\n\t\tfield = definition.GetField(i)\r\n\t\tfields.append(field)\r\n\t\theadings.append(field.ColumnHeading)\r\n\t\tnames.append(field.GetName())\r\n\tfields_all.append(fields)\r\n\tnames_all.append(names)\r\n\theadings_all.append(headings)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = [fields_all, names_all, headings_all]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input):\r\n    if isinstance(input, list) and len(input) == 1:\r\n        return input[0]\r\n    else:\r\n        return input\r\n\r\n# Preparing input from dynamo to revit\r\nscheds = uwlist(IN[0])\r\n\r\n# Get all fields and their column headings\r\nfields_all, names_all, headings_all = [],[],[]\r\n\r\nfor s in scheds:\r\n\tfields,names,headings = [],[],[]\r\n\tdefinition  = s.Definition\r\n\tcount_field = definition.GetFieldCount()\t\r\n\tfor i in range(0, count_field, 1):\r\n\t\tfield = definition.GetField(i)\r\n\t\tfields.append(field)\r\n\t\theadings.append(field.ColumnHeading)\r\n\t\tnames.append(field.GetName())\r\n\tfields_all.append(fields)\r\n\tnames_all.append(names)\r\n\theadings_all.append(headings)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(fields_all), objOrList(names_all), objOrList(headings_all)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "b32070dde4944b0b8f7a950be570f8f1",
       "Inputs": [
@@ -39,7 +40,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -140,7 +141,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "nameActual",
+      "Symbol": "namesActual",
       "Id": "ce42dc39849e4a809fec2a782197a69a",
       "Inputs": [
         {
@@ -161,7 +162,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "nameFormatted",
+      "Symbol": "namesFormatted",
       "Id": "714df805cc574970b07703d5cf29f871",
       "Inputs": [
         {
@@ -208,27 +209,28 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -17.0,
-      "EyeY": 24.0,
-      "EyeZ": 50.0,
-      "LookX": 12.0,
-      "LookY": -13.0,
-      "LookZ": -58.0,
-      "UpX": 0.0,
-      "UpY": 1.0,
-      "UpZ": 0.0
+      "EyeX": 4855.888671875,
+      "EyeY": 110105.578125,
+      "EyeZ": 84641.15625,
+      "LookX": 19975.3515625,
+      "LookY": -109643.9140625,
+      "LookZ": -79003.4140625,
+      "UpX": 0.16081817448139191,
+      "UpY": 0.75470954179763794,
+      "UpZ": -0.63604336977005
     },
     "NodeViews": [
       {
@@ -268,8 +270,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -1.0,
-        "Y": 1.0
+        "X": -26.846537528316617,
+        "Y": 2.5203845604892194
       },
       {
         "ShowGeometry": true,
@@ -293,8 +295,8 @@
       }
     ],
     "Annotations": [],
-    "X": -408.40912566610888,
-    "Y": 390.27669365332781,
-    "Zoom": 1.5908743338911318
+    "X": -9.37206972502213,
+    "Y": 266.64767997394517,
+    "Zoom": 1.315456662725162
   }
 }

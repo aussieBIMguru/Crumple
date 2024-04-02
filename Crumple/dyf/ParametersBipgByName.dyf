@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport System\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Declare inputs\r\nnames = IN[0] if isinstance(IN[0], list) else [IN[0]]\r\n\r\n# Enumerate over all BIPG types\r\nbi_groups = [a for a in System.Enum.GetValues(BuiltInParameterGroup)]\r\nbi_names  = [a.ToString() for a in System.Enum.GetValues(BuiltInParameterGroup)]\r\n\r\nmatches = []\r\n\r\nfor n in names:\r\n\ttry:\r\n\t\tind = bi_names.index(n)\r\n\t\tmatches.append(bi_groups[ind])\r\n\texcept:\r\n\t\tmatches.append(None)\r\n\r\n# Preparing output to Dynamo\r\nOUT = matches",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport System\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import BuiltInParameterGroup\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input):\r\n    if isinstance(input, list) and len(input) == 1:\r\n        return input[0]\r\n    else:\r\n        return input\r\n\r\n# Declare inputs\r\nnames = tolist(IN[0])\r\n\r\n# Enumerate over all BIPG types\r\nbi_groups = [a for a in System.Enum.GetValues(BuiltInParameterGroup)]\r\nbi_names  = [a.ToString() for a in System.Enum.GetValues(BuiltInParameterGroup)]\r\n\r\nmatches = []\r\n\r\nfor n in names:\r\n\tif n in bi_names:\r\n\t\tind = bi_names.index(n)\r\n\t\tmatches.append(bi_groups[ind])\r\n\telse:\r\n\t\tmatches.append(None)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(matches)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "6ade4d154ce34ecc8916f7eb9794929b",
       "Inputs": [
@@ -39,7 +40,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -103,21 +104,22 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -22.020641205966292,
-      "EyeY": 107.30823585841793,
-      "EyeZ": 30.288711023603071,
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
       "LookX": 12.0,
       "LookY": -13.0,
       "LookZ": -58.0,
@@ -158,8 +160,8 @@
       }
     ],
     "Annotations": [],
-    "X": 690.34593053080016,
-    "Y": 291.8952680049573,
+    "X": -133.65406946919984,
+    "Y": 270.8952680049573,
     "Zoom": 1.5193932772469254
   }
 }

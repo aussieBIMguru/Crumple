@@ -1,0 +1,357 @@
+{
+  "Uuid": "ae59d327-6f34-4f99-befe-e0a3c15238ce",
+  "IsCustomNode": true,
+  "Category": "Crumple.Script.Create",
+  "Description": "Creates a basic dropdown form from a set of keys and values. If cancelled, the form will return nothing (null).",
+  "Name": "© UI.DropdownForm",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\nimport clr\r\n\r\nclr.AddReference(\"System.Drawing\")\r\nclr.AddReference(\"System.Windows.Forms\")\r\n\r\nimport System\r\nimport System.Drawing\r\n\r\nfrom System.Drawing import *\r\nfrom System.Windows.Forms import *\r\n\r\nfrom collections import namedtuple\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Imports from Dynamo\r\nkeys      = tolist(IN[1])\r\nvalues    = tolist(IN[2])\r\nformTitle = IN[0]\r\n\r\nformWidth  = 300\r\nformHeight = 100\r\nbuttonHeight = 225\r\n\r\n# Class for key/value pair\r\nclass MyItem():\r\n\tdef __init__(self, key, value):\r\n\t\tself.Key = key\r\n\t\tself.Value = value\r\n\r\n# Make key value pairs\r\nlist_of_items = [MyItem(i,j) for i,j in zip(keys, values)] \r\n\r\n# Class for main winform\r\nclass MainForm(Form):\r\n\t\r\n\t# Initialize form object\r\n\tdef __init__(self):\r\n\t\t# Begin with first value\r\n\t\tself.choice = list_of_items[0].Value\r\n\t\tself.InitializeComponent()\r\n\t\r\n\t# Make form components\r\n\tdef InitializeComponent(self):\r\n\t\t\r\n\t\t# Combo box\r\n\t\tself._comboBoxType = System.Windows.Forms.ComboBox()\r\n\t\tself._comboBoxType.Location = System.Drawing.Point(25, 25)\r\n\t\tself._comboBoxType.Size = System.Drawing.Size(formWidth-50, 25)\r\n\t\tself._comboBoxType.DataSource = list_of_items\r\n\t\tself._comboBoxType.DisplayMember = \"Key\"\r\n\t\tself._comboBoxType.ValueMember = \"Value\"\r\n\t\tself._comboBoxType.SelectedIndexChanged += self.newItemSelected\r\n\t\tself.Controls.Add(self._comboBoxType)\r\n\t\t\r\n\t\t# Text box\r\n\t\tself.tbox1 = TextBox()\r\n\t\tself.tbox1.Parent = self\r\n\t\tself.tbox1.Text = \"test\"\r\n\t\tself.tbox1.Location = Point(25,25)\r\n\t\tself.tbox1.Width = 100\r\n\t\t\r\n\t\t# OK button\r\n\t\tbtnOk = Button()\r\n\t\tbtnOk.Text = \"OK\"\r\n\t\tbtnOk.Anchor = (AnchorStyles.Bottom | AnchorStyles.Right)\r\n\t\tbtnOk.Location = Point(105, buttonHeight)\r\n\t\tself.Controls.Add(btnOk)\r\n\t\tbtnOk.Click += self.okButtonPressed\r\n\r\n\t\t# Cancel button\r\n\t\tbtnCancel = Button()\r\n\t\tbtnCancel.Text = \"Cancel\"\r\n\t\tbtnCancel.Anchor = (AnchorStyles.Bottom | AnchorStyles.Right)\r\n\t\tbtnCancel.Location = Point(185, buttonHeight)\r\n\t\tself.Controls.Add(btnCancel)\r\n\t\tbtnCancel.Click += self.cancelButtonPressed\r\n\t\t\r\n\t\t# Draw main form\r\n\t\tself.ClientSize = System.Drawing.Size(formWidth, formHeight)\r\n\t\tself.BringToFront()\r\n\t\tself.CenterToScreen()\r\n\t\tself.FormBorderStyle = FormBorderStyle.FixedSingle\r\n\t\tself.Name = formTitle\r\n\t\tself.Text = formTitle\r\n\t\tself.ResumeLayout(False)\r\n\t\r\n\t# Event if OK button pressed\r\n\tdef okButtonPressed(self, sender, args):\r\n\t\tself.Close()\r\n\t\tself.runNextOutput = True\r\n\r\n\t# Event if OK button pressed\r\n\tdef cancelButtonPressed(self, sender, args):\r\n\t\tself.choice = None\r\n\t\tself.Close()\r\n\t\tself.runNextOutput = False \r\n\r\n\t# Event if dropdown changes\r\n\tdef newItemSelected(self, sender, e):\r\n\t\tself.choice = sender.SelectedItem.Value\r\n\t\tself.runNextOutput = False\r\n\r\n# Show form to the user\r\nobjForm = MainForm()\r\nobjForm.ShowDialog()\r\n\r\n# Return the selected object and if it was cancelled\r\nchosenItem = objForm.choice\r\n\r\nif not chosenItem:\r\n\tOUT = None, True\r\nelse:\r\n\tOUT = chosenItem, False",
+      "Engine": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "7d0efe7ca2d24000bcf213bfad50e8bb",
+      "Inputs": [
+        {
+          "Id": "62173e3c0db941aa9f6a6e28abb9e60e",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a8b1ed563db2451587bd993fdc2270cc",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a47d8a93764841e5bfdf025fff711f80",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "bf541eb65d804b30891e8581d7ea9a9d",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "chosenValue",
+      "Id": "1d44c0429172420abc3b083b480dd255",
+      "Inputs": [
+        {
+          "Id": "47c583127e484de5a4bf3ac1abaf9017",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "formTitle",
+        "TypeName": "string",
+        "TypeRank": 0,
+        "DefaultValue": "\"Please select an item\"",
+        "Description": ""
+      },
+      "Id": "e25be0083f634375bf4a4666706e1d8d",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "4ebce629642949a5ab777d65f3a3c03d",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "x[0];\nx[1];",
+      "Id": "ee636c4a99494590b521ea419c7250f0",
+      "Inputs": [
+        {
+          "Id": "a9622710ab0548099ad4f0b1822189ac",
+          "Name": "x",
+          "Description": "x",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f5b49b11892c4a5e83e47f080dafdd7b",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "905d80ef08194fef871071064de54e6b",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "wasCancelled",
+      "Id": "35b914e1e92a44d6a29f0f6c1ed7abdd",
+      "Inputs": [
+        {
+          "Id": "fc123f32315e49d88e5e634de2492a5d",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "keys",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": " What the user will see in the form"
+      },
+      "Id": "55ad5bded8434d308dd585f61047b0c2",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "97179dce4619409b965c5d9d97092f47",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "values",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": " What will be passed through"
+      },
+      "Id": "f8918a18ce2c4f5584d22ce48c48c31f",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "de002c40017d4b7d9e8f53b14aed744e",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "bf541eb65d804b30891e8581d7ea9a9d",
+      "End": "a9622710ab0548099ad4f0b1822189ac",
+      "Id": "d23b8b8bf02f45f0a20c57225cb2634a"
+    },
+    {
+      "Start": "4ebce629642949a5ab777d65f3a3c03d",
+      "End": "62173e3c0db941aa9f6a6e28abb9e60e",
+      "Id": "8e7019c95ca24ccebcc9dc7b9db41f30"
+    },
+    {
+      "Start": "f5b49b11892c4a5e83e47f080dafdd7b",
+      "End": "47c583127e484de5a4bf3ac1abaf9017",
+      "Id": "beec2730761d46a38cf6414b31e405a9"
+    },
+    {
+      "Start": "905d80ef08194fef871071064de54e6b",
+      "End": "fc123f32315e49d88e5e634de2492a5d",
+      "Id": "8ca3ce75100041069d3d0142320ddd38"
+    },
+    {
+      "Start": "97179dce4619409b965c5d9d97092f47",
+      "End": "a8b1ed563db2451587bd993fdc2270cc",
+      "Id": "4ae64fbd57d9474daf0c573eba55620b"
+    },
+    {
+      "Start": "de002c40017d4b7d9e8f53b14aed744e",
+      "End": "a47d8a93764841e5bfdf025fff711f80",
+      "Id": "8eee31564ee446bf80a065596164b6e2"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.12.1.8246",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "7d0efe7ca2d24000bcf213bfad50e8bb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "1d44c0429172420abc3b083b480dd255",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 688.56540378672048,
+        "Y": -66.545945496311219
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "e25be0083f634375bf4a4666706e1d8d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -353.53056344885727,
+        "Y": -60.804805882564409
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "ee636c4a99494590b521ea419c7250f0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 460.90486489253465,
+        "Y": 1.9070276357633134
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "35b914e1e92a44d6a29f0f6c1ed7abdd",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 691.40324283511359,
+        "Y": 66.618378198524454
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "55ad5bded8434d308dd585f61047b0c2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -303.882989068082,
+        "Y": 17.74905469516969
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "f8918a18ce2c4f5584d22ce48c48c31f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -250.04584793954942,
+        "Y": 110.84873472799612
+      }
+    ],
+    "Annotations": [],
+    "X": 297.43982258509521,
+    "Y": 281.50009792760977,
+    "Zoom": 0.78436932804482684
+  }
+}

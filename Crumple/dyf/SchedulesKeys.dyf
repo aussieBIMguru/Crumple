@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nuw_list  = uwlist(IN[0])\r\n\r\nkeys, keynames = [], []\r\n\r\n# Do some action in a Transaction\r\nfor s in uw_list:\r\n\tskeys,knames = [],[]\r\n\ttry:\r\n\t\tbool = s.Definition.IsKeySchedule\r\n\texcept:\r\n\t\tbool = False\r\n\tif bool:\r\n\t\tskeys = FilteredElementCollector(doc,s.Id).ToElements()\r\n\t\tknames = [s.Name for s in skeys]\r\n\t\tkeys.append(skeys)\r\n\t\tkeynames.append(knames)\r\n\telse:\r\n\t\tkeys.append(skeys)\r\n\t\tkeynames.append(knames)\r\n\t\t\r\n# Preparing output to Dynamo\r\nOUT = [keys, keynames]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FilteredElementCollector\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input):\r\n    if isinstance(input, list) and len(input) == 1:\r\n        return input[0]\r\n    else:\r\n        return input\r\n\r\n# Preparing input from dynamo to revit\r\nschedules = uwlist(IN[0])\r\n\r\nkeys, keynames = [], []\r\n\r\n# Do some action in a Transaction\r\nfor s in schedules:\r\n\tskeys,knames = [],[]\r\n\ttry:\r\n\t\tbool = s.Definition.IsKeySchedule\r\n\texcept:\r\n\t\tbool = False\r\n\tif bool:\r\n\t\tskeys = FilteredElementCollector(s.Document, s.Id).ToElements()\r\n\t\tknames = [s.Name for s in skeys]\r\n\t\tkeys.append(skeys)\r\n\t\tkeynames.append(knames)\r\n\telse:\r\n\t\tkeys.append(skeys)\r\n\t\tkeynames.append(knames)\r\n\t\t\r\n# Preparing output to Dynamo\r\nOUT = objOrList(keys), objOrList(keynames)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "44ce4d17009f424189807a2a19d56b57",
       "Inputs": [
@@ -39,7 +40,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -71,7 +72,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "keys",
+      "Symbol": "scheduleKeys",
       "Id": "2b04cb96620b486eaeb9e32f0b18b84b",
       "Inputs": [
         {
@@ -173,27 +174,28 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -17.0,
-      "EyeY": 24.0,
-      "EyeZ": 50.0,
-      "LookX": 12.0,
-      "LookY": -13.0,
-      "LookZ": -58.0,
-      "UpX": 0.0,
-      "UpY": 1.0,
-      "UpZ": 0.0
+      "EyeX": 4855.888671875,
+      "EyeY": 110105.578125,
+      "EyeZ": 84641.15625,
+      "LookX": 19975.3515625,
+      "LookY": -109643.9140625,
+      "LookZ": -79003.4140625,
+      "UpX": 0.16081817448139191,
+      "UpY": 0.75470954179763794,
+      "UpZ": -0.63604336977005
     },
     "NodeViews": [
       {
@@ -248,8 +250,8 @@
       }
     ],
     "Annotations": [],
-    "X": 24.627892304494765,
-    "Y": 302.60448696122438,
-    "Zoom": 1.545620359375
+    "X": 23.348560772652661,
+    "Y": 299.266379399191,
+    "Zoom": 0.78436932804482706
   }
 }

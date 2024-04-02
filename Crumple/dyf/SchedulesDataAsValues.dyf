@@ -26,7 +26,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Found at https://forum.dynamobim.com/t/schedule-in-revit-to-dynamo-data-maintain-data-types/48558/2\r\n\r\n# Boilerplate text\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference('RevitAPI')\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Function for getting value of parameter\r\ndef convert_Value(paraL):\r\n\tif paraL.StorageType == StorageType.Double : \r\n\t\tvalue = paraL.AsDouble()\r\n\t\tunitType = paraL.Definition.UnitType\r\n\t\tformatOption = doc.GetUnits().GetFormatOptions(unitType)\r\n\t\tdisplayUnit = formatOption.DisplayUnits\r\n\t\tconvert =  UnitUtils.ConvertFromInternalUnits(value,displayUnit)\r\n\t\treturn convert\r\n\telif paraL.StorageType == StorageType.String : \t\r\n\t\tvalue = paraL.AsString()\r\n\t\tif value is None:\r\n\t\t\tvalue = paraL.AsValueString()\r\n\t\treturn value\r\n\telif paraL.StorageType == StorageType.Integer: \t\r\n\t\tvalue = paraL.AsInteger()\r\n\t\treturn value\t\r\n\telif paraL.StorageType == StorageType.ElementId: \t\r\n\t\tvalueId = paraL.AsElementId()\r\n\t\treturn doc.GetElement(valueId)\r\n\r\n# Get schedule view and read data\r\nscheduleView = UnwrapElement(IN[0])\r\n\r\nif scheduleView.ViewType == ViewType.Schedule:\t\r\n\tcollinview = FilteredElementCollector(doc, scheduleView.Id).OfClass(FamilyInstance).WhereElementIsNotElementType().ToElements()\r\n\tdefinition = scheduleView.Definition\r\n\tids = definition.GetFieldOrder()\r\n\tparaSchNames = []\r\n\tout = []\r\n\tfor id in ids:\r\n\t\tfield = definition.GetField(id)\r\n\t\tif field.FieldType  == ScheduleFieldType.Instance or field.FieldType  == ScheduleFieldType.ElementType:\r\n\t\t\tparaSchNames.append(field.GetName())\r\n\tfor elem in collinview:\r\n\t\ttemp = []\r\n\t\telemType = doc.GetElement(elem.GetTypeId())\r\n\t\tfor paraSchName in paraSchNames:\r\n\t\t\tvalue = None\r\n\t\t\tparaelem = elem.LookupParameter(paraSchName)\r\n\t\t\tif paraelem is not None:\t\r\n\t\t\t\tvalue = convert_Value(paraelem)\r\n\t\t\t\ttemp.append(value)\r\n\t\t\t#if value is None check if it's a Parameter Type\t\r\n\t\t\tif \tvalue is None:\r\n\t\t\t\tparaelemT = elemType.LookupParameter(paraSchName)\r\n\t\t\t\tif paraelemT is not None:\t\r\n\t\t\t\t\tvalue = convert_Value(paraelemT)\r\n\t\t\t\t\ttemp.append(value)\t\t\t\t\r\n\t\tout.append(temp)\r\n\r\n\tOUT = out\r\nelse:\r\n\tOUT = \"View is not a valid view type\"",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Found at https://forum.dynamobim.com/t/schedule-in-revit-to-dynamo-data-maintain-data-types/48558/2\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('RevitAPI')\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n# Get Revit build version\r\nuiapp = DocumentManager.Instance.CurrentUIApplication\r\napp = uiapp.Application\r\nrvt_year = int(app.VersionNumber)\r\n\r\n# Convert length to internal\r\ndef interalToProject_len(val, myDoc, ver = rvt_year):\r\n\tif rvt_year < 2022:\r\n\t\tintUnits = myDoc.GetUnits().GetFormatOptions(UnitType.UT_Length).DisplayUnits\r\n\t\treturn UnitUtils.Convert(val,DisplayUnitType.DUT_DECIMAL_FEET,intUnits)\r\n\telse:\r\n\t\tintUnitsId = myDoc.GetUnits().GetFormatOptions(SpecTypeId.Length).GetUnitTypeId()\r\n\t\treturn UnitUtils.ConvertFromInternalUnits(val, intUnitsId)\r\n\r\n# Convert area to internal\r\ndef interalToProject_area(val, myDoc, ver = rvt_year):\r\n\tif rvt_year < 2022:\r\n\t\tintUnits = myDoc.GetUnits().GetFormatOptions(UnitType.UT_Area).DisplayUnits\r\n\t\treturn UnitUtils.Convert(val,DisplayUnitType.DUT_SQUARE_FEET,intUnits)\r\n\telse:\r\n\t\tintUnitsId = myDoc.GetUnits().GetFormatOptions(SpecTypeId.Area).GetUnitTypeId()\r\n\t\treturn UnitUtils.ConvertFromInternalUnits(val, intUnitsId)\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input):\r\n    if isinstance(input, list) and len(input) == 1:\r\n        return input[0]\r\n    else:\r\n        return input\r\n\r\n# Function for getting value of parameter\r\ndef convert_Value(paraL):\r\n\tif paraL.StorageType == StorageType.Double : \r\n\t\tvalue = paraL.AsDouble()\r\n\t\tpt    = paraL.Definition.ParameterType\r\n\t\tif value == 0.00:\r\n\t\t\treturn 0.00\r\n\t\telif pt == ParameterType.Length:\r\n\t\t\treturn interalToProject_len(value, doc)\r\n\t\telif pt == ParameterType.Area:\r\n\t\t\treturn interalToProject_area(value, doc)\r\n\t\telse:\r\n\t\t\treturn value\r\n\telif paraL.StorageType == StorageType.String : \r\n\t\tvalue = paraL.AsString()\r\n\t\tif value is None:\r\n\t\t\tvalue = paraL.AsValueString()\r\n\t\treturn value\r\n\telif paraL.StorageType == StorageType.Integer: \t\r\n\t\tvalue = paraL.AsInteger()\r\n\t\treturn value\t\r\n\telif paraL.StorageType == StorageType.ElementId: \t\r\n\t\tvalueId = paraL.AsElementId()\r\n\t\treturn doc.GetElement(valueId)\r\n\r\n# Function to return schedule data\r\ndef sched_returnData(sched):\r\n\tdata = []\r\n\tif sched.ViewType != ViewType.Schedule or sched.IsTemplate:\r\n\t\treturn data\r\n\tcollinview = FilteredElementCollector(doc, sched.Id).OfClass(FamilyInstance).WhereElementIsNotElementType().ToElements()\r\n\tdefinition = sched.Definition\r\n\tids = definition.GetFieldOrder()\r\n\tparaSchNames = []\r\n\tfor id in ids:\r\n\t\tfield = definition.GetField(id)\r\n\t\tif field.FieldType  == ScheduleFieldType.Instance or field.FieldType  == ScheduleFieldType.ElementType:\r\n\t\t\tparaSchNames.append(field.GetName())\r\n\tfor elem in collinview:\r\n\t\ttemp = []\r\n\t\telemType = doc.GetElement(elem.GetTypeId())\r\n\t\tfor paraSchName in paraSchNames:\r\n\t\t\tvalue = None\r\n\t\t\tparaelem = elem.LookupParameter(paraSchName)\r\n\t\t\tif paraelem is not None:\t\r\n\t\t\t\tvalue = convert_Value(paraelem)\r\n\t\t\t\ttemp.append(value)\r\n\t\t\t#if value is None check if it's a Parameter Type\t\r\n\t\t\tif \tvalue is None:\r\n\t\t\t\tparaelemT = elemType.LookupParameter(paraSchName)\r\n\t\t\t\tif paraelemT is not None:\t\r\n\t\t\t\t\tvalue = convert_Value(paraelemT)\r\n\t\t\t\t\ttemp.append(value)\t\t\t\t\r\n\t\tdata.append(temp)\r\n\treturn data\r\n\r\n# Get schedule view and read data\r\nschedules = uwlist(IN[0])\r\n\r\n# Preparing output to Dynamo\r\ndataAll = [sched_returnData(s) for s in schedules]\r\nOUT     = objOrList(dataAll)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "25fd18cc7ce34ca3abddf414a94af992",
       "Inputs": [
@@ -52,15 +53,15 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "schedule",
-        "TypeName": "Revit.Elements.Views.ScheduleView",
-        "TypeRank": 0,
+        "Name": "schedules",
+        "TypeName": "var",
+        "TypeRank": -1,
         "DefaultValue": null,
         "Description": ""
       },
@@ -116,27 +117,28 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -17.0,
-      "EyeY": 24.0,
-      "EyeZ": 50.0,
-      "LookX": 12.0,
-      "LookY": -13.0,
-      "LookZ": -58.0,
-      "UpX": 0.0,
-      "UpY": 1.0,
-      "UpZ": 0.0
+      "EyeX": 4855.888671875,
+      "EyeY": 110105.578125,
+      "EyeZ": 84641.15625,
+      "LookX": 19975.3515625,
+      "LookY": -109643.9140625,
+      "LookZ": -79003.4140625,
+      "UpX": 0.16081817448139191,
+      "UpY": 0.75470954179763794,
+      "UpZ": -0.63604336977005
     },
     "NodeViews": [
       {
@@ -156,7 +158,7 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -173.50886451812335,
+        "X": -33.662341209514523,
         "Y": 1.0
       },
       {
@@ -171,8 +173,8 @@
       }
     ],
     "Annotations": [],
-    "X": 371.72451086920012,
-    "Y": 390.8236863915119,
-    "Zoom": 1.969493096610671
+    "X": 41.182332877541626,
+    "Y": 292.05949599854796,
+    "Zoom": 1.0082481613707748
   }
 }

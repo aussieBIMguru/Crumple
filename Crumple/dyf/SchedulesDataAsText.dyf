@@ -18,7 +18,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Preparing input from dynamo to revit\r\nsched = UnwrapElement(IN[0])\r\n\r\n# Retrieve data from the schedule\r\ntableData = sched.GetTableData()\r\nsectionData = tableData.GetSectionData(SectionType.Body)\r\nnumbRows = sectionData.NumberOfRows\r\nnumbCols = sectionData.NumberOfColumns\r\n\r\n# Create list with schedule data with rows as second level lists\r\ndata = []\r\n\r\nfor i in range(numbRows):\r\n    rows = []\r\n    for j in range(numbCols):\r\n        content = sched.GetCellText(SectionType.Body, i, j)\r\n        rows.append(content)\r\n    data.append(rows)\r\n\r\n# Preparing output to Dynamo\r\nOUT = data",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import SectionType\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input):\r\n    if isinstance(input, list) and len(input) == 1:\r\n        return input[0]\r\n    else:\r\n        return input\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nST_BODY = SectionType.Body\r\n\r\n# Preparing input from dynamo to revit\r\nschedules = uwlist(IN[0])\r\n\r\n# Function to return schedule data\r\ndef sched_returnData(sched):\r\n\t# Retrieve data from the schedule\r\n\ttableData   = sched.GetTableData()\r\n\tsectionData = tableData.GetSectionData(ST_BODY)\r\n\tnumbRows    = sectionData.NumberOfRows\r\n\tnumbCols    = sectionData.NumberOfColumns\r\n\t# Create list with schedule data with rows as second level lists\r\n\tdata = []\r\n\t# Iterate through rows\r\n\tfor i in range(numbRows):\r\n\t    rows = []\r\n\t    for j in range(numbCols):\r\n\t        content = sched.GetCellText(ST_BODY, i, j)\r\n\t        rows.append(content)\r\n\t    data.append(rows)\r\n\t# Return data\r\n\treturn data\r\n\r\n# Preparing output to Dynamo\r\ndataAll = [sched_returnData(s) for s in schedules]\r\nOUT = objOrList(dataAll)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "482710b834c84f239664e2f90e2d5ef2",
       "Inputs": [
@@ -44,15 +45,15 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "schedule",
-        "TypeName": "Revit.Elements.Views.ScheduleView",
-        "TypeRank": 0,
+        "Name": "schedules",
+        "TypeName": "var",
+        "TypeRank": -1,
         "DefaultValue": null,
         "Description": ""
       },
@@ -76,7 +77,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "scheduleText",
+      "Symbol": "dataAsText",
       "Id": "8fddb0527c3447758ebb6189b3886577",
       "Inputs": [
         {
@@ -108,27 +109,28 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -39.288168355469793,
-      "EyeY": 131.23858607831943,
-      "EyeZ": 21.352420012348418,
-      "LookX": 12.0,
-      "LookY": -13.0,
-      "LookZ": -58.0,
-      "UpX": 0.0,
-      "UpY": 1.0,
-      "UpZ": 0.0
+      "EyeX": 4855.888671875,
+      "EyeY": 110105.578125,
+      "EyeZ": 84641.15625,
+      "LookX": 19975.3515625,
+      "LookY": -109643.9140625,
+      "LookZ": -79003.4140625,
+      "UpX": 0.16081817448139191,
+      "UpY": 0.75470954179763794,
+      "UpZ": -0.63604336977005
     },
     "NodeViews": [
       {
@@ -148,7 +150,7 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -191.50886451812335,
+        "X": -37.172340843584493,
         "Y": 0.0
       },
       {
@@ -163,8 +165,8 @@
       }
     ],
     "Annotations": [],
-    "X": 294.30158702019338,
-    "Y": 402.92732189625451,
+    "X": -58.698412979806619,
+    "Y": 301.92732189625451,
     "Zoom": 1.3801010605186965
   }
 }

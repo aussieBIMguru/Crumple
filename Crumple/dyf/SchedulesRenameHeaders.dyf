@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Preparing input from dynamo to revit\r\nsched       = UnwrapElement(IN[0])\r\ndefinition  = sched.Definition\r\ncount_field = definition.GetFieldCount()\r\n\r\nnames_old = tolist(IN[1])\r\nnames_new = tolist(IN[2])\r\n\r\nfields,fieldnames,hasfield,fieldmatch,results = [],[],[],[],[]\r\n\r\n# Get all fields and their column headings\r\nfor i in range(0, count_field, 1):\r\n\tfield = definition.GetField(i)\r\n\tname  = field.ColumnHeading\r\n\tfields.append(field)\r\n\tfieldnames.append(name)\r\n\t\r\n# Find the matching fields for the existing names\r\nfor n in names_old:\r\n\tif n in fieldnames:\r\n\t\tind = fieldnames.index(n)\r\n\t\tfieldmatch.append(fields[ind])\r\n\t\thasfield.append(True)\r\n\telse:\r\n\t\tfieldmatch.append(None)\r\n\t\thasfield.append(False)\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor field, nm_n, bool in zip(fieldmatch,names_new,hasfield):\r\n\tif bool:\r\n\t\tfield.ColumnHeading = nm_n\r\n\telse:\r\n\t\tpass\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = hasfield",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Preparing input from dynamo to revit\r\nsched       = UnwrapElement(IN[0])\r\ndefinition  = sched.Definition\r\ncount_field = definition.GetFieldCount()\r\n\r\nnames_old = tolist(IN[1])\r\nnames_new = tolist(IN[2])\r\n\r\nfields, fieldnames, fieldmatch, results = [],[],[],[],[]\r\n\r\n# Get all fields and their column headings\r\nfor i in range(0, count_field, 1):\r\n\tfield = definition.GetField(i)\r\n\tname  = field.ColumnHeading\r\n\tfields.append(field)\r\n\tfieldnames.append(name)\r\n\t\r\n# Find the matching fields for the existing names\r\nfor n in names_old:\r\n\tif n in fieldnames:\r\n\t\tind = fieldnames.index(n)\r\n\t\tfieldmatch.append(fields[ind])\r\n\telse:\r\n\t\tfieldmatch.append(None)\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor f, n in zip(fieldmatch, names_new):\r\n\tif f:\r\n\t\tf.ColumnHeading = n\r\n\telse:\r\n\t\tpass\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = [f != None for f in fieldmatch]",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "ce3a9dd99ec944268498300010798869",
       "Inputs": [
@@ -57,7 +58,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -89,7 +90,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "names_current",
+        "Name": "namesCurrent",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -115,7 +116,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "names_new",
+        "Name": "namesNew",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -141,7 +142,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "success",
+      "Symbol": "wasRenamed",
       "Id": "cd2bdb5ab87e40b68cf53cc09dac9b9d",
       "Inputs": [
         {
@@ -183,27 +184,28 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -17.0,
-      "EyeY": 24.0,
-      "EyeZ": 50.0,
-      "LookX": 12.0,
-      "LookY": -13.0,
-      "LookZ": -58.0,
-      "UpX": 0.0,
-      "UpY": 1.0,
-      "UpZ": 0.0
+      "EyeX": 4855.888671875,
+      "EyeY": 110105.578125,
+      "EyeZ": 84641.15625,
+      "LookX": 19975.3515625,
+      "LookY": -109643.9140625,
+      "LookZ": -79003.4140625,
+      "UpX": 0.16081817448139191,
+      "UpY": 0.75470954179763794,
+      "UpZ": -0.63604336977005
     },
     "NodeViews": [
       {
@@ -258,8 +260,8 @@
       }
     ],
     "Annotations": [],
-    "X": 39.704367476885125,
-    "Y": 172.66442146703332,
-    "Zoom": 1.4894713771450314
+    "X": 42.12051640445668,
+    "Y": 227.29829585712804,
+    "Zoom": 1.2597743490161393
   }
 }

@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Inputs\r\nnames = IN[0]\r\n\r\n# Get forgetypeids and names\r\nspec_ids   = SpecUtils.GetAllSpecs()\r\nspec_names = [LabelUtils.GetLabelForSpec(s) for s in spec_ids]\r\n\r\n# Get elements\r\nelements_out = []\r\n\r\nfor n in names:\r\n\tif n in spec_names:\r\n\t\tind = spec_names.index(n)\r\n\t\telements_out.append(spec_ids[ind])\r\n\telse:\r\n\t\telements_out.append(None)\r\n\r\n# Return output\r\nOUT = elements_out",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import SpecUtils, LabelUtils\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input):\r\n    if isinstance(input, list) and len(input) == 1:\r\n        return input[0]\r\n    else:\r\n        return input\r\n\r\n# Inputs\r\nnames = tolist(IN[0])\r\n\r\n# Get forgetypeids and names\r\nspec_ids   = SpecUtils.GetAllSpecs()\r\nspec_names = [LabelUtils.GetLabelForSpec(s) for s in spec_ids]\r\n\r\n# Get elements\r\nelements_out = []\r\n\r\nfor n in names:\r\n\tif n in spec_names:\r\n\t\tind = spec_names.index(n)\r\n\t\telements_out.append(spec_ids[ind])\r\n\telse:\r\n\t\telements_out.append(None)\r\n\r\n# Return output\r\nOUT = objOrList(elements_out)",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "18708e91ac6b44728cc9f75d690a62e5",
@@ -117,15 +117,15 @@
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -19177.32421875,
-      "EyeY": 17003.115234375,
-      "EyeZ": 16749.59375,
-      "LookX": 11034.255859375,
-      "LookY": -17215.615234375,
-      "LookZ": -16548.0,
-      "UpX": 0.26467055082321167,
-      "UpY": 0.87881672382354736,
-      "UpZ": -0.39702725410461426
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "NodeViews": [
       {

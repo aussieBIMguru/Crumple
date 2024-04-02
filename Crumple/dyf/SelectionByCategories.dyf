@@ -26,7 +26,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nimport System\r\nfrom System.Collections.Generic import List\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nclr.AddReference(\"RevitAPIUI\")\r\n\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\nfrom  Autodesk.Revit.UI import Selection\r\nfrom  Autodesk.Revit.UI.Selection import ISelectionFilter\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\nuidoc = uiapp.ActiveUIDocument\r\n\r\n# Force list function\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\ncategory = uwlist(IN[0])\r\nrunMe = IN[1]\r\n\r\nif runMe:\r\n\t# Make selection filter class\r\n\tclass selectionfilter(ISelectionFilter):\r\n\t\tdef __init__(self,category):\r\n\t\t\tself.category = category\r\n\t\tdef AllowElement(self,element):\r\n\t\t\tif element.Category.Name in [c.Name for c in self.category]:\r\n\t\t\t\treturn True\r\n\t\t\telse:\r\n\t\t\t\treturn False\r\n\r\n\t# Create selection filter\r\n\tselfilt = selectionfilter(category)\r\n\tsel = uidoc.Selection.PickObjects(Selection.ObjectType.Element,selfilt)\r\n\r\n\t# Lists for appending/adding\r\n\telementIds = List[ElementId]()\r\n\telements = []\r\n\r\n# Try to get elements for selection\r\nfor s in sel:\r\n\ttry:\r\n\t\tid = s.ElementId\r\n\t\tel = doc.GetElement(id)\r\n\t\telements.append(el)\r\n\t\telementIds.Add(id)\r\n\texcept:\r\n\t\tpass\r\n\r\n# Select the elements\r\nselection = uidoc.Selection.SetElementIds(elementIds)\r\n\r\n# Preparing output to Dynamo\r\nOUT = elements",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nimport System\r\nfrom System.Collections.Generic import List\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nclr.AddReference(\"RevitAPIUI\")\r\n\r\nimport Autodesk\r\nfrom  Autodesk.Revit.DB import ElementId\r\nfrom  Autodesk.Revit.UI import Selection\r\nfrom  Autodesk.Revit.UI.Selection import ISelectionFilter\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\nuidoc = uiapp.ActiveUIDocument\r\n\r\n# Force list function\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\ncategory = uwlist(IN[0])\r\nrunMe = IN[1]\r\n\r\nif runMe:\r\n\t# Make selection filter class\r\n\tclass selectionfilter(ISelectionFilter):\r\n\t\tdef __init__(self,category):\r\n\t\t\tself.category = category\r\n\t\tdef AllowElement(self,element):\r\n\t\t\tif element.Category.Name in [c.Name for c in self.category]:\r\n\t\t\t\treturn True\r\n\t\t\telse:\r\n\t\t\t\treturn False\r\n\r\n\t# Create selection filter\r\n\tselfilt = selectionfilter(category)\r\n\tsel = uidoc.Selection.PickObjects(Selection.ObjectType.Element,selfilt)\r\n\r\n\t# Lists for appending/adding\r\n\telementIds = List[ElementId]()\r\n\telements = []\r\n\r\n# Try to get elements for selection\r\nfor s in sel:\r\n\ttry:\r\n\t\tid = s.ElementId\r\n\t\tel = doc.GetElement(id)\r\n\t\telements.append(el)\r\n\t\telementIds.Add(id)\r\n\texcept:\r\n\t\tpass\r\n\r\n# Select the elements\r\nselection = uidoc.Selection.SetElementIds(elementIds)\r\n\r\n# Preparing output to Dynamo\r\nOUT = elements",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "d6fd518fa6a944309b7e2c75a77816df",
       "Inputs": [
@@ -61,7 +62,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -93,7 +94,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "runIt",
+        "Name": "runMe",
         "TypeName": "bool",
         "TypeRank": 0,
         "DefaultValue": "False",
@@ -156,27 +157,28 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -17.0,
-      "EyeY": 24.0,
-      "EyeZ": 50.0,
-      "LookX": 12.0,
-      "LookY": -13.0,
-      "LookZ": -58.0,
-      "UpX": 0.0,
-      "UpY": 1.0,
-      "UpZ": 0.0
+      "EyeX": 4855.888671875,
+      "EyeY": 110105.578125,
+      "EyeZ": 84641.15625,
+      "LookX": 19975.3515625,
+      "LookY": -109643.9140625,
+      "LookZ": -79003.4140625,
+      "UpX": 0.16081817448139191,
+      "UpY": 0.75470954179763794,
+      "UpZ": -0.63604336977005
     },
     "NodeViews": [
       {
@@ -221,8 +223,8 @@
       }
     ],
     "Annotations": [],
-    "X": 153.81018557312382,
-    "Y": 334.17664898382759,
-    "Zoom": 2.3898066919769758
+    "X": 93.824369926803911,
+    "Y": 269.34412408810664,
+    "Zoom": 1.0387856921325613
   }
 }

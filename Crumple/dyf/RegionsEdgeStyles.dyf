@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application \r\nuidoc = uiapp.ActiveUIDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nregions = uwlist(IN[0])\r\n\r\n# Establish default options and prepare edge arrays\r\ngeomOption = app.Create.NewGeometryOptions()\r\n\r\nedgeArray = []\r\n\r\n# Construct edge array for review\r\nfor r in regions:\r\n\tgeomElem = r.get_Geometry(geomOption)\r\n\tenum1 = geomElem.GetEnumerator() ; enum1.MoveNext()\r\n\tgeo = enum1.Current\r\n\tedgeArray.append(geo.Edges)\r\n\t\r\n# Get the graphic style of each edge\r\nlineStyles = []\r\n\r\nfor i in range(0,len(edgeArray)):\r\n\tls = []\r\n\tfor edge in edgeArray[i]:\r\n\t\tls.append(doc.GetElement(edge.GraphicsStyleId))\r\n\tlineStyles.append(ls)\r\n\r\n# Preparing output to Dynamo\r\nOUT = lineStyles",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Get app\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application \r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input):\r\n    if isinstance(input, list) and len(input) == 1:\r\n        return input[0]\r\n    else:\r\n        return input\r\n\r\n# Document and regions\r\nregions = uwlist(IN[0])\r\ndoc = IN[1]\r\n\r\n# Establish default options and prepare edge arrays\r\ngeomOption = app.Create.NewGeometryOptions()\r\n\r\nedgeArray = []\r\n\r\n# Construct edge array for review\r\nfor r in regions:\r\n\tgeomElem = r.get_Geometry(geomOption)\r\n\tenum1 = geomElem.GetEnumerator() ; enum1.MoveNext()\r\n\tgeo = enum1.Current\r\n\tedgeArray.append(geo.Edges)\r\n\t\r\n# Get the graphic style of each edge\r\nlineStyles = []\r\n\r\nfor i in range(0,len(edgeArray)):\r\n\tls = []\r\n\tfor edge in edgeArray[i]:\r\n\t\tls.append(doc.GetElement(edge.GraphicsStyleId))\r\n\tlineStyles.append(ls)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(lineStyles)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "2f3034c3c76a46c0bdb5687979a4b396",
       "Inputs": [
@@ -48,13 +49,13 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "region",
+        "Name": "regions",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -199,13 +200,14 @@
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -239,8 +241,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 11.0,
-        "Y": 0.0
+        "X": -19.620380217592583,
+        "Y": -20.413586811728322
       },
       {
         "ShowGeometry": true,
@@ -274,8 +276,8 @@
       }
     ],
     "Annotations": [],
-    "X": 400.210122687295,
-    "Y": 164.61381764627947,
-    "Zoom": 1.3908358435120016
+    "X": 211.53692119189606,
+    "Y": 173.60661803904924,
+    "Zoom": 1.1756875565939815
   }
 }
