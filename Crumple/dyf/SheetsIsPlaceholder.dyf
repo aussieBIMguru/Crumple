@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nsheets = uwlist(IN[0])\r\n\r\n# Check if placeholder\r\nbools = []\r\n\r\nfor s in sheets:\r\n\tph = s.IsPlaceholder\r\n\tbools.append(ph)\r\n\r\n# Preparing output to Dynamo\r\nOUT = bools",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nsheets = uwlist(IN[0])\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList([s.IsPlaceholder for s in sheets])",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "d6a16a34547c451c9bdf70947c6f5113",
       "Inputs": [
@@ -39,7 +40,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -103,27 +104,28 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": 18.503696896977047,
-      "EyeY": 177.2501939930566,
-      "EyeZ": 75.273264955367054,
-      "LookX": -18.503696896977047,
-      "LookY": -177.2501939930566,
-      "LookZ": -75.273264955367054,
-      "UpX": -0.19312339198054268,
-      "UpY": 0.58778525229247391,
-      "UpZ": -0.78562831711783654
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "NodeViews": [
       {
@@ -158,8 +160,8 @@
       }
     ],
     "Annotations": [],
-    "X": 30.0,
-    "Y": 374.85580204778154,
-    "Zoom": 2.6092150170648476
+    "X": -130.27299807118806,
+    "Y": 339.21556829832224,
+    "Zoom": 1.3461330608298456
   }
 }

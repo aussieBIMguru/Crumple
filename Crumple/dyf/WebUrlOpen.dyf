@@ -18,7 +18,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport os\r\n\r\n# Open URL\r\nif IN[1]:\r\n\tos.system(\"start \\\"\\\" \" + IN[0])\r\n\tOUT = \"URL Opened.\"\r\nelse:\r\n\tOUT = \"Set runMe to True!\"",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport os\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\ndef openUrl(url):\r\n\ttry:\r\n\t\tos.system(\"start \\\"\\\" \" + url)\r\n\t\treturn True\r\n\texcept:\r\n\t\treturn False\r\n\r\n# Open URL\r\nurls = tolist(IN[0])\r\n\r\nif IN[1]:\r\n\tOUT = objOrList([openUrl(u) for u in urls])\r\nelse:\r\n\tOUT = \"Set runMe to True!\"",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "8c004e38924f47369f400231a86e2685",
       "Inputs": [
@@ -53,16 +54,16 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
         "Name": "url",
-        "TypeName": "string",
-        "TypeRank": 0,
-        "DefaultValue": "\"www.youtube.com.au/aussiebimguru\"",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
         "Description": ""
       },
       "Id": "64c0c99851f5442eac1be1dc5da68006",
@@ -148,13 +149,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -178,8 +180,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 251.29397881431169,
-        "Y": 14.880756364583902
+        "X": 209.97392870065573,
+        "Y": 14.129482726153782
       },
       {
         "ShowGeometry": true,
@@ -188,8 +190,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -210.91854673279806,
-        "Y": 0.0
+        "X": -45.929772783606268,
+        "Y": -14.967626236313038
       },
       {
         "ShowGeometry": true,
@@ -198,8 +200,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 28.467533914856233,
-        "Y": 65.244387662587314
+        "X": -83.413033585044445,
+        "Y": 75.415348344396477
       },
       {
         "ShowGeometry": true,
@@ -208,13 +210,13 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 408.23966734918315,
-        "Y": 15.527745771739717
+        "X": 366.9196172355272,
+        "Y": 14.776472133309596
       }
     ],
     "Annotations": [],
-    "X": 491.92174130401247,
-    "Y": 314.51955768089977,
-    "Zoom": 2.1900479993786295
+    "X": 130.10061671438214,
+    "Y": 312.3483861508679,
+    "Zoom": 0.948840568048759
   }
 }

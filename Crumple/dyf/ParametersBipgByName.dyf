@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport System\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import BuiltInParameterGroup\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input):\r\n    if isinstance(input, list) and len(input) == 1:\r\n        return input[0]\r\n    else:\r\n        return input\r\n\r\n# Declare inputs\r\nnames = tolist(IN[0])\r\n\r\n# Enumerate over all BIPG types\r\nbi_groups = [a for a in System.Enum.GetValues(BuiltInParameterGroup)]\r\nbi_names  = [a.ToString() for a in System.Enum.GetValues(BuiltInParameterGroup)]\r\n\r\nmatches = []\r\n\r\nfor n in names:\r\n\tif n in bi_names:\r\n\t\tind = bi_names.index(n)\r\n\t\tmatches.append(bi_groups[ind])\r\n\telse:\r\n\t\tmatches.append(None)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(matches)",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport System\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import BuiltInParameterGroup\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Declare inputs\r\nnames = tolist(IN[0])\r\n\r\n# Enumerate over all BIPG types\r\nbi_groups = [a for a in System.Enum.GetValues(BuiltInParameterGroup)]\r\nbi_names  = [a.ToString() for a in System.Enum.GetValues(BuiltInParameterGroup)]\r\n\r\nmatches = []\r\n\r\nfor n in names:\r\n\tif n in bi_names:\r\n\t\tind = bi_names.index(n)\r\n\t\tmatches.append(bi_groups[ind])\r\n\telse:\r\n\t\tmatches.append(None)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(matches)",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "6ade4d154ce34ecc8916f7eb9794929b",
@@ -160,8 +160,8 @@
       }
     ],
     "Annotations": [],
-    "X": -133.65406946919984,
-    "Y": 270.8952680049573,
-    "Zoom": 1.5193932772469254
+    "X": 37.378703756708035,
+    "Y": 324.742432627865,
+    "Zoom": 1.0857035604471859
   }
 }

@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n#unwrap all elements to use with API\r\nelements = uwlist(IN[0])\r\n\r\n# Check and delete\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nresults, fails = [],[]\r\n\r\nfor e in elements:\r\n\ttry:\r\n\t\tdel_id = doc.Delete(e.Id)\r\n\t\tresults.append(True)\r\n\texcept:\r\n\t\tfails.append(e)\t\r\n\t\tresults.append(False)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n   \r\n# Result of transaction\r\nOUT = results, fails",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n#unwrap all elements to use with API\r\nelements = uwlist(IN[0])\r\n\r\n# Check and delete\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nresults = []\r\n\r\nfor e in elements:\r\n\ttry:\r\n\t\tdoc.Delete(e.Id)\r\n\t\tresults.append(True)\r\n\texcept:\r\n\t\tresults.append(False)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n   \r\n# Result of transaction\r\nOUT = objOrList(results)",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "c10aa140a9a54d44b64236876afbacc0",
@@ -72,71 +72,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "results",
+      "Symbol": "wasDeleted",
       "Id": "c3f000d465ea4d9f948bb0bd3dc689c9",
       "Inputs": [
         {
           "Id": "d700d9367d5c4a0993490629f965afb4",
-          "Name": "",
-          "Description": "",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [],
-      "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
-      "NodeType": "CodeBlockNode",
-      "Code": "results = out[0];\nfails = out[1];",
-      "Id": "fa5aeb96009449f1bb95b7aab7edd18a",
-      "Inputs": [
-        {
-          "Id": "3ac17ab681c64efea44226f39cdfb386",
-          "Name": "out",
-          "Description": "out",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "e7334c4afa6f4aa2a11c8b55ef8ae0aa",
-          "Name": "",
-          "Description": "results",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "788f1b9b97904caaa4dacaa14b8df3b3",
-          "Name": "",
-          "Description": "fails",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "Allows for DesignScript code to be authored directly"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
-      "ElementResolver": null,
-      "Symbol": "failed",
-      "Id": "f8b0cde0224347769a735b1468aa6e3b",
-      "Inputs": [
-        {
-          "Id": "0ebd3432019e464d8e12729a84940fae",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -153,23 +93,13 @@
   "Connectors": [
     {
       "Start": "2a30bf3a2b234fb8a4ffa5ff4cae27eb",
-      "End": "3ac17ab681c64efea44226f39cdfb386",
-      "Id": "2793483940a1441e940dc2acaffd30c4"
+      "End": "d700d9367d5c4a0993490629f965afb4",
+      "Id": "d6dcb3943fd040cb8b2b1abd1a3cf2ec"
     },
     {
       "Start": "55f06e68a0794515a81e69af19706b6d",
       "End": "9395f69ec7f14b60a9876056ad71decf",
       "Id": "e18d69d1474f42d0bc7b015fb3a14c42"
-    },
-    {
-      "Start": "e7334c4afa6f4aa2a11c8b55ef8ae0aa",
-      "End": "d700d9367d5c4a0993490629f965afb4",
-      "Id": "846c0dca35a44dd7a06870d37811ff83"
-    },
-    {
-      "Start": "788f1b9b97904caaa4dacaa14b8df3b3",
-      "End": "0ebd3432019e464d8e12729a84940fae",
-      "Id": "67175ed89d534173a27c6be6327b68e5"
     }
   ],
   "Dependencies": [],
@@ -225,33 +155,13 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 862.35098426446325,
-        "Y": -52.03069371162519
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Code Block",
-        "Id": "fa5aeb96009449f1bb95b7aab7edd18a",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 529.67110024888689,
-        "Y": -9.36512845531039
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Output",
-        "Id": "f8b0cde0224347769a735b1468aa6e3b",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 866.82592334466835,
-        "Y": 33.685386484514822
+        "X": 538.95314993228237,
+        "Y": -10.665854436578798
       }
     ],
     "Annotations": [],
-    "X": 67.4663526375694,
-    "Y": 389.50432933001,
-    "Zoom": 0.81062463834352239
+    "X": -170.536289628394,
+    "Y": 260.16992655030805,
+    "Zoom": 1.0637053297229482
   }
 }

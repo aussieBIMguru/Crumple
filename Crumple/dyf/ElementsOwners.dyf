@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import WorksharingUtils\r\n\r\n# Current doc/app/ui\r\ndoc = IN[1]\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nelements = uwlist(IN[0])\r\nwsu_creator, wsu_owner, wsu_change = [],[],[]\r\n\r\n# Find last used and creator\r\nfor e in elements:\r\n\ttry:\r\n\t\twsu = WorksharingUtils.GetWorksharingTooltipInfo(doc, e.Id)\r\n\t\twsu_creator.append(wsu.Creator)\r\n\t\twsu_owner.append(wsu.Owner)\r\n\t\twsu_change.append(wsu.LastChangedBy)\r\n\texcept:\r\n\t\twsu_creator.append(None)\r\n\t\twsu_owner.append(None)\r\n\t\twsu_change.append(None)\r\n\r\n# Preparing output to Dynamo\r\nOUT = wsu_creator, wsu_owner, wsu_change",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import WorksharingUtils\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nelements = uwlist(IN[0])\r\nwsu_creator, wsu_owner, wsu_change = [],[],[]\r\n\r\n# Find last used and creator\r\nfor e in elements:\r\n\ttry:\r\n\t\twsu = WorksharingUtils.GetWorksharingTooltipInfo(e.Document, e.Id)\r\n\t\twsu_creator.append(wsu.Creator)\r\n\t\twsu_owner.append(wsu.Owner)\r\n\t\twsu_change.append(wsu.LastChangedBy)\r\n\texcept:\r\n\t\twsu_creator.append(None)\r\n\t\twsu_owner.append(None)\r\n\t\twsu_change.append(None)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [objOrList(o) for o in [wsu_creator, wsu_owner, wsu_change]]",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "248aa56941ec4deeac3edf1e6b838f31",
@@ -22,15 +22,6 @@
           "Id": "7b84d63e09c2488c94eaf945c6ac83bf",
           "Name": "IN[0]",
           "Description": "Input #0",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "9fd39497084c4b57988b394233c8042a",
-          "Name": "IN[1]",
-          "Description": "Input #1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -187,72 +178,6 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
-      "Parameter": {
-        "Name": "docOrLink",
-        "TypeName": "var",
-        "TypeRank": -1,
-        "DefaultValue": "null",
-        "Description": "Uses current if none provided.\nAccepts document or link instance."
-      },
-      "Id": "84d250065466410ea68b4da7f603f122",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "bba1ad3ed32241bba1a4cda3b88f13bb",
-          "Name": "",
-          "Description": "Symbol",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "160fbb2dfa0344368011f093df9dc81c",
-      "Inputs": [
-        {
-          "Id": "cbb1dd3391614fd68007e18fa83d7685",
-          "Name": "docOrLink",
-          "Description": "var[]..[]\nDefault value : null",
-          "UsingDefaultValue": true,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "29c1bdf36b7c453588c06a13f480eee5",
-          "Name": "document",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "ebc09657ac99486eb8f6cef0ba380cdb",
-          "Name": "outcome",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
     }
   ],
   "Connectors": [
@@ -280,31 +205,10 @@
       "Start": "0c0a897cfc854514b637bc888ed4e7d1",
       "End": "8f8955fca333436795be7caae22a1147",
       "Id": "b04cf2adf2c24383b763ee5ebdaba5ac"
-    },
-    {
-      "Start": "bba1ad3ed32241bba1a4cda3b88f13bb",
-      "End": "cbb1dd3391614fd68007e18fa83d7685",
-      "Id": "f9e2bdffd0a54f8a940ad5943d5e3941"
-    },
-    {
-      "Start": "29c1bdf36b7c453588c06a13f480eee5",
-      "End": "9fd39497084c4b57988b394233c8042a",
-      "Id": "70f4f4119fe14e1bb58e081ffc4576c5"
     }
   ],
-  "Dependencies": [
-    "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc"
-  ],
-  "NodeLibraryDependencies": [
-    {
-      "Name": "Crumple",
-      "Version": "2022.2.13",
-      "ReferenceType": "Package",
-      "Nodes": [
-        "160fbb2dfa0344368011f093df9dc81c"
-      ]
-    }
-  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
   "Author": "None provided",
   "Bindings": [],
   "View": {
@@ -388,31 +292,11 @@
         "Excluded": false,
         "X": 672.45927336639852,
         "Y": 74.642269093751665
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "84d250065466410ea68b4da7f603f122",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": -443.7631863155076,
-        "Y": 71.001553786249076
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "© Revit.GetDocument",
-        "Id": "160fbb2dfa0344368011f093df9dc81c",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": -55.86480466407977,
-        "Y": 66.32309658329666
       }
     ],
     "Annotations": [],
-    "X": 317.507222223307,
-    "Y": 238.71407071545553,
-    "Zoom": 0.82833036351422673
+    "X": -8.3828281606143946,
+    "Y": 237.4300512296283,
+    "Zoom": 0.69615163489587828
   }
 }

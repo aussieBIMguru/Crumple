@@ -18,7 +18,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application \r\n\r\ndefObjs, defNames, grpObjs, grpNames = [],[],[],[]\r\n\r\nfile = app.OpenSharedParameterFile()\r\n\r\ngroups = file.Groups\r\n\r\nfor group in groups:\r\n\tfor d in group.Definitions:\r\n\t\tdefObjs.append(d)\r\n\t\tdefNames.append(d.Name)\r\n\t\tgrpObjs.append(group)\r\n\t\tgrpNames.append(group.Name)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [defObjs, defNames, grpObjs, grpNames]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\n# Current doc/app/ui\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application \r\n\r\ndefObjs, defNames, grpObjs, grpNames = [],[],[],[]\r\n\r\nfile = app.OpenSharedParameterFile()\r\n\r\ngroups = file.Groups\r\n\r\nfor group in groups:\r\n\tfor d in group.Definitions:\r\n\t\tdefObjs.append(d)\r\n\t\tdefNames.append(d.Name)\r\n\t\tgrpObjs.append(group)\r\n\t\tgrpNames.append(group.Name)\r\n\r\n# Preparing output to Dynamo\r\nOUT = defObjs, defNames, grpObjs, grpNames",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "f49ea77835544d88804359514cc07958",
       "Inputs": [
@@ -44,13 +45,13 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "Refresh",
+        "Name": "refresh",
         "TypeName": "bool",
         "TypeRank": 0,
         "DefaultValue": "true",
@@ -248,13 +249,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },

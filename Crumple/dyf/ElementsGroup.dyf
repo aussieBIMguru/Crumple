@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nitems  = uwlist(IN[0])\r\n\r\nitemgroup, hasgroup = [], []\r\n\t\r\n# Get group and check if has group\t\r\nfor i in items:\r\n\tif hasattr(i, \"GroupId\"):\r\n\t\tgrp = i.Document.GetElement(i.GroupId)\r\n\t\titemgroup.append(grp)\r\n\t\tif grp:\r\n\t\t\thasgroup.append(True)\r\n\t\telse:\r\n\t\t\thasgroup.append(False)\r\n\telse:\r\n\t\titemgroup.append(None)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [itemgroup, hasgroup]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nitems  = uwlist(IN[0])\r\n\r\nitemgroup, hasgroup = [], []\r\n\t\r\n# Get group and check if has group\t\r\nfor i in items:\r\n\tif hasattr(i, \"GroupId\"):\r\n\t\tgrp = i.Document.GetElement(i.GroupId)\r\n\t\titemgroup.append(grp)\r\n\t\tif grp:\r\n\t\t\thasgroup.append(True)\r\n\t\telse:\r\n\t\t\thasgroup.append(False)\r\n\telse:\r\n\t\titemgroup.append(None)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(itemgroup), objOrList(hasgroup)",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "f71ac545c3c6489d80f16c944fb18ad6",
@@ -250,8 +250,8 @@
       }
     ],
     "Annotations": [],
-    "X": 76.66341875,
-    "Y": 308.69637319114474,
-    "Zoom": 1.33823125
+    "X": -18.263851555532739,
+    "Y": 258.55354825809923,
+    "Zoom": 1.0792537289518347
   }
 }

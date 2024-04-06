@@ -22,7 +22,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Collect all sheets\r\nsheets = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Sheets).WhereElementIsNotElementType().ToElements()\r\n\r\nsheetnos = [s.SheetNumber for s in sheets]\r\n\r\n# Preparing input from dynamo to revit\r\nttb_d = IN[0]\r\nnames = tolist(IN[1])\r\nnumbers = tolist(IN[2])\r\nasph = IN[3]\r\n\r\nnumexists = [n in sheetnos for n in numbers]\r\n\r\nsheets,success = [],[]\r\n\r\n# Unwrapping titleblock\r\nttb_r = UnwrapElement(ttb_d).Id\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor nam,num,nex in zip(names,numbers,numexists):\r\n\tif nex == False:\r\n\t\tif asph == True:\r\n\t\t\tplaceholder = ViewSheet.CreatePlaceholder(doc)\r\n\t\telse:\r\n\t\t\tplaceholder = ViewSheet.Create(doc,ttb_r)\r\n\t\tplaceholder.SheetNumber = num\r\n\t\tplaceholder.Name = nam\r\n\t\tsheets.append(placeholder.ToDSType(False))\r\n\t\tsuccess.append(True)\r\n\telse:\r\n\t\tsheets.append(None)\r\n\t\tsuccess.append(False)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = [sheets,success]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory, ViewSheet\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[1]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Collect all sheets\r\nsheets = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Sheets).WhereElementIsNotElementType().ToElements()\r\n\r\nsheetnos = [s.SheetNumber for s in sheets]\r\n\r\n# Preparing input from dynamo to revit\r\nttb_d = IN[0]\r\nnames = tolist(IN[1])\r\nnumbers = tolist(IN[2])\r\nasph = IN[3]\r\n\r\nnumexists = [n in sheetnos for n in numbers]\r\n\r\nsheets,success = [],[]\r\n\r\n# Unwrapping titleblock\r\nttb_r = UnwrapElement(ttb_d).Id\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor nam,num,nex in zip(names,numbers,numexists):\r\n\tif nex == False:\r\n\t\tif asph == True:\r\n\t\t\tplaceholder = ViewSheet.CreatePlaceholder(doc)\r\n\t\telse:\r\n\t\t\tplaceholder = ViewSheet.Create(doc,ttb_r)\r\n\t\tplaceholder.SheetNumber = num\r\n\t\tplaceholder.Name = nam\r\n\t\tsheets.append(placeholder.ToDSType(False))\r\n\t\tsuccess.append(True)\r\n\telse:\r\n\t\tsheets.append(None)\r\n\t\tsuccess.append(False)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(sheets), objOrList(success)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "282c5fa72b2e49f491ea3a026152668f",
       "Inputs": [
@@ -75,7 +76,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -302,13 +303,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -407,8 +409,8 @@
       }
     ],
     "Annotations": [],
-    "X": 264.46322749953555,
-    "Y": 345.65241133304073,
+    "X": 26.463227499535549,
+    "Y": 339.65241133304073,
     "Zoom": 1.3533575653868708
   }
 }

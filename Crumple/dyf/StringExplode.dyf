@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Similar to Clockwork, but also allows sub of spaces\r\n# I often found this was my next step to exploding strings\r\n\r\n#Declare Input\r\ndata = IN[0]\r\nsub = IN[1]\r\n\r\n#If strings are not a list, make them a list\r\nif isinstance(data, list):\r\n\tstrlist = data\r\nelse:\r\n\tstrlist = [data]\r\n\r\nfinal = []\r\n\r\n#Iterate upon the strings, then iterate their characters\r\nfor str in strlist:\r\n\tchars = []\r\n\tfor char in str:\r\n\t\tif char == \" \":\r\n\t\t\tchars.append(sub)\r\n\t\telse:\r\n\t\t\tchars.append(char)\r\n\tfinal.append(chars)\r\n\r\n#Declare Output\r\nOUT = final",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Similar to Clockwork, but also allows sub of spaces\r\n# I often found this was my next step to exploding strings\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n#Declare Input\r\nstrings = tolist(IN[0])\r\nsub  = IN[1]\r\n\r\n# Function to split strings\r\ndef splitChars(string, subStr = sub):\r\n\tchars = []\r\n\tfor c in string:\r\n\t\tif c == \"\":\r\n\t\t\tchars.append(subStr)\r\n\t\telse:\r\n\t\t\tchars.append(c)\r\n\treturn chars\r\n\r\n#Declare Output\r\nOUT = objOrList([splitChars(s) for s in strings])",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "35f18aa224c3467581164ae163a8b92f",
       "Inputs": [
@@ -48,7 +49,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -80,7 +81,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "Sub",
+        "Name": "charReplace",
         "TypeName": "string",
         "TypeRank": 0,
         "DefaultValue": "\" \"",
@@ -106,7 +107,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//Sublists of the exploded\r\n//characters per string.\r\nOutput",
+      "Symbol": "//Sublists of the exploded\r\n//characters per string.\r\nstringsOut",
       "Id": "60d03a76b3554d1592b3ccfa7dc179df",
       "Inputs": [
         {
@@ -143,24 +144,25 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -22.499469651426988,
-      "EyeY": 83.474008687746775,
-      "EyeZ": 25.340790306871632,
-      "LookX": 10.07099783483187,
-      "LookY": -10.910247654401203,
-      "LookZ": -48.676489535020693,
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
       "UpX": 0.0,
       "UpY": 1.0,
       "UpZ": 0.0
@@ -183,8 +185,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -100.2833581091524,
-        "Y": -27.173555100544547
+        "X": -155.34432696687202,
+        "Y": -23.349876707647354
       },
       {
         "ShowGeometry": true,
@@ -193,8 +195,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -99.636368701996389,
-        "Y": 98.887836834690091
+        "X": -154.697337559716,
+        "Y": 102.71151522758728
       },
       {
         "ShowGeometry": true,
@@ -208,8 +210,8 @@
       }
     ],
     "Annotations": [],
-    "X": 308.47724184348,
-    "Y": 214.6628668811083,
-    "Zoom": 1.545620359375
+    "X": 83.188088044122935,
+    "Y": 220.3419151685101,
+    "Zoom": 1.3076413563671876
   }
 }

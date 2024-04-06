@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Mostly made from Clockwork, was a useful script so absorbed\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Current doc/app\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application \r\n\r\n# Collect build data\r\nif int(app.VersionNumber) > 2017:\r\n\tfullVersion = app.SubVersionNumber\r\nelse:\r\n\tfullVersion = str(app.VersionNumber)\r\n\r\nversionName  = app.VersionName\r\nversionBuild = app.VersionBuild\r\nlanguage = app.Language.ToString()\r\nversionShort = int(app.VersionNumber)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [versionName, versionShort, fullVersion, versionBuild, language]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Mostly made from Clockwork, was a useful script so absorbed\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Current doc/app\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application \r\n\r\n# Collect build data\r\nif int(app.VersionNumber) > 2017:\r\n\tfullVersion = app.SubVersionNumber\r\nelse:\r\n\tfullVersion = str(app.VersionNumber)\r\n\r\nversionName  = app.VersionName\r\nversionBuild = app.VersionBuild\r\nlanguage = app.Language.ToString()\r\nversionShort = int(app.VersionNumber)\r\n\r\n# Preparing output to Dynamo\r\nOUT = versionName, versionShort, fullVersion, versionBuild, language",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "eaa08a1ae3cb4417b17431de94e89319",
       "Inputs": [
@@ -39,7 +40,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
@@ -278,13 +279,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -383,8 +385,8 @@
       }
     ],
     "Annotations": [],
-    "X": 249.57483272538133,
-    "Y": 373.74580722393705,
+    "X": -72.425167274618673,
+    "Y": 375.74580722393705,
     "Zoom": 1.49919520032277
   }
 }

@@ -18,7 +18,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nsheets     = uwlist(IN[0])\r\nrevisions  = uwlist(IN[1])\r\nrunMe      = IN[2]\r\n\r\n# Do some action in a Transaction\r\nif runMe:\r\n\tfor s in sheets:\r\n\t\t\r\n\t\t# Get revisions currently on sheets\r\n\t\tsheetRevs = s.GetAdditionalRevisionIds()\r\n\t\t\r\n\t\t# Check if new revisions are on sheet, if not add them\r\n\t\tfor r in revisions:\r\n\t\t\tif r.Id in sheetRevs:\r\n\t\t\t\tsheetRevs.Remove(r.Id)\r\n\t\t\telse:\r\n\t\t\t\tcontinue\r\n\t\r\n\t\t# Add the revisions to the sheets\r\n\t\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\t\ts.SetAdditionalRevisionIds(sheetRevs)\r\n\t\tTransactionManager.Instance.TransactionTaskDone()\r\n\t\t\r\n\tOUT = sheets\r\n\t\r\nelse:\r\n\tOUT = \"Set runMe to true!\"",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nsheets     = uwlist(IN[0])\r\nrevisions  = uwlist(IN[1])\r\nrunMe      = IN[2]\r\n\r\n# Do some action in a Transaction\r\nif runMe:\r\n\tfor s in sheets:\r\n\t\t\r\n\t\t# Get revisions currently on sheets\r\n\t\tsheetRevs = s.GetAdditionalRevisionIds()\r\n\t\t\r\n\t\t# Check if new revisions are on sheet, if not add them\r\n\t\tfor r in revisions:\r\n\t\t\tif r.Id in sheetRevs:\r\n\t\t\t\tsheetRevs.Remove(r.Id)\r\n\t\t\telse:\r\n\t\t\t\tcontinue\r\n\t\r\n\t\t# Add the revisions to the sheets\r\n\t\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\t\ts.SetAdditionalRevisionIds(sheetRevs)\r\n\t\tTransactionManager.Instance.TransactionTaskDone()\r\n\t\t\r\n\tOUT = objOrList(sheets)\r\n\t\r\nelse:\r\n\tOUT = \"Set runMe to true!\"",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "40922822f2ec4a26a637494afc4bc76b",
       "Inputs": [
@@ -62,7 +63,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -188,13 +189,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -263,8 +265,8 @@
       }
     ],
     "Annotations": [],
-    "X": 214.27231671819186,
-    "Y": 173.14203920208462,
-    "Zoom": 2.6734023332671444
+    "X": 40.797972994558393,
+    "Y": 219.11064542686421,
+    "Zoom": 1.6305397934326744
   }
 }

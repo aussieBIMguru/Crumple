@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport os\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import BasicFileInfo\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef getVersion(filePath):\r\n\tif os.path.exists(filePath):\r\n\t\ttry:\r\n\t\t\tinfo_file = BasicFileInfo.Extract(filePath)\r\n\t\t\treturn int(info_file.Format)\r\n\t\texcept:\r\n\t\t\treturn None\t\r\n\r\nfile_paths = tolist(IN[0])\r\n\t\r\nOUT = [getVersion(fp) for fp in file_paths]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport os\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import BasicFileInfo\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\ndef getVersion(filePath):\r\n\tif os.path.exists(filePath):\r\n\t\ttry:\r\n\t\t\tinfo_file = BasicFileInfo.Extract(filePath)\r\n\t\t\treturn int(info_file.Format)\r\n\t\texcept:\r\n\t\t\treturn None\t\r\n\r\nfile_paths = tolist(IN[0])\r\n\t\r\nOUT = objOrList([getVersion(fp) for fp in file_paths])",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "f2c67bc66f3d4d478a2470bc366a10f2",

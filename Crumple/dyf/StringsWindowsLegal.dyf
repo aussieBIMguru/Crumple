@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Inputs from Dynamo\r\nstrings = tolist(IN[0])\r\nreplace = IN[1]\r\n\r\nnewStrings, stringsChanged = [],[]\r\n\r\nCHARS_ILLEGAL = ['/','?','<','>','\\\\',':','*','|','\"','^']\r\n\r\n# Function: Replace or remove illegal characters for windows\r\ndef legalizeString(string_check):\r\n\t# New string to build\r\n\tstring_legal  = \"\"\r\n\t# Check each character\r\n\tfor c in string_check:\r\n\t\tif c in CHARS_ILLEGAL:\r\n\t\t\tstring_legal += replace\r\n\t\telse:\r\n\t\t\tstring_legal += c\r\n\t# Return new string\r\n\treturn string_legal, string_check == string_legal\r\n\r\n# Legalize strings\r\nfor s in strings:\r\n\tsl, wc = legalizeString(s)\r\n\tnewStrings.append(sl)\r\n\tstringsChanged.append(wc)\r\n\r\n# Output to Dynamo\r\nOUT = newStrings, stringsChanged",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Inputs from Dynamo\r\nstrings = tolist(IN[0])\r\nreplace = IN[1]\r\n\r\nnewStrings, stringsChanged = [],[]\r\n\r\nCHARS_ILLEGAL = ['/','?','<','>','\\\\',':','*','|','\"','^']\r\n\r\n# Function: Replace or remove illegal characters for windows\r\ndef legalizeString(string_check):\r\n\t# New string to build\r\n\tstring_legal  = \"\"\r\n\t# Check each character\r\n\tfor c in string_check:\r\n\t\tif c in CHARS_ILLEGAL:\r\n\t\t\tstring_legal += replace\r\n\t\telse:\r\n\t\t\tstring_legal += c\r\n\t# Return new string\r\n\treturn string_legal, string_check == string_legal\r\n\r\n# Legalize strings\r\nfor s in strings:\r\n\tsl, wc = legalizeString(s)\r\n\tnewStrings.append(sl)\r\n\tstringsChanged.append(wc)\r\n\r\n# Output to Dynamo\r\nOUT = objOrList(newStrings), objOrList(stringsChanged)",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "9ac82603305647f1ab869df07de86f1e",
@@ -300,8 +300,8 @@
       }
     ],
     "Annotations": [],
-    "X": 347.24202820585776,
-    "Y": 340.75156134131419,
+    "X": 30.242028205857764,
+    "Y": 356.75156134131419,
     "Zoom": 1.0974636421538004
   }
 }

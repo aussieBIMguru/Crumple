@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.DB.Analysis import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Preparing input from dynamo to revit\r\nnames = IN[0] if isinstance(IN[0], list) else [IN[0]]\r\nrunme = IN[1]\r\n\r\nresults, spaces_only = [], []\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nif runme == True:\r\n\tfor name in names:\r\n\t\tif HVACLoadSpaceType.IsNameUnique(doc, name):\r\n\t\t\tst_r = HVACLoadSpaceType.Create(doc, name)\r\n\t\t\tst_d = st_r.ToDSType(False)\r\n\t\t\tresults.append(st_d)\r\n\t\t\tspaces_only.append(st_d)\r\n\t\telse:\r\n\t\t\tmsg = \"This name exists already!\"\r\n\t\t\tresults.append(msg)\r\nelse:\r\n\tresults = \"Set run_me to True!\"\r\n\r\n# Transaction complete\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = [results, spaces_only]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB.Analysis import HVACLoadSpaceType\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n\tresult = input if isinstance(input, list) else [input]\r\n\treturn result\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Preparing input from dynamo to revit\r\nnames = tolist(IN[0])\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nresults, spaceTypes = [], []\r\n\r\nfor name in names:\r\n\tif HVACLoadSpaceType.IsNameUnique(doc, name):\r\n\t\tst_r = HVACLoadSpaceType.Create(doc, name)\r\n\t\tst_d = st_r.ToDSType(False)\r\n\t\tspaceTypes.append(st_d)\r\n\t\tresults.append(True)\r\n\telse:\r\n\t\tspaceTypes.append(None)\r\n\t\tresults.append(False)\r\n\r\n# Transaction complete\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(spaceTypes), objOrList(results)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "e1787cd1b5a549a18c6746fb79433192",
       "Inputs": [
@@ -21,15 +22,6 @@
           "Id": "34f8556c9d3747659e16fd3659732273",
           "Name": "IN[0]",
           "Description": "Input #0",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "34561bcf013b478c924857446313e63d",
-          "Name": "IN[1]",
-          "Description": "Input #1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -48,7 +40,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -77,60 +69,13 @@
       "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
-      "Parameter": {
-        "Name": "run_me",
-        "TypeName": "bool",
-        "TypeRank": 0,
-        "DefaultValue": "false",
-        "Description": "Set to True to run"
-      },
-      "Id": "caf2c9cdaa584bd89b525f6213b2cf44",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "0df3ffd18e9543a1984c275175d94c15",
-          "Name": "",
-          "Description": "Symbol",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
-      "ElementResolver": null,
-      "Symbol": "//Including error messages.\r\nresults",
-      "Id": "4f303395ffaa4d428249902485efc7fb",
-      "Inputs": [
-        {
-          "Id": "ca7c464e5ba44c228b278632f555f115",
-          "Name": "",
-          "Description": "",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [],
-      "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
-    },
-    {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
-      "Code": "result = lst[0];\nt_only = lst[1];",
+      "Code": "st = lst[0];\nre = lst[1];",
       "Id": "86f6b67396bb4b84a4e04a24bceb7c29",
       "Inputs": [
         {
-          "Id": "f550080bc64f455ea0ff1d2f37dc9e91",
+          "Id": "888157c5ff984414a167f663ae7a19e6",
           "Name": "lst",
           "Description": "lst",
           "UsingDefaultValue": false,
@@ -141,18 +86,18 @@
       ],
       "Outputs": [
         {
-          "Id": "5d53808ee0454b76ac9631829e14fb53",
+          "Id": "1276c16112e74fab9eba40e9072efeb0",
           "Name": "",
-          "Description": "result",
+          "Description": "st",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
           "KeepListStructure": false
         },
         {
-          "Id": "a52b2d3052a94b459ba7384d3b74b39f",
+          "Id": "6ea0e80fb57d457aa8ba375022f359a6",
           "Name": "",
-          "Description": "t_only",
+          "Description": "re",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -166,11 +111,32 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//New Space Types only.\r\nspace_types",
+      "Symbol": "spaceTypes",
       "Id": "9cef2ba049674ff4a10a04139b2a8556",
       "Inputs": [
         {
           "Id": "5b30f196b4604be2a1856db08cf9b1ff",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "wasCreated",
+      "Id": "a4a7c8c542754c77ad77b1e9f48e5619",
+      "Inputs": [
+        {
+          "Id": "126be0709c104dcebe41bb84fbbc1298",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -187,8 +153,8 @@
   "Connectors": [
     {
       "Start": "c4b9788c7cd44176967cfd49e0d70920",
-      "End": "f550080bc64f455ea0ff1d2f37dc9e91",
-      "Id": "ee4ce117726849f1af32911a8a6e1453"
+      "End": "888157c5ff984414a167f663ae7a19e6",
+      "Id": "4417a50ffa954686a1574ea51ca98847"
     },
     {
       "Start": "9f8ad345f5c74453bae8379078dce9c0",
@@ -196,38 +162,34 @@
       "Id": "e310d1bfaef54573ab08b62c3e314306"
     },
     {
-      "Start": "0df3ffd18e9543a1984c275175d94c15",
-      "End": "34561bcf013b478c924857446313e63d",
-      "Id": "d0466da68bee4cef8ea76bef431c7781"
-    },
-    {
-      "Start": "5d53808ee0454b76ac9631829e14fb53",
-      "End": "ca7c464e5ba44c228b278632f555f115",
-      "Id": "7aea52bad7d74df8bef60494fa8894d3"
-    },
-    {
-      "Start": "a52b2d3052a94b459ba7384d3b74b39f",
+      "Start": "1276c16112e74fab9eba40e9072efeb0",
       "End": "5b30f196b4604be2a1856db08cf9b1ff",
-      "Id": "2c185dd371924d83bc35f9506b1bb657"
+      "Id": "e620704833094ce6be8d0a54d82c27d4"
+    },
+    {
+      "Start": "6ea0e80fb57d457aa8ba375022f359a6",
+      "End": "126be0709c104dcebe41bb84fbbc1298",
+      "Id": "5f3860e703c34d9a8d90b0dc343ee8fa"
     }
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -16.657216786055237,
-      "EyeY": 114.57313150030453,
-      "EyeZ": 29.770046363161676,
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
       "LookX": 12.0,
       "LookY": -13.0,
       "LookZ": -58.0,
@@ -253,28 +215,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -99.0,
-        "Y": -46.0
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "caf2c9cdaa584bd89b525f6213b2cf44",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": -56.0,
-        "Y": 50.0
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Output",
-        "Id": "4f303395ffaa4d428249902485efc7fb",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 696.0,
-        "Y": -27.0
+        "X": -70.272975149095032,
+        "Y": 1.0078588469354486
       },
       {
         "ShowGeometry": true,
@@ -293,13 +235,23 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 696.5,
-        "Y": 53.5
+        "X": 707.23178394360025,
+        "Y": -44.159233886762337
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "a4a7c8c542754c77ad77b1e9f48e5619",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 679.53499169701456,
+        "Y": 61.091626103996646
       }
     ],
     "Annotations": [],
-    "X": 142.84160983318287,
-    "Y": 271.57672512542672,
-    "Zoom": 0.69134779386718748
+    "X": -213.72976824669183,
+    "Y": 169.61939128072058,
+    "Zoom": 0.76582939285155172
   }
 }

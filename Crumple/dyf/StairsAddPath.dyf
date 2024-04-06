@@ -18,7 +18,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nstairs = uwlist(IN[0])\r\npath   = UnwrapElement(IN[1])\r\nview   = UnwrapElement(IN[2])\r\n\r\nnewpaths = []\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor stair in stairs:\r\n\ttry:\r\n\t\tstairid = LinkElementId(stair.Id)\r\n\t\tnewpath = Autodesk.Revit.DB.Architecture.StairsPath.Create(doc, stairid, path.Id, view.Id)\r\n\t\tnewpaths.append(newpath)\r\n\texcept:\r\n\t\tnewpaths.append(None)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = newpaths",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import LinkElementId\r\nfrom Autodesk.Revit.DB.Architecture import StairsPath\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nstairs = uwlist(IN[0])\r\npath   = UnwrapElement(IN[1])\r\nview   = UnwrapElement(IN[2])\r\n\r\nnewpaths = []\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor stair in stairs:\r\n\ttry:\r\n\t\tstairid = LinkElementId(stair.Id)\r\n\t\tnewpath = StairsPath.Create(doc, stairid, path.Id, view.Id)\r\n\t\tnewpaths.append(newpath)\r\n\texcept:\r\n\t\tnewpaths.append(None)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(newpaths)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "5eb7ce486aa941d4ac35f4c4c4683887",
       "Inputs": [
@@ -62,7 +63,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -188,13 +189,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -263,8 +265,8 @@
       }
     ],
     "Annotations": [],
-    "X": 33.616805875702994,
-    "Y": 148.80740841016598,
-    "Zoom": 2.2043480251573562
+    "X": 97.328819404633862,
+    "Y": 169.20315655455687,
+    "Zoom": 0.95527942473298544
   }
 }

@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Get app\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application \r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input):\r\n    if isinstance(input, list) and len(input) == 1:\r\n        return input[0]\r\n    else:\r\n        return input\r\n\r\n# Document and regions\r\nregions = uwlist(IN[0])\r\ndoc = IN[1]\r\n\r\n# Establish default options and prepare edge arrays\r\ngeomOption = app.Create.NewGeometryOptions()\r\n\r\nedgeArray = []\r\n\r\n# Construct edge array for review\r\nfor r in regions:\r\n\tgeomElem = r.get_Geometry(geomOption)\r\n\tenum1 = geomElem.GetEnumerator() ; enum1.MoveNext()\r\n\tgeo = enum1.Current\r\n\tedgeArray.append(geo.Edges)\r\n\t\r\n# Get the graphic style of each edge\r\nlineStyles = []\r\n\r\nfor i in range(0,len(edgeArray)):\r\n\tls = []\r\n\tfor edge in edgeArray[i]:\r\n\t\tls.append(doc.GetElement(edge.GraphicsStyleId))\r\n\tlineStyles.append(ls)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(lineStyles)",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Get app\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application \r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Document and regions\r\nregions = uwlist(IN[0])\r\n\r\n# Establish default options and prepare edge arrays\r\ngeomOption = app.Create.NewGeometryOptions()\r\n\r\nlineStyles = []\r\n\r\n# Construct edge array for review\r\nfor r in regions:\r\n\t\r\n\tgeomElem = r.get_Geometry(geomOption)\r\n\tenum1 = geomElem.GetEnumerator() ; enum1.MoveNext()\r\n\tgeo = enum1.Current\r\n\tedgeArray = geo.Edges\r\n\t\r\n\tls = []\r\n\t\r\n\tfor edge in edgeArray:\r\n\t\tls.append(r.Document.GetElement(edge.GraphicsStyleId))\r\n\t\r\n\tlineStyles.append(ls)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(lineStyles)",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "2f3034c3c76a46c0bdb5687979a4b396",
@@ -22,15 +22,6 @@
           "Id": "aa7c060d6d944df0aa14f3d263ac6665",
           "Name": "IN[0]",
           "Description": "Input #0",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "97427fde335a408290b41ae1ab11de8a",
-          "Name": "IN[1]",
-          "Description": "Input #1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -97,72 +88,6 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
-      "Parameter": {
-        "Name": "docOrLink",
-        "TypeName": "var",
-        "TypeRank": -1,
-        "DefaultValue": "null",
-        "Description": "Uses current if none provided.\nAccepts document or link instance."
-      },
-      "Id": "908b03e071364362a48997c9e1db4365",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "f10705c5a34644208131a1e0bbf8a947",
-          "Name": "",
-          "Description": "Symbol",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "e49addadb12f45ed822daf6595c094ce",
-      "Inputs": [
-        {
-          "Id": "598ac4f70b4e4dc2bbab1870347e60b3",
-          "Name": "docOrLink",
-          "Description": "var[]..[]\nDefault value : null",
-          "UsingDefaultValue": true,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "433335454670434998a9c661b422bc3e",
-          "Name": "document",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "e5a71bd79fd44f8ea7513dd753e4f755",
-          "Name": "outcome",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
     }
   ],
   "Connectors": [
@@ -175,31 +100,10 @@
       "Start": "1905d26d3c0a4a7e84b1c5e9e0176934",
       "End": "aa7c060d6d944df0aa14f3d263ac6665",
       "Id": "ea1c6a2716fb4e57a6d9b13d67f5d8a3"
-    },
-    {
-      "Start": "f10705c5a34644208131a1e0bbf8a947",
-      "End": "598ac4f70b4e4dc2bbab1870347e60b3",
-      "Id": "f4b926b04ad94c49b85f2a13793a0ddc"
-    },
-    {
-      "Start": "433335454670434998a9c661b422bc3e",
-      "End": "97427fde335a408290b41ae1ab11de8a",
-      "Id": "ae954c1627ff412aa6d3f3e226d0f251"
     }
   ],
-  "Dependencies": [
-    "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc"
-  ],
-  "NodeLibraryDependencies": [
-    {
-      "Name": "Crumple",
-      "Version": "2022.2.13",
-      "ReferenceType": "Package",
-      "Nodes": [
-        "e49addadb12f45ed822daf6595c094ce"
-      ]
-    }
-  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
   "Author": "None provided",
   "Bindings": [],
   "View": {
@@ -241,8 +145,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -19.620380217592583,
-        "Y": -20.413586811728322
+        "X": -24.723776920524642,
+        "Y": 0.85056611715535269
       },
       {
         "ShowGeometry": true,
@@ -253,26 +157,6 @@
         "Excluded": false,
         "X": 453.86043917131303,
         "Y": 1.0436457668427721
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "908b03e071364362a48997c9e1db4365",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": -452.39711474394824,
-        "Y": 72.371723275252535
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "© Revit.GetDocument",
-        "Id": "e49addadb12f45ed822daf6595c094ce",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": -61.265406039673962,
-        "Y": 75.052841671188759
       }
     ],
     "Annotations": [],

@@ -98,7 +98,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FilteredElementCollector, ProjectInfo, ElementId\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nsheets      = uwlist(IN[0])\r\nincludePrj  = IN[1]\r\nincludeRev  = IN[2]\r\nincludeName = IN[3]\r\ndoc         = IN[4]\r\n\r\ninvalidId   = ElementId.InvalidElementId\r\n\r\n# Project information\r\nprojectInfo = FilteredElementCollector(doc).OfClass(ProjectInfo).FirstElement()\r\nprojectNumber = projectInfo.Number\r\n\r\n# Make sheet names\r\nsheetNames = []\r\n\r\nfor s in sheets:\r\n\tsn = s.SheetNumber\r\n\tif includePrj:\r\n\t\tsn = '{}-{}'.format(projectNumber, sn)\r\n\tif includeRev:\r\n\t\trevId = s.GetCurrentRevision()\r\n\t\tif revId != invalidId:\r\n\t\t\trevStr = s.GetRevisionNumberOnSheet(revId)\r\n\t\telse:\r\n\t\t\trevStr = \"-\"\r\n\t\tsn = '{} [{}]'.format(sn, revStr)\r\n\tif includeName:\r\n\t\tsn = '{} - {}'.format(sn, s.Name)\r\n\tsheetNames.append(sn)\r\n\r\n# Preparing output to Dynamo\r\nOUT = sheets, sheetNames",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FilteredElementCollector, ProjectInfo, ElementId\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nsheets      = uwlist(IN[0])\r\nincludePrj  = IN[1]\r\nincludeRev  = IN[2]\r\nincludeName = IN[3]\r\n\r\ndefaultDoc   = sheets[0].Document\r\ndefaultTitle =  defaultDoc.Title\r\n\r\ninvalidId   = ElementId.InvalidElementId\r\n\r\n# Project information\r\nprojectInfo = FilteredElementCollector(defaultDoc).OfClass(ProjectInfo).FirstElement()\r\nprojectNumber = projectInfo.Number\r\n\r\n# Make sheet names\r\nsheetNames = []\r\n\r\nfor s in sheets:\r\n\tif s.Document.Title != defaultTitle:\r\n\t\ttempInfo = FilteredElementCollector(s.Document).OfClass(ProjectInfo).FirstElement()\r\n\t\tprjNum   = tempInfo.Number\r\n\telse:\r\n\t\tprjNum = projectNumber\r\n\tsn = s.SheetNumber\r\n\tif includePrj:\r\n\t\tsn = '{}-{}'.format(prjNum, sn)\r\n\tif includeRev:\r\n\t\trevId = s.GetCurrentRevision()\r\n\t\tif revId != invalidId:\r\n\t\t\trevStr = s.GetRevisionNumberOnSheet(revId)\r\n\t\telse:\r\n\t\t\trevStr = \"-\"\r\n\t\tsn = '{} [{}]'.format(sn, revStr)\r\n\tif includeName:\r\n\t\tsn = '{} - {}'.format(sn, s.Name)\r\n\tsheetNames.append(sn)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(sheets), objOrList(sheetNames)",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "814b54fd65864f1baf42767a77d6033f",
@@ -134,15 +134,6 @@
           "Id": "61464e6a9dd74ba5914fcff823200d72",
           "Name": "IN[3]",
           "Description": "Input #3",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "755c334cffdb4724afdc43cac354c5a3",
-          "Name": "IN[4]",
-          "Description": "Input #4",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -279,72 +270,6 @@
       ],
       "Replication": "Disabled",
       "Description": "Allows for DesignScript code to be authored directly"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "a3d103003aac4ce0847501d3fa7faaa9",
-      "Inputs": [
-        {
-          "Id": "aac0addc9e7e4b0393d216618edfbab9",
-          "Name": "docOrLink",
-          "Description": "var[]..[]\nDefault value : null",
-          "UsingDefaultValue": true,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "a9bdb8223ac545608ef6be4a2251583d",
-          "Name": "document",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "1d72889e8fa5481b9daba56f83621a00",
-          "Name": "outcome",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
-      "Parameter": {
-        "Name": "docOrLink",
-        "TypeName": "var",
-        "TypeRank": -1,
-        "DefaultValue": "null",
-        "Description": "Uses current if none provided.\nAccepts document or link instance."
-      },
-      "Id": "367b86acbf374ed599934042e9da889f",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "469d4038306249058ebe2623edf606e8",
-          "Name": "",
-          "Description": "Symbol",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     }
   ],
   "Connectors": [
@@ -382,31 +307,10 @@
       "Start": "c4788fa86e7b4635b021e56a301be077",
       "End": "2b8aea9f44754359810e1ddeba8ae810",
       "Id": "ee7f649e04c943d1a6ef76bca1561542"
-    },
-    {
-      "Start": "a9bdb8223ac545608ef6be4a2251583d",
-      "End": "755c334cffdb4724afdc43cac354c5a3",
-      "Id": "3d3026e7bb2a4e5cace4659686191ed3"
-    },
-    {
-      "Start": "469d4038306249058ebe2623edf606e8",
-      "End": "aac0addc9e7e4b0393d216618edfbab9",
-      "Id": "60564daea4da425a8f4442bcb7f547ab"
     }
   ],
-  "Dependencies": [
-    "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc"
-  ],
-  "NodeLibraryDependencies": [
-    {
-      "Name": "Crumple",
-      "Version": "2024.3.1",
-      "ReferenceType": "Package",
-      "Nodes": [
-        "a3d103003aac4ce0847501d3fa7faaa9"
-      ]
-    }
-  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
   "Author": "None provided",
   "Bindings": [],
   "View": {
@@ -510,31 +414,11 @@
         "Excluded": false,
         "X": 692.97830069633221,
         "Y": -15.981070820204707
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "© Revit.GetDocument",
-        "Id": "a3d103003aac4ce0847501d3fa7faaa9",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": -96.2177265407816,
-        "Y": 215.7740573596046
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "367b86acbf374ed599934042e9da889f",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": -492.53599775914637,
-        "Y": 212.61850127789251
       }
     ],
     "Annotations": [],
-    "X": 53.592642522340043,
-    "Y": 240.69327435746223,
+    "X": 169.59264252234004,
+    "Y": 228.69327435746223,
     "Zoom": 0.59405331560236529
   }
 }

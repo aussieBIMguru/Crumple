@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Current doc/app/ui\r\ndocs = tolist(IN[0])\r\n\r\n# Preparing output to Dynamo\r\nOUT = [d.Title for d in docs]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Current doc/app/ui\r\ndocs = tolist(IN[0])\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList([d.Title for d in docs])",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "26e5f2ec700545aa9c20bdf94f232694",
@@ -160,8 +160,8 @@
       }
     ],
     "Annotations": [],
-    "X": -203.0,
-    "Y": 371.74495412844038,
-    "Zoom": 2.7266055045871558
+    "X": 160.785699969097,
+    "Y": 393.758542405135,
+    "Zoom": 1.0048464499864074
   }
 }

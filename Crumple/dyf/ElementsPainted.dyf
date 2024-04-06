@@ -50,32 +50,6 @@
       "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
-      "Parameter": {
-        "Name": "docOrLink",
-        "TypeName": "var",
-        "TypeRank": -1,
-        "DefaultValue": "null",
-        "Description": ""
-      },
-      "Id": "9480d0d97442475f8d7c9e088aa3a6d5",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "95e86755d2554d50bca333d255c427b4",
-          "Name": "",
-          "Description": "Symbol",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
-    },
-    {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
@@ -159,7 +133,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import Options\r\n\r\n# Current doc/app/ui\r\ndoc = IN[1]\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nelements = uwlist(IN[0])\r\ngOpts = Options()\r\npaintlist,paintcounts = [],[]\r\n\r\n# Do some action in a Transaction\r\nfor e in elements:\r\n\tcount = 0\r\n\tgeom = e.get_Geometry(gOpts)\r\n\tfor g in geom:\r\n\t\ttry:\r\n\t\t\tele_faces = g.Faces\r\n\t\t\tfor f in ele_faces:\r\n\t\t\t\tif f.HasRegions:\r\n\t\t\t\t\tregions = f.GetRegions()\r\n\t\t\t\t\tfor r in regions:\r\n\t\t\t\t\t\tif doc.IsPainted(e.Id, r):\r\n\t\t\t\t\t\t\tcount += 1\t\t\r\n\t\t\t\tif doc.IsPainted(e.Id, f):\r\n\t\t\t\t\tcount += 1\t\r\n\t\texcept:\r\n\t\t\tpass\r\n\tpaintcounts.append(count)\r\n\tif count > 0:\r\n\t\tpaintlist.append(True)\r\n\telse:\r\n\t\tpaintlist.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = paintlist, paintcounts",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import Options\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nelements = uwlist(IN[0])\r\ngOpts = Options()\r\npaintlist,paintcounts = [],[]\r\n\r\n# Do some action in a Transaction\r\nfor e in elements:\r\n\tcount = 0\r\n\tgeom = e.get_Geometry(gOpts)\r\n\tdoc = e.Document\r\n\tfor g in geom:\r\n\t\ttry:\r\n\t\t\tele_faces = g.Faces\r\n\t\t\tfor f in ele_faces:\r\n\t\t\t\tif f.HasRegions:\r\n\t\t\t\t\tregions = f.GetRegions()\r\n\t\t\t\t\tfor r in regions:\r\n\t\t\t\t\t\tif doc.IsPainted(e.Id, r):\r\n\t\t\t\t\t\t\tcount += 1\t\t\r\n\t\t\t\tif doc.IsPainted(e.Id, f):\r\n\t\t\t\t\tcount += 1\t\r\n\t\texcept:\r\n\t\t\tpass\r\n\tpaintcounts.append(count)\r\n\tif count > 0:\r\n\t\tpaintlist.append(True)\r\n\telse:\r\n\t\tpaintlist.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(paintlist), objOrList(paintcounts)",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "1555aa313d824c1ea5ce8172c7f14703",
@@ -168,15 +142,6 @@
           "Id": "89f0a9da60cb40cfa634236b97f55dbf",
           "Name": "IN[0]",
           "Description": "Input #0",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "86d11be60c444d069fcccc61d39605ad",
-          "Name": "IN[1]",
-          "Description": "Input #1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -196,46 +161,6 @@
       ],
       "Replication": "Disabled",
       "Description": "Runs an embedded Python script."
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "d50615f300a04eee8481ae4d55c0cd2b",
-      "Inputs": [
-        {
-          "Id": "9f3315baf20a4e54a5551ab84bee5cb1",
-          "Name": "docOrLink",
-          "Description": "var[]..[]\nDefault value : null",
-          "UsingDefaultValue": true,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "b7349f19082a4744bdfaf30b4249eac1",
-          "Name": "document",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "275b49b2e55142e684ae69cacd88aada",
-          "Name": "outcome",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
     }
   ],
   "Connectors": [
@@ -243,11 +168,6 @@
       "Start": "e284e75be4d443b683eed68bd19f30d0",
       "End": "89f0a9da60cb40cfa634236b97f55dbf",
       "Id": "f2c85c0a58134178b985238bb007597e"
-    },
-    {
-      "Start": "95e86755d2554d50bca333d255c427b4",
-      "End": "9f3315baf20a4e54a5551ab84bee5cb1",
-      "Id": "b5091d20dbc7427e84da6ee38f734369"
     },
     {
       "Start": "5e4b314fb6ff485dbc3b1de7bcf1a5da",
@@ -263,26 +183,10 @@
       "Start": "752fe7ac40b740ffb7ceda85d4b2afc1",
       "End": "f83daead4e434d258fb79c5e7010d5b7",
       "Id": "d69102aad0f64cd38fcd9cb1851b3fa3"
-    },
-    {
-      "Start": "b7349f19082a4744bdfaf30b4249eac1",
-      "End": "86d11be60c444d069fcccc61d39605ad",
-      "Id": "9ffb55c5e90d4476bb96b8da96ddcabf"
     }
   ],
-  "Dependencies": [
-    "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc"
-  ],
-  "NodeLibraryDependencies": [
-    {
-      "Name": "Crumple",
-      "Version": "2022.2.13",
-      "ReferenceType": "Package",
-      "Nodes": [
-        "d50615f300a04eee8481ae4d55c0cd2b"
-      ]
-    }
-  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
   "Author": "None provided",
   "Bindings": [],
   "View": {
@@ -314,18 +218,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -135.0,
-        "Y": -37.0
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "9480d0d97442475f8d7c9e088aa3a6d5",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": -372.56436999209348,
-        "Y": 104.53010592844177
+        "X": -44.018263865487143,
+        "Y": -0.17405918364954687
       },
       {
         "ShowGeometry": true,
@@ -366,21 +260,11 @@
         "Excluded": false,
         "X": 260.21138884152572,
         "Y": -0.39222352354758527
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "© Revit.GetDocument",
-        "Id": "d50615f300a04eee8481ae4d55c0cd2b",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": -51.546424047233245,
-        "Y": 103.01259560292186
       }
     ],
     "Annotations": [],
-    "X": 141.48510026727371,
-    "Y": 211.94032975569263,
+    "X": -18.514899732726292,
+    "Y": 228.94032975569263,
     "Zoom": 0.92326222348416553
   }
 }

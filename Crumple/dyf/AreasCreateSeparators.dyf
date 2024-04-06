@@ -34,7 +34,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import SketchPlane\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Preparing input from dynamo to revit\r\ncurves_list = [IN[0]]\r\nview_r      = UnwrapElement(IN[1])\r\n\r\n# Start making Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\n# Make sketchplane at level of view\r\nlevel_r = view_r.GenLevel\r\nplane_r = SketchPlane.Create(doc, level_r.Id)\r\n\r\n# Make area boundary lines from curves\r\nbounds = []\r\n\r\nfor curves in curves_list:\r\n\tbound = []\r\n\tfor curve in curves:\r\n\t\tcrv = curve.ToRevitType()\r\n\t\tline = doc.Create.NewAreaBoundaryLine(plane_r, crv, view_r)\r\n\t\tbound.append(line.ToDSType(False))\r\n\tbounds.append(bound)\r\n\t\t\r\n# Finish making transaction\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = bounds",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import SketchPlane\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Preparing input from dynamo to revit\r\ncurves = uwlist(IN[0])\r\nview_r = UnwrapElement(IN[1])\r\n\r\n# Start making Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\n# Make sketchplane at level of view\r\nlevel_r = view_r.GenLevel\r\nplane_r = SketchPlane.Create(doc, level_r.Id)\r\n\r\n# Make area boundary lines from curves\r\nbounds = []\r\n\r\nfor curve in curves:\r\n\tcrv = curve.ToRevitType()\r\n\tline = doc.Create.NewAreaBoundaryLine(plane_r, crv, view_r)\r\n\tbounds.append(line.ToDSType(False))\r\n\t\t\r\n# Finish making transaction\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(bounds)",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "f81b7cde7fb94a84ac1476e1c4ba842c",
@@ -285,8 +285,8 @@
       }
     ],
     "Annotations": [],
-    "X": -2.98254531216719,
-    "Y": 257.60230262706028,
-    "Zoom": 1.2198072017254968
+    "X": -48.207112996673573,
+    "Y": 389.05453591612115,
+    "Zoom": 0.612283078543345
   }
 }

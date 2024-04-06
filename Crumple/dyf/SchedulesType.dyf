@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input):\r\n    if isinstance(input, list) and len(input) == 1:\r\n        return input[0]\r\n    else:\r\n        return input\r\n\r\n# Preparing input from dynamo to revit\r\nschedules, revschedules, keyschedules = [],[],[]\r\n\r\ncoll = uwlist(IN[0])\r\n\r\nschedTypes = []\r\n\r\nfor s in coll:\r\n\tmaster = s.Document.GetElement(s.ScheduleId)\r\n\tschedTypes.append(master)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(schedTypes)",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nschedules, revschedules, keyschedules = [],[],[]\r\n\r\ncoll = uwlist(IN[0])\r\n\r\nschedTypes = []\r\n\r\nfor s in coll:\r\n\tmaster = s.Document.GetElement(s.ScheduleId)\r\n\tschedTypes.append(master)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(schedTypes)",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "f66e957523f940c983ddec3e7c44dd05",
@@ -117,15 +117,15 @@
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": 4855.888671875,
-      "EyeY": 110105.578125,
-      "EyeZ": 84641.15625,
-      "LookX": 19975.3515625,
-      "LookY": -109643.9140625,
-      "LookZ": -79003.4140625,
-      "UpX": 0.16081817448139191,
-      "UpY": 0.75470954179763794,
-      "UpZ": -0.63604336977005
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "NodeViews": [
       {

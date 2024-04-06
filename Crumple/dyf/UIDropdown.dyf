@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\nimport clr\r\n\r\nclr.AddReference(\"System.Drawing\")\r\nclr.AddReference(\"System.Windows.Forms\")\r\n\r\nimport System\r\nimport System.Drawing\r\n\r\nfrom System.Drawing import *\r\nfrom System.Windows.Forms import *\r\n\r\nfrom collections import namedtuple\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Imports from Dynamo\r\nkeys      = tolist(IN[1])\r\nvalues    = tolist(IN[2])\r\nformTitle = IN[0]\r\n\r\nformWidth  = 300\r\nformHeight = 100\r\nbuttonHeight = 225\r\n\r\n# Class for key/value pair\r\nclass MyItem():\r\n\tdef __init__(self, key, value):\r\n\t\tself.Key = key\r\n\t\tself.Value = value\r\n\r\n# Make key value pairs\r\nlist_of_items = [MyItem(i,j) for i,j in zip(keys, values)] \r\n\r\n# Class for main winform\r\nclass MainForm(Form):\r\n\t\r\n\t# Initialize form object\r\n\tdef __init__(self):\r\n\t\t# Begin with first value\r\n\t\tself.choice = list_of_items[0].Value\r\n\t\tself.InitializeComponent()\r\n\t\r\n\t# Make form components\r\n\tdef InitializeComponent(self):\r\n\t\t\r\n\t\t# Combo box\r\n\t\tself._comboBoxType = System.Windows.Forms.ComboBox()\r\n\t\tself._comboBoxType.Location = System.Drawing.Point(25, 25)\r\n\t\tself._comboBoxType.Size = System.Drawing.Size(formWidth-50, 25)\r\n\t\tself._comboBoxType.DataSource = list_of_items\r\n\t\tself._comboBoxType.DisplayMember = \"Key\"\r\n\t\tself._comboBoxType.ValueMember = \"Value\"\r\n\t\tself._comboBoxType.SelectedIndexChanged += self.newItemSelected\r\n\t\tself.Controls.Add(self._comboBoxType)\r\n\t\t\r\n\t\t# Text box\r\n\t\tself.tbox1 = TextBox()\r\n\t\tself.tbox1.Parent = self\r\n\t\tself.tbox1.Text = \"test\"\r\n\t\tself.tbox1.Location = Point(25,25)\r\n\t\tself.tbox1.Width = 100\r\n\t\t\r\n\t\t# OK button\r\n\t\tbtnOk = Button()\r\n\t\tbtnOk.Text = \"OK\"\r\n\t\tbtnOk.Anchor = (AnchorStyles.Bottom | AnchorStyles.Right)\r\n\t\tbtnOk.Location = Point(105, buttonHeight)\r\n\t\tself.Controls.Add(btnOk)\r\n\t\tbtnOk.Click += self.okButtonPressed\r\n\r\n\t\t# Cancel button\r\n\t\tbtnCancel = Button()\r\n\t\tbtnCancel.Text = \"Cancel\"\r\n\t\tbtnCancel.Anchor = (AnchorStyles.Bottom | AnchorStyles.Right)\r\n\t\tbtnCancel.Location = Point(185, buttonHeight)\r\n\t\tself.Controls.Add(btnCancel)\r\n\t\tbtnCancel.Click += self.cancelButtonPressed\r\n\t\t\r\n\t\t# Draw main form\r\n\t\tself.ClientSize = System.Drawing.Size(formWidth, formHeight)\r\n\t\tself.BringToFront()\r\n\t\tself.CenterToScreen()\r\n\t\tself.FormBorderStyle = FormBorderStyle.FixedSingle\r\n\t\tself.Name = formTitle\r\n\t\tself.Text = formTitle\r\n\t\tself.ResumeLayout(False)\r\n\t\r\n\t# Event if OK button pressed\r\n\tdef okButtonPressed(self, sender, args):\r\n\t\tself.Close()\r\n\t\tself.runNextOutput = True\r\n\r\n\t# Event if OK button pressed\r\n\tdef cancelButtonPressed(self, sender, args):\r\n\t\tself.choice = None\r\n\t\tself.Close()\r\n\t\tself.runNextOutput = False \r\n\r\n\t# Event if dropdown changes\r\n\tdef newItemSelected(self, sender, e):\r\n\t\tself.choice = sender.SelectedItem.Value\r\n\t\tself.runNextOutput = False\r\n\r\n# Show form to the user\r\nobjForm = MainForm()\r\nobjForm.ShowDialog()\r\n\r\n# Return the selected object and if it was cancelled\r\nchosenItem = objForm.choice\r\n\r\nif not chosenItem:\r\n\tOUT = None, True\r\nelse:\r\n\tOUT = chosenItem, False",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Thanks for the tips and example Cyril!\r\n# https://github.com/Cyril-Pop/IronPython-Samples/blob/master/WinForms/combobox%2BDataBinding%20with%20DataTable.py\r\n\r\nimport clr\r\n\r\nclr.AddReference(\"System.Drawing\")\r\nclr.AddReference(\"System.Windows.Forms\")\r\n\r\nimport System\r\nimport System.Drawing\r\n\r\nfrom System.Drawing import *\r\nfrom System.Windows.Forms import *\r\n\r\nfrom collections import namedtuple\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Imports from Dynamo\r\nform_title  = IN[0]\r\nkeys        = tolist(IN[1])\r\nvalues      = tolist(IN[2])\r\nform_width  = IN[3]\r\nform_height = IN[4]\r\n\r\n# Class for key/value pair\r\nclass MyItem():\r\n\tdef __init__(self, key, value):\r\n\t\tself.Key = key\r\n\t\tself.Value = value\r\n\r\n# Make key value pairs\r\nlist_of_items = [MyItem(i,j) for i,j in zip(keys, values)] \r\n\r\n# Class for main winform\r\nclass MainForm(Form):\r\n\t\r\n\t# Initialize form object\r\n\tdef __init__(self, list_elements, title, formWidth, formHeight):\r\n\t\t# Begin with first value\r\n\t\tself.list_elements = list_elements\r\n\t\tself.title  = title\r\n\t\tself.formWidth = formWidth\r\n\t\tself.formHeight = formHeight\r\n\t\tself.choice = list_of_items[0].Value\r\n\t\tself.InitializeComponent()\r\n\t\r\n\t# Make form components\r\n\tdef InitializeComponent(self):\r\n\t\t\r\n\t\t# Add buttons\r\n\t\tself._comboBox = System.Windows.Forms.ComboBox()\r\n\t\tself._buttonCancel = System.Windows.Forms.Button()\r\n\t\tself._buttonOK = System.Windows.Forms.Button()\r\n\t\tself.SuspendLayout()\r\n\t\t\r\n\t\t# Combo box\r\n\t\tself._comboBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right\r\n\t\tself._comboBox.Location = System.Drawing.Point(20, 20)\r\n\t\tself._comboBox.Size = System.Drawing.Size(self.formWidth - 40, 21)\r\n\t\tself._comboBox.DataSource = self.list_elements\r\n\t\tself._comboBox.DisplayMember = \"Key\"\r\n\t\tself._comboBox.ValueMember = \"Value\"\r\n\t\tself._comboBox.SelectedIndexChanged += self.ComboBox1SelectedIndexChanged\r\n\t\t\r\n\t\t# OK button\r\n\t\tself._buttonOK.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right\r\n\t\tself._buttonOK.Location = System.Drawing.Point(self.formWidth-180, self.formHeight-50)\r\n\t\tself._buttonOK.Name = \"buttonOK\"\r\n\t\tself._buttonOK.Size = System.Drawing.Size(80, 25)\r\n\t\tself._buttonOK.TabIndex = 1\r\n\t\tself._buttonOK.Text = \"OK\"\r\n\t\tself._buttonOK.UseVisualStyleBackColor = True\r\n\t\tself._buttonOK.Click += self.ButtonOKClick\r\n\r\n\t\t# Cancel button\r\n\t\tself._buttonCancel.Anchor =  System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right\r\n\t\tself._buttonCancel.Location = System.Drawing.Point(self.formWidth-100, self.formHeight-50)\r\n\t\tself._buttonCancel.Name = \"buttonCancel\"\r\n\t\tself._buttonCancel.Size = System.Drawing.Size(80, 25)\r\n\t\tself._buttonCancel.TabIndex = 1\r\n\t\tself._buttonCancel.Text = \"Cancel\"\r\n\t\tself._buttonCancel.UseVisualStyleBackColor = True\r\n\t\tself._buttonCancel.Click += self.ButtonCancelClick\r\n\t\t\r\n\t\t# Draw main form\r\n\t\tself.ClientSize = System.Drawing.Size(self.formWidth, self.formHeight)\r\n\t\tself.MinimumSize = self.ClientSize + System.Drawing.Size(20, 20)\r\n\t\tself.Controls.Add(self._comboBox)\r\n\t\tself.Controls.Add(self._buttonOK)\r\n\t\tself.Controls.Add(self._buttonCancel)\r\n\t\tself.ControlBox = False\r\n\t\tself.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show\r\n\t\tself.Name = \"MainForm\"\r\n\t\tself.Text = self.title\r\n\t\tself.BringToFront()\r\n\t\tself.CenterToScreen()\r\n\t\t# self.FormBorderStyle = FormBorderStyle.FixedSingle\r\n\t\tself.ResumeLayout(False)\r\n\r\n\t# Event if dropdown changes\r\n\tdef ComboBox1SelectedIndexChanged(self, sender, e):\r\n\t\tself.choice = sender.SelectedItem.Value\r\n\r\n\t# Event if OK button pressed\r\n\tdef ButtonOKClick(self, sender, e):\r\n\t\tself.Close()\r\n\t\tself.runNextOutput = True \r\n\r\n\t# Event if OK button pressed\r\n\tdef ButtonCancelClick(self, sender, e):\r\n\t\tself.choice = None\r\n\t\tself.Close()\r\n\t\tself.runNextOutput = False\r\n\r\n# Show form to the user\r\nobjForm = MainForm(list_of_items,\r\n\t\t\t\t   title = form_title,\r\n\t\t\t\t   formWidth = form_width,\r\n\t\t\t\t   formHeight = form_height)\r\n\r\nobjForm.ShowDialog()\r\n\r\n# Return the selected object and if it was cancelled\r\nchosenItem = objForm.choice\r\n\r\nif not chosenItem:\r\n\tOUT = None, True\r\nelse:\r\n\tOUT = chosenItem, False",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "7d0efe7ca2d24000bcf213bfad50e8bb",
@@ -40,6 +40,24 @@
           "Id": "a47d8a93764841e5bfdf025fff711f80",
           "Name": "IN[2]",
           "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "c5d9c843508a450aa720dfd41bc0f0e5",
+          "Name": "IN[3]",
+          "Description": "Input #3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "905771da6b0c46bca410fd616cde67e5",
+          "Name": "IN[4]",
+          "Description": "Input #4",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -218,6 +236,58 @@
       ],
       "Replication": "Disabled",
       "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "formWidth",
+        "TypeName": "int",
+        "TypeRank": 0,
+        "DefaultValue": "400",
+        "Description": ""
+      },
+      "Id": "aad372751a8b46258fff3611b13dbf3c",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "acaec9aae84f487d9e4d03ac8458301e",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "formHeight",
+        "TypeName": "int",
+        "TypeRank": 0,
+        "DefaultValue": "120",
+        "Description": ""
+      },
+      "Id": "8f70952e7c3f4efaaa4c55fd08dbe4bf",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "21ffafb3b144455d954ab73bf2065158",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     }
   ],
   "Connectors": [
@@ -250,6 +320,16 @@
       "Start": "de002c40017d4b7d9e8f53b14aed744e",
       "End": "a47d8a93764841e5bfdf025fff711f80",
       "Id": "8eee31564ee446bf80a065596164b6e2"
+    },
+    {
+      "Start": "acaec9aae84f487d9e4d03ac8458301e",
+      "End": "c5d9c843508a450aa720dfd41bc0f0e5",
+      "Id": "b2b47773deaa4a1daa183b264541daed"
+    },
+    {
+      "Start": "21ffafb3b144455d954ab73bf2065158",
+      "End": "905771da6b0c46bca410fd616cde67e5",
+      "Id": "9c949e6639af4e37938b0b9ef4de9c5c"
     }
   ],
   "Dependencies": [],
@@ -285,8 +365,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 250.0,
-        "Y": 0.0
+        "X": 206.65307300484233,
+        "Y": -8.9243673225324187
       },
       {
         "ShowGeometry": true,
@@ -295,8 +375,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 688.56540378672048,
-        "Y": -66.545945496311219
+        "X": 659.24248258411387,
+        "Y": -74.195403201339047
       },
       {
         "ShowGeometry": true,
@@ -305,8 +385,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -353.53056344885727,
-        "Y": -60.804805882564409
+        "X": -361.18002115388515,
+        "Y": -97.7771847901989
       },
       {
         "ShowGeometry": true,
@@ -315,8 +395,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 460.90486489253465,
-        "Y": 1.9070276357633134
+        "X": 431.58194368992804,
+        "Y": -5.7424300692645147
       },
       {
         "ShowGeometry": true,
@@ -325,8 +405,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 691.40324283511359,
-        "Y": 66.618378198524454
+        "X": 662.080321632507,
+        "Y": 58.968920493496626
       },
       {
         "ShowGeometry": true,
@@ -335,8 +415,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -303.882989068082,
-        "Y": 17.74905469516969
+        "X": -325.55645256566083,
+        "Y": -30.697510770006573
       },
       {
         "ShowGeometry": true,
@@ -345,13 +425,33 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -250.04584793954942,
-        "Y": 110.84873472799612
+        "X": -269.16949220211893,
+        "Y": 42.003615382745664
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "aad372751a8b46258fff3611b13dbf3c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -171.39862278935516,
+        "Y": 126.85338209285993
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "8f70952e7c3f4efaaa4c55fd08dbe4bf",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -177.63145011523636,
+        "Y": 200.39958602805467
       }
     ],
     "Annotations": [],
-    "X": 297.43982258509521,
-    "Y": 281.50009792760977,
+    "X": 262.43982258509521,
+    "Y": 266.50009792760977,
     "Zoom": 0.78436932804482684
   }
 }

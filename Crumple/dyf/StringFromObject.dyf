@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Get inputs\r\nitems = IN[0] if isinstance(IN[0], list) else [IN[0]]\r\n\r\n# Convert to strings\r\nstrings = []\r\n\r\nfor i in items:\r\n\ttostr = str(i)\r\n\ttry:\r\n\t\tind = tostr.index(\".\")\r\n\t\tstrings.append(tostr[:ind])\r\n\texcept:\r\n\t\tstrings.append(tostr)\r\n\r\n# Define outputs\r\nOUT = strings",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\ndef toString(obj):\r\n\tobj = str(obj)\r\n\tif obj[-1] == \"0\" or obj[-1] == \".\":\r\n\t\ttry:\r\n\t\t\tnewObj = obj.rstrip('0').rstrip('.')\r\n\t\t\tnumObj = float(newObj)\r\n\t\t\treturn newObj\r\n\t\texcept:\r\n\t\t\treturn obj\r\n\telse:\r\n\t\treturn obj\r\n\r\n# Get inputs\r\nobjects = tolist(IN[0])\r\n\r\n# Define outputs\r\nOUT = objOrList([toString(o) for o in objects])",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "3754d6e9934745b193c4bbf02cb70564",
       "Inputs": [
@@ -39,7 +40,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -103,13 +104,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -143,8 +145,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 0.0,
-        "Y": 0.0
+        "X": -61.694629770866584,
+        "Y": -1.3863961746262135
       },
       {
         "ShowGeometry": true,
@@ -158,8 +160,8 @@
       }
     ],
     "Annotations": [],
-    "X": 198.38660384885839,
-    "Y": 237.83079653012049,
-    "Zoom": 2.370040607913583
+    "X": -71.424824570647331,
+    "Y": 322.229563055902,
+    "Zoom": 1.4425890929331342
   }
 }

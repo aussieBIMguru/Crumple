@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr \r\n\r\n# Revit API\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc\r\ndoc = IN[1]\r\n\r\n# Inputs, make sure it's a list\r\nnumbers = IN[0] if isinstance(IN[0], list) else [IN[0]]\r\n\r\n# Container lists for iteration\r\nsht_l, num_l, matches, matches_clean, fails = [], [], [], [], []\r\n\r\n# Get all sheets and their numbers\r\nsheets = FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.ViewSheet).ToElements()\r\n\r\nfor s in sheets:\r\n\tsht_l.append(s)\r\n\tnum_l.append(s.SheetNumber)\r\n\r\n# Find matching sheets, catch the non-matches\r\nfor n in numbers:\r\n\ttry:\r\n\t\tind = num_l.index(n)\r\n\t\tmatch = sht_l[ind]\r\n\t\tmatches.append(match)\r\n\t\tmatches_clean.append(match)\r\n\texcept:\r\n\t\tind = numbers.index(n)\r\n\t\tmatches.append(\"No match\")\r\n\t\tfails.append(ind)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [matches, matches_clean, fails]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr \r\n\r\n# Revit API\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FilteredElementCollector, ViewSheet\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n\tresult = input if isinstance(input, list) else [input]\r\n\treturn result\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Current doc\r\ndoc = IN[1]\r\n\r\n# Inputs, make sure it's a list\r\nnumbers = tolist(IN[0])\r\n\r\n# Container lists for iteration\r\nsheets_out, matched = [],[]\r\n\r\n# Get all sheets and their numbers\r\nsheets  = FilteredElementCollector(doc).OfClass(ViewSheet).ToElements()\r\nex_nums = [s.SheetNumber for s in sheets]\r\n\r\n# Find matching sheets, catch the non-matches\r\nfor n in numbers:\r\n\tif n in ex_nums:\r\n\t\tind = ex_nums.index(n)\r\n\t\tmatch = sheets[ind]\r\n\t\tsheets_out.append(match)\r\n\t\tmatched.append(True)\r\n\telse:\r\n\t\tsheets_out.append(None)\r\n\t\tmatched.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(sheets_out), objOrList(matched)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "923a0935896c4f16b7f7ed3b37e23a23",
       "Inputs": [
@@ -48,7 +49,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -100,11 +101,11 @@
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
-      "Code": "x[0];\nx[1];\nx[2];",
+      "Code": "x[0];\nx[1];",
       "Id": "de0d0dd6f9a048d88bbbe5af9fd7a5c0",
       "Inputs": [
         {
-          "Id": "1680085b585e42bdb29374903f4a32fe",
+          "Id": "c729e1a4e3d0430aadf4a467597e33c1",
           "Name": "x",
           "Description": "x",
           "UsingDefaultValue": false,
@@ -115,7 +116,7 @@
       ],
       "Outputs": [
         {
-          "Id": "ed563687b4f243e3a1a17e9ce8be5c46",
+          "Id": "6d3f56e488e342018f887aeca7f040e7",
           "Name": "",
           "Description": "Value of expression at line 1",
           "UsingDefaultValue": false,
@@ -124,18 +125,9 @@
           "KeepListStructure": false
         },
         {
-          "Id": "cf0b869ee1254f619715434dae1ea577",
+          "Id": "e6c0683cdcd34212b59f6abe01af189d",
           "Name": "",
           "Description": "Value of expression at line 2",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "c088f4b78e844c91b661cccd1c56b4dd",
-          "Name": "",
-          "Description": "Value of expression at line 3",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -149,32 +141,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//Successful results only.\r\nmatches_only",
+      "Symbol": "//Did we find a match?\r\nfoundSheet",
       "Id": "66517b8d732843dea3555df0c74e223d",
       "Inputs": [
         {
           "Id": "12afef8458d4405892fb09ffe0ffdbd4",
-          "Name": "",
-          "Description": "",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [],
-      "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
-      "ElementResolver": null,
-      "Symbol": "//These can be used to filter out the failing results.\r\n//Feed in these to a 'get item at index' over another list.\r\nfailing_indices",
-      "Id": "17c296bb95414df69da023446b2767d4",
-      "Inputs": [
-        {
-          "Id": "c6d9b45468ad4a0c90625c74a066ce45",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -257,8 +228,8 @@
   "Connectors": [
     {
       "Start": "e5965dcacfc94431bf444010ac6b34d9",
-      "End": "1680085b585e42bdb29374903f4a32fe",
-      "Id": "feffebc3df9f4b3b8e1518f8ede9b385"
+      "End": "c729e1a4e3d0430aadf4a467597e33c1",
+      "Id": "2e187d1fde2d445697f0fe0dd4582274"
     },
     {
       "Start": "332d7a8f16bf4dec9767b521bb7d01e0",
@@ -266,19 +237,14 @@
       "Id": "9767bffcdd444b8e99c55c7e8fd44f0b"
     },
     {
-      "Start": "ed563687b4f243e3a1a17e9ce8be5c46",
+      "Start": "6d3f56e488e342018f887aeca7f040e7",
       "End": "bec07abf5bb640ce98189b3899debe15",
-      "Id": "4a9be08fcd1149b0ac6ccb2e6718040d"
+      "Id": "861c2b7925104842ac37b8261911ef5e"
     },
     {
-      "Start": "cf0b869ee1254f619715434dae1ea577",
+      "Start": "e6c0683cdcd34212b59f6abe01af189d",
       "End": "12afef8458d4405892fb09ffe0ffdbd4",
-      "Id": "0a529b52be9b4195add7ce371d32b9fe"
-    },
-    {
-      "Start": "c088f4b78e844c91b661cccd1c56b4dd",
-      "End": "c6d9b45468ad4a0c90625c74a066ce45",
-      "Id": "f19a575c79a14b0490064d9f30f34c4b"
+      "Id": "22f68c6e6a604bca93ed9bf227b198d9"
     },
     {
       "Start": "6490e1f07bee4e609af8bdbcc58af781",
@@ -304,13 +270,14 @@
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -344,8 +311,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 604.4945100108821,
-        "Y": -100.36275027204752
+        "X": 657.951224242335,
+        "Y": -38.5206691023275
       },
       {
         "ShowGeometry": true,
@@ -354,8 +321,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -54.71140556035391,
-        "Y": -0.15310382203463746
+        "X": -91.3973859152726,
+        "Y": -34.742742442386515
       },
       {
         "ShowGeometry": true,
@@ -374,18 +341,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 602.0,
-        "Y": 16.0
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Output",
-        "Id": "17c296bb95414df69da023446b2767d4",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 606.4945100108821,
-        "Y": 120.87922023940183
+        "X": 655.45671423145291,
+        "Y": 77.842081169720018
       },
       {
         "ShowGeometry": true,
@@ -409,8 +366,8 @@
       }
     ],
     "Annotations": [],
-    "X": 287.84139436661144,
-    "Y": 99.922180813019224,
-    "Zoom": 0.9540429248828125
+    "X": 131.13656532602903,
+    "Y": 178.79296298154966,
+    "Zoom": 0.65867485215821509
   }
 }

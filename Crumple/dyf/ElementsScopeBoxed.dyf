@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory\r\n\r\n# Current doc/app/ui\r\ndoc = IN[1]\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nelements = uwlist(IN[0])\r\nallBoxNames, usedBoxes, indBoxes, hasBox = [],[],[],[]\r\n\r\n# Get all scope boxes, make them a list and get their names\r\nallBoxes = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_VolumeOfInterest)\r\n\r\nfor s in allBoxes:\r\n\tn = s.Name\r\n\tallBoxNames.append(n)\r\n\tindBoxes.append(s)\r\n\r\n# Check if the element has a scope box and return it if so\r\nfor e in elements:\r\n\ttry:\r\n\t\tsn = e.GetParameters(\"Scope Box\")[0].AsValueString()\r\n\t\tsi = allBoxNames.index(sn)\r\n\t\tusedBoxes.append(indBoxes[si])\r\n\t\thasBox.append(True)\r\n\texcept:\r\n\t\tusedBoxes.append(None)\r\n\t\thasBox.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = usedBoxes, hasBox",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory\r\n\r\n# Current doc/app/ui\r\ndoc = IN[1]\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nelements = uwlist(IN[0])\r\nallBoxNames, usedBoxes, indBoxes, hasBox = [],[],[],[]\r\n\r\n# Get all scope boxes, make them a list and get their names\r\nallBoxes = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_VolumeOfInterest)\r\n\r\nfor s in allBoxes:\r\n\tn = s.Name\r\n\tallBoxNames.append(n)\r\n\tindBoxes.append(s)\r\n\r\n# Check if the element has a scope box and return it if so\r\nfor e in elements:\r\n\ttry:\r\n\t\tsn = e.GetParameters(\"Scope Box\")[0].AsValueString()\r\n\t\tsi = allBoxNames.index(sn)\r\n\t\tusedBoxes.append(indBoxes[si])\r\n\t\thasBox.append(True)\r\n\texcept:\r\n\t\tusedBoxes.append(None)\r\n\t\thasBox.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(usedBoxes), objOrList(hasBox)",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "5b3b55e37aa4436c83e6514eff4a884c",
@@ -283,15 +283,15 @@
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": 0.23855733577588106,
-      "EyeY": 78.987985222705078,
-      "EyeZ": 44.000550597987569,
-      "LookX": -0.23855733577588106,
-      "LookY": -78.987985222705078,
-      "LookZ": -44.000550597987569,
-      "UpX": -0.0040604653768241405,
-      "UpY": 0.66261970996856689,
-      "UpZ": -0.74894499778747559
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "NodeViews": [
       {
@@ -366,8 +366,8 @@
       }
     ],
     "Annotations": [],
-    "X": 376.42861449653168,
-    "Y": 269.720398067422,
+    "X": 80.428614496531679,
+    "Y": 232.72039806742202,
     "Zoom": 0.72752745234751126
   }
 }
