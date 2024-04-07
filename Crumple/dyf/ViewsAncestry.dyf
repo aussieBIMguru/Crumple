@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = IN[1]\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nviewlist  = uwlist(IN[0])\r\nalltrees, alldepths, hasparents = [],[],[]\r\n\r\n# Exhaust the lineage\r\nfor v in viewlist:\r\n\t\r\n\tbreaker = 0\r\n\tcheckview = v\r\n\ttreedepth = 1\r\n\tviewtree  = []\r\n\tgodeeper = True\r\n\t\r\n\twhile godeeper and breaker < 99:\r\n\t\r\n\t\tbreaker += 1\r\n\t\t\r\n\t\ttry:\r\n\t\t\tparentId  = checkview.get_Parameter(BuiltInParameter.SECTION_PARENT_VIEW_NAME).AsElementId()\r\n\t\t\tcheckview = Document.GetElement(doc, parentId)\r\n\t\t\t\r\n\t\t\tif checkview != None:\r\n\t\t\t\ttreedepth += 1\r\n\t\t\t\tviewtree.append(checkview)\r\n\t\t\telse:\r\n\t\t\t\tgodeeper = False\r\n\t\texcept:\r\n\t\t\tgodeeper = False\r\n\t\r\n\talltrees.append(viewtree)\r\n\talldepths.append(treedepth)\r\n\thasparents.append(treedepth > 1)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [alltrees, alldepths, hasparents]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import BuiltInParameter\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nviewlist  = uwlist(IN[0])\r\nalltrees, alldepths, hasparents = [],[],[]\r\n\r\nBIP_PARENT = BuiltInParameter.SECTION_PARENT_VIEW_NAME\r\n\r\n# Exhaust the lineage\r\nfor v in viewlist:\r\n\t\r\n\tdoc = v.Document\r\n\t\r\n\tbreaker = 0\r\n\tcheckview = v\r\n\ttreedepth = 1\r\n\tviewtree  = []\r\n\tgodeeper = True\r\n\t\r\n\twhile godeeper and breaker < 99:\r\n\t\r\n\t\tbreaker += 1\r\n\t\t\r\n\t\ttry:\r\n\t\t\tparentId  = checkview.get_Parameter(BIP_PARENT).AsElementId()\r\n\t\t\tcheckview = doc.GetElement(parentId)\r\n\t\t\t\r\n\t\t\tif checkview != None:\r\n\t\t\t\ttreedepth += 1\r\n\t\t\t\tviewtree.append(checkview)\r\n\t\t\telse:\r\n\t\t\t\tgodeeper = False\r\n\t\texcept:\r\n\t\t\tgodeeper = False\r\n\t\r\n\talltrees.append(viewtree)\r\n\talldepths.append(treedepth)\r\n\thasparents.append(treedepth > 1)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [objOrList(o) for o in [alltrees, alldepths, hasparents]]",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "dd9ccb6ba3de40c7a93100e405ff6660",
       "Inputs": [
@@ -21,15 +22,6 @@
           "Id": "84d7e816d35940758573ba0f0c0e8e4b",
           "Name": "IN[0]",
           "Description": "Input #0",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "e66f518311514d1f96f6448d2302bcb4",
-          "Name": "IN[1]",
-          "Description": "Input #1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -48,7 +40,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -186,72 +178,6 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
-      "Parameter": {
-        "Name": "docOrLink",
-        "TypeName": "var",
-        "TypeRank": -1,
-        "DefaultValue": "null",
-        "Description": "Uses current if none provided.\nAccepts document or link instance."
-      },
-      "Id": "7beaba013ae5497bac60e4f2bd820a42",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "30e2453742c44ca1bff0885cf4eb9b40",
-          "Name": "",
-          "Description": "Symbol",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "951c8ec9d28e46079270f08568b7ea1f",
-      "Inputs": [
-        {
-          "Id": "6d90df18794645168314bad8cc42d90f",
-          "Name": "docOrLink",
-          "Description": "var[]..[]\nDefault value : null",
-          "UsingDefaultValue": true,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "09df4a73e90a4e089d98e26eccf3e63f",
-          "Name": "document",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "ca4512b3a5374bf2ac7bf87df89ec5ec",
-          "Name": "outcome",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
     }
   ],
   "Connectors": [
@@ -279,38 +205,18 @@
       "Start": "735b114b440d4818bdd8b6b1b45b8946",
       "End": "78ba02111b3b4abeb07ceffcd3f50302",
       "Id": "b03f54dc34d24e3ca50f81b8b92335b2"
-    },
-    {
-      "Start": "30e2453742c44ca1bff0885cf4eb9b40",
-      "End": "6d90df18794645168314bad8cc42d90f",
-      "Id": "1f1107ee1d3f4ef9911eb4263913ab03"
-    },
-    {
-      "Start": "09df4a73e90a4e089d98e26eccf3e63f",
-      "End": "e66f518311514d1f96f6448d2302bcb4",
-      "Id": "aaf72e1872d047399ceba32eaff297fd"
     }
   ],
-  "Dependencies": [
-    "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc"
-  ],
-  "NodeLibraryDependencies": [
-    {
-      "Name": "Crumple",
-      "Version": "2022.2.13",
-      "ReferenceType": "Package",
-      "Nodes": [
-        "951c8ec9d28e46079270f08568b7ea1f"
-      ]
-    }
-  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -386,31 +292,11 @@
         "Excluded": false,
         "X": 709.89255714809417,
         "Y": 106.64108901540077
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "7beaba013ae5497bac60e4f2bd820a42",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": -483.0880866276147,
-        "Y": 80.127697338808517
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "© Revit.GetDocument",
-        "Id": "951c8ec9d28e46079270f08568b7ea1f",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": -77.393166978050289,
-        "Y": 82.4676964996699
       }
     ],
     "Annotations": [],
-    "X": 372.46357651241033,
-    "Y": 35.932731857314877,
+    "X": 71.463576512410327,
+    "Y": 172.93273185731488,
     "Zoom": 1.1042780629024851
   }
 }

@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n# Boilerplate text\nimport clr\n\nclr.AddReference(\"RevitNodes\")\nimport Revit\nclr.ImportExtensions(Revit.Elements)\nclr.ImportExtensions(Revit.GeometryConversion)\n\nclr.AddReference(\"RevitAPI\")\nimport Autodesk \nfrom Autodesk.Revit.DB import *\n\nclr.AddReference('RevitServices')\nimport RevitServices\nfrom RevitServices.Persistence import DocumentManager\nfrom RevitServices.Transactions import TransactionManager\n\n# Define list/unwrap list functions\ndef tolist(input):\n    result = input if isinstance(input, list) else [input]\n    return result\n\ndef uwlist(input):\n    result = input if isinstance(input, list) else [input]\n    return UnwrapElement(result)\n\n# Current doc/app/ui\ndoc = DocumentManager.Instance.CurrentDBDocument\n\n# Preparing input from dynamo to revit\nwkst_ele = uwlist(IN[0])\nwkst_nam = tolist(IN[1])\n\n# Do some action in a Transaction\nTransactionManager.Instance.EnsureInTransaction(doc)\n\nwksts,bools = [],[]\n\nfor w,n in zip(wkst_ele, wkst_nam):\n\tWorksetTable.RenameWorkset(doc,w.Id,n)\n\twksts.append(w)\n\tbools.append(w.Name == n)\n\t\nTransactionManager.Instance.TransactionTaskDone()\n\n# Preparing output to Dynamo\nOUT = [wksts,bools]",
+      "Code": "# Made by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n# Boilerplate text\nimport clr\n\nclr.AddReference(\"RevitAPI\")\nimport Autodesk \nfrom Autodesk.Revit.DB import WorksetTable\n\nclr.AddReference('RevitServices')\nimport RevitServices\nfrom RevitServices.Persistence import DocumentManager\nfrom RevitServices.Transactions import TransactionManager\n\n# Define list/unwrap list functions\ndef tolist(input):\n    result = input if isinstance(input, list) else [input]\n    return result\n\ndef uwlist(input):\n    result = input if isinstance(input, list) else [input]\n    return UnwrapElement(result)\n\ndef objOrList(input, initial = IN[0]):\n\tif isinstance(initial, list):\n\t\treturn input\n\telse:\n\t\treturn input[0]\n\n# Current doc/app/ui\ndoc = DocumentManager.Instance.CurrentDBDocument\n\n# Preparing input from dynamo to revit\nwkst_ele = uwlist(IN[0])\nwkst_nam = tolist(IN[1])\n\n# Do some action in a Transaction\nTransactionManager.Instance.EnsureInTransaction(doc)\n\nbools = []\n\nfor w,n in zip(wkst_ele, wkst_nam):\n\ttry:\n\t\tWorksetTable.RenameWorkset(doc, w.Id, \"__\" + n)\n\t\tWorksetTable.RenameWorkset(doc, w.Id, n)\n\t\tbools.append(True)\n\texcept:\n\t\tbools.append(False)\n\t\nTransactionManager.Instance.TransactionTaskDone()\n\n# Preparing output to Dynamo\nOUT = objOrList(wkst_ele), objOrList(bools)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "f48d02e058474c1a9e9ef2d03165dad9",
       "Inputs": [
@@ -48,13 +49,13 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "workset",
+        "Name": "worksets",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -80,7 +81,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "name",
+        "Name": "names",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -106,7 +107,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "workset",
+      "Symbol": "worksets",
       "Id": "acc32620238e4dff8dafdb07acd6d6b4",
       "Inputs": [
         {
@@ -166,7 +167,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "success",
+      "Symbol": "wasRenamed",
       "Id": "3fae26c480904b99befdf6138fe27440",
       "Inputs": [
         {
@@ -213,13 +214,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -298,8 +300,8 @@
       }
     ],
     "Annotations": [],
-    "X": 17.486411765145327,
-    "Y": 370.10300421825082,
-    "Zoom": 1.9271489727283166
+    "X": -73.891069453816044,
+    "Y": 268.88723774801065,
+    "Zoom": 1.3820425606113835
   }
 }

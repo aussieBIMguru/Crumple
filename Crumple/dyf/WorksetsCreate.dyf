@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n# Boilerplate text\nimport clr\n\nclr.AddReference(\"RevitServices\")\nimport RevitServices\nfrom RevitServices.Persistence import DocumentManager \nfrom RevitServices.Transactions import TransactionManager \n\nclr.AddReference(\"RevitAPI\")\nimport Autodesk \nfrom Autodesk.Revit.DB import *\n\n# Current doc/app/ui\ndoc = DocumentManager.Instance.CurrentDBDocument\n\n# Define list/unwrap list functions\ndef tolist(input):\n    result = input if isinstance(input, list) else [input]\n    return result\n\n# Preparing input from dynamo to revit\nnames = tolist(IN[0])\nworksets,ids,bools = [],[],[]\n\n# Do some action in a Transaction\nTransactionManager.Instance.EnsureInTransaction(doc)\n\nfor n in names:\n\ttry:\n\t\tw_r = Workset.Create(doc, n)\n\t\tworksets.append(w_r)\n\t\tids.append(w_r.Id.IntegerValue)\n\t\tbools.append(True)\n\texcept:\n\t\tworksets.append(None)\n\t\tids.append(None)\n\t\tbools.append(False)\n\nTransactionManager.Instance.TransactionTaskDone()\n\n# Preparing output to Dynamo\nOUT = [worksets,ids,bools]",
+      "Code": "# Made by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n# Boilerplate text\nimport clr\n\nclr.AddReference(\"RevitServices\")\nimport RevitServices\nfrom RevitServices.Persistence import DocumentManager \nfrom RevitServices.Transactions import TransactionManager \n\nclr.AddReference(\"RevitAPI\")\nimport Autodesk \nfrom Autodesk.Revit.DB import FilteredWorksetCollector, WorksetKind, Workset\n\n# Current doc/app/ui\ndoc = DocumentManager.Instance.CurrentDBDocument\n\n# Define list/unwrap list functions\ndef tolist(input):\n    result = input if isinstance(input, list) else [input]\n    return result\n\ndef objOrList(input, initial = IN[0]):\n\tif isinstance(initial, list):\n\t\treturn input\n\telse:\n\t\treturn input[0]\n\n# Preparing input from dynamo to revit\nnew_names = tolist(IN[0])\n\nworksets_out, bools = [],[]\n\n# If document is workshared...\nif doc.IsWorkshared:\n\t# Do some action in a Transaction\n\tTransactionManager.Instance.EnsureInTransaction(doc)\n\t# Collect workset names\n\tworksets = FilteredWorksetCollector(doc).OfKind(WorksetKind.UserWorkset).ToWorksets()\n\tex_names = [w.Name for w in worksets]\n\t# For each workset...\n\tfor n in new_names:\n\t\tif n not in ex_names:\n\t\t\tworkset = Workset.Create(doc, n)\n\t\t\tworksets_out.append(workset)\n\t\t\tbools.append(True)\n\t\telse:\n\t\t\tworksets_out.append(None)\n\t\t\tbools.append(False)\n\t# Close transaction\n\tTransactionManager.Instance.TransactionTaskDone()\n# Otherwise we return nothing\nelse:\n\tfor n in new_names:\n\t\tworksets_out.append(None)\n\t\tbools.append(False)\n\n# Preparing output to Dynamo\nOUT = objOrList(worksets_out), objOrList(bools)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "8c75aaf3ea0642aa925f77265c0a9bff",
       "Inputs": [
@@ -39,13 +40,13 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "name",
+        "Name": "names",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -71,7 +72,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "workset",
+      "Symbol": "worksets",
       "Id": "23aa61846c3c4de6bb6dc1081c768995",
       "Inputs": [
         {
@@ -91,11 +92,11 @@
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
-      "Code": "wkst  = out[0];\nids   = out[1];\nbools = out[2];",
+      "Code": "wkst  = out[0];\nbools = out[1];",
       "Id": "e6221073966544e7adc2b5ddf4ec3636",
       "Inputs": [
         {
-          "Id": "274015272fa0488dbe32ff7a14abbd7c",
+          "Id": "fea471d4491e4af09c4a0b353514ec41",
           "Name": "out",
           "Description": "out",
           "UsingDefaultValue": false,
@@ -106,7 +107,7 @@
       ],
       "Outputs": [
         {
-          "Id": "16782dc61c6f446295b36f2e4261b7ad",
+          "Id": "0d34326ba2ad41ed89846315fab95b41",
           "Name": "",
           "Description": "wkst",
           "UsingDefaultValue": false,
@@ -115,16 +116,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "20966854be0148888a11c745b94de108",
-          "Name": "",
-          "Description": "ids",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "315f371b77104eafb66533ac8eaf0725",
+          "Id": "3e00acc11b5c45ba80da00391150ef9c",
           "Name": "",
           "Description": "bools",
           "UsingDefaultValue": false,
@@ -140,28 +132,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "id",
-      "Id": "fe5ae5ea50dd43c1b5a33ee4deb21329",
-      "Inputs": [
-        {
-          "Id": "5681b0b89ec0419fa51a8bb390f0828b",
-          "Name": "",
-          "Description": "",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [],
-      "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
-      "ElementResolver": null,
-      "Symbol": "success",
+      "Symbol": "wasCreated",
       "Id": "c5757921bce2415b9ea8022be33eadb9",
       "Inputs": [
         {
@@ -182,8 +153,8 @@
   "Connectors": [
     {
       "Start": "914aa19fa6db46478d9b90341744b357",
-      "End": "274015272fa0488dbe32ff7a14abbd7c",
-      "Id": "464376252a2f40479e63a0fb5c123237"
+      "End": "fea471d4491e4af09c4a0b353514ec41",
+      "Id": "a7248fbf49d34e81a4143ba6a710d98f"
     },
     {
       "Start": "b905ec1efd0547cc8c58b6ab254ea994",
@@ -191,30 +162,26 @@
       "Id": "b8bd4fa9c92b4d02bccc389a5162de74"
     },
     {
-      "Start": "16782dc61c6f446295b36f2e4261b7ad",
+      "Start": "0d34326ba2ad41ed89846315fab95b41",
       "End": "e05ef4a298554950be9833014187507c",
-      "Id": "886e745adb584497a6e5c698b53045d8"
+      "Id": "82669533af864afbaf4dd903cdbe5627"
     },
     {
-      "Start": "20966854be0148888a11c745b94de108",
-      "End": "5681b0b89ec0419fa51a8bb390f0828b",
-      "Id": "e055b1a3d6984f248f6d306eb73ead9e"
-    },
-    {
-      "Start": "315f371b77104eafb66533ac8eaf0725",
+      "Start": "3e00acc11b5c45ba80da00391150ef9c",
       "End": "789a82d2b03343cb8126952ec2da5310",
-      "Id": "982204b2e85a435fa94249b68d981517"
+      "Id": "0f7f5c9a7b784dd28453b7eceec2f65a"
     }
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -268,18 +235,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 444.5,
-        "Y": 5.1609109068907628
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Output",
-        "Id": "fe5ae5ea50dd43c1b5a33ee4deb21329",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 769.764291652378,
-        "Y": 16.720280299537762
+        "X": 453.63839517033716,
+        "Y": 6.2360162210480894
       },
       {
         "ShowGeometry": true,
@@ -293,8 +250,8 @@
       }
     ],
     "Annotations": [],
-    "X": -44.411314823334067,
-    "Y": 371.12636099304206,
-    "Zoom": 1.8602828705833516
+    "X": -132.88168629185333,
+    "Y": 297.04873374686434,
+    "Zoom": 0.95056608879939031
   }
 }

@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Current doc/app/ui\r\ndoc = IN[1]\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nwarnings  = uwlist(IN[0])\r\n\r\nfailingIds, failingElements = [],[]\r\n\r\n# Get messages\r\nfor w in warnings:\r\n\tids = w.GetFailingElements()\r\n\telements = [doc.GetElement(i) for i in ids]\r\n\tfailingElements.append(elements)\r\n\r\n# Preparing output to Dynamo\r\nOUT = failingElements",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nwarnings  = uwlist(IN[0])\r\ndoc = IN[1]\r\n\r\nfailingIds, failingElements = [],[]\r\n\r\n# Get messages\r\nfor w in warnings:\r\n\tids = w.GetFailingElements()\r\n\telements = [doc.GetElement(i) for i in ids]\r\n\tfailingElements.append(elements)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(failingElements)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "91decf398c4449d0b4043489d51c3aae",
       "Inputs": [
@@ -27,7 +28,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "bc697adf1cf644a6aa837cbbb61ad748",
+          "Id": "4d3c08fbf36d42d9bcd0e1e1bc8c9a1e",
           "Name": "IN[1]",
           "Description": "Input #1",
           "UsingDefaultValue": false,
@@ -48,7 +49,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -107,11 +108,11 @@
         "DefaultValue": "null",
         "Description": "Uses current if none provided.\nAccepts document or link instance."
       },
-      "Id": "e8b7e2d7abd74caa8506c34500595679",
+      "Id": "420414d7c5bb4e0d86f77e7af3e900c0",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "a4588a7e56364f1bb359655e51d5cab0",
+          "Id": "6b08d7d3763c494e8f77a54ea19f0e15",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -128,10 +129,10 @@
       "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
       "FunctionType": "Graph",
       "NodeType": "FunctionNode",
-      "Id": "518bf5d830404c4db90d5b94396d7fad",
+      "Id": "c464e2c93fd148aebef4d5995bab469e",
       "Inputs": [
         {
-          "Id": "2f141634db334b0eb83668f71f0480c4",
+          "Id": "fa73307a31724c5695a3173f10cb9731",
           "Name": "docOrLink",
           "Description": "var[]..[]\nDefault value : null",
           "UsingDefaultValue": true,
@@ -142,7 +143,7 @@
       ],
       "Outputs": [
         {
-          "Id": "caf29b41698840069f8b560ec6f40ea1",
+          "Id": "5cae31a3b6f34410a57dd31069d5ccbd",
           "Name": "document",
           "Description": "return value",
           "UsingDefaultValue": false,
@@ -151,7 +152,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "5082d393f4004426a687b3f36904242d",
+          "Id": "15cd28e88a0c4e6487c07508119929d2",
           "Name": "outcome",
           "Description": "return value",
           "UsingDefaultValue": false,
@@ -176,14 +177,14 @@
       "Id": "d498a75aa4b042949d2a8abc967d143f"
     },
     {
-      "Start": "a4588a7e56364f1bb359655e51d5cab0",
-      "End": "2f141634db334b0eb83668f71f0480c4",
-      "Id": "06100dbc73c14c868f39f68a11669360"
+      "Start": "6b08d7d3763c494e8f77a54ea19f0e15",
+      "End": "fa73307a31724c5695a3173f10cb9731",
+      "Id": "7f70a3a019ca490b8ad148a53c03dce5"
     },
     {
-      "Start": "caf29b41698840069f8b560ec6f40ea1",
-      "End": "bc697adf1cf644a6aa837cbbb61ad748",
-      "Id": "34e14f0c7fe24ddbb6c2086ce2de1790"
+      "Start": "5cae31a3b6f34410a57dd31069d5ccbd",
+      "End": "4d3c08fbf36d42d9bcd0e1e1bc8c9a1e",
+      "Id": "f6c3e2b53c404f6d9e2180f9c9854e22"
     }
   ],
   "Dependencies": [
@@ -192,20 +193,21 @@
   "NodeLibraryDependencies": [
     {
       "Name": "Crumple",
-      "Version": "2022.2.13",
+      "Version": "2024.3.1",
       "ReferenceType": "Package",
       "Nodes": [
-        "518bf5d830404c4db90d5b94396d7fad"
+        "c464e2c93fd148aebef4d5995bab469e"
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -239,8 +241,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 43.0,
-        "Y": -2.0
+        "X": -20.045114540685518,
+        "Y": -5.1522557270342872
       },
       {
         "ShowGeometry": true,
@@ -255,27 +257,27 @@
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "e8b7e2d7abd74caa8506c34500595679",
+        "Id": "420414d7c5bb4e0d86f77e7af3e900c0",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -414.6813169806195,
-        "Y": 73.414946996482541
+        "X": -464.70574820186596,
+        "Y": 90.3607087929878
       },
       {
         "ShowGeometry": true,
         "Name": "© Revit.GetDocument",
-        "Id": "518bf5d830404c4db90d5b94396d7fad",
+        "Id": "c464e2c93fd148aebef4d5995bab469e",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -23.610763860673046,
-        "Y": 77.37509784523229
+        "X": -75.878329785333108,
+        "Y": 96.690665594183727
       }
     ],
     "Annotations": [],
-    "X": 327.25118443670488,
-    "Y": 54.923727599439815,
-    "Zoom": 1.5777204268580103
+    "X": 15.992118330890605,
+    "Y": 164.32333434980217,
+    "Zoom": 0.90782117759959824
   }
 }

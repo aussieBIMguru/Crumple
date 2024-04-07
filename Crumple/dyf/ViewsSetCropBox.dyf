@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nviews   = uwlist(IN[0])\r\npcurves = tolist(IN[1])\r\nvisible = IN[2]\r\n\r\nviewout = []\r\n\r\n# Deconstruct curves and set the view crops\r\nfor v,pc in zip(views,pcurves):\r\n\r\n\tregionManager = v.GetCropRegionShapeManager()\r\n\t\r\n\tcurves_pc = PolyCurve.Curves(pc)\r\n\tcurves_rv = [c.ToRevitType() for c in curves_pc]\r\n\t\r\n\tcurveloop = Autodesk.Revit.DB.CurveLoop()\r\n\tfor c in curves_rv:\r\n\t\tcurveloop.Append(c)\r\n\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\t\r\n\tv.CropBoxVisible = visible\r\n\tif v.CropBoxActive == False:\r\n\t\tv.CropBoxActive  = True\r\n\t\r\n\tregionManager.SetCropShape(curveloop)\r\n\t\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\n\t\r\n\tviewout.append(v)\r\n\r\n# Preparing output to Dynamo\r\nOUT = viewout",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import CurveLoop\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nviews   = uwlist(IN[0])\r\npcurves = tolist(IN[1])\r\nvisible = IN[2]\r\n\r\nviewout = []\r\n\r\n# Deconstruct curves and set the view crops\r\nfor v,pc in zip(views,pcurves):\r\n\r\n\tregionManager = v.GetCropRegionShapeManager()\r\n\t\r\n\tcurves_pc = PolyCurve.Curves(pc)\r\n\tcurves_rv = [c.ToRevitType() for c in curves_pc]\r\n\t\r\n\tcurveloop = CurveLoop()\r\n\tfor c in curves_rv:\r\n\t\tcurveloop.Append(c)\r\n\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\t\r\n\tv.CropBoxVisible = visible\r\n\tif v.CropBoxActive == False:\r\n\t\tv.CropBoxActive  = True\r\n\t\r\n\tregionManager.SetCropShape(curveloop)\r\n\t\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\n\t\r\n\tviewout.append(v)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(viewout)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "d2ffccd8ee904905888c570eca97cfb7",
       "Inputs": [
@@ -57,7 +58,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -183,27 +184,28 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": 3628.5611194144217,
-      "EyeY": 22200.983782141619,
-      "EyeZ": 9579.23901816478,
-      "LookX": -2317.6294787894217,
-      "LookY": -22200.983782141619,
-      "LookZ": -9428.1450240241556,
-      "UpX": -0.19312339198054268,
-      "UpY": 0.58778525229247391,
-      "UpZ": -0.78562831711783654
+      "EyeX": -45759.7734375,
+      "EyeY": 51367.51171875,
+      "EyeZ": 72695.359375,
+      "LookX": 45759.7734375,
+      "LookY": -51367.51171875,
+      "LookZ": -72695.359375,
+      "UpX": 0.16903457045555115,
+      "UpY": 0.94832348823547363,
+      "UpZ": -0.26853266358375549
     },
     "NodeViews": [
       {
@@ -258,8 +260,8 @@
       }
     ],
     "Annotations": [],
-    "X": 280.84451838526974,
-    "Y": 298.70004889456874,
-    "Zoom": 2.4865775806990138
+    "X": 178.79975917439538,
+    "Y": 263.8317365559036,
+    "Zoom": 1.4466774676749781
   }
 }

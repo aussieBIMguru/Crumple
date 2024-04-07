@@ -3,7 +3,7 @@
   "IsCustomNode": true,
   "Category": "Crumple.Revit.Create",
   "Description": "Given a list of points and an elevation view type, will create elevation bodies (without markers) at those points.",
-  "Name": "© Views.CreateElevationBody",
+  "Name": "© Views.CreateElevationBodies",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nelev_pts = uwlist(IN[0])\r\nvtype = UnwrapElement(IN[1])\r\n\r\n# Make elevation markers\r\nmarkers = []\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor p in elev_pts:\r\n\telePt = p.ToXyz()\r\n\teleMarker = ElevationMarker.CreateElevationMarker(doc, vtype.Id, elePt, 100)\r\n\trvtMarker = eleMarker.ToDSType(True)\r\n\tmarkers.append(rvtMarker)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = markers",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import ElevationMarker\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nelev_pts = uwlist(IN[0])\r\nvtype    = UnwrapElement(IN[1])\r\nvTypeId  = vtype.Id\r\nscale    = IN[2]\r\n\r\n# Make elevation markers\r\nmarkers = []\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor p in elev_pts:\r\n\telePt = p.ToXyz()\r\n\teleMarker = ElevationMarker.CreateElevationMarker(doc, vTypeId, elePt, scale)\r\n\tmarkers.append(eleMarker)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(markers)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "9d4287fc56b5451ba3782f34fb0b2727",
       "Inputs": [
@@ -34,6 +35,15 @@
           "Level": 2,
           "UseLevels": false,
           "KeepListStructure": false
+        },
+        {
+          "Id": "ccf812dc77844f1a87a7f7c6b96aa356",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
         }
       ],
       "Outputs": [
@@ -48,13 +58,13 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "point",
+        "Name": "points",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -83,7 +93,7 @@
         "Name": "viewType",
         "TypeName": "var",
         "TypeRank": 0,
-        "DefaultValue": "None",
+        "DefaultValue": null,
         "Description": ""
       },
       "Id": "488aed46c1a84deba4dbe137c7f4df0b",
@@ -106,7 +116,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "elevationBody",
+      "Symbol": "elevationMarkers",
       "Id": "eab2bdadd67d47108c37d7f1a777a192",
       "Inputs": [
         {
@@ -122,6 +132,32 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "initialScale",
+        "TypeName": "int",
+        "TypeRank": 0,
+        "DefaultValue": "50",
+        "Description": "The scale to use in 1:X ratio"
+      },
+      "Id": "b1fe7423e7834a789d56110cc2540ec0",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "88335be18c5b4ad8a7990abc5cea19bb",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     }
   ],
   "Connectors": [
@@ -139,17 +175,23 @@
       "Start": "3192600af48345a29c976b96ce34490d",
       "End": "506b3570d0b24c2c9f862ec31c6a0421",
       "Id": "26e49575579448548f42dba7a81d8a2b"
+    },
+    {
+      "Start": "88335be18c5b4ad8a7990abc5cea19bb",
+      "End": "ccf812dc77844f1a87a7f7c6b96aa356",
+      "Id": "ff286b8b1f4c41f6b3b11902e8aa2a45"
     }
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -183,8 +225,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -23.526565693388733,
-        "Y": -47.344750044386984
+        "X": -35.810474236482406,
+        "Y": -54.254448599877179
       },
       {
         "ShowGeometry": true,
@@ -193,8 +235,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -44.053131386777522,
-        "Y": 71.310499911226032
+        "X": -8.7368943253831617,
+        "Y": 26.0135871585681
       },
       {
         "ShowGeometry": true,
@@ -205,11 +247,21 @@
         "Excluded": false,
         "X": 439.53482624184585,
         "Y": 1.1157034003630031
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "b1fe7423e7834a789d56110cc2540ec0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -158.56370356919592,
+        "Y": 96.68470989882951
       }
     ],
     "Annotations": [],
-    "X": 141.30623655414803,
-    "Y": 346.76777505290943,
-    "Zoom": 2.5266362015653767
+    "X": 160.83776553442459,
+    "Y": 341.37980902361892,
+    "Zoom": 0.92808738800394708
   }
 }

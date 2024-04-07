@@ -14,7 +14,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//All results, including views that\r\n//failed to place. These are most\r\n//likely already on a sheet.\r\nviewports;",
+      "Symbol": "viewports",
       "Id": "91a53a8133f043c9b35fa2f2bd57fa4b",
       "Inputs": [
         {
@@ -112,7 +112,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nimport sys\r\nsys.path.append('C:\\Program Files (x86)\\IronPython 2.7\\Lib')\r\n\r\nimport System\r\nfrom System import Array\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Function for unwrapping and forcing lists\r\ndef uwlist(input):\r\n\ttolist = input if isinstance(input, list) else [input]\r\n\treturn UnwrapElement(tolist)\r\n\r\ndef listpad(lst,count):\r\n\tpadded = []\r\n\tlength = len(lst)\r\n\tfor i in range(0,count):\r\n\t\tif i < length:\r\n\t\t\tpadded.append(lst[i])\r\n\t\telse:\r\n\t\t\tpadded.append(lst[-1])\r\n\treturn padded\r\n\r\n# Preparing input from dynamo to revit\r\nviews  = uwlist(IN[0])\r\nsheets = uwlist(IN[1])\r\npoints = listpad(uwlist(IN[2]), len(views))\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nviewports = []\r\nreport = []\r\n\r\nfor v,s,p in zip(views,sheets,points):\r\n\r\n\tisUnplaced = Viewport.CanAddViewToSheet(doc, s.Id, v.Id)\r\n\t\r\n\tif isUnplaced:\r\n\t\treport.append(\"\")\r\n\t\tvp = Viewport.Create(doc, s.Id, v.Id, p.ToXyz())\r\n\t\tviewports.append(vp)\r\n\telse:\r\n\t\treport.append(\"View is already placed.\")\r\n\t\tviewports.append(None)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = [viewports, report]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FilteredElementCollector, BasePoint, TemporaryViewMode, Viewport\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nfirstId = FilteredElementCollector(doc).OfClass(BasePoint).FirstElementId()\r\nVIEWMODE_TEMPHIDE = TemporaryViewMode.TemporaryHideIsolate\r\n\r\n# Function for unwrapping and forcing lists\r\ndef uwlist(input):\r\n\ttolist = input if isinstance(input, list) else [input]\r\n\treturn UnwrapElement(tolist)\r\n\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef listpad(lst,count):\r\n\tpadded = []\r\n\tlength = len(lst)\r\n\tfor i in range(0,count):\r\n\t\tif i < length:\r\n\t\t\tpadded.append(lst[i])\r\n\t\telse:\r\n\t\t\tpadded.append(lst[-1])\r\n\treturn padded\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Function to create viewport\r\ndef viewportCreate(view, sheet, point, typeId = None, myDoc = doc):\r\n\t# Convert point\r\n\tpt_rvt = point.ToXyz()\r\n\t# Isolate the view for the viewport\r\n\tview.IsolateElementTemporary(firstId)\r\n\t# Place the viewport, change its type\r\n\tvp = Viewport.Create(myDoc, sheet.Id, view.Id, pt_rvt)\r\n\tif typeId:\r\n\t\tvp.ChangeTypeId(typeId)\r\n\t# Reset temporary isolate\r\n\tview.DisableTemporaryViewMode(VIEWMODE_TEMPHIDE)\r\n\t# Return viewport\r\n\treturn vp\r\n\r\n# Preparing input from dynamo to revit\r\nviews  = uwlist(IN[0])\r\nsheets = uwlist(IN[1])\r\npoints = listpad(tolist(IN[2]), len(views))\r\nvpType = IN[3]\r\n\r\n# Viewport type Id\r\nif vpType:\r\n\tvpTypeId = UnwrapElement(vpType).Id\r\nelse:\r\n\tvpTypeId = None\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nviewports, results, outcomes = [],[],[]\r\n\r\nfor v,s,p in zip(views,sheets,points):\r\n\r\n\tisUnplaced = Viewport.CanAddViewToSheet(doc, s.Id, v.Id)\r\n\t\r\n\tif isUnplaced:\r\n\t\ttry:\r\n\t\t\tvp = viewportCreate(v, s, p, vpTypeId, doc)\r\n\t\t\tviewports.append(vp)\r\n\t\t\tresults.append(True)\r\n\t\t\toutcomes.append(\"SUCCESS: Viewport placed.\")\r\n\t\texcept:\r\n\t\t\tviewports.append(None)\r\n\t\t\tresults.append(False)\r\n\t\t\toutcomes.append(\"FAILURE: Viewport could not be placed.\")\r\n\telse:\r\n\t\tviewports.append(None)\r\n\t\tresults.append(False)\r\n\t\toutcomes.append(\"ERROR: View is already placed.\")\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = [objOrList(o) for o in [viewports, results, outcomes]]",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "1a2ba4004e97464595a5e9ab64feb901",
@@ -143,6 +143,15 @@
           "Level": 2,
           "UseLevels": false,
           "KeepListStructure": false
+        },
+        {
+          "Id": "97697eff8fe344b7929b1b941380744e",
+          "Name": "IN[3]",
+          "Description": "Input #3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
         }
       ],
       "Outputs": [
@@ -163,7 +172,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//A result of whether the viewport\r\n//was successfully placed.\r\n//\r\n//No news = good news!\r\nreport;",
+      "Symbol": "// A list of true/false outcomes\r\nresults",
       "Id": "a1ce71d4454a4bbb86575e3771a07a42",
       "Inputs": [
         {
@@ -183,11 +192,11 @@
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
-      "Code": "vp = lst[0];\nrp = lst[1];",
+      "Code": "vp = lst[0];\nrp = lst[1];\noc = lst[2];",
       "Id": "3e402aeb75d848eb88ead7c86195e17e",
       "Inputs": [
         {
-          "Id": "c75c3e9d2e49457a8ef392d9a4d97d8d",
+          "Id": "bdbac4f890ff4ad396dda8c3b3ad1958",
           "Name": "lst",
           "Description": "lst",
           "UsingDefaultValue": false,
@@ -198,7 +207,7 @@
       ],
       "Outputs": [
         {
-          "Id": "302b256731674ff596cbfc28f8c4bc42",
+          "Id": "c2bd7532de314be9a5709469395ce0d1",
           "Name": "",
           "Description": "vp",
           "UsingDefaultValue": false,
@@ -207,9 +216,18 @@
           "KeepListStructure": false
         },
         {
-          "Id": "724a11564d6d4190a6688e009261ba5b",
+          "Id": "7c44a45556c74cb3ada1ad028c8ed079",
           "Name": "",
           "Description": "rp",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "f265932cf0af4d71b4a1b322c94ec6c9",
+          "Name": "",
+          "Description": "oc",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -218,6 +236,53 @@
       ],
       "Replication": "Disabled",
       "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "// Detailed messages of outcomes\r\noutcomes",
+      "Id": "91606f94308f440d87c71ffaeb9c3847",
+      "Inputs": [
+        {
+          "Id": "2931255e615f41ed9b568009d35511c1",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "viewportType",
+        "TypeName": "var",
+        "TypeRank": 0,
+        "DefaultValue": "null",
+        "Description": "Viewport type to be\nused (optional)."
+      },
+      "Id": "e0c348cbbbe447e6b77078212527ac1c",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "ef1cf6fa939845e1bee4d3922a88c2c6",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     }
   ],
   "Connectors": [
@@ -234,22 +299,32 @@
     {
       "Start": "fd231f70e87c470e80a222a87b7f5988",
       "End": "5f17d20eaee34b88b33cf8088ca5c9ec",
-      "Id": "ca641ae0936b45d5a22ceba985816a13"
+      "Id": "804ab80a51414a8790ac673f5b316966"
     },
     {
       "Start": "ee744ff6a5c24f62a48b13ea0fc9dd6d",
-      "End": "c75c3e9d2e49457a8ef392d9a4d97d8d",
-      "Id": "5bfe94742e2741279072af39b8102a6a"
+      "End": "bdbac4f890ff4ad396dda8c3b3ad1958",
+      "Id": "084415ec13c244ef9709ca51c91c451c"
     },
     {
-      "Start": "302b256731674ff596cbfc28f8c4bc42",
+      "Start": "c2bd7532de314be9a5709469395ce0d1",
       "End": "94ef0b5456fa4d6e903c6113576aa2f6",
-      "Id": "ecb04aa7fa314ef3a4e141275e2cb155"
+      "Id": "7fceafd9f3fd4e27919085d08aed0a44"
     },
     {
-      "Start": "724a11564d6d4190a6688e009261ba5b",
+      "Start": "7c44a45556c74cb3ada1ad028c8ed079",
       "End": "d23e5b53ea744263adec69885667d31c",
-      "Id": "6b0a0c83713442488d6a10a31f07bf8c"
+      "Id": "48d22cea8ccd4fa4888a73cec85851a1"
+    },
+    {
+      "Start": "f265932cf0af4d71b4a1b322c94ec6c9",
+      "End": "2931255e615f41ed9b568009d35511c1",
+      "Id": "89b50337186649e699bfeec8f632d117"
+    },
+    {
+      "Start": "ef1cf6fa939845e1bee4d3922a88c2c6",
+      "End": "97697eff8fe344b7929b1b941380744e",
+      "Id": "8ba579ace0ef41b9bdf8c93568b93c3b"
     }
   ],
   "Dependencies": [],
@@ -285,8 +360,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1085.0762110466219,
-        "Y": 65.316702857566213
+        "X": 1252.9603992960524,
+        "Y": 46.346738083619243
       },
       {
         "ShowGeometry": true,
@@ -295,8 +370,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 192.0,
-        "Y": 71.0
+        "X": 109.69021657114126,
+        "Y": 24.114680325333609
       },
       {
         "ShowGeometry": true,
@@ -305,8 +380,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 189.15135363411241,
-        "Y": 160.83459493355002
+        "X": 106.84157020525367,
+        "Y": 113.94927525888363
       },
       {
         "ShowGeometry": true,
@@ -315,8 +390,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 196.10378608037979,
-        "Y": 260.71567604921842
+        "X": 113.79400265152105,
+        "Y": 213.83035637455203
       },
       {
         "ShowGeometry": true,
@@ -335,8 +410,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1084.7426123335863,
-        "Y": 194.40767887641556
+        "X": 1248.8328076282271,
+        "Y": 147.93126518024556
       },
       {
         "ShowGeometry": true,
@@ -347,11 +422,31 @@
         "Excluded": false,
         "X": 833.68930710584618,
         "Y": 135.06413626302736
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "91606f94308f440d87c71ffaeb9c3847",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1247.568864237116,
+        "Y": 255.10942680811172
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "e0c348cbbbe447e6b77078212527ac1c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 101.94663852230701,
+        "Y": 329.736889956148
       }
     ],
     "Annotations": [],
-    "X": -194.78283621248676,
-    "Y": 32.910221158581862,
-    "Zoom": 1.0542982150113263
+    "X": -124.44761381642877,
+    "Y": 116.09403878979532,
+    "Zoom": 1.0120421414445724
   }
 }

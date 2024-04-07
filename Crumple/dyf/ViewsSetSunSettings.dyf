@@ -9,6 +9,10 @@
       "Level": {
         "Key": "Revit.Elements.Level",
         "Value": "RevitNodes.dll"
+      },
+      "Revit.Elements.Level": {
+        "Key": "Revit.Elements.Level",
+        "Value": "RevitNodes.dll"
       }
     }
   },
@@ -18,7 +22,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Credit to Matthew Anderle & Chris Williams for their examples\r\n# DTx Library: https://trello.com/c/mOujiMPA/39-slider-sun-settings\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nimport System\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# To list function\r\ndef tolist(input):\r\n\tout = input if isinstance(input, list) else [input]\r\n\treturn out\r\n\r\n# Preparing input from dynamo to revit\r\nviews = tolist(IN[0])\r\ntimes = tolist(IN[1])\r\nshade = IN[2]\r\nlevel = UnwrapElement(IN[3])\r\nno_gp = IN[4]\r\n\r\n# Datetimes set as local\r\nDT_kind = System.DateTimeKind.Local\r\n\r\n# Rebuild datetimes list\r\nDT_times = []\r\nfor time in times:\r\n\tspectime = System.DateTime.SpecifyKind(time, DT_kind)\r\n\tDT_times.append(spectime)\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\n# Transactable actions\r\nviews_done = []\r\n\r\nfor view, time in zip(views, DT_times):\r\n\tview_uw  = UnwrapElement(view)\r\n\tsettings = view_uw.SunAndShadowSettings\r\n\tview_uw.ShadowIntensity = 1\r\n\tsettings.SunAndShadowType = SunAndShadowType.StillImage\r\n\tsettings.StartDateAndTime = time\r\n\tview_uw.ShadowIntensity = shade\r\n\tif no_gp:\r\n\t\tsettings.UsesGroundPlane = False\r\n\telse:\r\n\t\tsettings.UsesGroundPlane = True\r\n\t\tsettings.GroundPlaneLevelId = level.Id\r\n\tviews_done.append(view)\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = [views_done, DT_times]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Credit to Matthew Anderle & Chris Williams for their examples\r\n# DTx Library: https://trello.com/c/mOujiMPA/39-slider-sun-settings\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nimport System\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import SunAndShadowType\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nviews = uwlist(IN[0])\r\ntimes = tolist(IN[1])\r\nshade = IN[2]\r\nlevel = UnwrapElement(IN[3])\r\nno_gp = IN[4]\r\n\r\n# Datetimes set as local\r\nDT_kind = System.DateTimeKind.Local\r\n\r\n# Rebuild datetimes list\r\nDT_times = []\r\n\r\nfor time in times:\r\n\tspectime = System.DateTime.SpecifyKind(time, DT_kind)\r\n\tDT_times.append(spectime)\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\n# Transactable actions\r\nfor view, time in zip(views, DT_times):\r\n\tsettings = view.SunAndShadowSettings\r\n\tview.ShadowIntensity = 1\r\n\tsettings.SunAndShadowType = SunAndShadowType.StillImage\r\n\tsettings.StartDateAndTime = time\r\n\tview.ShadowIntensity = shade\r\n\tif no_gp:\r\n\t\tsettings.UsesGroundPlane = False\r\n\telse:\r\n\t\tsettings.UsesGroundPlane = True\r\n\t\tsettings.GroundPlaneLevelId = level.Id\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(views), objOrList(DT_times)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "0ee51f98c53144f2bac683be8f73ee79",
       "Inputs": [
@@ -80,7 +85,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -112,7 +117,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "datetimes",
+        "Name": "dateTimes",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -224,7 +229,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//Datetimes of updated views\r\ndatetimes",
+      "Symbol": "//Datetimes of updated views\r\ndateTimes",
       "Id": "48731d0d9cfc4fba854623cbab9d18a8",
       "Inputs": [
         {
@@ -245,7 +250,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "ground_planes",
+        "Name": "groundPlane",
         "TypeName": "Revit.Elements.Level",
         "TypeRank": 0,
         "DefaultValue": "null",
@@ -275,7 +280,7 @@
       "Inputs": [
         {
           "Id": "12d4be2f3b0d45b18752dc12d31c41aa",
-          "Name": "obj",
+          "Name": "object",
           "Description": "Object to test.\n\nvar",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -295,7 +300,7 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Determines the if the given object is null.\n\nObject.IsNull (obj: var): bool"
+      "Description": "Determines if the given object is null.\n\nObject.IsNull (object: var): bool"
     }
   ],
   "Connectors": [
@@ -347,27 +352,28 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -17.0,
-      "EyeY": 24.0,
-      "EyeZ": 50.0,
-      "LookX": 12.0,
-      "LookY": -13.0,
-      "LookZ": -58.0,
-      "UpX": 0.0,
-      "UpY": 1.0,
-      "UpZ": 0.0
+      "EyeX": -45759.7734375,
+      "EyeY": 51367.51171875,
+      "EyeZ": 72695.359375,
+      "LookX": 45759.7734375,
+      "LookY": -51367.51171875,
+      "LookZ": -72695.359375,
+      "UpX": 0.16903457045555115,
+      "UpY": 0.94832348823547363,
+      "UpZ": -0.26853266358375549
     },
     "NodeViews": [
       {
@@ -387,8 +393,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -308.83936594731523,
-        "Y": -147.54536690110783
+        "X": -421.21875170301752,
+        "Y": -182.30187795957244
       },
       {
         "ShowGeometry": true,
@@ -397,8 +403,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -314.015281204562,
-        "Y": -69.361191095404081
+        "X": -439.13872101503449,
+        "Y": -99.483500679406745
       },
       {
         "ShowGeometry": true,
@@ -407,8 +413,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -319.83818586896427,
-        "Y": 22.409762260571938
+        "X": -439.16887383635935,
+        "Y": 0.39730525687767226
       },
       {
         "ShowGeometry": true,
@@ -447,8 +453,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -319.92458689486608,
-        "Y": 129.04355441257422
+        "X": -471.69468518349487,
+        "Y": 100.07979519718705
       },
       {
         "ShowGeometry": true,
@@ -457,13 +463,13 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 46.72431241713025,
+        "X": 13.126351727281076,
         "Y": 188.40750402859032
       }
     ],
     "Annotations": [],
-    "X": 213.40280313748963,
-    "Y": 206.6124360651105,
-    "Zoom": 0.46912748069240612
+    "X": 355.87758366999708,
+    "Y": 239.43965374944332,
+    "Zoom": 0.72583335096493962
   }
 }

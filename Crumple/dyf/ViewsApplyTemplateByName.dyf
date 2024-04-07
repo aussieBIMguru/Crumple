@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nviews = uwlist(IN[0])\r\ntName = IN[1]\r\n\r\n#Get view template\r\nviews_all = FilteredElementCollector(doc).OfClass(View).ToElements()\r\n\r\nviewTemplates,tempNames = [],[]\r\n\r\nfor v in views_all:\r\n\tif v.IsTemplate:\r\n\t\tviewTemplates.append(v)\r\n\t\ttempNames.append(v.Name)\r\n\telse:\r\n\t\tpass\r\n\r\nresults = []\r\n\r\n# Start Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\n# Try to find template by name\r\ntry:\r\n\ti = tempNames.index(tName)\r\n\tapplyTemp = viewTemplates[i]\r\n\ttoApply = True\r\nexcept:\r\n\ttoApply = False\r\n\r\n# Set template if able\r\nfor v in views:\r\n\tif toApply:\r\n\t\ttry:\r\n\t\t\tdoc.Regenerate()\r\n\t\t\tv.ViewTemplateId = applyTemp.Id\r\n\t\t\tdoc.Regenerate()\r\n\t\t\tresults.append(True)\r\n\t\texcept:\r\n\t\t\tresults.append(False)\r\n\telse:\r\n\t\tresults.append(False)\r\n\r\n# End Transaction\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = [views,results,toApply]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FilteredElementCollector, View\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nviews = uwlist(IN[0])\r\ntName = IN[1]\r\n\r\n#Get view template\r\nviews_all = FilteredElementCollector(doc).OfClass(View).ToElements()\r\n\r\nviewTemplates, tempNames = [],[]\r\n\r\nfor v in views_all:\r\n\tif v.IsTemplate:\r\n\t\tviewTemplates.append(v)\r\n\t\ttempNames.append(v.Name)\r\n\telse:\r\n\t\tpass\r\n\r\nresults = []\r\n\r\n# Start Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\n# Try to find template by name\r\ntry:\r\n\ti = tempNames.index(tName)\r\n\tapplyTemp = viewTemplates[i]\r\n\ttoApply = True\r\nexcept:\r\n\ttoApply = False\r\n\r\n# Set template if able\r\nfor v in views:\r\n\tif toApply:\r\n\t\ttry:\r\n\t\t\tdoc.Regenerate()\r\n\t\t\tv.ViewTemplateId = applyTemp.Id\r\n\t\t\tdoc.Regenerate()\r\n\t\t\tresults.append(True)\r\n\t\texcept:\r\n\t\t\tresults.append(False)\r\n\telse:\r\n\t\tresults.append(False)\r\n\r\n# End Transaction\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(views), objOrList(results), toApply",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "d62f6ba3f05e470eaecfe950b78c1df9",
       "Inputs": [
@@ -48,7 +49,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -248,13 +249,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -343,8 +345,8 @@
       }
     ],
     "Annotations": [],
-    "X": 147.61552193871435,
-    "Y": 365.98491537405351,
-    "Zoom": 1.6702319027048449
+    "X": 114.70671846290219,
+    "Y": 211.95465940500785,
+    "Zoom": 1.0090158192897176
   }
 }

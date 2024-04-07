@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nsheets = FilteredElementCollector(doc).OfClass(ViewSheet).ToElements()\r\nsheetNums = [s.SheetNumber for s in sheets]\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nviews = uwlist(IN[0])\r\n\r\n# Get data\r\nview_sheets, view_sheeted = [],[]\r\n\r\nfor v in views:\r\n\ttry:\r\n\t\tpar = v.LookupParameter(\"Sheet Number\")\r\n\t\tval = par.AsString()\r\n\t\tind = sheetNums.index(val)\r\n\t\tview_sheets.append(sheets[ind])\r\n\t\tview_sheeted.append(True)\r\n\texcept:\r\n\t\tview_sheets.append(None)\r\n\t\tview_sheeted.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = view_sheets, view_sheeted",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FilteredElementCollector, ViewSheet\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\n# Current doc\r\ncurDoc   = DocumentManager.Instance.CurrentDBDocument\r\ncurTitle = curDoc.Title\r\n\r\n# Collect all sheets\r\nsheets = FilteredElementCollector(curDoc).OfClass(ViewSheet).ToElements()\r\nsheetNums = [s.SheetNumber for s in sheets]\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nviews = uwlist(IN[0])\r\n\r\n# Get data\r\nview_sheets, view_sheeted = [],[]\r\n\r\nfor v in views:\r\n\t# Get document\r\n\tdoc = v.Document\r\n\tdocTitle = doc.Title\r\n\t# If not same, change sheets\r\n\tif docTitle == curTitle:\r\n\t\tcheckSheets = sheets\r\n\t\tcheckSheetNums = sheetNums\r\n\telse:\r\n\t\tcheckSheets = FilteredElementCollector(doc).OfClass(ViewSheet).ToElements()\r\n\t\tcheckSheetNums = [s.SheetNumber for s in sheets]\r\n\t# Get sheet number\r\n\tpar = v.LookupParameter(\"Sheet Number\")\r\n\tval = par.AsString()\r\n\t# Get the sheet if it matches\r\n\tif val in checkSheetNums:\r\n\t\tind = checkSheetNums.index(val)\r\n\t\tview_sheets.append(checkSheets[ind])\r\n\t\tview_sheeted.append(True)\r\n\telse:\r\n\t\tview_sheets.append(None)\r\n\t\tview_sheeted.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(view_sheets), objOrList(view_sheeted)",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "57da7ab24a164c07b4579082cf89a481",
@@ -46,7 +46,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "sheet",
+      "Symbol": "sheets",
       "Id": "0658ea9d1b084761a671979c74038880",
       "Inputs": [
         {
@@ -250,8 +250,8 @@
       }
     ],
     "Annotations": [],
-    "X": -86.2666046380092,
-    "Y": 195.88726272973847,
+    "X": -67.2666046380092,
+    "Y": 194.88726272973847,
     "Zoom": 0.91006380393143915
   }
 }

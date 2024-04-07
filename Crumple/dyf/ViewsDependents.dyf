@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nviewlist = uwlist(IN[0])\r\nchildlist,haschildren = [],[]\r\n\r\n# Do some action in a Transaction\r\nfor v in viewlist:\r\n\tchildIds = v.GetDependentViewIds()\r\n\tchildren = []\r\n\tfor i in childIds:\r\n\t\tvc = Document.GetElement(doc, i)\r\n\t\tchildren.append(vc)\r\n\tchildlist.append(children)\r\n\thaschildren.append(len(children) > 0)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [childlist, haschildren]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nviewlist = uwlist(IN[0])\r\n\r\nchildlist,haschildren = [],[]\r\n\r\n# Do some action in a Transaction\r\nfor v in viewlist:\r\n\tdoc = v.Document\r\n\tchildIds = v.GetDependentViewIds()\r\n\tchildren = []\r\n\tfor i in childIds:\r\n\t\tvc = doc.GetElement(i)\r\n\t\tchildren.append(vc)\r\n\tchildlist.append(children)\r\n\thaschildren.append(len(children) > 0)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(childlist), objOrList(haschildren)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "a8db56f0dbee41499ffcf1994b2a91a8",
       "Inputs": [
@@ -39,7 +40,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -173,13 +174,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -248,8 +250,8 @@
       }
     ],
     "Annotations": [],
-    "X": -61.256004565354971,
-    "Y": 367.15364059570123,
-    "Zoom": 2.0279112125634438
+    "X": -561.44823150343382,
+    "Y": 296.587805403947,
+    "Zoom": 1.4552721481755613
   }
 }

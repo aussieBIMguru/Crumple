@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\nview   = UnwrapElement(IN[0])\r\nnames  = tolist(IN[1])\r\n\r\ndepViews,success,outcomes = [],[],[]\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor n in names:\r\n\t\r\n\ttry:\r\n\t\tnewViewId = view.Duplicate(Autodesk.Revit.DB.ViewDuplicateOption.AsDependent)\r\n\t\tnewView = doc.GetElement(newViewId)\r\n\t\tviewMade = True\r\n\texcept:\r\n\t\tsuccess.append(False)\r\n\t\toutcomes.append(\"Error: View cannot be created.\")\r\n\t\tdepViews.append(None)\r\n\t\tviewMade = False\r\n\r\n\tif viewMade:\r\n\t\ttry:\r\n\t\t\tnewView.Name = n\r\n\t\t\tdepViews.append(newView)\r\n\t\t\tsuccess.append(True)\r\n\t\t\toutcomes.append(\"No errors found.\")\r\n\t\texcept:\r\n\t\t\tid = newView.Id\r\n\t\t\tdel_id = doc.Delete(id)\r\n\t\t\tdepViews.append(None)\r\n\t\t\tsuccess.append(False)\r\n\t\t\toutcomes.append(\"Error: View name already exists.\")\r\n\t\t\t\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = [depViews,success,outcomes]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import ViewDuplicateOption\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nviews  = uwlist(IN[0])\r\nnames  = tolist(IN[1])\r\n\r\nviewLists, results, outcomes = [],[],[]\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\n# For each view...\r\nfor v in views:\r\n\t# List so build\r\n\tviewList, result, outcome = [],[],[]\r\n\t# For each name...\r\n\tfor n in names:\r\n\t\t# Try to duplicate as dependent\r\n\t\ttry:\r\n\t\t\tnewViewId = v.Duplicate(ViewDuplicateOption.AsDependent)\r\n\t\t\tnewView = doc.GetElement(newViewId)\r\n\t\t\tviewMade = True\r\n\t\t# Otherwise, failure\r\n\t\texcept:\r\n\t\t\tviewList.append(None)\r\n\t\t\tresult.append(False)\r\n\t\t\toutcome.append(\"FAILURE: View cannot be created.\")\r\n\t\t\tviewMade = False\r\n\t\t# If a view was made...\r\n\t\tif viewMade:\r\n\t\t\t# Try to rename it\r\n\t\t\ttry:\r\n\t\t\t\tnewView.Name = n\r\n\t\t\t\tviewList.append(newView)\r\n\t\t\t\tresult.append(True)\r\n\t\t\t\toutcome.append(\"SUCCESS: No errors found.\")\r\n\t\t\t# Otherwise, delete it\r\n\t\t\texcept:\r\n\t\t\t\tid = newView.Id\r\n\t\t\t\tdoc.Delete(id)\r\n\t\t\t\tviewList.append(None)\r\n\t\t\t\tresult.append(False)\r\n\t\t\t\toutcome.append(\"ERROR: View name already exists.\")\r\n\t# Append the lists\r\n\tviewLists.append(viewList)\r\n\tresults.append(result)\r\n\toutcomes.append(outcome)\r\n\t\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = [objOrList(o) for o in [viewLists, results, outcomes]]",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "89840106374e4e25913039534e913974",
       "Inputs": [
@@ -48,13 +49,13 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "view",
+        "Name": "views",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -175,7 +176,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "success",
+      "Symbol": "wasCreated",
       "Id": "9eb8d45cb3ed4265bbec3c005148fb3e",
       "Inputs": [
         {
@@ -196,7 +197,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "errorReport",
+      "Symbol": "outcomes",
       "Id": "8333f41870874930aa4a0240073069b4",
       "Inputs": [
         {
@@ -248,13 +249,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -288,8 +290,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 11.0,
-        "Y": -37.0
+        "X": -3.7539682378154566,
+        "Y": -36.297430083913554
       },
       {
         "ShowGeometry": true,
@@ -343,8 +345,8 @@
       }
     ],
     "Annotations": [],
-    "X": 151.05677867902665,
-    "Y": 377.58690614136736,
-    "Zoom": 1.6813441483198146
+    "X": 49.044962525449534,
+    "Y": 270.22327320972119,
+    "Zoom": 0.85605519234859317
   }
 }
