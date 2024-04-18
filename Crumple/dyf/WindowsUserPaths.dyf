@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Thanks to Sean Page for suggesting the os package\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport os\r\n\r\n#Add Dynamo services for its API\r\nclr.AddReference('DynamoRevitDS')\r\nimport Dynamo\r\nfrom System import Environment\r\n\r\n# access to the current Dynamo instance and workspace\r\nDynamoCurrent = Dynamo.Applications.DynamoRevit()\r\nDynamoVersion = DynamoCurrent.RevitDynamoModel.Version\r\n\r\nuser = os.environ.get('USERNAME')\r\nfl = os.environ.get('USERPROFILE')\r\n\r\ndt = fl + \"\\Desktop\"\r\nmd = fl + \"\\Documents\"\r\nte = fl + \"\\AppData\\Local\\Temp\"\r\ndr = fl + \"\\AppData\\Roaming\\Dynamo\\Dynamo Revit\\\\\" + DynamoVersion[0:3]\r\ndl = fl + \"\\AppData\\Roaming\\Dynamo\\Dynamo Revit\\\\\" + DynamoVersion[0:3] + \"\\Logs\"\r\n\r\nOUT = [user,fl,dt,md,te,dr,dl]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Thanks to Sean Page for suggesting the os package\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport os\r\n\r\nuser = os.environ.get('USERNAME')\r\nfl = os.environ.get('USERPROFILE')\r\n\r\ndt = fl + \"\\Desktop\"\r\nmd = fl + \"\\Documents\"\r\nte = fl + \"\\AppData\\Local\\Temp\"\r\n\r\nOUT = [user,fl,dt,md,te]",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "264a476e8c6f42e6a0933952734a518b",
       "Inputs": [
@@ -39,7 +40,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -66,7 +67,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "Refresh",
+        "Name": "refresh",
         "TypeName": "bool",
         "TypeRank": 0,
         "DefaultValue": "true",
@@ -91,11 +92,11 @@
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
-      "Code": "out[0];\nout[1];\nout[2];\nout[3];\nout[4];\nout[5];\nout[6];",
+      "Code": "out[0];\nout[1];\nout[2];\nout[3];\nout[4];",
       "Id": "b6a9c2bee86b46e48579106901970640",
       "Inputs": [
         {
-          "Id": "b77a396b909047b497313d9c0879a323",
+          "Id": "bc4687678c15465fb2436ebe578c50b4",
           "Name": "out",
           "Description": "out",
           "UsingDefaultValue": false,
@@ -106,7 +107,7 @@
       ],
       "Outputs": [
         {
-          "Id": "193872b9c5194cf9908f6cbef74c6482",
+          "Id": "063cb2150b71435e81373aef7415db59",
           "Name": "",
           "Description": "Value of expression at line 1",
           "UsingDefaultValue": false,
@@ -115,7 +116,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "c056f1ca54904c45a43b9fd258e26ae8",
+          "Id": "4dfb06f0947e4ab987be17ec4eb1068b",
           "Name": "",
           "Description": "Value of expression at line 2",
           "UsingDefaultValue": false,
@@ -124,7 +125,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "b2b2a85edaae4f158c0a602031010e57",
+          "Id": "1a66222f6d0d4854b2084906a6ab5563",
           "Name": "",
           "Description": "Value of expression at line 3",
           "UsingDefaultValue": false,
@@ -133,7 +134,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "4acf101baa6f4a7c9fae55de3094de56",
+          "Id": "cf1673c2887f4a41ac83c2c7c51ba0cd",
           "Name": "",
           "Description": "Value of expression at line 4",
           "UsingDefaultValue": false,
@@ -142,27 +143,9 @@
           "KeepListStructure": false
         },
         {
-          "Id": "e24b65e8750d43c29384287c984a29b4",
+          "Id": "f27f7f9b07e44876a339b9ff8a684d41",
           "Name": "",
           "Description": "Value of expression at line 5",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "c7962ac0e4264e87834dbb2971ff19a6",
-          "Name": "",
-          "Description": "Value of expression at line 6",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "056404c7caa84f7ea965b84853c6d24f",
-          "Name": "",
-          "Description": "Value of expression at line 7",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -176,7 +159,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//The active user's user folder path\r\nfolder",
+      "Symbol": "//The active user's user folder path\r\nuserFolder",
       "Id": "3db30969abeb47f6a597dddab40530b2",
       "Inputs": [
         {
@@ -197,7 +180,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//The active user's Desktop path\r\nDesktop",
+      "Symbol": "//The active user's Desktop path\r\ndesktop",
       "Id": "8d0a071db5f84d0abfe8b2f03a9de489",
       "Inputs": [
         {
@@ -218,7 +201,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//The active user's My Documents path\r\nMy_Docs",
+      "Symbol": "//The active user's My Documents path\r\nuserDocuments",
       "Id": "bfe7a597324944ad8281fb3f2944ab53",
       "Inputs": [
         {
@@ -239,53 +222,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//The active user's Temporary Files path\r\nTemp",
+      "Symbol": "//The active user's Temporary Files path\r\ntempFiles",
       "Id": "89c833b3ffe848ae85a9ef5bbbfc21d2",
       "Inputs": [
         {
           "Id": "738e373597d3436a90201067312a9f21",
-          "Name": "",
-          "Description": "",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [],
-      "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
-      "ElementResolver": null,
-      "Symbol": "//The active user's Dynamo path\r\nDyn_Rvt",
-      "Id": "4f93283c360a4888a8930f8d8f5a66d6",
-      "Inputs": [
-        {
-          "Id": "5a3a8f61640240d6b60cc6c2aff1ccd1",
-          "Name": "",
-          "Description": "",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [],
-      "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
-      "ElementResolver": null,
-      "Symbol": "//The active user's Dynamo logs path\r\nDyn_Logs",
-      "Id": "add95c92ba804b83b94de9ddb343c293",
-      "Inputs": [
-        {
-          "Id": "19c21b47d0d94f2c89ed924abf900cff",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -302,8 +243,8 @@
   "Connectors": [
     {
       "Start": "48ed158add0f4f9b90c07ae9c35c45ad",
-      "End": "b77a396b909047b497313d9c0879a323",
-      "Id": "3363ebef71c4455ea6d92e002faaf793"
+      "End": "bc4687678c15465fb2436ebe578c50b4",
+      "Id": "86a8b449d0a843c6aec671015ef1961b"
     },
     {
       "Start": "7a5952c481bd4266ae96b8c69bc1dd42",
@@ -311,61 +252,52 @@
       "Id": "a6ed889edf6441f1bd68e4cf1829acc7"
     },
     {
-      "Start": "193872b9c5194cf9908f6cbef74c6482",
+      "Start": "063cb2150b71435e81373aef7415db59",
       "End": "ca6f3482021e4c82ac359fd045465b1c",
-      "Id": "d489281a198c4c51b45daea2207d6f32"
+      "Id": "713e2a5fe9af4d3a90fd0ef72d7d4181"
     },
     {
-      "Start": "c056f1ca54904c45a43b9fd258e26ae8",
+      "Start": "4dfb06f0947e4ab987be17ec4eb1068b",
       "End": "0de8355147a843978706444a9ba4ca4c",
-      "Id": "1fb62e9a150f4b2e999e217f31a4bc19"
+      "Id": "9133db3cb65d4f14bda4284433fcb9a0"
     },
     {
-      "Start": "b2b2a85edaae4f158c0a602031010e57",
+      "Start": "1a66222f6d0d4854b2084906a6ab5563",
       "End": "5ad3535c34e24f798edfc70a9c560bc8",
-      "Id": "417e76ebf240447ab604c75478e0d847"
+      "Id": "4f4592e415124487ae9a875739ae4639"
     },
     {
-      "Start": "4acf101baa6f4a7c9fae55de3094de56",
+      "Start": "cf1673c2887f4a41ac83c2c7c51ba0cd",
       "End": "290b943e7bf449d98e2abf86a7417583",
-      "Id": "dac3eae9395a455fb1c1222e8166b8b3"
+      "Id": "174a85f93511487ab17ad7a1277c6c02"
     },
     {
-      "Start": "e24b65e8750d43c29384287c984a29b4",
+      "Start": "f27f7f9b07e44876a339b9ff8a684d41",
       "End": "738e373597d3436a90201067312a9f21",
-      "Id": "ed686466e9ea474d9302cb11b82d4f9b"
-    },
-    {
-      "Start": "c7962ac0e4264e87834dbb2971ff19a6",
-      "End": "5a3a8f61640240d6b60cc6c2aff1ccd1",
-      "Id": "95fd602345ea408fbe31dba51c6f2b69"
-    },
-    {
-      "Start": "056404c7caa84f7ea965b84853c6d24f",
-      "End": "19c21b47d0d94f2c89ed924abf900cff",
-      "Id": "ffcebc3a899e4be49ca994fc1ca5bbf8"
+      "Id": "bbc5bf5ad2ec470f99d141225285f118"
     }
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -22.499469651426988,
-      "EyeY": 83.474008687746775,
-      "EyeZ": 25.340790306871632,
-      "LookX": 10.07099783483187,
-      "LookY": -10.910247654401203,
-      "LookZ": -48.676489535020693,
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
       "UpX": 0.0,
       "UpY": 1.0,
       "UpZ": 0.0
@@ -450,31 +382,11 @@
         "Excluded": false,
         "X": 949.69012046578814,
         "Y": 174.26124849606202
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Output",
-        "Id": "4f93283c360a4888a8930f8d8f5a66d6",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 949.7427550950481,
-        "Y": 242.23702104921495
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Output",
-        "Id": "add95c92ba804b83b94de9ddb343c293",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 950.27180901437941,
-        "Y": 314.75340776257713
       }
     ],
     "Annotations": [],
-    "X": -14.244280372936146,
-    "Y": 188.63542320409417,
+    "X": -85.244280372936146,
+    "Y": 129.63542320409417,
     "Zoom": 1.0120421414445722
   }
 }

@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import Document\r\n\r\n# Define list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef toPaddedListOfLists(input, maxLen):\r\n    # Force object to list\r\n    input = tolist(input)\r\n    # If not list of lists, make list of lists\r\n    if not isinstance(input[0], list):\r\n\t    input = [input]\r\n    # Check item count\r\n    lenCheck = len(input)\r\n    if lenCheck < maxLen:\r\n    \tresult = []\r\n    \tfor i in range(0, maxLen - lenCheck):\r\n    \t\tinput.append(input[-1])\r\n    return input\r\n\r\n# Get family documents only\r\nprimary = tolist(IN[0])\r\n\r\n# Length of family documents\r\nmaxLength = len(primary)\r\n\r\n# Establish the core list\r\noutputs = [primary]\r\n\r\n# For each other input...\r\nfor i in (IN[1],IN[2],IN[3],IN[4],IN[5]):\r\n\t# If provided...\r\n\tif i:\r\n\t\t# Pad and append\r\n\t\toutput = toPaddedListOfLists(i, maxLength)\r\n\t\toutputs.append(output)\r\n\t# Otherwise, append None\r\n\telse:\r\n\t\toutputs.append(None)\r\n\r\n# Preparing output to Dynamo\r\nOUT = outputs",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "712c2b9b1cac4394b836e5b98fb49cb8",
       "Inputs": [
@@ -680,8 +680,8 @@
       }
     ],
     "Annotations": [],
-    "X": 329.87314586596972,
-    "Y": 217.02140547045855,
+    "X": -4.1268541340302818,
+    "Y": 215.02140547045855,
     "Zoom": 0.8033215934625979
   }
 }

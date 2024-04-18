@@ -19,7 +19,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Get inputs\r\nitems = tolist(IN[0])\r\nn = IN[1]\r\n\r\n# Catch all for index greater than 0\r\nif n > 0:\r\n\tn += 1\r\nelse:\r\n\tpass\r\n\r\n# Convert to strings\r\nstrings = []\r\n\r\nfor i in items:\r\n\t\r\n\ttostr = str(i)\r\n\t\r\n\tif \".\" in tostr:\r\n\t\tind = tostr.index(\".\")+n\r\n\t\tstrings.append(tostr[:ind])\r\n\telse:\r\n\t\tstrings.append(tostr)\r\n\r\n# Define outputs\r\nOUT = objOrList(strings)",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "059141099ebc4c49bf81f190b46264a4",
       "Inputs": [

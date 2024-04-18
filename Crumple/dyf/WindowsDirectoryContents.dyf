@@ -14,6 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nfrom System.IO import Directory, SearchOption\r\n\r\n# Preparing input from dynamo to revit\r\ndir = IN[0]\r\nsearchstring = IN[1]\r\nalldirectories = IN[2]\r\n\r\nfoundfiles = []\r\n\r\n# Search directory contents\r\nif Directory.Exists(dir):\r\n\tif alldirectories:\r\n\t\tdirfiles = Directory.GetFiles(dir, \".\", SearchOption.AllDirectories)\r\n\telse:\r\n\t\tdirfiles = Directory.GetFiles(dir, \".\", SearchOption.TopDirectoryOnly)\r\n\tfor file in dirfiles:\r\n\t\tif searchstring not in file:\r\n\t\t\tcontinue\r\n\t\telse:\r\n\t\t\tfoundfiles.append(file)\r\n\tOUT = foundfiles\r\nelse:\r\n\tOUT = []",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "f0fe5193493b424c8b7cf28aff82c530",
       "Inputs": [
@@ -57,7 +58,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -183,13 +184,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -258,8 +260,8 @@
       }
     ],
     "Annotations": [],
-    "X": 392.76994619067943,
-    "Y": 290.21883915062142,
+    "X": 41.769946190679434,
+    "Y": 239.21883915062142,
     "Zoom": 1.545620359375
   }
 }

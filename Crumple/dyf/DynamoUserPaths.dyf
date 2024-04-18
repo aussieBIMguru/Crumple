@@ -1,9 +1,9 @@
 {
-  "Uuid": "0dabf348-0d1f-4a3f-aafa-f96f25387cca",
+  "Uuid": "7e154660-82c1-47ea-9e3a-6f36bf1bd309",
   "IsCustomNode": true,
-  "Category": "Crumple.Script.Create",
-  "Description": "Will output a time that is taken once data has passed through this node. Connect this time up to TimerCheck nodes to measure execution times.",
-  "Name": "© Timer.Start",
+  "Category": "Crumple.Application.Query",
+  "Description": "Returns the Dynamo folder and log folder paths.",
+  "Name": "© Dynamo.UserPaths",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -13,13 +13,13 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nfrom datetime import datetime\r\n\r\n# Collect input\r\ndatain = IN[0]\r\n\r\n# Output the time now\r\nOUT = [datain, datetime.now()]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Thanks to Sean Page for suggesting the os package\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport os\r\n\r\n#Add Dynamo services for its API\r\nclr.AddReference('DynamoRevitDS')\r\nimport Dynamo\r\nfrom System import Environment\r\n\r\n# access to the current Dynamo instance and workspace\r\nDynamoCurrent = Dynamo.Applications.DynamoRevit()\r\nDynamoVersion = DynamoCurrent.RevitDynamoModel.Version\r\n\r\nversionSplit  = DynamoVersion.split('.')\r\nversionString = versionSplit[0] + \".\" + versionSplit[1]\r\n\r\nuser = os.environ.get('USERNAME')\r\nfl = os.environ.get('USERPROFILE')\r\n\r\ndr = fl + \"\\AppData\\Roaming\\Dynamo\\Dynamo Revit\\\\\" + versionString\r\ndl = fl + \"\\AppData\\Roaming\\Dynamo\\Dynamo Revit\\\\\" + versionString + \"\\Logs\"\r\n\r\nOUT = dr,dl",
       "Engine": "CPython3",
       "VariableInputPorts": true,
-      "Id": "ceb0c6bbccfc4b8e94e4c1ad9933858a",
+      "Id": "3106c55d925a4ff1a247cdb2d6796a4c",
       "Inputs": [
         {
-          "Id": "3826a5f7300e42f081bd6e51d4f53260",
+          "Id": "8b7cd5b0ffb54e93a8bd787892e5ed8c",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -30,7 +30,7 @@
       ],
       "Outputs": [
         {
-          "Id": "610294f300224699b7d20d657e865107",
+          "Id": "05716b56f9b148feb7be8d9c7c727048",
           "Name": "OUT",
           "Description": "Result of the python script",
           "UsingDefaultValue": false,
@@ -46,17 +46,17 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "data_in",
-        "TypeName": "var",
-        "TypeRank": -1,
-        "DefaultValue": "Empty",
-        "Description": "Data to pass through the node."
+        "Name": "refresh",
+        "TypeName": "bool",
+        "TypeRank": 0,
+        "DefaultValue": "true",
+        "Description": "Toggle to refresh"
       },
-      "Id": "8bd84f3966774f8abe3d54e49b9ed115",
+      "Id": "8ca849c9beb84d3183a5dee5a5bd827e",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "ca1e501a51b745de8929be1a559bb828",
+          "Id": "f97d8292685e43689352e1184b91ff13",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -72,11 +72,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//Data as it leaves the node\r\ndata_out",
-      "Id": "395b96fbeead4ac480f389d3af2699e3",
+      "Symbol": "//The active user's Dynamo path\r\ndynamoPath",
+      "Id": "da59781dca534832ba545ee4b3370ed8",
       "Inputs": [
         {
-          "Id": "364372d73e704dab9394f8f66b6b9a60",
+          "Id": "98e004fbfae24d43b5a30dc48b1e50d8",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -92,13 +92,13 @@
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
-      "Code": "data = lst[0];\ntime = lst[1];",
-      "Id": "b49749e434e94ae29cadb05626021396",
+      "Code": "X[0];\nX[1];",
+      "Id": "ece08c7e1152461fa48cbb18fc58070b",
       "Inputs": [
         {
-          "Id": "092fa08e9a9d4d328fee419a862a9491",
-          "Name": "lst",
-          "Description": "lst",
+          "Id": "6df29025d80940499e7de4154ba16bb3",
+          "Name": "X",
+          "Description": "X",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -107,18 +107,18 @@
       ],
       "Outputs": [
         {
-          "Id": "d48a5ce545064dde8c34711f4fe53b69",
+          "Id": "3908d159b1864ccd9ae8e1d3dca51bf2",
           "Name": "",
-          "Description": "data",
+          "Description": "Value of expression at line 1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
           "KeepListStructure": false
         },
         {
-          "Id": "a87f20deed854683b7bd6346c74c2542",
+          "Id": "bf91e84589af498d898dc4c0dcde4a96",
           "Name": "",
-          "Description": "time",
+          "Description": "Value of expression at line 2",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -132,11 +132,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//The datetime when the data passed through.\r\n//\r\n//Connect this to TimerCheck nodes!\r\ntime",
-      "Id": "4daaa45492534cfebc21cc4120362a40",
+      "Symbol": "//The active user's Dynamo logs path\r\ndynamoLogs",
+      "Id": "23975a4ba7354f51abecd4dd35e79863",
       "Inputs": [
         {
-          "Id": "621c649cee774f6ea695c121c16a59b9",
+          "Id": "f12f692e876443bdb1cf09897b8d6d69",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -152,24 +152,24 @@
   ],
   "Connectors": [
     {
-      "Start": "610294f300224699b7d20d657e865107",
-      "End": "092fa08e9a9d4d328fee419a862a9491",
-      "Id": "2e09adb79f71417f866f78d9cc565bfe"
+      "Start": "05716b56f9b148feb7be8d9c7c727048",
+      "End": "6df29025d80940499e7de4154ba16bb3",
+      "Id": "7431fc44afb7462da01dc054528d9342"
     },
     {
-      "Start": "ca1e501a51b745de8929be1a559bb828",
-      "End": "3826a5f7300e42f081bd6e51d4f53260",
-      "Id": "fe534ba4268549c5958ea30aa954a97e"
+      "Start": "f97d8292685e43689352e1184b91ff13",
+      "End": "8b7cd5b0ffb54e93a8bd787892e5ed8c",
+      "Id": "379ed361566743e6851b27320385c5c4"
     },
     {
-      "Start": "d48a5ce545064dde8c34711f4fe53b69",
-      "End": "364372d73e704dab9394f8f66b6b9a60",
-      "Id": "05e99ef7af5543899967d923697cf966"
+      "Start": "3908d159b1864ccd9ae8e1d3dca51bf2",
+      "End": "98e004fbfae24d43b5a30dc48b1e50d8",
+      "Id": "b4df42883c1e4413a23cbbc38ca6972a"
     },
     {
-      "Start": "a87f20deed854683b7bd6346c74c2542",
-      "End": "621c649cee774f6ea695c121c16a59b9",
-      "Id": "a59ddd426c6e45a69ff9510d9f141d2c"
+      "Start": "bf91e84589af498d898dc4c0dcde4a96",
+      "End": "f12f692e876443bdb1cf09897b8d6d69",
+      "Id": "d7453bcd92f44522b5b2418a3816e118"
     }
   ],
   "Dependencies": [],
@@ -201,7 +201,7 @@
       {
         "ShowGeometry": true,
         "Name": "Python Script",
-        "Id": "ceb0c6bbccfc4b8e94e4c1ad9933858a",
+        "Id": "3106c55d925a4ff1a247cdb2d6796a4c",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
@@ -211,47 +211,47 @@
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "8bd84f3966774f8abe3d54e49b9ed115",
+        "Id": "8ca849c9beb84d3183a5dee5a5bd827e",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -122.30673516245133,
-        "Y": 0.92656617547316955
+        "X": -53.5,
+        "Y": -0.17791868421718959
       },
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "395b96fbeead4ac480f389d3af2699e3",
+        "Id": "da59781dca534832ba545ee4b3370ed8",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 684.47889108846607,
-        "Y": -63.355034983325417
+        "X": 674.0,
+        "Y": -82.0
       },
       {
         "ShowGeometry": true,
         "Name": "Code Block",
-        "Id": "b49749e434e94ae29cadb05626021396",
+        "Id": "ece08c7e1152461fa48cbb18fc58070b",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 408.00382574247328,
-        "Y": 4.1596528054656972
+        "X": 421.0,
+        "Y": 6.0
       },
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "4daaa45492534cfebc21cc4120362a40",
+        "Id": "23975a4ba7354f51abecd4dd35e79863",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 685.21394898200151,
-        "Y": 70.7491501101367
+        "X": 675.5,
+        "Y": 83.5
       }
     ],
     "Annotations": [],
-    "X": 178.12909998343073,
-    "Y": 196.97474064231747,
-    "Zoom": 0.7658293928515516
+    "X": -62.0,
+    "Y": 196.0,
+    "Zoom": 1.0
   }
 }

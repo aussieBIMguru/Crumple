@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n#Import Regex (regular expressions)\r\nimport re\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n#Turn data into a list for iteration\r\nlst = tolist(IN[0])\r\n\r\n#Empty list, apply regex for capital letters\r\ndataout = []\r\n\r\nfor str in lst:\r\n\tcaps = re.findall('[A-Z][^A-Z]*', str)\r\n\tdataout.append(caps)\r\n\r\n#Define output\r\nOUT = objOrList(dataout)",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "17a5fcc0977a49c088a6a41d634a2b02",
       "Inputs": [

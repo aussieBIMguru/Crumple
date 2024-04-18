@@ -14,6 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Declare inputs, ensure values and range are iterable\r\nvalues_in = IN[0] if isinstance(IN[0], list) else [IN[0]]\r\nrange_in  = IN[1] if isinstance(IN[0], list) else [IN[1]]\r\nforcedown = IN[2]\r\n\r\n# Define function for finding closest number\r\n# Note we find absolute value, then find the floor later on\r\ndef closest(list, number):\r\n\tdiff = []\r\n\tfor i in list:\r\n\t\tdiff.append(abs(number-i))\r\n\treturn diff.index(min(diff))\r\n\r\n# Build empty lists\r\nindices = []\r\nvalues_out  = []\r\n\r\n# Test all values on the range using our function 'closest'\r\nfor i in values_in:\r\n\tindex = closest(range_in, i)\r\n\t# Test if the value is under the nearest\r\n\tif i - range_in[index] >= 0 and forcedown == False:\r\n\t\tindices.append(index)\r\n\t\tvalues_out.append(range_in[index])\r\n\telse:\r\n\t\t# Test if the value is the first item (can't reduce index)\r\n\t\tif index != 0:\r\n\t\t\tindices.append(index-1)\r\n\t\t\tvalues_out.append(range_in[index-1])\r\n\t\telse:\r\n\t\t\tindices.append(0)\r\n\t\t\tvalues_out.append(range_in[0])\r\n\r\n# Outputs\r\nOUT = [values_out, indices]",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "c18e2b5685e24472bf9f5fef4bf3cf78",
       "Inputs": [
@@ -57,7 +58,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -253,24 +254,25 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -22.499469651426988,
-      "EyeY": 83.474008687746775,
-      "EyeZ": 25.340790306871632,
-      "LookX": 10.07099783483187,
-      "LookY": -10.910247654401203,
-      "LookZ": -48.676489535020693,
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
       "UpX": 0.0,
       "UpY": 1.0,
       "UpZ": 0.0
@@ -348,8 +350,8 @@
       }
     ],
     "Annotations": [],
-    "X": 292.20571832847793,
-    "Y": 240.37739917199463,
+    "X": -125.79428167152207,
+    "Y": 249.37739917199463,
     "Zoom": 1.2270473614083381
   }
 }

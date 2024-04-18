@@ -13,8 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Mostly made from Clockwork, was a useful script so absorbed\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Current doc/app\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application \r\n\r\n# Collect build data\r\nif int(app.VersionNumber) > 2017:\r\n\tfullVersion = app.SubVersionNumber\r\nelse:\r\n\tfullVersion = str(app.VersionNumber)\r\n\r\nversionName  = app.VersionName\r\nversionBuild = app.VersionBuild\r\nlanguage = app.Language.ToString()\r\nversionShort = int(app.VersionNumber)\r\n\r\n# Preparing output to Dynamo\r\nOUT = versionName, versionShort, fullVersion, versionBuild, language",
-      "Engine": "IronPython2",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Mostly made from Clockwork, was a useful script so absorbed\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport System\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference('RevitAPI')\r\nimport Autodesk\r\nfrom Autodesk.Revit.ApplicationServices import LanguageType\r\n\r\n# Get enum name\r\ndef enumGetName(enum, enumClass):\r\n    return System.Enum.GetName(enumClass,enum)\r\n\r\n# Current doc/app\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application \r\n\r\n# Collect build data\r\nif int(app.VersionNumber) > 2017:\r\n\tfullVersion = app.SubVersionNumber\r\nelse:\r\n\tfullVersion = str(app.VersionNumber)\r\n\r\nversionName  = app.VersionName\r\nversionBuild = app.VersionBuild\r\nlanguage = enumGetName(app.Language, LanguageType)\r\nversionShort = int(app.VersionNumber)\r\n\r\n# Preparing output to Dynamo\r\nOUT = versionName, versionShort, fullVersion, versionBuild, language",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "eaa08a1ae3cb4417b17431de94e89319",
       "Inputs": [
@@ -385,8 +385,8 @@
       }
     ],
     "Annotations": [],
-    "X": -72.425167274618673,
-    "Y": 375.74580722393705,
-    "Zoom": 1.49919520032277
+    "X": 80.479396236258538,
+    "Y": 382.54259954922122,
+    "Zoom": 1.0710244818045751
   }
 }

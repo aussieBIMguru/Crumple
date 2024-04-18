@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Similar to Clockwork, but also allows sub of spaces\r\n# I often found this was my next step to exploding strings\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n#Declare Input\r\nstrings = tolist(IN[0])\r\nsub  = IN[1]\r\n\r\n# Function to split strings\r\ndef splitChars(string, subStr = sub):\r\n\tchars = []\r\n\tfor c in string:\r\n\t\tif c == \"\":\r\n\t\t\tchars.append(subStr)\r\n\t\telse:\r\n\t\t\tchars.append(c)\r\n\treturn chars\r\n\r\n#Declare Output\r\nOUT = objOrList([splitChars(s) for s in strings])",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "35f18aa224c3467581164ae163a8b92f",
       "Inputs": [

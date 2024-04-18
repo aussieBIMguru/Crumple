@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Get app version\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application\r\nrvt_year = int(app.VersionNumber)\r\n\r\n# Import API references by version\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\n\r\nif rvt_year < 2022:\r\n\tfrom Autodesk.Revit.DB import UnitType\r\nelse:\r\n\tfrom Autodesk.Revit.DB import SpecTypeId\r\n\r\n# Get units\r\nif rvt_year < 2022:\r\n\tintLenUnits  = doc.GetUnits().GetFormatOptions(UnitType.UT_Length).DisplayUnits\r\n\tintAreaUnits = doc.GetUnits().GetFormatOptions(UnitType.UT_Area).DisplayUnits\r\n\tintVolUnits  = doc.GetUnits().GetFormatOptions(UnitType.UT_Volume).DisplayUnits\r\nelse:\r\n\tintLenUnits  = doc.GetUnits().GetFormatOptions(SpecTypeId.Length).GetUnitTypeId()\r\n\tintAreaUnits = doc.GetUnits().GetFormatOptions(SpecTypeId.Area).GetUnitTypeId()\r\n\tintVolUnits  = doc.GetUnits().GetFormatOptions(SpecTypeId.Volume).GetUnitTypeId()\r\n\r\n# Preparing output to Dynamo\r\nOUT = intLenUnits, intAreaUnits, intVolUnits",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "e2836d27dcd447bda3a62ec066f6e9e0",
       "Inputs": [

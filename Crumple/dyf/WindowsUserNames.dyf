@@ -14,6 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Thanks to Sean Page for suggesting the os package\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport os\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPIUI\")\r\nfrom Autodesk.Revit.UI import *\r\n\r\n# Current doc/app/ui\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application \r\n\r\n# Obtain usernames\r\nuser_w = os.environ.get('USERNAME')\r\nuser_r = app.Username\r\n\r\nOUT = [user_w, user_r]",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "581ad28cdd864b98a19387c94884975a",
       "Inputs": [
@@ -39,7 +40,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -126,7 +127,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "Refresh",
+        "Name": "refresh",
         "TypeName": "bool",
         "TypeRank": 0,
         "DefaultValue": "true",
@@ -173,21 +174,22 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -22.020641205966292,
-      "EyeY": 107.30823585841793,
-      "EyeZ": 30.288711023603071,
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
       "LookX": 12.0,
       "LookY": -13.0,
       "LookZ": -58.0,
@@ -248,8 +250,8 @@
       }
     ],
     "Annotations": [],
-    "X": -150.90971967000365,
-    "Y": 194.52669921344778,
-    "Zoom": 0.71259483262848844
+    "X": -247.33711501298774,
+    "Y": 166.85743721252052,
+    "Zoom": 0.959788699581266
   }
 }

@@ -14,6 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport csv\r\nimport os\r\n\r\n# Preparing input from dynamo to revit\r\ncsvPath = IN[0]\r\ndeLimit = IN[1]\r\n\r\n# Try to read the file\r\nif os.path.isfile(csvPath):\r\n\twith open(csvPath,\"r\") as file:\r\n\t\treader = csv.reader(file,delimiter = deLimit)\r\n\t\tcsv_data = list(reader)\r\n\tresult = \"CSV contents read.\"\r\nelse:\r\n\tcsv_data = []\r\n\tresult = \"CSV contents not able to be read.\"\r\n\r\n# Preparing output to Dynamo\r\nOUT = [csv_data,result]",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "eb643537cbf54fecad6ebeb07fefdd26",
       "Inputs": [
@@ -48,7 +49,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -213,13 +214,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -298,8 +300,8 @@
       }
     ],
     "Annotations": [],
-    "X": 265.0,
-    "Y": 203.0,
+    "X": 12.0,
+    "Y": 219.0,
     "Zoom": 1.0
   }
 }

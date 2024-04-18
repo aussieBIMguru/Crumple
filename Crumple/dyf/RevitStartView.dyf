@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import StartingViewSettings\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\ndef getStartView(doc):\r\n\ttry:\r\n\t\tstartSettings = StartingViewSettings.GetStartingViewSettings(doc)\r\n\t\tstartViewId = startSettings.ViewId\r\n\t\treturn doc.GetElement(startViewId)\r\n\texcept:\r\n\t\treturn None\t\r\n\r\n# Preparing input from dynamo to revit\r\ndocs = tolist(IN[0])\r\n\r\n# Get start view\r\nOUT = objOrList([getStartView(d) for d in docs])",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "b25af5387a5f4fc6a47a5d634e1ddbe5",
       "Inputs": [

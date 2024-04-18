@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Define list function\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Create a lazy iterator to break list at value\r\ndef splitter(seq, splitval = 0):\r\n    # Add one instance of the splitter to the end\r\n    seq.append(splitval)\r\n    group = []\r\n    # Iterate across all values\r\n    for num in seq:\r\n        if num != splitval:\r\n            group.append(num)\r\n        # If a splitval is found, yield to group\r\n        elif group:\r\n            yield group\r\n            group = []\r\n\r\n# Preparing input from dynamo to revit\r\nvalues = tolist(IN[0])\r\nresult = []\r\n\r\n# Iterate across all sublists\r\nfor n in values:\r\n    result.append(list(splitter(n)))\r\n\r\n# Preparing output to Dynamo\r\nOUT = result",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "df5ce72f639448f383462fecc4031467",
       "Inputs": [
@@ -210,8 +210,8 @@
       }
     ],
     "Annotations": [],
-    "X": 321.5778253738801,
-    "Y": 280.27088070728439,
+    "X": 2.5778253738801027,
+    "Y": 256.27088070728439,
     "Zoom": 1.3076413563671876
   }
 }

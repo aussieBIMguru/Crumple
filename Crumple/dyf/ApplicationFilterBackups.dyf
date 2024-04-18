@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Preparing input from dynamo to revit\r\nfilePaths = tolist(IN[0])\r\n\r\n# Return only non-backup\r\ndef isBackup(fp):\r\n\tfp1 = fp.rsplit(\".\", 1)[0]\r\n\tfp2 = fp1.rsplit(\".\",1)[-1]\r\n\ttry:\r\n\t\tint(fp2)\r\n\t\treturn True\r\n\texcept:\r\n\t\treturn False\r\n\r\npathsOut, bkpPaths = [],[]\r\n\r\nfor fp in filePaths:\r\n\tbkp = isBackup(fp)\r\n\tif bkp:\r\n\t\tbkpPaths.append(fp)\r\n\telse:\r\n\t\tpathsOut.append(fp)\r\n\r\n# Preparing output to Dynamo\r\nOUT = pathsOut, bkpPaths",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "5a3bbe454af64fca969970915c94abc2",
       "Inputs": [

@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import DWGExportOptions, BaseExportOptions\r\n\r\n# Preparing input from dynamo to revit\r\nsettingsName = IN[0]\r\nsharedCoords = IN[1]\r\nmergedViews  = IN[2]\r\ndoc          = IN[3]\r\n\r\n# Collect all sheets\r\noptions = BaseExportOptions.GetPredefinedSetupNames(doc)\r\n\r\nif settingsName in options:\r\n\toptions_dwg = DWGExportOptions.GetPredefinedOptions(doc, settingsName)\r\n\tfoundSetting = True\r\nelse:\r\n\toptions_dwg = DWGExportOptions()\r\n\toptions_dwg.SharedCoords = sharedCoords\r\n\toptions_dwg.MergedViews  = mergedViews\r\n\tfoundSetting = False\r\n\r\n# Preparing output to Dynamo\r\nOUT = options_dwg, foundSetting",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "1202e820c14a48e6acbea235ebd5719b",
       "Inputs": [
@@ -340,7 +340,16 @@
   "Dependencies": [
     "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc"
   ],
-  "NodeLibraryDependencies": [],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Crumple",
+      "Version": "2024.3.1",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "dfc3a2f5cd184a839ba44dbfbe6bfd58"
+      ]
+    }
+  ],
   "Author": "None provided",
   "Bindings": [],
   "View": {

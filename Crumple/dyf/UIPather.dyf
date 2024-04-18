@@ -19,6 +19,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Repackaged by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n##based off of code from http://onecore.net/ironpython-using-textbox-widget.htm\n##also made possible thanks to the awesome work of Dimitar Venkov, without his examples I wouldn't be able to do any of this.\n##built for Dynamo by john pierson\n\n# Boilerplate text\nimport clr\n\nimport sys\nimport System\nclr.AddReference('System.Windows.Forms')\nclr.AddReference('System.Drawing')\nclr.AddReference('System')\n\nfrom System.Drawing import Point, Font\nfrom System.Windows.Forms import OpenFileDialog\n\n# Preparing input from dynamo to revit\nif IN[0]:\n\t\n\topenDialog = OpenFileDialog()\n\topenDialog.Multiselect = True\n\topenDialog.Filter = \"All files|*.*\"\n\topenDialog.ShowDialog()\n\t\n\tOUT = openDialog.FileNames\n\t\nelse:\n\t\n\tOUT = \"set runMe to true!\"",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "ca76943e8f074436a0df8a92f212e73c",
       "Inputs": [
@@ -44,7 +45,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -108,13 +109,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },

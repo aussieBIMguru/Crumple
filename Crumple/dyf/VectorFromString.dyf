@@ -14,6 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\n# Preparing input from dynamo to revit\r\nstrs = IN[0] if isinstance(IN[0], list) else [IN[0]]\r\n\r\nvectors = []\r\n\r\n# Convert string to vector format\r\nfor s in strs:\r\n\txind = s.index('X = ')\r\n\tyind = s.index('Y = ')\r\n\tzind = s.index('Z = ')\r\n\t\r\n\tx = float(s[xind+4:xind+9])\r\n\ty = float(s[yind+4:yind+9])\r\n\tz = float(s[zind+4:zind+9])\r\n\t\r\n\tv = Vector.ByCoordinates(x,y,z)\r\n\tvectors.append(v)\r\n\r\n# Preparing output to Dynamo\r\nOUT = vectors",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "b1ba004e98404780b85543da896d1aa8",
       "Inputs": [
@@ -39,7 +40,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -103,13 +104,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -158,8 +160,8 @@
       }
     ],
     "Annotations": [],
-    "X": 621.64924475565851,
-    "Y": 285.75902589479091,
+    "X": -339.35075524434149,
+    "Y": 237.75902589479091,
     "Zoom": 1.545620359375
   }
 }

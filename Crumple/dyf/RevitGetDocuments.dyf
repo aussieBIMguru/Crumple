@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application \r\n\r\n# Get documents\r\ndocuments = app.Documents\r\n\r\n# Get current and other docs\r\notherDocs, linkDocs, linkTitles, otherTitles = [],[],[],[]\r\n\r\nfor d in app.Documents:\r\n\tif d.Title != doc.Title:\r\n\t\tif d.IsLinked:\r\n\t\t\tlinkDocs.append(d)\r\n\t\t\tlinkTitles.append(d.Title)\r\n\t\telse:\r\n\t\t\totherDocs.append(d)\r\n\t\t\totherTitles.append(d.Title)\r\n\r\nOUT = [doc, linkDocs, otherDocs, doc.Title, linkTitles, otherTitles]",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "595874874b9d460e8ef3e1e37e4c7c37",
       "Inputs": [
@@ -430,8 +430,8 @@
       }
     ],
     "Annotations": [],
-    "X": -126.41131529940844,
-    "Y": 288.79576447201373,
+    "X": 9.588684700591557,
+    "Y": 280.79576447201373,
     "Zoom": 0.9540429248828125
   }
 }

@@ -14,6 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "import clr\r\nimport System\r\nfrom System.Threading import Thread, ThreadStart\r\nclr.AddReference(\"System.Windows.Forms\")\r\n\r\nclipboardcontents = '###'\r\n\r\ndef GetText():\r\n    def thread_proc():\r\n        global clipboardcontents\r\n        clipboardcontents = System.Windows.Forms.Clipboard.GetText()\r\n    t = Thread(ThreadStart(thread_proc))\r\n    t.ApartmentState = System.Threading.ApartmentState.STA\r\n    t.Start()\r\n    t.Join()\r\n\r\ntry:\r\n\tGetText()\r\n\tOUT = [clipboardcontents, True]\r\nexcept:\r\n\tOUT = [\"\", False]",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "121179b8bf5a45d5bef6a4423208b456",
       "Inputs": [
@@ -39,7 +40,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -173,13 +174,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },

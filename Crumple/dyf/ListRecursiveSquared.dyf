@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# If I could see further, it is because I have stood on the shoulders of giants\r\n# https://stackoverflow.com/questions/30060970/how-to-apply-a-function-to-each-sublist-of-a-list-in-python\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Function to apply function recursively\r\n# Inputs are a = input value/object\r\n#            f = lambda function to recur\r\ndef apply_f(a,f):\r\n\t# If input is a list\r\n\tif isinstance(a, list):\r\n\t\t# Return the recursive function\r\n\t\treturn map(lambda t: apply_f(t,f), a)\r\n\t# Otherwise function on lowest item\r\n\telse:\r\n\t\treturn f(a)\r\n\r\n# Function to apply recursively\r\ndef my_function(num):\r\n\treturn num ** 2\r\n\r\n# Preparing input from dynamo to revit\r\nnumbers = IN[0]\r\n\r\n# Preparing output to Dynamo\r\nOUT = apply_f(numbers, lambda n:my_function(n))",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "efbb4a73e4a74c748e4c3c78b70487ea",
       "Inputs": [

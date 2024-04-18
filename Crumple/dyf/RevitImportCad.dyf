@@ -26,8 +26,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n# Boilerplate text\nimport clr\nimport System\n\nclr.AddReference('RevitServices')\nimport RevitServices\nfrom RevitServices.Persistence import DocumentManager\nfrom RevitServices.Transactions import TransactionManager\n\nclr.AddReference('RevitAPI')\nimport Autodesk\nfrom Autodesk.Revit.DB import ImportUnit, DWGImportOptions, ImportColorMode, ElementId, Transaction\n\n# Current doc\ndoc = DocumentManager.Instance.CurrentDBDocument\n\n# Define list/unwrap list functions\ndef tolist(input):\n    result = input if isinstance(input, list) else [input]\n    return result\n\ndef uwlist(input):\n    result = input if isinstance(input, list) else [input]\n    return UnwrapElement(result)\n\n# Get inputs\nfilePaths = tolist(IN[0])\nviews     = uwlist(IN[1])\n\n# Get import unit types as enumeration\nenums = System.Enum.GetValues(Autodesk.Revit.DB.ImportUnit)\nnames = [str(u) for u in enums]\n\n# Find matching enum unit type\ni = names.index(IN[2])\nunitType = enums[i]\n\n# CAD settings\ncustomscale = False\ncolormode = \"Preserve\"\nplacement = \"Origin\"\nallView = True\n\n# Empty lists\nresults, importInstances = [],[],[],[]\n\n# Import options\noptions = DWGImportOptions()\noptions.AutoCorrectAlmostVHLines = True\noptions.OrientToView = False\noptions.ThisViewOnly = False\noptions.VisibleLayersOnly = True\nImportColorMode.Preserved\noptions.Placement.Origin\noptions.Unit = unitType\n\n# Create ElementId / .NET object\n\n\n# Import CAD files\nfor fp in filePaths:\n\t# Try to import CAD\n\ttry:\n\t\t# Create ElementId / .NET object\n\t\tlinkedElem = clr.Reference[ElementId]()\n\t\t# Import CAD\n\t\twith Transaction(doc, 'Import CAD') as t:\n\t\t\tt.Start()\n\t\t\tdoc.Import(fp, options, views, linkedElem)\n\t\t\tt.Commit()\n\t\t# Get import instance\n\t\timportInstance = doc.GetElement(linkedElem.Value)\n\t\timportInstances.append(importInstance)\n\t\tresults.append(True)\n\t# Otherwise it failed\n\texcept:\n\t\timportInstances.append(None)\n\t\tresults.append(False)\n\t\n# Outputs\nOUT = importInstances, results",
-      "Engine": "IronPython2",
+      "Code": "# Made by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n# Boilerplate text\nimport clr\nimport System\n\nclr.AddReference('RevitServices')\nimport RevitServices\nfrom RevitServices.Persistence import DocumentManager\nfrom RevitServices.Transactions import TransactionManager\n\nclr.AddReference('RevitAPI')\nimport Autodesk\nfrom Autodesk.Revit.DB import ImportUnit, DWGImportOptions, ImportColorMode, ElementId, Transaction\n\n# Current doc\ndoc = DocumentManager.Instance.CurrentDBDocument\n\n# Define list/unwrap list functions\ndef tolist(input):\n    result = input if isinstance(input, list) else [input]\n    return result\n\ndef uwlist(input):\n    result = input if isinstance(input, list) else [input]\n    return UnwrapElement(result)\n\n# Get inputs\nfilePaths = tolist(IN[0])\nviews     = uwlist(IN[1])\n\n# Get enum name\ndef enumGetName(enum, enumClass):\n    return System.Enum.GetName(enumClass,enum)\n\n# Get import unit types as enumeration\nenums = System.Enum.GetValues(ImportUnit)\nnames = [enumGetName(u,ImportUnit) for u in enums]\n\n# Find matching enum unit type\ni = names.index(IN[2])\nunitType = enums[i]\n\n# CAD settings\ncustomscale = False\ncolormode = \"Preserve\"\nplacement = \"Origin\"\nallView = True\n\n# Empty lists\nresults, importInstances = [],[]\n\n# Import options\noptions = DWGImportOptions()\noptions.AutoCorrectAlmostVHLines = True\noptions.OrientToView = False\noptions.ThisViewOnly = False\noptions.VisibleLayersOnly = True\nImportColorMode.Preserved\noptions.Unit = unitType\n\n#Do some action in a Transaction\nTransactionManager.Instance.EnsureInTransaction(doc)\n\n# Import CAD files\nfor fp,v in zip(filePaths,views):\n\t# Try to import CAD\n\ttry:\n\t\t# Dummy Id\n\t\tdummyId = ElementId.InvalidElementId\n\t\t# Import CAD\n\t\tresult_import, cad_instance_Id = doc.Import(fp, options, v, dummyId)\n\t\t# Get import instance\n\t\timportInstance = doc.GetElement(cad_instance_Id)\n\t\timportInstances.append(importInstance)\n\t\tresults.append(result_import)\n\t# Otherwise it failed\n\texcept:\n\t\timportInstances.append(None)\n\t\tresults.append(False)\n\nTransactionManager.Instance.TransactionTaskDone()\n\n# Outputs\nOUT = importInstances, results",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "dcb7afe1dfb84e65ac514bc8569f17e8",
       "Inputs": [
@@ -318,8 +318,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -68.767489128304248,
-        "Y": 24.729066928609939
+        "X": -180.8794822522928,
+        "Y": 32.203199803542532
       },
       {
         "ShowGeometry": true,
@@ -363,8 +363,8 @@
       }
     ],
     "Annotations": [],
-    "X": 58.679921030548826,
-    "Y": 303.50195657703756,
+    "X": 158.67992103054883,
+    "Y": 284.50195657703756,
     "Zoom": 0.93656349400440009
   }
 }

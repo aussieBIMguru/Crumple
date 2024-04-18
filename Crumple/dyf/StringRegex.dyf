@@ -19,6 +19,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text (re is regex)\r\nimport clr\r\nimport re\r\n\r\n# Preparing input from dynamo to revit\r\nstr_list = IN[0] if isinstance(IN[0],list) else [IN[0]]\r\nthisexp = re.compile(IN[1])\r\n\r\nresults = []\r\n\r\n# Check each string against the regex\r\nfor s in str_list:\r\n\tif re.search(thisexp, s):\r\n\t\tresults.append(True)\r\n\telse:\r\n\t\tresults.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = results",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "ecaa83eedd744009adcdbd36fabc9fb4",
       "Inputs": [
@@ -53,33 +54,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
-      "Parameter": {
-        "Name": "regex",
-        "TypeName": "string",
-        "TypeRank": 0,
-        "DefaultValue": null,
-        "Description": ""
-      },
-      "Id": "c727b42f3fe74db7b8f37ba03c43e067",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "234e0bc83ec54b0a9ecf083e948ec983",
-          "Name": "",
-          "Description": "Symbol",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -127,6 +102,32 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "regex",
+        "TypeName": "string",
+        "TypeRank": 0,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "2fc36edf439443b89fc4c118c1c8ccea",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "bf995219f60a4cc58d77b341e8e2f07b",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     }
   ],
   "Connectors": [
@@ -136,25 +137,26 @@
       "Id": "7726d863dbd243d8bcc9fa8579ab2e45"
     },
     {
-      "Start": "234e0bc83ec54b0a9ecf083e948ec983",
-      "End": "494ead1eb1554cc59cbfae3aa184b478",
-      "Id": "650dcee1cc4d4cb08aa7e29440fea624"
-    },
-    {
       "Start": "71feb9271b7d467d843d8e4814c93966",
       "End": "25c231a21ad741faa99e047c7782a095",
       "Id": "131f65d8a62346f4ba58c0427570b2d0"
+    },
+    {
+      "Start": "bf995219f60a4cc58d77b341e8e2f07b",
+      "End": "494ead1eb1554cc59cbfae3aa184b478",
+      "Id": "33a231c0e7a54e0fbe54fe0193bde957"
     }
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -184,16 +186,6 @@
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "c727b42f3fe74db7b8f37ba03c43e067",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 5.7317940592863579,
-        "Y": 47.887621122278972
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "6f2240b6b4204110b17d59dcf042f949",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -210,6 +202,16 @@
         "Excluded": false,
         "X": 416.0,
         "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "2fc36edf439443b89fc4c118c1c8ccea",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -0.84019228462841511,
+        "Y": 69.3821311331609
       }
     ],
     "Annotations": [],

@@ -79,6 +79,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Prepare inputs\r\nnumbers = IN[0] if isinstance(IN[0], list) else [IN[0]]\r\nlimit   = IN[1]\r\n\r\n# Process down\r\nclamped, changed = [], []\r\n\r\n# Find clamped values\r\nfor n in numbers:\r\n\thigher    = n > limit\r\n\tremainder = n % limit\r\n\texcess    = (n-remainder)/limit\r\n\tresult    = n-(limit*excess)\r\n\tclamped.append(result)\r\n\tchanged.append(higher)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [clamped, changed]",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "5afdca600c1249c9b1359a5dcb5e0a8d",
       "Inputs": [
@@ -113,7 +114,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -218,13 +219,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -303,8 +305,8 @@
       }
     ],
     "Annotations": [],
-    "X": 588.23137215962072,
-    "Y": 168.18971243622045,
+    "X": 49.231372159620719,
+    "Y": 182.18971243622045,
     "Zoom": 1.1917937712929565
   }
 }

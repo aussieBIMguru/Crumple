@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n# Boilerplate text\nimport clr\n\nimport os\nimport System\nfrom System import Environment\n\nclr.AddReference('RevitServices')\nfrom RevitServices.Persistence import DocumentManager\n\n# Get current document path\ndoc = DocumentManager.Instance.CurrentDBDocument\npn = doc.PathName\n\n# Method from Data-Shapes to get current model size\ntry:\n\tguid = doc.WorksharingCentralGUID  \n\tAppDataList = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData).split(\"\\\\\")\n\tAppDataList.pop(-1)\n\tAppData = \"\\\\\".join(AppDataList)\n\tlocation =  AppData + \"\\\\Local\\\\Autodesk\\\\Revit\"\n\tcachedFile = System.IO.Directory.GetFiles(location, str(guid) + \".rvt\" ,SearchOption.AllDirectories)\n\tsize = [os.path.getsize(file) for file in cachedFile][0]\nexcept:\n\tsize = float(os.path.getsize(pn))\n\n# Return size in MB\nOUT = size/1000000",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "3560b8687b094627aaebd193ffae9443",
       "Inputs": [
@@ -160,8 +160,8 @@
       }
     ],
     "Annotations": [],
-    "X": -263.36121302544234,
-    "Y": 300.97820828957379,
+    "X": 38.638786974557661,
+    "Y": 267.97820828957379,
     "Zoom": 1.1517533276952223
   }
 }
