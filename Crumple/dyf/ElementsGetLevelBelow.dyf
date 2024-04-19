@@ -110,7 +110,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Declare inputs, ensure values and range are iterable\r\nelev_lvls = tolist(IN[0])\r\nelev_eles = tolist(IN[1])\r\n\r\nind_lvls, ind_elevs = [],[]\r\n\r\n# For each elevation\r\nfor e in elev_eles:\r\n\tif elev_lvls[0] > e:\r\n\t\tind = 0\r\n\telse:\r\n\t\tind = -1\r\n\tfor l in elev_lvls:\r\n\t\tif l > e:\r\n\t\t\tbreak\r\n\t\telse:\r\n\t\t\tind += 1\r\n\tind_lvls.append(ind)\r\n\tind_elevs.append(elev_lvls[ind])\r\n\r\n# Outputs\r\nOUT = ind_lvls, ind_elevs",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "38932afc75e34dc7acf53b1d21da534e",
       "Inputs": [
@@ -574,15 +574,15 @@
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": 0.23855733577588106,
-      "EyeY": 78.987985222705078,
-      "EyeZ": 44.000550597987569,
-      "LookX": -0.23855733577588106,
-      "LookY": -78.987985222705078,
-      "LookZ": -44.000550597987569,
-      "UpX": -0.0040604653768241405,
-      "UpY": 0.66261970996856689,
-      "UpZ": -0.74894499778747559
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "NodeViews": [
       {
@@ -717,8 +717,8 @@
       }
     ],
     "Annotations": [],
-    "X": -693.248410471633,
-    "Y": 123.81015569796205,
+    "X": 269.75158952836705,
+    "Y": 97.810155697962045,
     "Zoom": 0.92708234748145768
   }
 }

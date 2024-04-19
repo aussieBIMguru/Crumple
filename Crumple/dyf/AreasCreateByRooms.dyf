@@ -25,6 +25,10 @@
       "Views": {
         "Key": "archilab.Revit.Views.Views",
         "Value": "archilab.dll"
+      },
+      "View": {
+        "Key": "Revit.Elements.Views.View",
+        "Value": "RevitNodes.dll"
       }
     }
   },
@@ -83,7 +87,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import UV\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Unwrapped list function\r\ndef uwlist(input):\r\n\tresult = input if isinstance(input, list) else [input]\r\n\treturn UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nrooms_list  = uwlist(IN[0])\r\nview_r      = UnwrapElement(IN[1])\r\n\r\n# Start making Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\n# Make areas from rooms, matching names and numbers\r\nareas, nums, nams = [], [], []\r\n\r\nfor room in rooms_list:\r\n\tloc = room.Location.Point\r\n\tarea = doc.Create.NewArea(view_r, UV(loc.X, loc.Y))\r\n\tnumb = room.GetParameters(\"Number\")[0].AsString()\r\n\tarea.Number = numb\r\n\tname = room.GetParameters(\"Name\")[0].AsString()\r\n\tarea.Name = name\r\n\tnums.append(numb)\r\n\tnams.append(name)\r\n\tareas.append(area.ToDSType(False))\r\n\t\t\r\n# Finish making transaction\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(areas), objOrList(nums), objOrList(nams)",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "60e525fd9e254062b47968d951d584dd",
       "Inputs": [
@@ -214,9 +218,9 @@
       "NodeType": "InputNode",
       "Parameter": {
         "Name": "view",
-        "TypeName": "var",
+        "TypeName": "Revit.Elements.Views.View",
         "TypeRank": 0,
-        "DefaultValue": "Revit.Application.Document.Current.ActiveView",
+        "DefaultValue": null,
         "Description": "The view to place the areas in."
       },
       "Id": "7b85ff5188f94d7ab39f74fe6a4910c1",
@@ -361,13 +365,13 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -361.0372836390768,
-        "Y": 157.78757450599647
+        "X": -176.23757318266564,
+        "Y": 163.44470849956008
       }
     ],
     "Annotations": [],
-    "X": 248.33165647699241,
-    "Y": 38.124737427724938,
+    "X": 378.33165647699241,
+    "Y": 174.12473742772494,
     "Zoom": 1.0606077223602068
   }
 }

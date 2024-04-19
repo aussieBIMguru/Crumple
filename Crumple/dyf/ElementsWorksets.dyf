@@ -58,7 +58,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\neles = uwlist(IN[0])\r\n\r\nworksets, names = [],[]\r\n\r\nfor e in eles:\r\n\tdoc = e.Document\r\n\tif doc.IsWorkshared:\r\n\t\tid = e.WorksetId\r\n\t\tworkset = doc.GetWorksetTable().GetWorkset(id)\r\n\t\tworksets.append(workset)\r\n\t\tnames.append(workset.Name)\r\n\telse:\r\n\t\tworksets.append(None)\r\n\t\tnames.append(\"\")\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(worksets), objOrList(names)",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "4a61fcc4a5f04863967a5e7611d85d2a",
       "Inputs": [

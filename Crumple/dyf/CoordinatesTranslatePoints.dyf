@@ -465,7 +465,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport math\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\n# Revit services and API\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Get app version\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application\r\nrvt_year = int(app.VersionNumber)\r\n\r\ndef interalToProject(val, ver = rvt_year, myDoc = doc):\r\n\tif rvt_year < 2022:\r\n\t\tintUnits = doc.GetUnits().GetFormatOptions(UnitType.UT_Length).DisplayUnits\r\n\t\treturn UnitUtils.Convert(val,DisplayUnitType.DUT_DECIMAL_FEET,intUnits)\r\n\telse:\r\n\t\tintUnitsId = doc.GetUnits().GetFormatOptions(SpecTypeId.Length).GetUnitTypeId()\r\n\t\treturn UnitUtils.ConvertFromInternalUnits(val, intUnitsId)\r\n\r\n# Get project position\r\nori = doc.ActiveProjectLocation.GetProjectPosition(XYZ(0,0,0))\r\npbp = BasePoint.GetProjectBasePoint(doc)\r\n\r\n# Get EW, NS, Elev\r\nori_ns = interalToProject(ori.NorthSouth)\r\nori_ew = interalToProject(ori.EastWest)\r\nori_el = interalToProject(ori.Elevation)\r\npbp_an = pbp.get_Parameter(BuiltInParameter.BASEPOINT_ANGLETON_PARAM).AsDouble() * 180/math.pi\r\n\r\n# Preparing output to Dynamo\r\nOUT = [pbp_an, ori_ew, ori_ns, ori_el]",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "6490e51839dd4e67877e6e010d482a82",
       "Inputs": [],
@@ -685,15 +685,15 @@
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -19177.32421875,
-      "EyeY": 17003.115234375,
-      "EyeZ": 16749.59375,
-      "LookX": 11034.255859375,
-      "LookY": -17215.615234375,
-      "LookZ": -16548.0,
-      "UpX": 0.26467055082321167,
-      "UpY": 0.87881672382354736,
-      "UpZ": -0.39702725410461426
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "NodeViews": [
       {
@@ -818,8 +818,8 @@
       }
     ],
     "Annotations": [],
-    "X": -78.287229473513776,
-    "Y": 320.13922174770158,
-    "Zoom": 0.33624134159612984
+    "X": -357.21772537300058,
+    "Y": -60.805344016145114,
+    "Zoom": 1.146832581537621
   }
 }

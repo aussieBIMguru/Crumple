@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FilteredElementCollector, ElevationMarker\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\npurge = IN[1]\r\n\r\n# Get all elevation markers\r\nmarkers_all = FilteredElementCollector(doc).OfClass(ElevationMarker).ToElements()\r\n\r\n# Get all empty elevation markers\r\nempty_markers = []\r\n\r\nfor m in markers_all:\r\n\tif not m.HasElevations():\r\n\t\tempty_markers.append(m)\r\n\r\nmarker_ids = [m.Id for m in empty_markers]\r\n\r\n# Preparing output to Dynamo\r\nif purge:\r\n\t# Do some action in a Transaction\r\n\toutList = []\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\tfor i,m in zip(marker_ids, empty_markers):\r\n\t\ttry:\r\n\t\t\tdoc.Delete(i)\r\n\t\t\toutList.append(None)\r\n\t\texcept:\r\n\t\t\toutList.append(m)\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\n\tOUT = outList, marker_ids\r\nelse:\r\n\tOUT = empty_markers, marker_ids",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "070b2537cdc34f948dca9f2359c8a5a0",
       "Inputs": [

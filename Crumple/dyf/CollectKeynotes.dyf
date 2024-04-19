@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import KeynoteTable\r\n\r\n# Current doc/app/ui\r\ndoc = IN[1]\r\nuniqueOnly = IN[0]\r\n\r\ntry:\r\n\tkeynoteTable = KeynoteTable.GetKeynoteTable(doc)\r\nexcept:\r\n\tkeynoteTable = None\r\n\r\n# Lists to build\r\nkeyValues   = []\r\nkeyParents  = []\r\nkeyDescs    = []\r\nbaseKeys    = []\r\nbaseDescs   = []\r\nbaseParents = []\r\n\r\n# If we found a keynote table\r\nif keynoteTable:\r\n\t# Get the iterator\r\n\tkeynoteEntry = keynoteTable.GetKeyBasedTreeEntries()\r\n\tkeynoteEnum  = keynoteEntry.GetKeyBasedTreeEntriesIterator()\r\n\tcounter = 0\r\n\t# Get the keys from keynote file\r\n\twhile keynoteEnum.MoveNext() and counter < 9999:\r\n\t\ttbe = keynoteEnum.Current\r\n\t\tkeyValues.append(tbe.Key)\r\n\t\tkeyParents.append(tbe.ParentKey)\r\n\t\tkeyDescs.append(tbe.KeynoteText)\r\n\t\tcounter += 1\r\n\t# Get the unique keys only\r\n\tfor k,d,p in zip(keyValues, keyDescs, keyParents):\r\n\t\tif k not in keyParents:\r\n\t\t\tbaseKeys.append(k)\r\n\t\t\tbaseDescs.append(d)\r\n\t\t\tbaseParents.append(p)\r\n\r\n# Preparing output to Dynamo\r\nif uniqueOnly:\r\n\tOUT = baseKeys, baseDescs, baseParents\r\nelse:\r\n\tOUT = keyValues, keyDescs, keyParents",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "97a7b6b92f2e458b85a35b9e8d5b3ccf",
       "Inputs": [
@@ -411,8 +411,8 @@
       }
     ],
     "Annotations": [],
-    "X": 232.50244077494375,
-    "Y": 271.11110478783479,
-    "Zoom": 0.48391633011669022
+    "X": 169.33673689876122,
+    "Y": 229.37111724349998,
+    "Zoom": 0.88878922829715568
   }
 }

@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FilteredElementCollector, Family\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Collect all sheets\r\nfams = FilteredElementCollector(doc).OfClass(Family).WhereElementIsNotElementType().ToElements()\r\n\r\n# Build output\r\nuserCreated, inPlace, internal = [],[],[]\r\n\r\nfor f in fams:\r\n\tif f.IsInPlace:\r\n\t\tinPlace.append(f)\r\n\telif f.IsUserCreated:\r\n\t\tuserCreated.append(f)\r\n\telse:\r\n\t\tinternal.append(f)\r\n\r\n# Preparing output to Dynamo\r\nOUT = userCreated, inPlace, internal",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "d2d6959beeec42d89ea3eb880cd17ab9",
       "Inputs": [

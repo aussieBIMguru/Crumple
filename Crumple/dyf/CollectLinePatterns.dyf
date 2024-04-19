@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n# Boilerplate text\nimport clr\n\nclr.AddReference('RevitAPI')\nimport Autodesk\nfrom Autodesk.Revit.DB import FilteredElementCollector, LinePatternElement\n\n# Current document\ndoc = IN[0]\n\nallLinePatterns = FilteredElementCollector(doc).OfClass(LinePatternElement).ToElements()\nnames = [p.Name for p in allLinePatterns]\n\nOUT = allLinePatterns, names",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "902d8b7211cd4792910a88189ab03ccd",
       "Inputs": [

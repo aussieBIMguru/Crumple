@@ -22,7 +22,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory\r\n\r\ndoc = IN[0]\r\n\r\nlinkInstances = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_RvtLinks).WhereElementIsNotElementType().ToElements()\r\n\r\ntypes = []\r\n\r\nfor i in linkInstances:\r\n\ttypes.append(doc.GetElement(i.GetTypeId()))\r\n\r\nOUT = linkInstances, types",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "f17c828110534953bbb64b6e4c805bfb",
       "Inputs": [

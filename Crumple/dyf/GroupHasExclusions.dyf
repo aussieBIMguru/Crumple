@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Boilerplate text\r\nimport clr\r\n\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\ngroups = uwlist(IN[0])\r\n\r\nexcluded = []\r\n\r\n# Check for excluded elements\r\nfor group in groups:\r\n\tif \"excluded\" in group.Name:\r\n\t\texcluded.append(True)\r\n\telse:\r\n\t\texcluded.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(excluded)",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "c1adc7efc66a46fe8ee93f62afab866f",
       "Inputs": [

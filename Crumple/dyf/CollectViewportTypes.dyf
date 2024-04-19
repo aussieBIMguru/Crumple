@@ -11,49 +11,10 @@
   "Outputs": [],
   "Nodes": [
     {
-      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
-      "NodeType": "CodeBlockNode",
-      "Code": "x[0];\nx[1];",
-      "Id": "cdb88100979f4baea17715673405f715",
-      "Inputs": [
-        {
-          "Id": "49bc4954e5304687941031114ca7adf9",
-          "Name": "x",
-          "Description": "x",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "c8a386b746a343508c983742aef19b0d",
-          "Name": "",
-          "Description": "Value of expression at line 1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "ffd2fb045c01474ea183a712728b2d1b",
-          "Name": "",
-          "Description": "Value of expression at line 2",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "Allows for DesignScript code to be authored directly"
-    },
-    {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import BuiltInParameter, ParameterFilterRuleFactory,\\\r\nElementId, ElementParameterFilter, FilteredElementCollector, Element\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Get all viewport types\r\nBIP_FAMILYNAME = BuiltInParameter.SYMBOL_FAMILY_NAME_PARAM\r\n\r\ncol_rule  = ParameterFilterRuleFactory.CreateEqualsRule(ElementId(BIP_FAMILYNAME), \"Viewport\", False)\r\ncol_filt  = ElementParameterFilter(col_rule)\r\n\r\nviewportTypes_all = FilteredElementCollector(doc).WhereElementIsElementType().WherePasses(col_filt).ToElements()\r\n\r\n# Preparing output to Dynamo\r\nOUT = viewportTypes_all, [Element.Name.__get__(v) for v in viewportTypes_all]",
-      "Engine": "IronPython2",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import BuiltInParameter, ParameterFilterRuleFactory,\\\r\nElementId, ElementParameterFilter, FilteredElementCollector, Element\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Get all viewport types\r\nBIP_FAMILYNAME = BuiltInParameter.SYMBOL_FAMILY_NAME_PARAM\r\n\r\ncol_rule  = ParameterFilterRuleFactory.CreateEqualsRule(ElementId(BIP_FAMILYNAME), \"Viewport\", False)\r\ncol_filt  = ElementParameterFilter(col_rule)\r\n\r\nviewportTypes_all = FilteredElementCollector(doc).WhereElementIsElementType().WherePasses(col_filt).ToElements()\r\n\r\n# Preparing output to Dynamo\r\nOUT = viewportTypes_all",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "c68ba6f619aa4ee7a4bafeb5dc4b3869",
       "Inputs": [
@@ -188,23 +149,48 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Elements.Element.Name",
+      "Id": "0b01e144f8fd4f2ba1f298fd51d338bb",
+      "Inputs": [
+        {
+          "Id": "54e3f3d8b6424e2b8d521652853469f1",
+          "Name": "element",
+          "Description": "Revit.Elements.Element",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "11240a96bd8c4747a737b3474279ab26",
+          "Name": "string",
+          "Description": "string",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Get the Name of the Element\n\nElement.Name: string"
     }
   ],
   "Connectors": [
     {
-      "Start": "c8a386b746a343508c983742aef19b0d",
+      "Start": "4351d8d0bd2d4d37b8f70acce031a4c3",
       "End": "1507d7da5104434189d95dd1da1f940e",
-      "Id": "3b665f8e771e40d0bdc86b0af860b7fa"
-    },
-    {
-      "Start": "ffd2fb045c01474ea183a712728b2d1b",
-      "End": "1e63940712394770b65cf6060e0d30b9",
-      "Id": "03a1f8e3ba594bfc9692d33f6ef038fd"
+      "Id": "1cf9d6e80c9b41b68f34e27ce9cbbf8b"
     },
     {
       "Start": "4351d8d0bd2d4d37b8f70acce031a4c3",
-      "End": "49bc4954e5304687941031114ca7adf9",
-      "Id": "094b194da43a4fcf85100de025bf8002"
+      "End": "54e3f3d8b6424e2b8d521652853469f1",
+      "Id": "4b5226768be245e9b525653302f231fe"
     },
     {
       "Start": "294ff896406f4d1aa76c9ae7f2c66309",
@@ -215,6 +201,11 @@
       "Start": "f50ebfaa0ef7440fa619aca40331882f",
       "End": "36efba0d3d2b476ba730939c66904936",
       "Id": "fef18cef22a8428abdf100f477a506d1"
+    },
+    {
+      "Start": "11240a96bd8c4747a737b3474279ab26",
+      "End": "1e63940712394770b65cf6060e0d30b9",
+      "Id": "3d9205a15c5949c9910e9bef043bd3d5"
     }
   ],
   "Dependencies": [
@@ -254,16 +245,6 @@
       "UpZ": 0.0
     },
     "NodeViews": [
-      {
-        "ShowGeometry": true,
-        "Name": "Code Block",
-        "Id": "cdb88100979f4baea17715673405f715",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 767.51443641673268,
-        "Y": 4.624596567255935
-      },
       {
         "ShowGeometry": true,
         "Name": "Python Script",
@@ -311,13 +292,23 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 977.79302536324815,
-        "Y": 58.758603460883933
+        "X": 1065.3102322850159,
+        "Y": 145.06029361984935
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Element.Name",
+        "Id": "0b01e144f8fd4f2ba1f298fd51d338bb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 806.38846655633643,
+        "Y": 139.45805641792498
       }
     ],
     "Annotations": [],
-    "X": 34.587950710579776,
-    "Y": 266.26850415751619,
+    "X": -131.41204928942022,
+    "Y": 240.26850415751619,
     "Zoom": 0.822695359375
   }
 }

@@ -62,7 +62,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import FilteredElementCollector, ScheduleSheetInstance\r\n\r\n# Current doc/app/ui\r\ndoc = IN[3]\r\n\r\n# Preparing input from dynamo to revit\r\nincstd, inckey, increv = IN[0],IN[1],IN[2]\r\n\r\nschedules, revschedules, keyschedules = [],[],[]\r\n\r\ncoll = FilteredElementCollector(doc).OfClass(ScheduleSheetInstance).ToElements()\r\n\r\nschedInsts, schedTypes, schedNames = [],[],[]\r\n\r\nfor s in coll:\r\n\tschedType = doc.GetElement(s.ScheduleId)\r\n\tif schedType.Definition.IsKeySchedule and inckey:\r\n\t\tschedTypes.append(schedType)\r\n\t\tschedInsts.append(s)\r\n\t\tschedNames.append(\"Key Schedule\")\r\n\telif \"<Revision Schedule>\" in schedType.Name and increv:\r\n\t\tschedTypes.append(schedType)\r\n\t\tschedInsts.append(s)\r\n\t\tschedNames.append(\"Revision Schedule\")\r\n\telif incstd and not schedType.Definition.IsKeySchedule and not \"<Revision Schedule>\" in schedType.Name:\r\n\t\tschedTypes.append(schedType)\r\n\t\tschedInsts.append(s)\r\n\t\tschedNames.append(\"Schedule\")\r\n\r\n# Preparing output to Dynamo\r\nOUT = schedInsts, schedTypes, schedNames",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "4122b68a76064adbbfa4fbcd036ed065",
       "Inputs": [

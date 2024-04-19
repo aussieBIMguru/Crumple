@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n# Boilerplate text\nimport clr\n\nclr.AddReference(\"RevitNodes\")\nimport Revit\nclr.ImportExtensions(Revit.Elements)\n\nclr.AddReference(\"RevitAPI\")\nimport Autodesk \nfrom Autodesk.Revit.DB import FilteredElementCollector, FilledRegion\n\n# Current doc/app/ui\ndoc = IN[2]\n\n# Collect and construct list of regions\ncollector = FilteredElementCollector(doc).OfClass(FilledRegion)\n\nfilled, masking, type, regionout = IN[0], IN[1], [], []\n\nfor i in collector:\n\tif i.Name == \"Masking Region\":\n\t\tif masking:\n\t\t\tregionout.append(i.ToDSType(True))\n\t\t\ttype.append(False)\n\telse:\n\t\tif filled:\n\t\t\tregionout.append(i.ToDSType(True))\n\t\t\ttype.append(True)\n\n# Preparing output to Dynamo\nOUT = [regionout, type]",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "d5962e598cdf40d0a1f5e17d97a12ba8",
       "Inputs": [

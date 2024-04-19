@@ -19,7 +19,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import FilteredElementCollector, ImportInstance\r\n\r\ndoc = IN[0]\r\n\r\n# Collect all imports\r\ncol = FilteredElementCollector(doc).OfClass(ImportInstance).ToElements()\r\n\r\n# Get instance properties\r\ncadLnk, cadLnkType, cadLnkView = [], [], []\r\n\r\nfor i in col:\r\n\ttry:\r\n\t\tif i.IsLinked == True:\r\n\t\t\tcadLnk.append(i)\r\n\t\t\tcadLnkType.append(i.Document.GetElement(i.GetTypeId()))\r\n\t\t\tcadLnkView.append(doc.GetElement(i.OwnerViewId))\r\n\texcept:\r\n\t\tpass\r\n\r\n# Preparing output to Dynamo\r\nOUT = [cadLnk, cadLnkType, cadLnkView]",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "a6eb24181ac044268ef0a14691cc8b21",
       "Inputs": [
@@ -366,8 +366,8 @@
       }
     ],
     "Annotations": [],
-    "X": 511.0,
-    "Y": 202.0,
-    "Zoom": 1.0
+    "X": 310.84000000000003,
+    "Y": 228.735,
+    "Zoom": 0.8425
   }
 }

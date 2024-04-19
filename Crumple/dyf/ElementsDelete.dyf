@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n#unwrap all elements to use with API\r\nelements = uwlist(IN[0])\r\n\r\n# Check and delete\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nresults = []\r\n\r\nfor e in elements:\r\n\ttry:\r\n\t\tdoc.Delete(e.Id)\r\n\t\tresults.append(True)\r\n\texcept:\r\n\t\tresults.append(False)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n   \r\n# Result of transaction\r\nOUT = objOrList(results)",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "c10aa140a9a54d44b64236876afbacc0",
       "Inputs": [
@@ -160,8 +160,8 @@
       }
     ],
     "Annotations": [],
-    "X": -170.536289628394,
-    "Y": 260.16992655030805,
+    "X": 216.463710371606,
+    "Y": 309.16992655030805,
     "Zoom": 1.0637053297229482
   }
 }

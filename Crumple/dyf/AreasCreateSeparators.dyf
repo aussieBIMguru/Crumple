@@ -25,6 +25,10 @@
       "Views": {
         "Key": "archilab.Revit.Views.Views",
         "Value": "archilab.dll"
+      },
+      "View": {
+        "Key": "Revit.Elements.Views.View",
+        "Value": "RevitNodes.dll"
       }
     }
   },
@@ -35,7 +39,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import SketchPlane\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Preparing input from dynamo to revit\r\ncurves = uwlist(IN[0])\r\nview_r = UnwrapElement(IN[1])\r\n\r\n# Start making Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\n# Make sketchplane at level of view\r\nlevel_r = view_r.GenLevel\r\nplane_r = SketchPlane.Create(doc, level_r.Id)\r\n\r\n# Make area boundary lines from curves\r\nbounds = []\r\n\r\nfor curve in curves:\r\n\tcrv = curve.ToRevitType()\r\n\tline = doc.Create.NewAreaBoundaryLine(plane_r, crv, view_r)\r\n\tbounds.append(line.ToDSType(False))\r\n\t\t\r\n# Finish making transaction\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(bounds)",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "f81b7cde7fb94a84ac1476e1c4ba842c",
       "Inputs": [
@@ -71,45 +75,6 @@
       ],
       "Replication": "Disabled",
       "Description": "Runs an embedded Python script."
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
-      "NodeType": "FunctionNode",
-      "FunctionSignature": "DSCore.List.Flatten@var[]..[],int",
-      "Id": "af64092263ec4c309a873944c9a73103",
-      "Inputs": [
-        {
-          "Id": "e4521e1e18c14df89b08a72a77ddbcc1",
-          "Name": "list",
-          "Description": "List to flatten.\n\nvar[]..[]",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "9d829902a1d74226a4ffe925f0846f02",
-          "Name": "amount",
-          "Description": "Layers of list nesting to remove (-1 will remove all list nestings)\n\nint\nDefault value : -1",
-          "UsingDefaultValue": true,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "1f2f9094cad74bea92abb43b315943f9",
-          "Name": "list",
-          "Description": "Flattened list by amount",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Flattens a nested list of lists by a certain amount.\n\nList.Flatten (list: var[]..[], amount: int = -1): var[]..[]"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -163,9 +128,9 @@
       "NodeType": "InputNode",
       "Parameter": {
         "Name": "view",
-        "TypeName": "var",
+        "TypeName": "Revit.Elements.Views.View",
         "TypeRank": 0,
-        "DefaultValue": "Revit.Application.Document.Current.ActiveView",
+        "DefaultValue": null,
         "Description": "The view to place the lines in."
       },
       "Id": "a2d9863c526b4665ae031d7e6c496fa7",
@@ -192,14 +157,9 @@
       "Id": "9c1348be95364542b8eb52fa5de39dbb"
     },
     {
-      "Start": "1f2f9094cad74bea92abb43b315943f9",
-      "End": "45a1edf1a5ab442db1b0b0be6865ea61",
-      "Id": "62c7b9f9627448e084fb7ea633713586"
-    },
-    {
       "Start": "577e724d490f4088b8db942359b871b2",
-      "End": "e4521e1e18c14df89b08a72a77ddbcc1",
-      "Id": "793613a6b7f745e2a45782f8cbede0de"
+      "End": "45a1edf1a5ab442db1b0b0be6865ea61",
+      "Id": "3cb5479904f141269cf54ead6020ad4d"
     },
     {
       "Start": "cd42b8ca95c943619feb3a60b494f9d6",
@@ -245,16 +205,6 @@
       },
       {
         "ShowGeometry": true,
-        "Name": "List.Flatten",
-        "Id": "af64092263ec4c309a873944c9a73103",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 356.80036404121256,
-        "Y": 0.0
-      },
-      {
-        "ShowGeometry": true,
         "Name": "Output",
         "Id": "19ad51d1255a45ffb3df3159f63598ca",
         "IsSetAsInput": false,
@@ -270,8 +220,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 58.689361905170756,
-        "Y": 0.62524265976543347
+        "X": 291.32299494362638,
+        "Y": -9.4892631245152472
       },
       {
         "ShowGeometry": true,
@@ -280,13 +230,13 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 10.720351007465922,
-        "Y": 126.65273102680959
+        "X": 207.56419434769754,
+        "Y": 114.98214742956264
       }
     ],
     "Annotations": [],
-    "X": -48.207112996673573,
-    "Y": 389.05453591612115,
-    "Zoom": 0.612283078543345
+    "X": -148.67375677921564,
+    "Y": 245.74401616205478,
+    "Zoom": 1.2852827688530044
   }
 }

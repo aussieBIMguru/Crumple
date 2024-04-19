@@ -53,7 +53,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n# Boilerplate text\nimport clr\n\nclr.AddReference(\"RevitNodes\")\nimport Revit\nclr.ImportExtensions(Revit.Elements)\n\nclr.AddReference(\"RevitAPI\")\nimport Autodesk \nfrom Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory\n\n# Current doc/app/ui\ndetail = IN[0]\nmodel  = IN[1]\ndoc    = IN[2]\n\n# Collect all lines in project and build output lists\nallLines = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Lines).ToElements()\n\ncurvesOut, isDetail = [], []\n\nfor i in allLines:\n\tif i.Name == \"Detail Lines\":\n\t\tif detail:\n\t\t\tcurvesOut.append(i.ToDSType(True))\n\t\t\tisDetail.append(True)\n\telse:\n\t\tif model:\n\t\t\tcurvesOut.append(i.ToDSType(True))\n\t\t\tisDetail.append(False)\n\n# Preparing output to Dynamo\nOUT = curvesOut, isDetail",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "60760a58358343ab82f2c4ba158b50d5",
       "Inputs": [

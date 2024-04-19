@@ -79,8 +79,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\ndoors = uwlist(IN[0])\r\nphase = UnwrapElement(IN[1])\r\n\r\nhasto, hasfrom, counter, torm, fromrm = [],[],[],[],[]\r\n\r\n# Get to and from room values\r\nfor d in doors:\r\n\tif hasattr(d, \"FromRoom\") and str(phase.GetType()) == \"Autodesk.Revit.DB.Phase\":\r\n\t\ttry:\r\n\t\t\ttorm.append(d.ToRoom[phase])\r\n\t\t\tfromrm.append(d.FromRoom[phase])\r\n\t\texcept:\r\n\t\t\ttorm.append(None)\r\n\t\t\tfromrm.append(None)\r\n\r\nfor t,f in zip(torm, fromrm):\r\n\tc = 0\r\n\tif t == None:\r\n\t\thasto.append(False)\r\n\telse:\r\n\t\thasto.append(True)\r\n\t\tc+=1\r\n\tif f == None:\r\n\t\thasfrom.append(False)\r\n\telse:\r\n\t\thasfrom.append(True)\r\n\t\tc+=1\r\n\tcounter.append(c)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [objOrList(o) for o in[torm, fromrm, hasto, hasfrom, counter]]",
-      "Engine": "IronPython2",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\ndoors = uwlist(IN[0])\r\n\r\nhasto, hasfrom, counter, torm, fromrm = [],[],[],[],[]\r\n\r\n# Get to and from room values\r\nfor d in doors:\r\n\tif hasattr(d, \"FromRoom\"):\r\n\t\ttry:\r\n\t\t\ttorm.append(d.ToRoom)\r\n\t\t\tfromrm.append(d.FromRoom)\r\n\t\texcept:\r\n\t\t\ttorm.append(None)\r\n\t\t\tfromrm.append(None)\r\n\r\nfor t,f in zip(torm, fromrm):\r\n\tc = 0\r\n\tif t == None:\r\n\t\thasto.append(False)\r\n\telse:\r\n\t\thasto.append(True)\r\n\t\tc+=1\r\n\tif f == None:\r\n\t\thasfrom.append(False)\r\n\telse:\r\n\t\thasfrom.append(True)\r\n\t\tc+=1\r\n\tcounter.append(c)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [objOrList(o) for o in[torm, fromrm, hasto, hasfrom, counter]]",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "d6066c777f594b31bbf2cbc0577ddb24",
       "Inputs": [
@@ -88,15 +88,6 @@
           "Id": "d52d093b0c9a42cabef53174525ec036",
           "Name": "IN[0]",
           "Description": "Input #0",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "7128904c9067432ead8c240179e39ded",
-          "Name": "IN[1]",
-          "Description": "Input #1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -132,32 +123,6 @@
       "Outputs": [
         {
           "Id": "ad2abe263bea4ff9b512d94337a94567",
-          "Name": "",
-          "Description": "Symbol",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
-      "Parameter": {
-        "Name": "roomPhase",
-        "TypeName": "var",
-        "TypeRank": 0,
-        "DefaultValue": null,
-        "Description": ""
-      },
-      "Id": "363c6754fd694453af032694e9c33b8a",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "444ce0afaca440ef94684653a9b37ff7",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -310,11 +275,6 @@
       "Start": "ad2abe263bea4ff9b512d94337a94567",
       "End": "d52d093b0c9a42cabef53174525ec036",
       "Id": "96b4792c3a7f41419ed01d72c711d5af"
-    },
-    {
-      "Start": "444ce0afaca440ef94684653a9b37ff7",
-      "End": "7128904c9067432ead8c240179e39ded",
-      "Id": "0e8d60919121422b8a004e760b6a89bd"
     }
   ],
   "Dependencies": [],
@@ -370,18 +330,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 10.507887659036498,
-        "Y": -22.113505194680641
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "363c6754fd694453af032694e9c33b8a",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 17.183916885110023,
-        "Y": 59.772989610638717
+        "X": -7.2036846567853559,
+        "Y": 0.91153881588778063
       },
       {
         "ShowGeometry": true,
@@ -435,8 +385,8 @@
       }
     ],
     "Annotations": [],
-    "X": -28.506637962983632,
-    "Y": 274.86228166088654,
+    "X": 105.49336203701637,
+    "Y": 269.86228166088654,
     "Zoom": 1.1292052248875646
   }
 }

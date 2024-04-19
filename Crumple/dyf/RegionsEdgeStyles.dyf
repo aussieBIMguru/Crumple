@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Get app\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application \r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Document and regions\r\nregions = uwlist(IN[0])\r\n\r\n# Establish default options and prepare edge arrays\r\ngeomOption = app.Create.NewGeometryOptions()\r\n\r\nlineStyles = []\r\n\r\n# Construct edge array for review\r\nfor r in regions:\r\n\t\r\n\tgeomElem = r.get_Geometry(geomOption)\r\n\tenum1 = geomElem.GetEnumerator() ; enum1.MoveNext()\r\n\tgeo = enum1.Current\r\n\tedgeArray = geo.Edges\r\n\t\r\n\tls = []\r\n\t\r\n\tfor edge in edgeArray:\r\n\t\tls.append(r.Document.GetElement(edge.GraphicsStyleId))\r\n\t\r\n\tlineStyles.append(ls)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(lineStyles)",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "2f3034c3c76a46c0bdb5687979a4b396",
       "Inputs": [

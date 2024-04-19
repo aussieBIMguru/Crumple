@@ -13,8 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport System\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import ViewFamily\r\n\r\n# Enumerate over all BIPG types\r\npgnms = [(a, a.ToString()) for a in System.Enum.GetValues(ViewFamily)]\r\n\r\n# Preparing output to Dynamo\r\nOUT = zip(*pgnms)",
-      "Engine": "IronPython2",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport System\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import ViewFamily\r\n\r\n# Get enum name\r\ndef enumGetName(enum, enumClass):\r\n    return System.Enum.GetName(enumClass,enum)\r\n\r\n# Enumerate over all BIPG types\r\nvfs = System.Enum.GetValues(ViewFamily)\r\n\r\n# Preparing output to Dynamo\r\nOUT = vfs, [enumGetName(e, ViewFamily) for e in vfs]",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "e0ab961721b04e12b18f828a52876271",
       "Inputs": [
@@ -250,8 +250,8 @@
       }
     ],
     "Annotations": [],
-    "X": 86.966149474512235,
-    "Y": 318.62440218649914,
+    "X": 156.96614947451224,
+    "Y": 426.62440218649914,
     "Zoom": 0.9540429248828125
   }
 }

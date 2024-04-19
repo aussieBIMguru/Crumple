@@ -55,7 +55,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Credit to Cyril Poupin for contributing the below Python code\r\n# Shared here via the package for others to use :)\r\n\r\n# ORIGINAL THREAD AND USER PROFILE OF C.POUPIN\r\n# https://forum.dynamobim.com/u/c.poupin\r\n# https://forum.dynamobim.com/t/covid-chair-spacing-iteration-challenge/57031/6\r\n\r\n# Thanks also to Vikram Subbaiah for his Design script alternative\r\n# https://forum.dynamobim.com/u/Vikram_Subbaiah\r\n\r\n# Boilerplate\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n# Get app version\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application\r\nrvt_year = int(app.VersionNumber)\r\n\r\n# Imports by version\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\n\r\nif rvt_year < 2022:\r\n\tfrom Autodesk.Revit.DB import UnitType, UnitUtils, DisplayUnitType\r\nelse:\r\n\tfrom Autodesk.Revit.DB import SpecTypeId, UnitUtils\r\n\r\n# Function: Convert from project to internal\r\ndef projectToInternal(val, ver = rvt_year, myDoc = doc):\r\n\tif rvt_year < 2022:\r\n\t\tintUnits = myDoc.GetUnits().GetFormatOptions(UnitType.UT_Length).DisplayUnits\r\n\t\treturn UnitUtils.Convert(val, intUnits, DisplayUnitType.DUT_DECIMAL_FEET)\r\n\telse:\r\n\t\tintUnitsId = myDoc.GetUnits().GetFormatOptions(SpecTypeId.Length).GetUnitTypeId()\r\n\t\treturn UnitUtils.ConvertToInternalUnits(val, intUnitsId)\r\n\r\n# Function for reviewing chairs\r\ndef nextSpaceChair(group = [], elemA = None, startIdx = 0):\r\n    global margin\r\n    group = list(group)\r\n    if elemA is None: \r\n        elemA = group.pop(startIdx)\r\n        return [elemA] + nextSpaceChair(group, elemA)\r\n    else:   \r\n        locPt = elemA.Location.Point\r\n        lstPair = [[x, x.Location.Point.DistanceTo(locPt)] for x in group if x.Location.Point.DistanceTo(locPt) > margin]\r\n        lstPair.sort(key = lambda x : x[1])\r\n        if len(lstPair) > 0:\r\n            #get the nearest chair >= 1.50m\r\n            nearElem = lstPair[0][0]\r\n            #get the rest\r\n            group = [x[0] for x in lstPair[1:] ]\r\n            return [nearElem] + nextSpaceChair(group = group, elemA = nearElem )\r\n        else:\r\n            return []   \r\n\r\n# Force into a list of lists\r\nclusters = UnwrapElement(IN[0])\r\nmargin   = projectToInternal(IN[1])\r\n\r\n# Force list structure\r\ntry:\r\n\tclusters[0][0]\r\nexcept:\r\n\ttry:\r\n\t\tclusters[0]\r\n\t\tclusters = [clusters]\r\n\texcept:\r\n\t\tclusters = [[clusters]]\r\n\r\n# Build outputs\r\nout = []\r\n\r\nfor g in clusters:\r\n    # test with change first element, for each chair in group\r\n    testLst = [nextSpaceChair(group = g, elemA = None, startIdx = i) for i in range(len(g))]\r\n    maxlst = max(testLst, key = len)\r\n    out.append(maxlst)\r\n\r\n# Declare output\r\nOUT = out",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "8b96266f3385496b9d107584a6f907df",
       "Inputs": [
@@ -198,15 +198,15 @@
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": 5023.5458984375,
-      "EyeY": 16529.94921875,
-      "EyeZ": 7050.642578125,
-      "LookX": -49.3203125,
-      "LookY": -16330.296875,
-      "LookZ": -9096.8525390625,
-      "UpX": -0.0040604653768241405,
-      "UpY": 0.66261970996856689,
-      "UpZ": -0.74894499778747559
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "NodeViews": [
       {

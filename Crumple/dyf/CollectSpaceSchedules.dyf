@@ -196,7 +196,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import FilteredElementCollector\r\nfrom Autodesk.Revit.DB.Analysis import HVACLoadSpaceType\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Collect all Space types\r\nspaces = FilteredElementCollector(doc).OfClass(HVACLoadSpaceType).ToElements()\r\n\r\ndef getScheduleId(s, par):\r\n\treturn s.LookupParameter(par).AsElementId()\r\n\r\ndef returnElements(eIds):\r\n\treturn [doc.GetElement(i) for i in eIds]\r\n\r\n# Get unique Ids for schedule types\r\noccIds, ligIds, powIds = [],[],[]\r\n\r\nfor s in spaces:\r\n\toccId = getScheduleId(s, \"Occupancy Schedule\")\r\n\tligId = getScheduleId(s, \"Lighting Schedule\")\r\n\tpowId = getScheduleId(s, \"Power Schedule\")\r\n\tif occId not in occIds:\r\n\t\toccIds.append(occId)\r\n\tif ligId not in ligIds:\r\n\t\tligIds.append(ligId)\r\n\tif powId not in powIds:\r\n\t\tpowIds.append(powId)\r\n\t\r\n# Outputs\r\nOUT = returnElements(occIds), returnElements(ligIds), returnElements(powIds)",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "d40b8d90214742a0a65621e7513a9e89",
       "Inputs": [
