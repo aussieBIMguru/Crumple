@@ -2,7 +2,7 @@
   "Uuid": "3ba357ab-1dc9-41a1-80ee-89e434b70f38",
   "IsCustomNode": false,
   "Description": "",
-  "Name": "Crumple_BatchExportDWG",
+  "Name": "Crumple_BatchExportDwg",
   "ElementResolver": {
     "ResolutionMap": {
       "List": {
@@ -48,7 +48,7 @@
         {
           "Id": "7d7e74291a16488e84142eecbc234a49",
           "Name": "includePlaceholders",
-          "Description": "bool\nDefault value : true",
+          "Description": "bool\nDefault value : false",
           "UsingDefaultValue": true,
           "Level": 2,
           "UseLevels": false,
@@ -80,8 +80,8 @@
     },
     {
       "ConcreteType": "CoreNodeModels.Input.Directory, CoreNodeModels",
-      "HintPath": "C:\\Users\\Gavin\\Downloads",
-      "InputValue": "C:\\Users\\Gavin\\Downloads",
+      "HintPath": "C:\\Users\\Gavin\\Desktop\\New folder",
+      "InputValue": "C:\\Users\\Gavin\\Desktop\\New folder",
       "NodeType": "ExtensionNode",
       "Id": "8439280d7928436bbf7a1d332e1d4467",
       "Inputs": [],
@@ -247,15 +247,6 @@
           "Level": 2,
           "UseLevels": false,
           "KeepListStructure": false
-        },
-        {
-          "Id": "8bacd17cb8f84cf89e0adceef461d699",
-          "Name": "docOrLink",
-          "Description": "Uses current if none provided.\nAccepts document or link instance.\n\nvar[]..[]\nDefault value : null",
-          "UsingDefaultValue": true,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
         }
       ],
       "Outputs": [
@@ -300,73 +291,6 @@
       ],
       "Replication": "Disabled",
       "Description": "Selection between a true and false."
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "be91dc1c-d5aa-4b92-8f80-4cc5cae3b954",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "3669879d43814cef82657b080b62becb",
-      "Inputs": [
-        {
-          "Id": "27fa13e961b943309782052acf76dec5",
-          "Name": "settingsName",
-          "Description": "string\nDefault value : \"\"",
-          "UsingDefaultValue": true,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "22e07868504e4f0395526c651e665038",
-          "Name": "useSharedCoordinates",
-          "Description": "bool\nDefault value : false",
-          "UsingDefaultValue": true,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "79279f3cfead4737b9bcaef5bcaaa6ce",
-          "Name": "mergeViewsAsXrefs",
-          "Description": "bool\nDefault value : true",
-          "UsingDefaultValue": true,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "72a7e3f038e34cd592c90f8dd7c8d69b",
-          "Name": "docOrLink",
-          "Description": "Uses current if none provided.\nAccepts document or link instance.\n\nvar[]..[]\nDefault value : null",
-          "UsingDefaultValue": true,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "b671f92b926743e1be463e7e07a19781",
-          "Name": "dwgExportOptions",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "410c25dcbd7748e183fc0844fc380060",
-          "Name": "settingsFound",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Creates a DWG export options object, or retrieves one with the given name if found in the document."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
@@ -443,13 +367,139 @@
       ],
       "Replication": "Auto",
       "Description": "Given a list of views and/or sheets as well as various related settings, attempts to export them to DWG using the provided settings."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "be91dc1c-d5aa-4b92-8f80-4cc5cae3b954",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "d8567252bbb349a384313f71d80033b8",
+      "Inputs": [
+        {
+          "Id": "c5913e1e514f48ba94933f11956ff0c6",
+          "Name": "settingsName",
+          "Description": "string\nDefault value : \"\"",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e71c4389d75b4b79a74a2bcc91813e05",
+          "Name": "useSharedCoordinates",
+          "Description": "bool\nDefault value : false",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "8a1b58607821485a9a9191521e27abd5",
+          "Name": "mergeViewsAsXrefs",
+          "Description": "bool\nDefault value : true",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "11e44bb42a5846429c476d6f348786e4",
+          "Name": "docOrLink",
+          "Description": "Uses current if none provided.\nAccepts document or link instance.\n\nvar[]..[]\nDefault value : null",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "79194853399d45c3819cceeb4799edd9",
+          "Name": "dwgExportOptions",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "6dc5ea34fb9a4306a0b86061ecdcbe3f",
+          "Name": "settingsFound",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Creates a DWG export options object, or retrieves one with the given name if found in the document."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.TakeItems@var[]..[],int",
+      "Id": "3ac12224b4c3484da97690abc15b2128",
+      "Inputs": [
+        {
+          "Id": "bdc8e698e8a24867ba439d6844bfbd22",
+          "Name": "list",
+          "Description": "List to take from.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "19739b09744c451c98fbd3b8536f871a",
+          "Name": "amount",
+          "Description": "Amount of items to take. If negative, items are taken from the end of the list.\n\nint",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "fc33d172584f4da885f906813e3cb353",
+          "Name": "list",
+          "Description": "List of extracted items.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Fetches an amount of items from the start of the list.\n\nList.TakeItems (list: var[]..[], amount: int): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "2;",
+      "Id": "bd2c98d96afe4343b00ece2ed8e65e6d",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "68804dee198a476ab4c1cd2b96ba924a",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
     }
   ],
   "Connectors": [
     {
       "Start": "4106a944bc3a4ab19c1a29a2a2288aa7",
-      "End": "e2581cfa05b0492ea571650af57daa78",
-      "Id": "a22af8d38ae24e9ebcc8baa8190d8b63"
+      "End": "bdc8e698e8a24867ba439d6844bfbd22",
+      "Id": "50893c6a53a74eaea572e41587874e0e"
     },
     {
       "Start": "1ce125a1af9c4575bbf9ae02485b8ad0",
@@ -487,21 +537,31 @@
       "Id": "0a3ee734947446388c31fcc0e86dddd8"
     },
     {
-      "Start": "b671f92b926743e1be463e7e07a19781",
-      "End": "914a5b9b0d524149946f270673a8a076",
-      "Id": "1c21d662c1b549eca7fd3f90f0f79ce0"
-    },
-    {
       "Start": "fa3891e16a2f43dd83506b45e6a9e8bb",
       "End": "aa530b9388b44caf834724980df852a8",
       "Id": "83c57023bdca494d8411db31714d753f"
+    },
+    {
+      "Start": "79194853399d45c3819cceeb4799edd9",
+      "End": "914a5b9b0d524149946f270673a8a076",
+      "Id": "e1e5a0e9c4f442dda6a0be097ac416ac"
+    },
+    {
+      "Start": "fc33d172584f4da885f906813e3cb353",
+      "End": "e2581cfa05b0492ea571650af57daa78",
+      "Id": "e689565ea6454a65a38d9238e9a94a13"
+    },
+    {
+      "Start": "68804dee198a476ab4c1cd2b96ba924a",
+      "End": "19739b09744c451c98fbd3b8536f871a",
+      "Id": "d4b1e31c33ca43a19e601efd7d612024"
     }
   ],
   "Dependencies": [
     "bea35a0d-a8ee-4084-9e6f-402d4ef108e0",
     "2fad8039-8d0e-4515-ba35-c1cf519e44c8",
-    "be91dc1c-d5aa-4b92-8f80-4cc5cae3b954",
-    "bae72872-43e7-4963-bdf4-f2bf70b89579"
+    "bae72872-43e7-4963-bdf4-f2bf70b89579",
+    "be91dc1c-d5aa-4b92-8f80-4cc5cae3b954"
   ],
   "NodeLibraryDependencies": [
     {
@@ -511,8 +571,8 @@
       "Nodes": [
         "1a0dee86593b4c7da76eee48a4713783",
         "d39be4fab8c944f0b94724b3a8b3b83c",
-        "3669879d43814cef82657b080b62becb",
-        "08baeb2d65874b458042974d09ea4c58"
+        "08baeb2d65874b458042974d09ea4c58",
+        "d8567252bbb349a384313f71d80033b8"
       ]
     }
   ],
@@ -634,16 +694,6 @@
       },
       {
         "ShowGeometry": true,
-        "Name": "© Revit.CreateDwgExportOptions",
-        "Id": "3669879d43814cef82657b080b62becb",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 672.28894024073929,
-        "Y": -112.91128801555038
-      },
-      {
-        "ShowGeometry": true,
         "Name": "© Revit.ExportToDwg",
         "Id": "08baeb2d65874b458042974d09ea4c58",
         "IsSetAsInput": false,
@@ -651,6 +701,36 @@
         "Excluded": false,
         "X": 1232.0252736916541,
         "Y": -188.0044616481789
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "© Revit.ExportOptionsDwg",
+        "Id": "d8567252bbb349a384313f71d80033b8",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 660.80136497277306,
+        "Y": -131.19699466690793
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.TakeItems",
+        "Id": "3ac12224b4c3484da97690abc15b2128",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 736.08137914676581,
+        "Y": -633.98663793821061
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "bd2c98d96afe4343b00ece2ed8e65e6d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 457.0,
+        "Y": -622.0
       }
     ],
     "Annotations": [
@@ -662,11 +742,11 @@
           "8439280d7928436bbf7a1d332e1d4467",
           "d39be4fab8c944f0b94724b3a8b3b83c",
           "7fd4f5d2460a4805a9347c7103f0076a",
-          "3669879d43814cef82657b080b62becb"
+          "d8567252bbb349a384313f71d80033b8"
         ],
         "Left": 360.30164202898231,
         "Top": -503.55147578717413,
-        "Width": 690.3667670666473,
+        "Width": 725.009911167986,
         "Height": 640.96881664873706,
         "FontSize": 36.0,
         "InitialTop": -450.55147578717413,
@@ -704,13 +784,13 @@
         "Height": 250.0,
         "FontSize": 36.0,
         "InitialTop": -188.0044616481789,
-        "InitialHeight": 227.0,
+        "InitialHeight": 145.0,
         "TextblockHeight": 43.0,
         "Background": "#FF48B9FF"
       }
     ],
-    "X": -110.1353538338069,
-    "Y": 584.26785425954927,
+    "X": -209.1353538338069,
+    "Y": 583.26785425954927,
     "Zoom": 0.8900311465468832
   }
 }

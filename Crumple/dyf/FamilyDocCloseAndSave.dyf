@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Current doc/app/ui\r\ndocs     = tolist(IN[0])\r\noutcomes = []\r\n\r\n# Do some action in a Transaction\r\nfor doc in docs:\r\n\ttry:\r\n\t\tdoc.Close(True)\r\n\t\toutcomes.append(True)\r\n\texcept:\r\n\t\toutcomes.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = outcomes",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "03a21626577240ecb8c07d8ccd633737",
       "Inputs": [

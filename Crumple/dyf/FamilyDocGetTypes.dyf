@@ -120,8 +120,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FamilyManager\r\n\r\n# Function: Get types by name or all\r\ndef typesGet(namesGet, myDoc):\r\n\t# Get all parameters\r\n\ttypesAll = myDoc.FamilyManager.Types\r\n\ttypesGet = []\r\n\t# If we want all, just return them\r\n\tif not namesGet:\r\n\t\tfor t in typesAll:\r\n\t\t\tif t.Name != \"\" and t.Name != \" \":\r\n\t\t\t\ttypesGet.append(t)\r\n\t\treturn typesGet\r\n\t# Otherwise...\r\n\telse:\r\n\t\t# Get all names\r\n\t\tnamesAll = [t.Name for t in typesAll]\r\n\t\t# For each target name...\r\n\t\tfor n in namesGet:\r\n\t\t\t# If its a type, get its name\r\n\t\t\tif not isinstance(n, str):\r\n\t\t\t\tn = n.Name\r\n\t\t\t# Find it by zip looping\r\n\t\t\tft = None\r\n\t\t\tfor nA,t in zip(namesAll, typesAll):\r\n\t\t\t\tif n == nA:\r\n\t\t\t\t\tft = t\r\n\t\t\t\t\tbreak\r\n\t\t\ttypesGet.append(ft)\r\n\t\t# Return the parameters\r\n\t\treturn typesGet\r\n\r\n# Current doc/app/ui\r\ndoc_list = IN[0]\r\nname_lists = IN[1]\r\n\r\nif not name_lists:\r\n\tname_lists = [None for d in doc_list]\r\n\r\n# Get types and names\r\ntypeLists = []\r\n\r\nfor doc, nameList in zip(doc_list, name_lists):\r\n\t# Get types\r\n\tfam_types = typesGet(nameList, doc)\r\n\ttypeLists.append(fam_types)\r\n\r\n# Preparing output to Dynamo\r\nOUT = doc_list, typeLists",
-      "Engine": "IronPython2",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FamilyManager\r\n\r\n# Function: Get types by name or all\r\ndef typesGet(namesGet, myDoc):\r\n\t# Get all parameters\r\n\ttypesAll = myDoc.FamilyManager.Types\r\n\ttypesGet = []\r\n\t# If we want all, just return them\r\n\tif namesGet == None:\r\n\t\tfor t in typesAll:\r\n\t\t\tif t.Name != \"\" and t.Name != \" \":\r\n\t\t\t\ttypesGet.append(t)\r\n\t\treturn typesGet\r\n\t# Otherwise...\r\n\telse:\r\n\t\t# Get all names\r\n\t\tnamesAll = [t.Name for t in typesAll]\r\n\t\t# For each target name...\r\n\t\tfor n in namesGet:\r\n\t\t\t# If its a type, get its name\r\n\t\t\tif not isinstance(n, str):\r\n\t\t\t\tn = n.Name\r\n\t\t\t# Find it by zip looping\r\n\t\t\tft = None\r\n\t\t\tfor nA,t in zip(namesAll, typesAll):\r\n\t\t\t\tif n == nA:\r\n\t\t\t\t\tft = t\r\n\t\t\t\t\tbreak\r\n\t\t\ttypesGet.append(ft)\r\n\t\t# Return the parameters\r\n\t\treturn typesGet\r\n\r\n# Current doc/app/ui\r\ndoc_list = IN[0]\r\nname_lists = IN[1]\r\n\r\nif not name_lists:\r\n\tname_lists = [None for d in doc_list]\r\n\r\n# Get types and names\r\ntypeLists = []\r\n\r\nfor doc, nameList in zip(doc_list, name_lists):\r\n\t# Get types\r\n\tfam_types = typesGet(nameList, doc)\r\n\ttypeLists.append(fam_types)\r\n\r\n# Preparing output to Dynamo\r\nOUT = doc_list, typeLists",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "a8d02573c70a4a71a0511033a9d605e8",
       "Inputs": [
@@ -452,8 +452,8 @@
       }
     ],
     "Annotations": [],
-    "X": 445.21738559261871,
-    "Y": 298.7073581766096,
+    "X": 63.217385592618712,
+    "Y": 318.7073581766096,
     "Zoom": 0.89983112650232688
   }
 }

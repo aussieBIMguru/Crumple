@@ -14,6 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport os\r\nimport datetime\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference('DynamoRevitDS')\r\nimport Dynamo\r\n\r\n# Current doc and title\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\ndocTitle = doc.Title\r\n\r\n# Check Dynamo workspace properties\r\ndynamoRevit = Dynamo.Applications.DynamoRevit()\r\ncurrentWorkspace = dynamoRevit.RevitDynamoModel.CurrentWorkspace\r\nscript = currentWorkspace.Name\r\n\r\n# Get properties for writing the log file\r\ndateStamp   = datetime.datetime.today().strftime(\"%d/%m/%y\")\r\nuserName    = os.environ.get('USERNAME')\r\nuserProfile = os.environ.get('USERPROFILE')\r\n\r\n# Determine the relevant path if provided\r\nif os.path.exists(IN[1]):\r\n\tmyPath = IN[1] + \"\\\\\"\r\nelse:\r\n\tmyPath = userProfile + \"\\Documents\\\\\"\r\n\r\n# Error catch\r\nif IN[2]:\r\n\terrors = \"TRUE\"\r\nelse:\r\n\terrors = \"FALSE\"\r\n\r\n# Generate data to write\r\nmyLog   = myPath + \"DynamoLog_\" + userName + \".csv\"\r\ndataRow = dateStamp + \",\" + userName + \",\" + script +\".dyn\" + \",\" + docTitle + \".rvt\" + \",\" + errors\r\n\r\n# Adds new line to log file or creates one if doesn't exist\r\ntry:\r\n\twith open(myLog, \"a\") as file:\r\n\t\tfile.writelines(dataRow + \"\\n\")\r\n\tresult = True\r\nexcept:\r\n\tresult = False\r\n\r\n# Preparing output to Dynamo\r\nOUT = dataRow, myLog, result",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "9ea850a85a834f1798917a58377f7219",
       "Inputs": [
@@ -57,7 +58,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -288,13 +289,14 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -393,8 +395,8 @@
       }
     ],
     "Annotations": [],
-    "X": 317.63887900193447,
-    "Y": 213.55455390478534,
+    "X": -197.36112099806553,
+    "Y": 229.55455390478534,
     "Zoom": 1.4731987273239178
   }
 }

@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nuiapp = DocumentManager.Instance.CurrentUIApplication\r\napp   = uiapp.Application\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Current doc/app/ui\r\npaths = tolist(IN[0])\r\ndocs, outcomes = [], []\r\n\r\n# Do some action in a Transaction\r\nfor path in paths:\r\n\ttry:\r\n\t\tdoc = app.OpenDocumentFile(path)\r\n\t\tdocs.append(doc)\r\n\t\toutcomes.append(True)\r\n\texcept:\r\n\t\tdocs.append(None)\r\n\t\toutcomes.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = [docs, outcomes]",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "8a07b34b811e4a8ca5e79e8ca8eecc86",
       "Inputs": [
