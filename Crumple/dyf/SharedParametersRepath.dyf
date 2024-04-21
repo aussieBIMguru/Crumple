@@ -53,7 +53,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Current doc/app/ui\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application \r\n\r\n# Preparing input from dynamo to revit\r\nnew = IN[0]\r\n\r\n#Do some action in a Transaction\r\nexisting = uiapp.Application.SharedParametersFilename\r\n\r\ntry:\r\n\tuiapp.Application.SharedParametersFilename = new\r\nexcept:\r\n\tnew = existing\r\n\r\n# Preparing output to Dynamo\r\nOUT = existing, new",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "73ea6dd01ba742c4a112913ce9194f3a",
       "Inputs": [

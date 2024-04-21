@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nsheets    = uwlist(IN[0])\r\nrevisions = uwlist(IN[1])\r\nnoRev     = IN[2]\r\n\r\n# Revision Ids\r\nrevIds = [r.Id for r in revisions]\r\nreport = []\r\n\r\n# For each sheet...\r\nfor s in sheets:\r\n\t# Empty row\r\n\trow = []\r\n\t# For each revision Id\r\n\tfor r in revIds:\r\n\t\t# Get number on sheet\r\n\t\tnumOnSht = s.GetRevisionNumberOnSheet(r)\r\n\t\t# If it has one, append\r\n\t\tif numOnSht:\r\n\t\t\trow.append(numOnSht)\r\n\t\t# If not append no rev\r\n\t\telse:\r\n\t\t\trow.append(noRev)\r\n\t# Append row\r\n\treport.append(row)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(report)",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "7ae82cbd2afb4f738c69ee882cb7dcbf",
       "Inputs": [

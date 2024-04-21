@@ -17,6 +17,10 @@
       "Revit.Application.Document": {
         "Key": "Revit.Application.Document",
         "Value": "RevitNodes.dll"
+      },
+      "View": {
+        "Key": "Revit.Elements.Views.View",
+        "Value": "RevitNodes.dll"
       }
     }
   },
@@ -27,7 +31,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n# Current doc/app/ui\r\ndoc   = DocumentManager.Instance.CurrentDBDocument\r\nuidoc = DocumentManager.Instance.CurrentUIDocument\r\n\r\n# Begin transaction to allow viewrequest\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nTransactionManager.Instance.ForceCloseTransaction()\r\n\r\n# Change the active view\r\ntry:\r\n\tview = UnwrapElement(IN[0])\r\n\tuidoc.RequestViewChange(view)\r\n\tresult = True\r\nexcept:\r\n\tview = None\r\n\tresult = False\r\n\r\n# Preparing output to Dynamo\r\nOUT = view, result",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "4ba6e78ef0014f6082b68642a73570d0",
       "Inputs": [
@@ -81,9 +85,9 @@
       "NodeType": "InputNode",
       "Parameter": {
         "Name": "view",
-        "TypeName": "var",
+        "TypeName": "Revit.Elements.Views.View",
         "TypeRank": 0,
-        "DefaultValue": "Revit.Application.Document.Current.ActiveView",
+        "DefaultValue": null,
         "Description": "The view to place the areas in."
       },
       "Id": "470bb7ea41ca4e998d5b88f019284e8c",
@@ -200,15 +204,15 @@
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -45759.7734375,
-      "EyeY": 51367.51171875,
-      "EyeZ": 72695.359375,
-      "LookX": 45759.7734375,
-      "LookY": -51367.51171875,
-      "LookZ": -72695.359375,
-      "UpX": 0.16903457045555115,
-      "UpY": 0.94832348823547363,
-      "UpZ": -0.26853266358375549
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "NodeViews": [
       {
@@ -238,8 +242,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -321.38030475814992,
-        "Y": 0.1875848468388881
+        "X": -159.74680609295325,
+        "Y": -2.0889433033751743
       },
       {
         "ShowGeometry": true,
@@ -263,8 +267,8 @@
       }
     ],
     "Annotations": [],
-    "X": 172.25386713905959,
-    "Y": 239.45428776954657,
+    "X": 204.25386713905959,
+    "Y": 242.45428776954657,
     "Zoom": 0.87853075737805453
   }
 }

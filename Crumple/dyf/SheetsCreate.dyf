@@ -23,7 +23,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory, ViewSheet\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[1]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Collect all sheets\r\nsheets = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Sheets).WhereElementIsNotElementType().ToElements()\r\n\r\nsheetnos = [s.SheetNumber for s in sheets]\r\n\r\n# Preparing input from dynamo to revit\r\nttb_d = IN[0]\r\nnames = tolist(IN[1])\r\nnumbers = tolist(IN[2])\r\nasph = IN[3]\r\n\r\nnumexists = [n in sheetnos for n in numbers]\r\n\r\nsheets,success = [],[]\r\n\r\n# Unwrapping titleblock\r\nttb_r = UnwrapElement(ttb_d).Id\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor nam,num,nex in zip(names,numbers,numexists):\r\n\tif nex == False:\r\n\t\tif asph == True:\r\n\t\t\tplaceholder = ViewSheet.CreatePlaceholder(doc)\r\n\t\telse:\r\n\t\t\tplaceholder = ViewSheet.Create(doc,ttb_r)\r\n\t\tplaceholder.SheetNumber = num\r\n\t\tplaceholder.Name = nam\r\n\t\tsheets.append(placeholder.ToDSType(False))\r\n\t\tsuccess.append(True)\r\n\telse:\r\n\t\tsheets.append(None)\r\n\t\tsuccess.append(False)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(sheets), objOrList(success)",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "282c5fa72b2e49f491ea3a026152668f",
       "Inputs": [
@@ -82,7 +82,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "ttb_type",
+        "Name": "titleBlockType",
         "TypeName": "Revit.Elements.FamilyType",
         "TypeRank": 0,
         "DefaultValue": null,
@@ -168,7 +168,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//Was the process successful.\r\nsuccess",
+      "Symbol": "//Was the process successful.\r\nwasCreated",
       "Id": "745628e2308546feafd9720673f9b974",
       "Inputs": [
         {
@@ -189,7 +189,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "names",
+        "Name": "sheetNames",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -215,7 +215,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "numbers",
+        "Name": "sheetNumbers",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -241,7 +241,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "asph",
+        "Name": "asPlaceholders",
         "TypeName": "bool",
         "TypeRank": 0,
         "DefaultValue": "false",
@@ -344,8 +344,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -173.24558822894073,
-        "Y": -111.43030255806605
+        "X": -207.23512741391613,
+        "Y": -115.12481768686771
       },
       {
         "ShowGeometry": true,
@@ -404,13 +404,13 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -91.613690882569642,
-        "Y": 194.76896424256429
+        "X": -123.38652099026405,
+        "Y": 191.0744491137626
       }
     ],
     "Annotations": [],
-    "X": 26.463227499535549,
-    "Y": 339.65241133304073,
-    "Zoom": 1.3533575653868708
+    "X": 83.462125732914956,
+    "Y": 369.2894794898765,
+    "Zoom": 0.8126932489330625
   }
 }

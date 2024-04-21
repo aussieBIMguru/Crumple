@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FilteredElementCollector, ViewSheetSet, ViewSet, PrintRange\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nviewsForSet = uwlist(IN[0])\r\nsetName     = IN[1]\r\n\r\n# Get all sets and their names\r\nallSheetSets     = FilteredElementCollector(doc).OfClass(ViewSheetSet).WhereElementIsNotElementType().ToElements()\r\nallSheetSetNames = [s.Name for s in allSheetSets]\r\n\r\n# If the set exists, delete it\r\nif setName in allSheetSetNames:\r\n\t# Do some action in a Transaction\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\t# Get and delete the old sheet set\r\n\tind = allSheetSetNames.index(setName)\r\n\tvss = allSheetSets[ind]\r\n\tdoc.Delete(vss.Id)\r\n\t# your actions\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Create new sheet set\r\nviewSet = ViewSet()\r\n# Add each view to the set\r\nfor v in viewsForSet:\r\n\ttry:\r\n\t\tviewSet.Insert(v)\r\n\texcept:\r\n\t\tpass\r\n\r\n# Set print manager to it\r\nprintManager = doc.PrintManager\r\nprintManager.PrintRange = PrintRange.Select\r\nnewSheetSet = printManager.ViewSheetSetting\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n# Set print manager\r\nnewSheetSet.CurrentViewSheetSet.Views = viewSet\r\nnewSheetSet.SaveAs(setName)\r\n# Finish transaction\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Get all sets and their names\r\nallSheetSets     = FilteredElementCollector(doc).OfClass(ViewSheetSet).WhereElementIsNotElementType().ToElements()\r\nallSheetSetNames = [s.Name for s in allSheetSets]\r\n\r\n# Get new sheet set\r\nind = allSheetSetNames.index(setName)\r\nviewSheetSet = allSheetSets[ind]\r\n\r\n# Preparing output to Dynamo\r\nOUT = viewSheetSet",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "67f4662ea2984ab5a7c4a0a769b29e00",
       "Inputs": [
@@ -157,15 +157,15 @@
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -45759.7734375,
-      "EyeY": 51367.51171875,
-      "EyeZ": 72695.359375,
-      "LookX": 45759.7734375,
-      "LookY": -51367.51171875,
-      "LookZ": -72695.359375,
-      "UpX": 0.16903457045555115,
-      "UpY": 0.94832348823547363,
-      "UpZ": -0.26853266358375549
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "NodeViews": [
       {
@@ -185,8 +185,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -59.0,
-        "Y": -35.0
+        "X": -144.0,
+        "Y": -39.0
       },
       {
         "ShowGeometry": true,
@@ -195,8 +195,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 21.0,
-        "Y": 91.0
+        "X": -64.0,
+        "Y": 87.0
       },
       {
         "ShowGeometry": true,

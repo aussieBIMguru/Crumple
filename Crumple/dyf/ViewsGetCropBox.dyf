@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nviews = uwlist(IN[0])\r\n\r\n# Preparing empty lists\r\ncrops, active, visible = [],[],[]\r\n\r\n# Getting view level\r\nfor v in views:\r\n\tactive.append(v.CropBoxActive)\r\n\tvisible.append(v.CropBoxVisible)\r\n\tcrop = v.GetCropRegionShapeManager().GetCropShape()\r\n\tif len(crop) > 0:\r\n\t\tedges = [c.ToProtoType() for c in crop[0]]\r\n\t\tcrops.append(edges)\r\n\telse:\r\n\t\tcrops.append(None)\r\n\t\t\r\n# Preparing output to Dynamo\r\nOUT = [objOrList(o) for o in [crops, active, visible]]",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "b5fa7f09b172453392eccd116ab6533d",
       "Inputs": [

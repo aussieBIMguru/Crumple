@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr \r\n\r\n# Revit API\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FilteredElementCollector, ViewSheet\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n\tresult = input if isinstance(input, list) else [input]\r\n\treturn result\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Current doc\r\ndoc = IN[1]\r\n\r\n# Inputs, make sure it's a list\r\nnumbers = tolist(IN[0])\r\n\r\n# Container lists for iteration\r\nsheets_out, matched = [],[]\r\n\r\n# Get all sheets and their numbers\r\nsheets  = FilteredElementCollector(doc).OfClass(ViewSheet).ToElements()\r\nex_nums = [s.SheetNumber for s in sheets]\r\n\r\n# Find matching sheets, catch the non-matches\r\nfor n in numbers:\r\n\tif n in ex_nums:\r\n\t\tind = ex_nums.index(n)\r\n\t\tmatch = sheets[ind]\r\n\t\tsheets_out.append(match)\r\n\t\tmatched.append(True)\r\n\telse:\r\n\t\tsheets_out.append(None)\r\n\t\tmatched.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(sheets_out), objOrList(matched)",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "923a0935896c4f16b7f7ed3b37e23a23",
       "Inputs": [

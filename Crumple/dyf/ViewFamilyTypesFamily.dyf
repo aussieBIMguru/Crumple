@@ -13,8 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Inputs\r\nvf  = str(IN[0])\r\ndoc = IN[1]\r\n\r\n# Get all vfts\r\nvfts = FilteredElementCollector(doc).OfClass(ViewFamilyType).ToElements()\r\n\r\nvfts_out = []\r\n\r\nfor v in vfts:\r\n\tif str(v.ViewFamily) == vf:\r\n\t\tvfts_out.append(v)\r\n\r\n# Preparing output to Dynamo\r\nOUT = vfts_out",
-      "Engine": "IronPython2",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FilteredElementCollector, ViewFamilyType\r\n\r\n# Inputs\r\nvf  = str(IN[0])\r\ndoc = IN[1]\r\n\r\n# Get all vfts\r\nvfts = FilteredElementCollector(doc).OfClass(ViewFamilyType).ToElements()\r\n\r\nvfts_out = []\r\n\r\nfor v in vfts:\r\n\tif str(v.ViewFamily) == vf:\r\n\t\tvfts_out.append(v)\r\n\r\n# Preparing output to Dynamo\r\nOUT = vfts_out",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "abc564efec044566a27541337e5b34e5",
       "Inputs": [

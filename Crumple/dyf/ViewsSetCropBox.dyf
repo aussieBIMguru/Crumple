@@ -13,8 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import CurveLoop\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nviews   = uwlist(IN[0])\r\npcurves = tolist(IN[1])\r\nvisible = IN[2]\r\n\r\nviewout = []\r\n\r\n# Deconstruct curves and set the view crops\r\nfor v,pc in zip(views,pcurves):\r\n\r\n\tregionManager = v.GetCropRegionShapeManager()\r\n\t\r\n\tcurves_pc = PolyCurve.Curves(pc)\r\n\tcurves_rv = [c.ToRevitType() for c in curves_pc]\r\n\t\r\n\tcurveloop = CurveLoop()\r\n\tfor c in curves_rv:\r\n\t\tcurveloop.Append(c)\r\n\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\t\r\n\tv.CropBoxVisible = visible\r\n\tif v.CropBoxActive == False:\r\n\t\tv.CropBoxActive  = True\r\n\t\r\n\tregionManager.SetCropShape(curveloop)\r\n\t\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\n\t\r\n\tviewout.append(v)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(viewout)",
-      "Engine": "IronPython2",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import CurveLoop\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nviews   = uwlist(IN[0])\r\npcurves = tolist(IN[1])\r\nvisible = IN[2]\r\n\r\nresults, viewout = [],[]\r\n\r\n# Deconstruct curves and set the view crops\r\nfor v,pc in zip(views,pcurves):\r\n\r\n\tregionManager = v.GetCropRegionShapeManager()\r\n\t\r\n\tcurves_pc = PolyCurve.Curves(pc)\r\n\tcurves_rv = [c.ToRevitType() for c in curves_pc]\r\n\t\r\n\tcurveloop = CurveLoop()\r\n\tfor c in curves_rv:\r\n\t\tcurveloop.Append(c)\r\n\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\ttry:\r\n\t\tv.CropBoxVisible = visible\r\n\t\tif v.CropBoxActive == False:\r\n\t\t\tv.CropBoxActive  = True\r\n\t\tregionManager.SetCropShape(curveloop)\r\n\t\tresults.append(True)\r\n\texcept:\r\n\t   results.append(False)\r\n\t\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\n\t\r\n\tviewout.append(v)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(viewout),objOrList(results)",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "d2ffccd8ee904905888c570eca97cfb7",
       "Inputs": [
@@ -158,13 +158,73 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "x[0];\nx[1];",
+      "Id": "98d0908941a64dd0a12a106d7e724d8f",
+      "Inputs": [
+        {
+          "Id": "b2da13f3ffee4b92ae95f69d12c11ea6",
+          "Name": "x",
+          "Description": "x",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "004ff85f515e461f944e4d69a5e739aa",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "76308f60ada34c6f837846cefe91a64e",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "wasSet",
+      "Id": "e84e5aee5a7346199ed1c4d556cc4417",
+      "Inputs": [
+        {
+          "Id": "08266c2aff1842e6ac5dd281166e4185",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
     }
   ],
   "Connectors": [
     {
       "Start": "78ede2c826e74600a17b624401e56f94",
-      "End": "7a59e3aec9db408f850e7229d0ab1aaa",
-      "Id": "fe4be0f90fed442894fe3ee1696b2e8d"
+      "End": "b2da13f3ffee4b92ae95f69d12c11ea6",
+      "Id": "51d8edbc24bb4fa5844ca24c3bb7c091"
     },
     {
       "Start": "287e9b86c6de42b9b9776e9c455384b2",
@@ -180,6 +240,16 @@
       "Start": "5cf57ca91f3949d7a508a705660e0283",
       "End": "1809d985595b42a18b7920c857eb5bed",
       "Id": "cf5e5d1427704742a4ab055d04eecd3e"
+    },
+    {
+      "Start": "004ff85f515e461f944e4d69a5e739aa",
+      "End": "7a59e3aec9db408f850e7229d0ab1aaa",
+      "Id": "5d8d37b8bfb149b390bc1dc9f353d532"
+    },
+    {
+      "Start": "76308f60ada34c6f837846cefe91a64e",
+      "End": "08266c2aff1842e6ac5dd281166e4185",
+      "Id": "dc26ab7bc093401f907deaa5430380de"
     }
   ],
   "Dependencies": [],
@@ -197,15 +267,15 @@
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -45759.7734375,
-      "EyeY": 51367.51171875,
-      "EyeZ": 72695.359375,
-      "LookX": 45759.7734375,
-      "LookY": -51367.51171875,
-      "LookZ": -72695.359375,
-      "UpX": 0.16903457045555115,
-      "UpY": 0.94832348823547363,
-      "UpZ": -0.26853266358375549
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "NodeViews": [
       {
@@ -255,13 +325,33 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 443.0219599564723,
-        "Y": 2.9890200217637926
+        "X": 651.7761617381301,
+        "Y": -68.208605089198954
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "98d0908941a64dd0a12a106d7e724d8f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 448.16984115839028,
+        "Y": 5.714765676509387
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "e84e5aee5a7346199ed1c4d556cc4417",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 651.5853127193958,
+        "Y": 46.7290147998516
       }
     ],
     "Annotations": [],
-    "X": 178.79975917439538,
-    "Y": 263.8317365559036,
+    "X": -47.200240825604624,
+    "Y": 230.8317365559036,
     "Zoom": 1.4466774676749781
   }
 }

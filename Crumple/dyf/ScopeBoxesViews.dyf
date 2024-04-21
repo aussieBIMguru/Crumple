@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory\r\n\r\n# Current doc/app/ui\r\ndoc = IN[1]\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Get scope boxes\r\nsbs = uwlist(IN[0])\r\nviewboxes,withboxes,finallist = [],[],[]\r\n\r\n# Check all scope boxes of views\r\nviews = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Views).ToElements()\r\n\r\nfor v in views:\r\n\ttry:\r\n\t\tsbname = v.GetParameters(\"Scope Box\")[0].AsValueString()\r\n\t\tif sbname != \"None\":\r\n\t\t\tviewboxes.append(sbname)\r\n\t\t\twithboxes.append(v)\r\n\texcept:\r\n\t\tpass\r\n\r\n# Check which views use each scope box\r\nfor s in sbs:\r\n\tviewset = []\r\n\tsbname2 = s.Name\r\n\tfor v,w in zip(viewboxes,withboxes):\r\n\t\tif sbname2 == v:\r\n\t\t\tviewset.append(w)\r\n\tfinallist.append(viewset)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(finallist)",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "0f070423ecac46af850740bd3767505e",
       "Inputs": [

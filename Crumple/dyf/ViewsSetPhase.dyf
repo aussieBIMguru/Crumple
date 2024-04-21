@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import BuiltInParameter\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nviews = uwlist(IN[0])\r\nphase = UnwrapElement(IN[1])\r\n\r\nBIP_PHASE = BuiltInParameter.VIEW_PHASE\r\n\r\nresult = []\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor v in views:\r\n\ttry:\r\n\t\tv.get_Parameter(BIP_PHASE).Set(phase.Id)\r\n\t\tresult.append(True)\r\n\texcept:\r\n\t\tresult.append(False)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(views), objOrList(result)",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "28b4a0fc396446aaa833d83142b20257",
       "Inputs": [
@@ -227,15 +227,15 @@
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -45759.7734375,
-      "EyeY": 51367.51171875,
-      "EyeZ": 72695.359375,
-      "LookX": 45759.7734375,
-      "LookY": -51367.51171875,
-      "LookZ": -72695.359375,
-      "UpX": 0.16903457045555115,
-      "UpY": 0.94832348823547363,
-      "UpZ": -0.26853266358375549
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "NodeViews": [
       {

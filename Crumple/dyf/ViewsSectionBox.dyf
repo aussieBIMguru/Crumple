@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Credit to Amy Williams for sharing a majority of this code\r\n# https://forum.dynamobim.com/t/bounding-box-of-section-box-min-max-pts-z-values-dont-correspond-with-model-elevation/15776\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import BoundingBoxXYZ, XYZ\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nviewlist = uwlist(IN[0])\r\nboxlist, result = [], []\r\n\r\n# Get section boxes\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor view in viewlist:\r\n\ttry:\r\n\t\tsectionbox = view.GetSectionBox()\r\n\t\tproceed = True\r\n\texcept:\r\n\t\tproceed = False\r\n\tif proceed:\r\n\t\ttransform = sectionbox.Transform\r\n\t\tsboxoriginx = transform.Origin.X\r\n\t\tsboxoriginy = transform.Origin.Y\r\n\t\tsboxoriginz = transform.Origin.Z\r\n\t\tminx = sectionbox.Min.X + sboxoriginx\r\n\t\tmaxx = sectionbox.Max.X + sboxoriginx\r\n\t\tminy = sectionbox.Min.Y + sboxoriginy\r\n\t\tmaxy = sectionbox.Max.Y + sboxoriginy\r\n\t\tminz = sectionbox.Min.Z + sboxoriginz\r\n\t\tmaxz = sectionbox.Max.Z + sboxoriginz\r\n\t\tbbox = BoundingBoxXYZ()\r\n\t\tbbox.Min = XYZ((minx), (miny), (minz))\r\n\t\tbbox.Max = XYZ((maxx), (maxy), (maxz))\r\n\t\ttsectionbox = bbox.ToProtoType()\r\n\t\tboxlist.append(tsectionbox)\r\n\telse:\r\n\t\tboxlist.append(None)\r\n\tresult.append(proceed)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Send bounding boxes back\r\nOUT = objOrList(boxlist), objOrList(result)",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "98ded9adfbb94519a5f07541db8d0a95",
       "Inputs": [
@@ -187,15 +187,15 @@
     },
     "Camera": {
       "Name": "Background Preview",
-      "EyeX": -45759.7734375,
-      "EyeY": 51367.51171875,
-      "EyeZ": 72695.359375,
-      "LookX": 45759.7734375,
-      "LookY": -51367.51171875,
-      "LookZ": -72695.359375,
-      "UpX": 0.16903457045555115,
-      "UpY": 0.94832348823547363,
-      "UpZ": -0.26853266358375549
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "NodeViews": [
       {

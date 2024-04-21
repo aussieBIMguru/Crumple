@@ -13,8 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Inputs\r\nvf   = str(IN[0])\r\nfn = IN[1]\r\ndoc  = IN[2]\r\n\r\n# Get all vfts\r\nvfts = FilteredElementCollector(doc).OfClass(ViewFamilyType).ToElements()\r\n\r\nvft_out = None\r\n\r\nfor v in vfts:\r\n\tif str(v.ViewFamily) == vf and Element.Name.GetValue(v) == fn:\r\n\t\tvft_out = v\r\n\t\tbreak\r\n\r\n# Preparing output to Dynamo\r\nOUT = vft_out",
-      "Engine": "IronPython2",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import BuiltInParameter, FilteredElementCollector, ViewFamilyType\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Inputs\r\nvf  = str(IN[0])\r\nfn  = IN[1]\r\ndoc = IN[2]\r\n\r\n# Get all vfts\r\nvfts = FilteredElementCollector(doc).OfClass(ViewFamilyType).ToElements()\r\n\r\nvft_out = None\r\n\r\nfor v in vfts:\r\n\tif str(v.ViewFamily) == vf and v.get_Parameter(BuiltInParameter.ALL_MODEL_TYPE_NAME).AsString() == fn:\r\n\t\tvft_out = v\r\n\t\tbreak\r\n\r\n# Preparing output to Dynamo\r\nOUT = vft_out",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "a0237bc891af4a4b9460457961b26edf",
       "Inputs": [
@@ -181,7 +181,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "name",
+        "Name": "viewFamilyTypeName",
         "TypeName": "string",
         "TypeRank": 0,
         "DefaultValue": null,
@@ -417,8 +417,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 215.00000000000006,
-        "Y": 23.0
+        "X": 106.10991989440998,
+        "Y": 26.052992900156767
       },
       {
         "ShowGeometry": true,
@@ -452,8 +452,8 @@
       }
     ],
     "Annotations": [],
-    "X": -37.776932615255248,
-    "Y": 187.01036835396434,
-    "Zoom": 1.4425890929331346
+    "X": -114.86523989639613,
+    "Y": 221.50115129409377,
+    "Zoom": 0.98264231136796565
   }
 }

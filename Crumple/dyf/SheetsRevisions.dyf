@@ -19,7 +19,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nsheet_list = uwlist(IN[0])\r\nsheet_revs = []\r\n\r\n# Get revisions per sheet\r\nfor s in sheet_list:\r\n\tids = s.GetAllRevisionIds()\r\n\trevs = [s.Document.GetElement(r) for r in ids]\r\n\tsheet_revs.append(revs)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(sheet_revs)",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "8c704cc5b11e441883b776afdab12b4e",
       "Inputs": [

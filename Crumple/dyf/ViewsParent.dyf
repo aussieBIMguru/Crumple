@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import BuiltInParameter\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nviewlist  = uwlist(IN[0])\r\nparentlist, hasparent = [],[]\r\n\r\nBIP_PARENT = BuiltInParameter.SECTION_PARENT_VIEW_NAME\r\n\r\n# Do some action in a Transaction\r\nfor v in viewlist:\r\n\tdoc = v.Document\r\n\ttry:\r\n\t\tparentId = v.get_Parameter(BIP_PARENT).AsElementId()\r\n\t\tparentEl = doc.GetElement(parentId)\r\n\t\tparentlist.append(parentEl)\r\n\t\thasparent.append(True)\r\n\texcept:\r\n\t\tparentlist.append(None)\r\n\t\thasparent.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(parentlist), objOrList(hasparent)",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "9fdc5fae79084f87aba03d0d6ef30d58",
       "Inputs": [

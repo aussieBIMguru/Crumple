@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nviews = uwlist(IN[0])\r\n\r\nBIP_PHASE = BuiltInParameter.VIEW_PHASE\r\nphases = []\r\n\r\n# Do some action in a Transaction\r\nfor v in views:\r\n\tdoc = v.Document\r\n\ttry:\r\n\t\tphaseid = v.get_Parameter(BIP_PHASE).AsElementId()\r\n\t\tphase   = doc.GetElement(phaseid)\r\n\texcept:\r\n\t\tphase = None\r\n\tphases.append(phase)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(phases)",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "36064d0f64c5445585ebec856e3cb292",
       "Inputs": [
@@ -155,13 +155,13 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 572.739101920226,
-        "Y": -0.64698940715581443
+        "X": 608.79926321113965,
+        "Y": 2.2966972288371323
       }
     ],
     "Annotations": [],
-    "X": 8.2613725263837523,
-    "Y": 192.94381439615518,
+    "X": -306.73862747361625,
+    "Y": 200.94381439615518,
     "Zoom": 1.3588402892792064
   }
 }

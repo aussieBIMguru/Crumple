@@ -1,9 +1,9 @@
 {
-  "Uuid": "878d57a5-8791-42c8-9128-f4203e823631",
+  "Uuid": "b8912e9f-f3bd-4e3a-9d08-074662dafa4c",
   "IsCustomNode": true,
-  "Category": "Crumple.Revit.Query",
-  "Description": "For a viewport, returns the related view and sheet.",
-  "Name": "© Viewports.Relatives",
+  "Category": "Crumple.Application.Actions",
+  "Description": "Returns the sheet names in an excel filepath. If pandas is not found or functioning, returns an error.",
+  "Name": "© Excel.SheetNames 🐼",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -13,13 +13,13 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nviewports = uwlist(IN[0])\r\n\r\n# Preparing empty lists\r\nviews, sheets = [], []\r\n\r\n# Getting viewport view and sheet\r\nfor vp in viewports:\r\n\tdoc = vp.Document\r\n\tview  = doc.GetElement(vp.ViewId)\r\n\tsheet = doc.GetElement(vp.SheetId)\r\n\tviews.append(view)\r\n\tsheets.append(sheet)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(views), objOrList(sheets)",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Import pandas\r\ntry:\r\n\timport pandas as pd\r\n\tfilePath  = IN[0]\r\n\txcl = pd.ExcelFile(filePath)\r\n\tpandasFound = True\r\nexcept:\r\n\tpandasFound = False\r\n\r\n# If we found pandas...\r\nif pandasFound:\r\n\ttry:\r\n\t\t# Get sheet names\r\n\t\tsheetNames = xcl.sheet_names\r\n\t\t# Outputs to Dynamo\r\n\t\tOUT = sheetNames, \"SUCCESS: Worksheets read.\"\r\n\texcept:\r\n\t\tOUT = [], \"ERROR: Excel file not read.\"\r\nelse:\r\n\tOUT = [], \"ERROR: pandas not found/valid.\"",
       "Engine": "CPython3",
       "VariableInputPorts": true,
-      "Id": "728065f37860448d9015cb729fe074ae",
+      "Id": "998e914620b34fd89b2ec99bc600f295",
       "Inputs": [
         {
-          "Id": "4dc2d7c28da24e45a1ecc2adf4cce2ca",
+          "Id": "ffe31752e8074942b4fd78c0e247ac1e",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -30,7 +30,7 @@
       ],
       "Outputs": [
         {
-          "Id": "e1cd5b9a701148c88a33faf5e22bc554",
+          "Id": "cdb4ed7336e14a40ae23039c9bacdc16",
           "Name": "OUT",
           "Description": "Result of the python script",
           "UsingDefaultValue": false,
@@ -46,17 +46,17 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "viewports",
-        "TypeName": "var",
-        "TypeRank": -1,
+        "Name": "filePath",
+        "TypeName": "string",
+        "TypeRank": 0,
         "DefaultValue": null,
-        "Description": "A viewport or list of\nviewports to retrieve\nthe data from."
+        "Description": ""
       },
-      "Id": "ceaf6cddb529421d879101880f8b4db4",
+      "Id": "8ed6b2c5b0954249afb57bfcccb282a0",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "a11fab8977a1425b9341187d8de9e795",
+          "Id": "67ffba06f20e451eacddafcfecc5c922",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -69,36 +69,15 @@
       "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
-      "ElementResolver": null,
-      "Symbol": "//Parent view of viewport.\r\nview",
-      "Id": "2b40ad66b1d94abc9890f787b2c74a39",
-      "Inputs": [
-        {
-          "Id": "f3ac83d032bd4de79d9f457b8c19e161",
-          "Name": "",
-          "Description": "",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [],
-      "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
-    },
-    {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
-      "Code": "views = lst[0];\nsheet = lst[1];",
-      "Id": "b0fb1088a94e419ca6091c38b0a7c3df",
+      "Code": "x[0];\nx[1];",
+      "Id": "af491d2b735e413382e026b43761760f",
       "Inputs": [
         {
-          "Id": "1a625f64d01c4770a07fb8a53bfdce40",
-          "Name": "lst",
-          "Description": "lst",
+          "Id": "9c8b768b2c434695af881c78f6643f4f",
+          "Name": "x",
+          "Description": "x",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -107,18 +86,18 @@
       ],
       "Outputs": [
         {
-          "Id": "e9728a30b0464ab88be18d46b2472f7f",
+          "Id": "852284b34e00477b8b0fae19d2c229e8",
           "Name": "",
-          "Description": "views",
+          "Description": "Value of expression at line 1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
           "KeepListStructure": false
         },
         {
-          "Id": "a2f570e7fdf64847b6f139832bd32832",
+          "Id": "8c81974c50514f8f9e01e6ee62939c6a",
           "Name": "",
-          "Description": "sheet",
+          "Description": "Value of expression at line 2",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -132,11 +111,32 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//Parent sheet of viewport.\r\nsheet",
-      "Id": "8efc81f07ac549ef84f207335e910d5f",
+      "Symbol": "sheetNames",
+      "Id": "b14f2906ce3e4770b7388bb80cfdfbf0",
       "Inputs": [
         {
-          "Id": "44fc381fdce04da4a7213c98bf202cd1",
+          "Id": "1cd855d325344635b31f8479af727fb6",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "errorReport",
+      "Id": "32bb6db5ccdc4940bce3ade0379b34b4",
+      "Inputs": [
+        {
+          "Id": "48eee55d9c6e4f9599e023ed4ddba024",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -152,24 +152,24 @@
   ],
   "Connectors": [
     {
-      "Start": "e1cd5b9a701148c88a33faf5e22bc554",
-      "End": "1a625f64d01c4770a07fb8a53bfdce40",
-      "Id": "dcda4a9761844140ab3eb1937eec87b0"
+      "Start": "cdb4ed7336e14a40ae23039c9bacdc16",
+      "End": "9c8b768b2c434695af881c78f6643f4f",
+      "Id": "9522bd98bf844d95a36b6ef85eff0202"
     },
     {
-      "Start": "a11fab8977a1425b9341187d8de9e795",
-      "End": "4dc2d7c28da24e45a1ecc2adf4cce2ca",
-      "Id": "9b217b34bbca443f964c048ff7564a9e"
+      "Start": "67ffba06f20e451eacddafcfecc5c922",
+      "End": "ffe31752e8074942b4fd78c0e247ac1e",
+      "Id": "8bc39f4b3a28449ab6ec2c56cf3e46c2"
     },
     {
-      "Start": "e9728a30b0464ab88be18d46b2472f7f",
-      "End": "f3ac83d032bd4de79d9f457b8c19e161",
-      "Id": "3970d60044454d6888798ea3cda11342"
+      "Start": "852284b34e00477b8b0fae19d2c229e8",
+      "End": "1cd855d325344635b31f8479af727fb6",
+      "Id": "759a4024b69847a3b584c467325c820f"
     },
     {
-      "Start": "a2f570e7fdf64847b6f139832bd32832",
-      "End": "44fc381fdce04da4a7213c98bf202cd1",
-      "Id": "1fc6ae2b36a44e5a93df6524158ac03e"
+      "Start": "8c81974c50514f8f9e01e6ee62939c6a",
+      "End": "48eee55d9c6e4f9599e023ed4ddba024",
+      "Id": "6a236616c5094613b969562fbe23a104"
     }
   ],
   "Dependencies": [],
@@ -201,7 +201,7 @@
       {
         "ShowGeometry": true,
         "Name": "Python Script",
-        "Id": "728065f37860448d9015cb729fe074ae",
+        "Id": "998e914620b34fd89b2ec99bc600f295",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
@@ -211,47 +211,47 @@
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "ceaf6cddb529421d879101880f8b4db4",
+        "Id": "8ed6b2c5b0954249afb57bfcccb282a0",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -58.0,
-        "Y": 1.0
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Output",
-        "Id": "2b40ad66b1d94abc9890f787b2c74a39",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 717.0,
-        "Y": -63.0
+        "X": 2.0,
+        "Y": -1.0
       },
       {
         "ShowGeometry": true,
         "Name": "Code Block",
-        "Id": "b0fb1088a94e419ca6091c38b0a7c3df",
+        "Id": "af491d2b735e413382e026b43761760f",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 418.0,
-        "Y": 4.0
+        "X": 451.0,
+        "Y": 6.0
       },
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "8efc81f07ac549ef84f207335e910d5f",
+        "Id": "b14f2906ce3e4770b7388bb80cfdfbf0",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 715.5,
-        "Y": 46.5
+        "X": 640.0,
+        "Y": -54.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "32bb6db5ccdc4940bce3ade0379b34b4",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 650.0,
+        "Y": 51.0
       }
     ],
     "Annotations": [],
-    "X": 14.707266199481808,
-    "Y": 239.31697561467962,
-    "Zoom": 0.76582939285155183
+    "X": 282.78673569114471,
+    "Y": 300.117275,
+    "Zoom": 1.33823125
   }
 }

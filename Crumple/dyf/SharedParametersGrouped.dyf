@@ -27,7 +27,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\n# Current doc/app/ui\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application \r\n\r\ngitem, itemg, itemd, items = [],[],[],[]\r\n\r\nfile = app.OpenSharedParameterFile()\r\n\r\ngroup = file.Groups\r\n\r\nfor g in group:\r\n\tgitem.append(g.Name)\r\n\titemg.append(g)\r\nfor ig in itemg:\r\n\titemd.append(ig.Definitions)\r\nfor i in itemd:\r\n\titem = []\r\n\tfor j in i:\r\n\t\titem.append(j.Name)\r\n\titems.append(item)\r\n\r\n# Preparing output to Dynamo\r\nOUT = gitem,itemg,items,itemd",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "5fbf27385c344678a509476accc4aeb2",
       "Inputs": [

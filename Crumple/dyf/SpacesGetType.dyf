@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n\tresult = input if isinstance(input, list) else [input]\r\n\treturn UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nelements = uwlist(IN[0])\r\n\r\n# Prepare empty lists\r\nspaceTypes = []\r\n\r\n# Find space type Id and convert to element\r\nfor e in elements:\r\n\tspaceType = e.Document.GetElement(e.SpaceTypeId)\r\n\tspaceTypes.append(spaceType)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(spaceTypes)",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "f2871e5eaeaa4e7881bacc272b2af717",
       "Inputs": [
@@ -72,7 +72,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//As an element.\r\nspace_type",
+      "Symbol": "//As an element.\r\nspaceTypes",
       "Id": "b2ab0eb8b82e421ea7d563e77fc54e95",
       "Inputs": [
         {
@@ -160,8 +160,8 @@
       }
     ],
     "Annotations": [],
-    "X": 231.42024768878878,
-    "Y": 190.20235738448102,
-    "Zoom": 0.904132977462957
+    "X": -360.79941744185726,
+    "Y": 150.39828147357565,
+    "Zoom": 1.400767416869013
   }
 }
