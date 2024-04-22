@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Import pandas\r\ntry:\r\n\timport pandas as pd\r\n\tfilePath  = IN[0]\r\n\txcl = pd.ExcelFile(filePath)\r\n\tpandasFound = True\r\nexcept:\r\n\tpandasFound = False\r\n\r\n# If we found pandas...\r\nif pandasFound == True:\r\n\t# Inputs from Dynamo\r\n\tsheetName = IN[1]\r\n\tasStrings = IN[2]\r\n\tfillNan   = IN[3]\r\n\t# Initial variable states\r\n\twasRead  = False\r\n\twasFound = False\r\n\t# Get sheet names\r\n\tsheetNames = xcl.sheet_names\r\n\t# If sheet name not found, get first sheet\r\n\tif sheetName not in sheetNames:\r\n\t\tsheetName = sheetNames[0]\r\n\t# Otherwise we found the sheet\r\n\telse:\r\n\t\twasFound = True\r\n\t# If read as strings...\r\n\tif asStrings:\r\n\t\t# Try to get data as df to lol\r\n\t\ttry:\r\n\t\t\tdf = pd.read_excel(filePath,\\\r\n\t\t\t\t\t   header=None,\r\n\t\t\t\t\t   dtype = str,\r\n\t\t\t\t\t   sheet_name=sheetName)\r\n\t\t\tdf.fillna(fillNan, inplace=True)\r\n\t\t\tdataOut = df.values.tolist()\r\n\t\t\twasRead = True\r\n\t\t\tmsgOut = \"SUCCESS: Excel file was read.\"\r\n\t\t# Otherwise return nothing\r\n\t\texcept:\r\n\t\t\tdataOut = None\r\n\t\t\tmsgOut = \"SUCCESS: Excel file not read.\"\r\n\t# Otherwise, read as is\r\n\telse:\r\n\t\t# Try to get data as df to lol\r\n\t\ttry:\r\n\t\t\tdf = pd.read_excel(filePath,\\\r\n\t\t\t\t\t   header=None,\r\n\t\t\t\t\t   sheet_name=sheetName)\r\n\t\t\tdf.fillna(fillNan, inplace=True)\r\n\t\t\tdataOut = df.values.tolist()\r\n\t\t\twasRead = True\r\n\t\t\tmsgOut = \"SUCCESS: Excel file was read.\"\r\n\t\t# Otherwise return nothing\r\n\t\texcept:\r\n\t\t\tdataOut = None\r\n\t\t\tmsgOut = \"SUCCESS: Excel file not read.\"\r\n\t# Outputs to Dynamo\r\n\tOUT = dataOut, wasRead, wasFound, msgOut\r\n# Otherwise, return nothing\r\nelse:\r\n\tOUT = None, False, False, \"ERROR: pandas not found/valid.\"",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[1]):\r\n    if isinstance(initial, list):\r\n        return input\r\n    else:\r\n        return input[0]\r\n\r\n# Collect inputs\r\nsheet_names    = tolist(IN[1])\r\nread_asStrings = IN[2]\r\nfill_nan       = IN[3]\r\n\r\n# Import pandas\r\ntry:\r\n    import pandas as pd\r\n    filePath  = IN[0]\r\n    xcl = pd.ExcelFile(filePath)\r\n    xcl_sheetNames = xcl.sheet_names\r\n    \r\nexcept:\r\n    xcl = None\r\n    xcl_sheetNames = []\r\n\r\n# Function: Read excel\r\ndef pandas_readExcel(xclObject, sheetName, asStrings, fillNan = \"\"):\r\n    # If read strings\r\n    if asStrings:\r\n        # Get df\r\n        df = pd.read_excel(filePath, header=None, dtype = str, sheet_name=sheetName)\r\n    # Otherwise, read as is\r\n    else:\r\n        # Get df\r\n        df = pd.read_excel(filePath, header=None, sheet_name=sheetName)\r\n    # Fill nan, to list\r\n    df.fillna(fillNan, inplace=True)\r\n    dataOut = df.values.tolist()\r\n    # Return data\r\n    return dataOut\r\n\r\n# Output lists\r\ndata_list, wasRead_list, error_list = [],[],[]\r\n\r\n# For each sheet\r\nfor s in sheet_names:\r\n    # If we found pandas/excel\r\n    if xcl == None:\r\n        data_list.append(None)\r\n        wasRead_list.append(False)\r\n        error_list.append(\"ERROR: Pandas and/or file not found.\")\r\n    # If we didn't find workbook\r\n    elif s not in xcl_sheetNames:\r\n        data_list.append(None)\r\n        wasRead_list.append(False)\r\n        error_list.append(\"ERROR: Worksheet name not found.\")\r\n    # Otherwise read data\r\n    else:\r\n        try:\r\n            data = pandas_readExcel(xcl, s, read_asStrings, fill_nan)\r\n            data_list.append(data)\r\n            wasRead_list.append(True)\r\n            error_list.append(\"SUCCESS: Worksheet data read.\")\r\n        except:\r\n            data_list.append(None)\r\n            wasRead_list.append(False)\r\n            error_list.append(\"ERROR: Worksheet data not read.\")\r\n\r\n# Return outputs\r\nOUT = [objOrList(o) for o in [data_list, wasRead_list, error_list]]",
       "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "b2ea8220246d42d0ae89d59267d54805",
@@ -99,9 +99,9 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "workSheet",
-        "TypeName": "string",
-        "TypeRank": 0,
+        "Name": "workSheets",
+        "TypeName": "var",
+        "TypeRank": -1,
         "DefaultValue": null,
         "Description": "If not found, reads the first sheet"
       },
@@ -197,11 +197,11 @@
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
-      "Code": "x[0];\nx[1];\nx[2];\nx[3];",
+      "Code": "x[0];\nx[1];\nx[2];",
       "Id": "316d2d811ae74e78adfede8810a96c96",
       "Inputs": [
         {
-          "Id": "e51267381a784f069c20b73c6f7e968b",
+          "Id": "b5bc03819cbf4c41ae7e554c447888a8",
           "Name": "x",
           "Description": "x",
           "UsingDefaultValue": false,
@@ -212,7 +212,7 @@
       ],
       "Outputs": [
         {
-          "Id": "367015486a6946dfbf80fd5f0c2cd352",
+          "Id": "34dbf65f5639411bb5eed0e910cb9928",
           "Name": "",
           "Description": "Value of expression at line 1",
           "UsingDefaultValue": false,
@@ -221,7 +221,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "18bcd84ec54d42fd9e2ce957315c3b98",
+          "Id": "7727ad437ff64daab62fe1187f600b9a",
           "Name": "",
           "Description": "Value of expression at line 2",
           "UsingDefaultValue": false,
@@ -230,18 +230,9 @@
           "KeepListStructure": false
         },
         {
-          "Id": "6645265726fe49998e5fa8521ef525de",
+          "Id": "10dac6cf778048b4a1e1d979a7382b24",
           "Name": "",
           "Description": "Value of expression at line 3",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "ef9b319cbcc14244adb2e1bd8dfada9e",
-          "Name": "",
-          "Description": "Value of expression at line 4",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -260,27 +251,6 @@
       "Inputs": [
         {
           "Id": "015de189f6bd48ca8a8ba14960d0c8da",
-          "Name": "",
-          "Description": "",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [],
-      "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
-      "ElementResolver": null,
-      "Symbol": "wasFound",
-      "Id": "d8837fdbc124430094131f6add2783a6",
-      "Inputs": [
-        {
-          "Id": "7a864be6c29c4402b16e9af355c2747d",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -318,8 +288,8 @@
   "Connectors": [
     {
       "Start": "096dfd44cbdc4708b7b71d7168e1201d",
-      "End": "e51267381a784f069c20b73c6f7e968b",
-      "Id": "084b0492a6d744a59d77213c691a712b"
+      "End": "b5bc03819cbf4c41ae7e554c447888a8",
+      "Id": "6ad63fadd9374f4f9797d75d827c9517"
     },
     {
       "Start": "f970715ca03d48269da8ad59aa2f53b6",
@@ -342,24 +312,19 @@
       "Id": "924bb6bd08724edba65f1936513b4906"
     },
     {
-      "Start": "367015486a6946dfbf80fd5f0c2cd352",
+      "Start": "34dbf65f5639411bb5eed0e910cb9928",
       "End": "fa3abe3a67e8456c934df0a31503bb6e",
-      "Id": "6612dfd1ccbb478396eb6298a6e15515"
+      "Id": "f5f04acef3fb4710b0c13a932b77d347"
     },
     {
-      "Start": "18bcd84ec54d42fd9e2ce957315c3b98",
+      "Start": "7727ad437ff64daab62fe1187f600b9a",
       "End": "015de189f6bd48ca8a8ba14960d0c8da",
-      "Id": "38edd73a861444adbc4b193ead430e64"
+      "Id": "d80d4c2784464b45a18baebda0530f69"
     },
     {
-      "Start": "6645265726fe49998e5fa8521ef525de",
-      "End": "7a864be6c29c4402b16e9af355c2747d",
-      "Id": "453f5c16906b4ef1965b1ce431c286d9"
-    },
-    {
-      "Start": "ef9b319cbcc14244adb2e1bd8dfada9e",
+      "Start": "10dac6cf778048b4a1e1d979a7382b24",
       "End": "663da34b99e9421eafc0078da4498072",
-      "Id": "001dfa12a4fe407c97b51a5363191c22"
+      "Id": "f0c205e2c3564bc1abc45d7749e92d15"
     }
   ],
   "Dependencies": [],
@@ -471,27 +436,17 @@
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "d8837fdbc124430094131f6add2783a6",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 714.0,
-        "Y": 54.0
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "582142500a7046e19afe9753ff2fd7ef",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 718.0,
-        "Y": 118.0
+        "X": 715.6520622036694,
+        "Y": 69.475952209168724
       }
     ],
     "Annotations": [],
-    "X": 355.23039117116639,
-    "Y": 351.72509112155012,
+    "X": 351.23039117116639,
+    "Y": 358.72509112155012,
     "Zoom": 1.2777169841077241
   }
 }
