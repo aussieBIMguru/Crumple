@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nscheds = uwlist(IN[0])\r\n\r\n# Get all fields and their column headings\r\nfields_all, names_all, headings_all = [],[],[]\r\n\r\nfor s in scheds:\r\n\tfields,names,headings = [],[],[]\r\n\tdefinition  = s.Definition\r\n\tcount_field = definition.GetFieldCount()\t\r\n\tfor i in range(0, count_field, 1):\r\n\t\tfield = definition.GetField(i)\r\n\t\tfields.append(field)\r\n\t\theadings.append(field.ColumnHeading)\r\n\t\tnames.append(field.GetName())\r\n\tfields_all.append(fields)\r\n\tnames_all.append(names)\r\n\theadings_all.append(headings)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(fields_all), objOrList(names_all), objOrList(headings_all)",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "b32070dde4944b0b8f7a950be570f8f1",
       "Inputs": [
