@@ -19,7 +19,7 @@
       "Id": "8c317960c6304583b0563def879a5613",
       "Name": "Excel file path...",
       "Type": "string",
-      "Value": "New folder\\ValuesSet\\familyValuesImport.xlsx",
+      "Value": "..\\..\\..\\..\\Desktop\\Families\\Directory\\familyValuesImport.xlsx",
       "Description": "Allows you to select a file on the system to get its file path.",
       "SelectedIndex": 0
     }
@@ -36,8 +36,8 @@
   "Nodes": [
     {
       "ConcreteType": "CoreNodeModels.Input.Directory, CoreNodeModels",
-      "HintPath": "C:\\Users\\Gavin\\Desktop\\New folder\\ValuesSet",
-      "InputValue": "C:\\Users\\Gavin\\Desktop\\New folder\\ValuesSet",
+      "HintPath": "C:\\Users\\Gavin\\Desktop\\Families\\Directory",
+      "InputValue": "C:\\Users\\Gavin\\Desktop\\Families\\Directory",
       "NodeType": "ExtensionNode",
       "Id": "a20f2c87a229451e9049f5af17060ace",
       "Inputs": [],
@@ -254,67 +254,9 @@
       "Description": "Creates a string."
     },
     {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "2d955c77-e83f-43d2-a2dd-c6ccdc5b9670",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "91ac4f300c3c4d0a931a50e151bf1272",
-      "Inputs": [
-        {
-          "Id": "d52727e523f54bb5af76411bc6d15839",
-          "Name": "filePath",
-          "Description": "string",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "d14f8983ba5547f8b19ad4db3a1fb725",
-          "Name": "sheetName",
-          "Description": "string\nDefault value : \"Sheet1\"",
-          "UsingDefaultValue": true,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "96251eeebf0b47b4b2bc0d60b0ed5af4",
-          "Name": "dataRows",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "b1385b3a1e8a4874bf3c1bbd190a828d",
-          "Name": "sheetFound",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "7ea177d468944404a90502703ab3efa5",
-          "Name": "report",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Imports a 2D matrix of data from an existing Excel file path from a given worksheet name. If a worksheet does not exist by that name it will take the data from the first worksheet instead. Credit to Cyril Poupin for most of the Python code (details in node body)."
-    },
-    {
       "ConcreteType": "CoreNodeModels.Input.Filename, CoreNodeModels",
-      "HintPath": "C:\\Users\\Gavin\\Desktop\\New folder\\ValuesSet\\familyValuesImport.xlsx",
-      "InputValue": "New folder\\ValuesSet\\familyValuesImport.xlsx",
+      "HintPath": "C:\\Users\\Gavin\\Desktop\\Families\\Directory\\familyValuesImport.xlsx",
+      "InputValue": "..\\..\\..\\..\\Desktop\\Families\\Directory\\familyValuesImport.xlsx",
       "NodeType": "ExtensionNode",
       "Id": "8c317960c6304583b0563def879a5613",
       "Inputs": [],
@@ -736,6 +678,64 @@
       ],
       "Replication": "Auto",
       "Description": "Filters a sequence by looking up corresponding indices in a separate list of booleans.\n\nList.FilterByBoolMask (list: var[]..[], mask: var[]..[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "2d955c77-e83f-43d2-a2dd-c6ccdc5b9670",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "13d44875ec5b435f8ebdf15631b698be",
+      "Inputs": [
+        {
+          "Id": "63267c4fdcea424b947165a7d55617bf",
+          "Name": "filePath",
+          "Description": "string",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "2ddc9367b2e04780a9145652acba484e",
+          "Name": "sheetName",
+          "Description": "string\nDefault value : \"Sheet1\"",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "27d7f3d2e7464f96ad39eea29865b79d",
+          "Name": "dataRows",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "477223861acb4b04870368f1c76797d8",
+          "Name": "sheetFound",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "89293598f9664744b436575436d4600e",
+          "Name": "report",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Imports a 2D matrix of data from an existing Excel file path from a given worksheet name. If a worksheet does not exist by that name it will take the data from the first worksheet instead. Credit to Cyril Poupin for most of the Python code (details in node body)."
     }
   ],
   "Connectors": [
@@ -780,19 +780,14 @@
       "Id": "6bef4eb6dad04fc9ada01bc43f3d7549"
     },
     {
-      "Start": "96251eeebf0b47b4b2bc0d60b0ed5af4",
-      "End": "11170c2324494d62a8e48c2fea9f0e74",
-      "Id": "d7e4e31d983f44a3ad0bac3b55e1ef52"
-    },
-    {
       "Start": "9d5c829f274c4a75b39128172626c088",
-      "End": "d52727e523f54bb5af76411bc6d15839",
-      "Id": "18a1fffacec94e2fbfdcc978f1fb259c"
+      "End": "63267c4fdcea424b947165a7d55617bf",
+      "Id": "54269343b85a475e9825c2a200211c52"
     },
     {
       "Start": "0f89c69ffe3a41dabae19bc4ddab7077",
-      "End": "d14f8983ba5547f8b19ad4db3a1fb725",
-      "Id": "2cfedc9316074dd099264917d9cb9ce8"
+      "End": "2ddc9367b2e04780a9145652acba484e",
+      "Id": "e16f7c0147ba4b6cab1393cca06cc296"
     },
     {
       "Start": "a93cf14e262344ac9cd210239dc30194",
@@ -827,7 +822,7 @@
     {
       "Start": "4498443925364c68a736f2a3bcbffa6e",
       "End": "079f671878e745e5ad78d2d0ac1b84a4",
-      "Id": "0d137bb32d7d45d6a954ae1dbb515478"
+      "Id": "1c003b04eddb4db69339430bd13c9ec9"
     },
     {
       "Start": "8d54c8b46e0f4c75a4bbfeccecb5c6ab",
@@ -853,16 +848,21 @@
       "Start": "f832242c0baa446a98ee3872987a8d9d",
       "End": "ae938dac575e4d0eb1c786adeb43503f",
       "Id": "d3133c372ecd4a67a4ab301b213e4a9a"
+    },
+    {
+      "Start": "27d7f3d2e7464f96ad39eea29865b79d",
+      "End": "11170c2324494d62a8e48c2fea9f0e74",
+      "Id": "f165a2e36b304ec4bd5d7df8c071d0a1"
     }
   ],
   "Dependencies": [
     "a32b54a3-50b7-4246-b937-030bad2c9f35",
     "cac9d4f6-2079-450f-998e-7f674949d1f4",
     "46bde950-4617-4547-8719-6b676b7ebbec",
-    "2d955c77-e83f-43d2-a2dd-c6ccdc5b9670",
     "bc9fe653-d16b-497d-9a03-b7414e60ed42",
     "e0d1e10d-0973-478e-b32d-e696714e8341",
-    "148c3c86-02c0-4e94-80fa-a241265b95d1"
+    "148c3c86-02c0-4e94-80fa-a241265b95d1",
+    "2d955c77-e83f-43d2-a2dd-c6ccdc5b9670"
   ],
   "NodeLibraryDependencies": [
     {
@@ -873,10 +873,17 @@
         "303fdda086b84bffb7d59c918f721fc0",
         "db12609b761944ea8c879a47fe49539d",
         "68b7725cd0944a7fbfd0180ac39aa167",
-        "91ac4f300c3c4d0a931a50e151bf1272",
         "d86d1954ce674862a137d63e6fff24e1",
         "74059d7330324280b3c331995777eedf",
         "f867f5e4c36949c9954d1a65ce493e99"
+      ]
+    },
+    {
+      "Name": "Crumple",
+      "Version": "2024.4.3",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "13d44875ec5b435f8ebdf15631b698be"
       ]
     }
   ],
@@ -998,16 +1005,6 @@
       },
       {
         "ShowGeometry": true,
-        "Name": "© Excel.Import",
-        "Id": "91ac4f300c3c4d0a931a50e151bf1272",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 2819.5238810434566,
-        "Y": 788.1868786831767
-      },
-      {
-        "ShowGeometry": true,
         "Name": "Excel file path...",
         "Id": "8c317960c6304583b0563def879a5613",
         "IsSetAsInput": true,
@@ -1105,6 +1102,16 @@
         "Excluded": false,
         "X": 4820.7808969321068,
         "Y": 877.24276442036592
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "🐍 Excel.Import",
+        "Id": "13d44875ec5b435f8ebdf15631b698be",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2818.2716696383541,
+        "Y": 780.10629822536907
       }
     ],
     "Annotations": [
@@ -1134,9 +1141,9 @@
         "Nodes": [
           "71d10cc5ab98417ca97ea426b13af6e3",
           "648ed3740b2c4156b0c2f8e34f0f624e",
-          "91ac4f300c3c4d0a931a50e151bf1272",
           "8c317960c6304583b0563def879a5613",
-          "4079d983c1bc4ce49a7c49a8d984c146"
+          "4079d983c1bc4ce49a7c49a8d984c146",
+          "13d44875ec5b435f8ebdf15631b698be"
         ],
         "Left": 2434.6060233233829,
         "Top": 701.488282159167,
@@ -1202,8 +1209,8 @@
         "Background": "#FFFF7BAC"
       }
     ],
-    "X": -492.68951142242327,
-    "Y": 100.99469357620265,
-    "Zoom": 0.30368668935410836
+    "X": -547.41801564641014,
+    "Y": 130.42430433874949,
+    "Zoom": 0.22879765626387089
   }
 }

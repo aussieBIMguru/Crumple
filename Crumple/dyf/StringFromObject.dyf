@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\ndef toString(obj):\r\n\tobj = str(obj)\r\n\tif obj[-1] == \"0\" or obj[-1] == \".\":\r\n\t\ttry:\r\n\t\t\tnewObj = obj.rstrip('0').rstrip('.')\r\n\t\t\tnumObj = float(newObj)\r\n\t\t\treturn newObj\r\n\t\texcept:\r\n\t\t\treturn obj\r\n\telse:\r\n\t\treturn obj\r\n\r\n# Get inputs\r\nobjects = tolist(IN[0])\r\n\r\n# Define outputs\r\nOUT = objOrList([toString(o) for o in objects])",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\ndef toString(obj):\r\n    strObj = str(obj)\r\n    if isinstance(obj, int):\r\n        if \".\" in strObj:\r\n            return obj.split(\".\")[-1]\r\n        else:\r\n            return strObj\r\n    elif isinstance(obj, float):\r\n        if \".\" in strObj and strObj[-1] == \"0\":\r\n            return strObj.rstrip(\"0\")\r\n        else:\r\n            return strObj\r\n    return strObj\r\n\r\n# Get inputs\r\nobjects = tolist(IN[0])\r\n\r\n# Define outputs\r\nOUT = objOrList([toString(o) for o in objects])",
       "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "3754d6e9934745b193c4bbf02cb70564",
@@ -160,8 +160,8 @@
       }
     ],
     "Annotations": [],
-    "X": -71.424824570647331,
-    "Y": 322.229563055902,
-    "Zoom": 1.4425890929331342
+    "X": 8.80057994943769,
+    "Y": 311.8648196484815,
+    "Zoom": 1.0298856394709861
   }
 }

@@ -1,0 +1,442 @@
+{
+  "Uuid": "8e8f05fb-e8f4-44d8-94c8-c6a2212af20b",
+  "IsCustomNode": false,
+  "Description": "",
+  "Name": "Crumple_SaveFromProject",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [
+    {
+      "Id": "8e17784722fd4f038da103c1fea92169",
+      "Name": "Save to directory...",
+      "Type": "string",
+      "Value": "C:\\Users\\Gavin\\Desktop\\Families",
+      "Description": "Allows you to select a directory on the system to get its path",
+      "SelectedIndex": 0
+    }
+  ],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "962b9a3e-76aa-472e-8df6-2a636a873eb4",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "ecbebb6b944d4e9b878b032836e919ef",
+      "Inputs": [
+        {
+          "Id": "bb09429296964c8c8ffa770fb4891584",
+          "Name": "docOrLink",
+          "Description": "Uses current if none provided.\nAccepts document or link instance.\n\nvar[]..[]\nDefault value : null",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "aa067696856842d3b923365fff540f90",
+          "Name": "userCreated",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "03b7d9ed295c44cfadba11aaea4f9d56",
+          "Name": "inPlace",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "98271bf7a66c441c802597f36a1af924",
+          "Name": "internal",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Returns all families in the document. Families are sorted into user created, inplace and internal."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "b8e554c9-25c0-4f98-af24-4ec6e3a924f2",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "43bf9523584341a186f529e692bd584a",
+      "Inputs": [
+        {
+          "Id": "3735e132fe614993835a91f3fd8f2825",
+          "Name": "families",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "55b045a0762c47ef93dbc68100b91431",
+          "Name": "filePaths",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "ed3d1d479a2443658a9c8bc049fa117c",
+          "Name": "wasSaved",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Saves families in the current document to the given file paths."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Elements.Element.Name",
+      "Id": "90644af645024487aff2668ec4211b54",
+      "Inputs": [
+        {
+          "Id": "b60e9eabe26e4ebe8cd9aed17d58c0cb",
+          "Name": "element",
+          "Description": "Revit.Elements.Element",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "4997d37023ec46f8893d0393c3d14b0e",
+          "Name": "string",
+          "Description": "string",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Get the Name of the Element\n\nElement.Name: string"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.Directory, CoreNodeModels",
+      "HintPath": "C:\\Users\\Gavin\\Desktop\\Families",
+      "InputValue": "C:\\Users\\Gavin\\Desktop\\Families",
+      "NodeType": "ExtensionNode",
+      "Id": "8e17784722fd4f038da103c1fea92169",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "49520efc15b441f99ba807e59724b99c",
+          "Name": "",
+          "Description": "Directory path",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows you to select a directory on the system to get its path"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "dirs = dp + \"\\\\\" + cat + \"\\\\\" + n + \".rfa\";",
+      "Id": "1afbb6c430e34e319437f7037f5d1586",
+      "Inputs": [
+        {
+          "Id": "2e6cf2322e4f4dff9937cc08fb4855e2",
+          "Name": "dp",
+          "Description": "dp",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "fa85025086ff41308f5f96e1e15351cf",
+          "Name": "cat",
+          "Description": "cat",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a24353a06a9a4ceda22f6a6e70a7da3a",
+          "Name": "n",
+          "Description": "n",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "8bbe67acb9654867b566c694bd59ae90",
+          "Name": "",
+          "Description": "dirs",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "675b3734-f77b-4666-9d50-5fc39d9bfe72",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "4b0d0177f7cb46ffbd79028135fb8f3a",
+      "Inputs": [
+        {
+          "Id": "d6d1d7c484b74256a549f4231eeb43ad",
+          "Name": "families",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "477dd584697747f0973b38b58052acfc",
+          "Name": "categoryNames",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Returns the category name a family is associated with."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "aa067696856842d3b923365fff540f90",
+      "End": "b60e9eabe26e4ebe8cd9aed17d58c0cb",
+      "Id": "738eb6451bd74e3cb2242f6b54425694"
+    },
+    {
+      "Start": "aa067696856842d3b923365fff540f90",
+      "End": "d6d1d7c484b74256a549f4231eeb43ad",
+      "Id": "0cbcf4b1278c4e789b77d74e367a340a"
+    },
+    {
+      "Start": "aa067696856842d3b923365fff540f90",
+      "End": "3735e132fe614993835a91f3fd8f2825",
+      "Id": "9f7acd0ca29f49c4974d1877963ef33a"
+    },
+    {
+      "Start": "4997d37023ec46f8893d0393c3d14b0e",
+      "End": "a24353a06a9a4ceda22f6a6e70a7da3a",
+      "Id": "ca1eb0c8eb234472a556a01342450868"
+    },
+    {
+      "Start": "49520efc15b441f99ba807e59724b99c",
+      "End": "2e6cf2322e4f4dff9937cc08fb4855e2",
+      "Id": "cf7d93628f8540c7b9b88916ff44253a"
+    },
+    {
+      "Start": "8bbe67acb9654867b566c694bd59ae90",
+      "End": "55b045a0762c47ef93dbc68100b91431",
+      "Id": "afbd5e93aea94363bc3a056d2b86cf9c"
+    },
+    {
+      "Start": "477dd584697747f0973b38b58052acfc",
+      "End": "fa85025086ff41308f5f96e1e15351cf",
+      "Id": "85b815521fb94b539692c748a52ba82d"
+    }
+  ],
+  "Dependencies": [
+    "962b9a3e-76aa-472e-8df6-2a636a873eb4",
+    "b8e554c9-25c0-4f98-af24-4ec6e3a924f2",
+    "675b3734-f77b-4666-9d50-5fc39d9bfe72"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Crumple",
+      "Version": "2024.4.3",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "ecbebb6b944d4e9b878b032836e919ef",
+        "43bf9523584341a186f529e692bd584a",
+        "4b0d0177f7cb46ffbd79028135fb8f3a"
+      ]
+    }
+  ],
+  "Thumbnail": "",
+  "GraphDocumentationURL": null,
+  "ExtensionWorkspaceData": [
+    {
+      "ExtensionGuid": "28992e1d-abb9-417f-8b1b-05e053bee670",
+      "Name": "Properties",
+      "Version": "2.12",
+      "Data": {}
+    },
+    {
+      "ExtensionGuid": "DFBD9CC0-DB40-457A-939E-8C8555555A9D",
+      "Name": "Generative Design",
+      "Version": "1.10",
+      "Data": {}
+    }
+  ],
+  "Author": "",
+  "Linting": {
+    "activeLinter": "None",
+    "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a",
+    "warningCount": 0,
+    "errorCount": 0
+  },
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.12.1.8246",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "© Collect.Families",
+        "Id": "ecbebb6b944d4e9b878b032836e919ef",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 510.75296924608972,
+        "Y": -54.571640612493923
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "© Family.SaveAs",
+        "Id": "43bf9523584341a186f529e692bd584a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2126.5074227935775,
+        "Y": -53.828581628816494
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Element.Name",
+        "Id": "90644af645024487aff2668ec4211b54",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1083.1059090828214,
+        "Y": 191.57451088633428
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Save to directory...",
+        "Id": "8e17784722fd4f038da103c1fea92169",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1090.5518904627977,
+        "Y": -164.02628564156129
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "1afbb6c430e34e319437f7037f5d1586",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1509.9128510507862,
+        "Y": 82.632920147939046
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "© Family.CategoryName",
+        "Id": "4b0d0177f7cb46ffbd79028135fb8f3a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1083.0190248840884,
+        "Y": 94.412926309728846
+      }
+    ],
+    "Annotations": [
+      {
+        "Id": "1b063626fcea4e65a58d18c2bdc46e96",
+        "Title": "Collect all families",
+        "Nodes": [
+          "ecbebb6b944d4e9b878b032836e919ef"
+        ],
+        "Left": 500.75296924608972,
+        "Top": -150.57164061249392,
+        "Width": 272.0,
+        "Height": 241.0,
+        "FontSize": 36.0,
+        "InitialTop": -54.571640612493923,
+        "InitialHeight": 249.55653124169476,
+        "TextblockHeight": 86.0,
+        "Background": "#FFFFAA45"
+      },
+      {
+        "Id": "15edefe36f5b491b94062e9ccd2779ad",
+        "Title": "Process file paths",
+        "Nodes": [
+          "90644af645024487aff2668ec4211b54",
+          "1afbb6c430e34e319437f7037f5d1586",
+          "4b0d0177f7cb46ffbd79028135fb8f3a"
+        ],
+        "Left": 1073.0190248840884,
+        "Top": 29.632920147939046,
+        "Width": 882.89382616669786,
+        "Height": 254.94159073839523,
+        "FontSize": 36.0,
+        "InitialTop": 82.632920147939046,
+        "InitialHeight": 253.94159073839523,
+        "TextblockHeight": 43.0,
+        "Background": "#FFBB87C6"
+      }
+    ],
+    "X": -231.86555596208552,
+    "Y": 410.27824893793792,
+    "Zoom": 0.64625845001531124
+  }
+}
