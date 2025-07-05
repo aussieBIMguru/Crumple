@@ -3,7 +3,7 @@
   "IsCustomNode": true,
   "Category": "Crumple.Application.Actions",
   "Description": "Convert values from the project unit type to internal Revit unit type (decimal feet).",
-  "Name": "© Revit.ProjectToInternal",
+  "Name": "© Revit.LengthToInternal",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -54,7 +54,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "toInternal",
+      "Symbol": "convertedValues",
       "Id": "d0e45c9de4984052847106f0a090449b",
       "Inputs": [
         {
@@ -75,7 +75,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "projectValues",
+        "Name": "values",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -126,8 +126,9 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Current doc/app/ui\r\nvalues = tolist(IN[0])\r\ndoc    = IN[1]\r\n\r\n# Get app version\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application\r\nrvt_year = int(app.VersionNumber)\r\n\r\n# Imports by version\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\n\r\nif rvt_year < 2022:\r\n\tfrom Autodesk.Revit.DB import UnitType, UnitUtils, DisplayUnitType\r\nelse:\r\n\tfrom Autodesk.Revit.DB import SpecTypeId, UnitUtils\r\n\r\n# Function: Convert from project to internal\r\ndef projectToInternal(val, ver = rvt_year, myDoc = doc):\r\n\tif rvt_year < 2022:\r\n\t\tintUnits = myDoc.GetUnits().GetFormatOptions(UnitType.UT_Length).DisplayUnits\r\n\t\treturn UnitUtils.Convert(val, intUnits, DisplayUnitType.DUT_DECIMAL_FEET)\r\n\telse:\r\n\t\tintUnitsId = myDoc.GetUnits().GetFormatOptions(SpecTypeId.Length).GetUnitTypeId()\r\n\t\treturn UnitUtils.ConvertToInternalUnits(val, intUnitsId)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList([projectToInternal(v) for v in values])",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Current doc/app/ui\r\nvalues = tolist(IN[0])\r\ndoc    = IN[1]\r\n\r\n# Get app version\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application\r\nrvt_year = int(app.VersionNumber)\r\n\r\n# Function: Convert from project to internal\r\ndef projectToInternal(val, ver = rvt_year, myDoc = doc):\r\n\tif rvt_year < 2022:\r\n\t\tintUnits = myDoc.GetUnits().GetFormatOptions(UnitType.UT_Length).DisplayUnits\r\n\t\treturn UnitUtils.Convert(val, intUnits, DisplayUnitType.DUT_DECIMAL_FEET)\r\n\telse:\r\n\t\tintUnitsId = myDoc.GetUnits().GetFormatOptions(SpecTypeId.Length).GetUnitTypeId()\r\n\t\treturn UnitUtils.ConvertToInternalUnits(val, intUnitsId)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList([projectToInternal(v) for v in values])",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "0a8073f4ce574ac490bf1c416d008c0d",
       "Inputs": [
@@ -169,22 +170,26 @@
     {
       "Start": "8af49f226b4e4f979a026f05a23b9f88",
       "End": "f55f2fd5322b4e04bbb03d19df0dd1f1",
-      "Id": "0cb801c0b39e43608f1fb4167a283204"
+      "Id": "0cb801c0b39e43608f1fb4167a283204",
+      "IsHidden": "False"
     },
     {
       "Start": "846b9d0e1b7e44eeaee6af99e19ac3da",
       "End": "1cb8c551fdfe4fa38802f4d7e0a040c6",
-      "Id": "5b92b865562b40ada0eff9cca03218c5"
+      "Id": "5b92b865562b40ada0eff9cca03218c5",
+      "IsHidden": "False"
     },
     {
       "Start": "d45f15c62db5443a9c826539b6649b6f",
       "End": "48a97919c7414bd8959ec8be64c4425c",
-      "Id": "d30ab809aff64f0cbc9f7d511d01e583"
+      "Id": "d30ab809aff64f0cbc9f7d511d01e583",
+      "IsHidden": "False"
     },
     {
       "Start": "ec46feeed05545e3b9cbd6fd927387f3",
       "End": "7b0adafe8d524be2a60bc48003eb079c",
-      "Id": "899186aab2ac435680a0b6c4f3265e98"
+      "Id": "899186aab2ac435680a0b6c4f3265e98",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [
@@ -207,7 +212,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -223,10 +228,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "© Revit.GetDocument",
+        "ShowGeometry": true,
         "Id": "9e96896905e940f7a2d7339afb27a00e",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -235,8 +241,8 @@
         "Y": 186.194448367868
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "d0e45c9de4984052847106f0a090449b",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -245,8 +251,8 @@
         "Y": 125.56896647439538
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "d7ef01b882f64898a4a9a9a1c31f92c5",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -255,8 +261,8 @@
         "Y": 72.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "61cd7cf2bdff4f4aaeaef07051023f1b",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -265,8 +271,8 @@
         "Y": 186.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "0a8073f4ce574ac490bf1c416d008c0d",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,

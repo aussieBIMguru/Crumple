@@ -15,6 +15,7 @@
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Import pandas\r\ntry:\r\n\timport pandas as pd\r\n\tfilePath  = IN[0]\r\n\txcl = pd.ExcelFile(filePath)\r\n\tpandasFound = True\r\nexcept:\r\n\tpandasFound = False\r\n\r\n# If we found pandas...\r\nif pandasFound:\r\n\ttry:\r\n\t\t# Get sheet names\r\n\t\tsheetNames = xcl.sheet_names\r\n\t\t# Outputs to Dynamo\r\n\t\tOUT = sheetNames, \"SUCCESS: Worksheets read.\"\r\n\texcept:\r\n\t\tOUT = [], \"ERROR: Excel file not read.\"\r\nelse:\r\n\tOUT = [], \"ERROR: pandas not found/valid.\"",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "998e914620b34fd89b2ec99bc600f295",
       "Inputs": [
@@ -111,7 +112,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "sheetNames",
+      "Symbol": "workSheetNames",
       "Id": "b14f2906ce3e4770b7388bb80cfdfbf0",
       "Inputs": [
         {
@@ -154,22 +155,26 @@
     {
       "Start": "cdb4ed7336e14a40ae23039c9bacdc16",
       "End": "9c8b768b2c434695af881c78f6643f4f",
-      "Id": "9522bd98bf844d95a36b6ef85eff0202"
+      "Id": "9522bd98bf844d95a36b6ef85eff0202",
+      "IsHidden": "False"
     },
     {
       "Start": "67ffba06f20e451eacddafcfecc5c922",
       "End": "ffe31752e8074942b4fd78c0e247ac1e",
-      "Id": "8bc39f4b3a28449ab6ec2c56cf3e46c2"
+      "Id": "8bc39f4b3a28449ab6ec2c56cf3e46c2",
+      "IsHidden": "False"
     },
     {
       "Start": "852284b34e00477b8b0fae19d2c229e8",
       "End": "1cd855d325344635b31f8479af727fb6",
-      "Id": "759a4024b69847a3b584c467325c820f"
+      "Id": "759a4024b69847a3b584c467325c820f",
+      "IsHidden": "False"
     },
     {
       "Start": "8c81974c50514f8f9e01e6ee62939c6a",
       "End": "48eee55d9c6e4f9599e023ed4ddba024",
-      "Id": "6a236616c5094613b969562fbe23a104"
+      "Id": "6a236616c5094613b969562fbe23a104",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -181,7 +186,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -197,10 +202,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "998e914620b34fd89b2ec99bc600f295",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -209,8 +215,8 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "8ed6b2c5b0954249afb57bfcccb282a0",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -219,8 +225,8 @@
         "Y": -1.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Code Block",
+        "ShowGeometry": true,
         "Id": "af491d2b735e413382e026b43761760f",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -229,29 +235,29 @@
         "Y": 6.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "b14f2906ce3e4770b7388bb80cfdfbf0",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 640.0,
-        "Y": -54.0
+        "X": 686.329810337339,
+        "Y": -70.439610119700916
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "32bb6db5ccdc4940bce3ade0379b34b4",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 650.0,
-        "Y": 51.0
+        "X": 678.39569020675606,
+        "Y": 103.30785038086651
       }
     ],
     "Annotations": [],
-    "X": 282.78673569114471,
-    "Y": 300.117275,
+    "X": -428.21326430885529,
+    "Y": 298.117275,
     "Zoom": 1.33823125
   }
 }

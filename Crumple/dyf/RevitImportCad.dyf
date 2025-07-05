@@ -17,6 +17,10 @@
       "View": {
         "Key": "Revit.Elements.Views.View",
         "Value": "RevitNodes.dll"
+      },
+      "Revit.Elements.Views.View": {
+        "Key": "Revit.Elements.Views.View",
+        "Value": "RevitNodes.dll"
       }
     }
   },
@@ -28,6 +32,7 @@
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n# Boilerplate text\nimport clr\nimport System\n\nclr.AddReference('RevitServices')\nimport RevitServices\nfrom RevitServices.Persistence import DocumentManager\nfrom RevitServices.Transactions import TransactionManager\n\nclr.AddReference('RevitAPI')\nimport Autodesk\nfrom Autodesk.Revit.DB import ImportUnit, DWGImportOptions, ImportColorMode, ElementId, Transaction\n\n# Current doc\ndoc = DocumentManager.Instance.CurrentDBDocument\n\n# Define list/unwrap list functions\ndef tolist(input):\n    result = input if isinstance(input, list) else [input]\n    return result\n\ndef uwlist(input):\n    result = input if isinstance(input, list) else [input]\n    return UnwrapElement(result)\n\n# Get inputs\nfilePaths = tolist(IN[0])\nviews     = uwlist(IN[1])\n\n# Get enum name\ndef enumGetName(enum, enumClass):\n    return System.Enum.GetName(enumClass,enum)\n\n# Get import unit types as enumeration\nenums = System.Enum.GetValues(ImportUnit)\nnames = [enumGetName(u,ImportUnit) for u in enums]\n\n# Find matching enum unit type\ni = names.index(IN[2])\nunitType = enums[i]\n\n# CAD settings\ncustomscale = False\ncolormode = \"Preserve\"\nplacement = \"Origin\"\nallView = True\n\n# Empty lists\nresults, importInstances = [],[]\n\n# Import options\noptions = DWGImportOptions()\noptions.AutoCorrectAlmostVHLines = True\noptions.OrientToView = False\noptions.ThisViewOnly = False\noptions.VisibleLayersOnly = True\nImportColorMode.Preserved\noptions.Unit = unitType\n\n#Do some action in a Transaction\nTransactionManager.Instance.EnsureInTransaction(doc)\n\n# Import CAD files\nfor fp,v in zip(filePaths,views):\n\t# Try to import CAD\n\ttry:\n\t\t# Dummy Id\n\t\tdummyId = ElementId.InvalidElementId\n\t\t# Import CAD\n\t\tresult_import, cad_instance_Id = doc.Import(fp, options, v, dummyId)\n\t\t# Get import instance\n\t\timportInstance = doc.GetElement(cad_instance_Id)\n\t\timportInstances.append(importInstance)\n\t\tresults.append(result_import)\n\t# Otherwise it failed\n\texcept:\n\t\timportInstances.append(None)\n\t\tresults.append(False)\n\nTransactionManager.Instance.TransactionTaskDone()\n\n# Outputs\nOUT = importInstances, results",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "dcb7afe1dfb84e65ac514bc8569f17e8",
       "Inputs": [
@@ -103,7 +108,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "importView",
+        "Name": "views",
         "TypeName": "Revit.Elements.Views.View",
         "TypeRank": 0,
         "DefaultValue": null,
@@ -237,32 +242,38 @@
     {
       "Start": "a2a792e445154af9adca7d65697ca969",
       "End": "2d1d17ab5ed74f159712a1604fa678ff",
-      "Id": "76c7d860daca42c191129c6acc40a8a5"
+      "Id": "76c7d860daca42c191129c6acc40a8a5",
+      "IsHidden": "False"
     },
     {
       "Start": "784a9fef9c81482a80918d777febc1e9",
       "End": "25b1c823f25042af8b7f139f87540de1",
-      "Id": "d20294d561eb4d7c83b0af09a399959d"
+      "Id": "d20294d561eb4d7c83b0af09a399959d",
+      "IsHidden": "False"
     },
     {
       "Start": "692b65d9ba0343e48531e6cbfa1b29a0",
       "End": "22545c8a3d9c47ca96f287370bd4d043",
-      "Id": "d2b30d78c51547f293ad952655817c87"
+      "Id": "d2b30d78c51547f293ad952655817c87",
+      "IsHidden": "False"
     },
     {
       "Start": "237b70ae5c1c4b848c0711a3f07a388f",
       "End": "b162d45dcb074132a430ae8a8faa19b2",
-      "Id": "daaedb1a83b04e2b87c7fdae64e4407b"
+      "Id": "daaedb1a83b04e2b87c7fdae64e4407b",
+      "IsHidden": "False"
     },
     {
       "Start": "7e0f426b4c8e49ad8b0eb94e6c693234",
       "End": "830615ff99a4437faafe6c59113d0860",
-      "Id": "39a4a7b74109423a832865d8c33721a2"
+      "Id": "39a4a7b74109423a832865d8c33721a2",
+      "IsHidden": "False"
     },
     {
       "Start": "7ac6f2e511e84c30b2f3d7c5bd72998e",
       "End": "1fdb7369e95b4b1cb75ae968a0f36d2b",
-      "Id": "571bbc3aa5524d03ab60db6278e2cf6a"
+      "Id": "571bbc3aa5524d03ab60db6278e2cf6a",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -274,7 +285,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -290,10 +301,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "dcb7afe1dfb84e65ac514bc8569f17e8",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -302,69 +314,69 @@
         "Y": 3.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "981f99717a444bf29427e8a794cecccb",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -41.406399607085064,
-        "Y": -46.135466535695
+        "X": -124.68959449919078,
+        "Y": -111.26719587439311
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "fd69d331765244cd987a73a97dcb3ece",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -180.8794822522928,
-        "Y": 32.203199803542532
+        "X": -215.04694682341318,
+        "Y": 36.474132874932536
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "0f6d69c46ee74234b70ebe323345b513",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -133.14709861708411,
-        "Y": 111.83309072575986
+        "X": -207.88842736640981,
+        "Y": 191.9130858143231
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "735d8144c0f040049721296cc78ce85b",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 606.68106987547185,
-        "Y": -27.238935035964744
+        "X": 747.62186123134313,
+        "Y": -65.677332678475125
       },
       {
-        "ShowGeometry": true,
         "Name": "Code Block",
+        "ShowGeometry": true,
         "Id": "2a49904012e34f91bd249f6dd93793ca",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 428.0,
-        "Y": 7.0
+        "X": 509.14772835641077,
+        "Y": 3.7968001964574682
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "7b3f64058d044f83b8899af333a46254",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 611.952002946862,
-        "Y": 47.864533464305
+        "X": 737.94452855286806,
+        "Y": 103.38666339237551
       }
     ],
     "Annotations": [],
-    "X": 158.67992103054883,
-    "Y": 284.50195657703756,
+    "X": -123.32007896945117,
+    "Y": 235.50195657703756,
     "Zoom": 0.93656349400440009
   }
 }

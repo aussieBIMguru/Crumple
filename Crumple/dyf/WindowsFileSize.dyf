@@ -1,8 +1,8 @@
 {
-  "Uuid": "d7e186c5-70af-4240-8f24-9fdd803801e8",
+  "Uuid": "114fc630-ac45-484c-b254-8e04a412a46f",
   "IsCustomNode": true,
   "Category": "Crumple.Application.Query",
-  "Description": "For given file objects, returns their size in bytes, kilobytes and megabytes.",
+  "Description": "Returns the size of a file path in MB.",
   "Name": "© Windows.FileSize",
   "ElementResolver": {
     "ResolutionMap": {}
@@ -11,63 +11,16 @@
   "Outputs": [],
   "Nodes": [
     {
-      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
-      "NodeType": "CodeBlockNode",
-      "Code": "x[0];\nx[1];\nx[2];",
-      "Id": "a9d9d23704e84b8684366093172c842a",
-      "Inputs": [
-        {
-          "Id": "1ee61f31ec1a4012ac58a739941dfa8a",
-          "Name": "x",
-          "Description": "x",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "2ee5eab8b02a4717b9277ceaf5812ede",
-          "Name": "",
-          "Description": "Value of expression at line 1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "636f319edae444e2b0ff6b3461cf1a59",
-          "Name": "",
-          "Description": "Value of expression at line 2",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "4cade568985f4d2dbde74a7552c8ced5",
-          "Name": "",
-          "Description": "Value of expression at line 3",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "Allows for DesignScript code to be authored directly"
-    },
-    {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport os\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\nfiles = tolist(IN[0])\r\nbytes = []\r\nkbytes = []\r\nmbytes = []\r\n\r\nfor file in files:\r\n\tsize = os.path.getsize(file)\r\n\tbytes.append(float(size))\r\n\tkbytes.append(size/1024)\r\n\tmbytes.append(size/1048576)\r\n\t\r\nOUT = (bytes,kbytes,mbytes)",
+      "Code": "# Made by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n# Boilerplate text\nimport clr\nimport os\n\n# Define list/unwrap list functions\ndef tolist(input):\n    result = input if isinstance(input, list) else [input]\n    return result\n\ndef objOrList(input, initial = IN[0]):\n\tif isinstance(initial, list):\n\t\treturn input\n\telse:\n\t\treturn input[0]\n\ndef getFileSize(filePath):\n    try:\n        size = os.path.getsize(filePath)\n        return size / 1000000\n    except:\n        return None\n\n# Method from Data-Shapes to get current model size\nfilePaths = tolist(IN[0])\nsizes = [getFileSize(fp) for fp in filePaths]\n\n# Return size in MB\nOUT = objOrList(sizes)",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
-      "Id": "a6043889320d4746a382ab242fbdc008",
+      "Id": "3560b8687b094627aaebd193ffae9443",
       "Inputs": [
         {
-          "Id": "dc8b55bed5694fe2aae654a8b8ae2945",
+          "Id": "07bd03bddf0749bcb8fb8f1e2e01fa93",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -78,7 +31,7 @@
       ],
       "Outputs": [
         {
-          "Id": "947d452e2e9e4f698d6891c650c22684",
+          "Id": "b472cf8646af4e958f726d78b12748f0",
           "Name": "OUT",
           "Description": "Result of the python script",
           "UsingDefaultValue": false,
@@ -100,11 +53,11 @@
         "DefaultValue": null,
         "Description": ""
       },
-      "Id": "fc1bc0b386f54488a50b799861b02c33",
+      "Id": "ed0e34c7c15740e1845edef7ea575ee8",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "a86a5e8f314d4393989d0e6f27bf83a7",
+          "Id": "9137a3c601814178b48c42bfd45bf5c0",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -120,53 +73,11 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "bytes",
-      "Id": "42742aed19114fa6af75b885bbf0af2f",
+      "Symbol": "// Returned in MB\r\nsizesInMb",
+      "Id": "d7da684b47754a75a175a3b9419c36f8",
       "Inputs": [
         {
-          "Id": "fdab4d2e8d5c4b3181efd9c03651678e",
-          "Name": "",
-          "Description": "",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [],
-      "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
-      "ElementResolver": null,
-      "Symbol": "kiloBytes",
-      "Id": "0a78d7ee59c545d9a95ed71b90a5aed6",
-      "Inputs": [
-        {
-          "Id": "f38d869c93674b3fad8b4bafaf9d29b0",
-          "Name": "",
-          "Description": "",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [],
-      "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
-      "ElementResolver": null,
-      "Symbol": "megaBytes",
-      "Id": "019d6fb5ba9a404296769673230c42af",
-      "Inputs": [
-        {
-          "Id": "76514dcfa5fd446e9a719eaef52bf4ee",
+          "Id": "820fa31b594a40ea98204b092a95d865",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -182,29 +93,16 @@
   ],
   "Connectors": [
     {
-      "Start": "2ee5eab8b02a4717b9277ceaf5812ede",
-      "End": "fdab4d2e8d5c4b3181efd9c03651678e",
-      "Id": "215be2b7e5c14a9b8a2ebdfee3f74c4b"
+      "Start": "b472cf8646af4e958f726d78b12748f0",
+      "End": "820fa31b594a40ea98204b092a95d865",
+      "Id": "f2c5700639c34ab7af90f36e2ecc0407",
+      "IsHidden": "False"
     },
     {
-      "Start": "636f319edae444e2b0ff6b3461cf1a59",
-      "End": "f38d869c93674b3fad8b4bafaf9d29b0",
-      "Id": "aca106f3899340b88bfd1eaf6b02916a"
-    },
-    {
-      "Start": "4cade568985f4d2dbde74a7552c8ced5",
-      "End": "76514dcfa5fd446e9a719eaef52bf4ee",
-      "Id": "9d2c33cd0df048bfb2898bab4cd7a067"
-    },
-    {
-      "Start": "947d452e2e9e4f698d6891c650c22684",
-      "End": "1ee61f31ec1a4012ac58a739941dfa8a",
-      "Id": "a19caf550b654ecd9490c4e3ab76e160"
-    },
-    {
-      "Start": "a86a5e8f314d4393989d0e6f27bf83a7",
-      "End": "dc8b55bed5694fe2aae654a8b8ae2945",
-      "Id": "4f5b24cdf58f4292965f824c552b5309"
+      "Start": "9137a3c601814178b48c42bfd45bf5c0",
+      "End": "07bd03bddf0749bcb8fb8f1e2e01fa93",
+      "Id": "ec5e51d6008c4f4f8b48b3bf37e9fb22",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -216,7 +114,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -232,71 +130,42 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
-        "Name": "Code Block",
-        "Id": "a9d9d23704e84b8684366093172c842a",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 410.72817039623851,
-        "Y": 4.0176643000522176
-      },
-      {
-        "ShowGeometry": true,
         "Name": "Python Script",
-        "Id": "a6043889320d4746a382ab242fbdc008",
+        "ShowGeometry": true,
+        "Id": "3560b8687b094627aaebd193ffae9443",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 250.0,
-        "Y": 0.0
+        "X": 335.08766386298038,
+        "Y": 1.7364829359791543
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
-        "Id": "fc1bc0b386f54488a50b799861b02c33",
+        "ShowGeometry": true,
+        "Id": "ed0e34c7c15740e1845edef7ea575ee8",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -13.412129565816713,
-        "Y": -0.34390075809784548
+        "X": -45.756341455593429,
+        "Y": 0.90097590757170565
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
-        "Id": "42742aed19114fa6af75b885bbf0af2f",
+        "ShowGeometry": true,
+        "Id": "d7da684b47754a75a175a3b9419c36f8",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 628.0,
-        "Y": -43.0
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Output",
-        "Id": "0a78d7ee59c545d9a95ed71b90a5aed6",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 629.0,
-        "Y": 16.0
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Output",
-        "Id": "019d6fb5ba9a404296769673230c42af",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 630.0,
-        "Y": 77.0
+        "X": 664.34750608126319,
+        "Y": 2.60472440396876
       }
     ],
     "Annotations": [],
-    "X": -228.86950855495894,
-    "Y": 307.79468310389893,
-    "Zoom": 1.2662528731136862
+    "X": 50.638786974557661,
+    "Y": 256.97820828957379,
+    "Zoom": 1.1517533276952223
   }
 }

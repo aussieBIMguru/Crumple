@@ -13,8 +13,9 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport os\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import ViewSet, ViewSheetSetting, Transaction, PrintRange\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\ndirectoryPath = IN[0]\r\nviewsToPrint  = uwlist(IN[1])\r\nfileNames     = tolist(IN[2])\r\nprintSetting  = UnwrapElement(IN[3])\r\nprinterName   = IN[4]\r\nconfirmPrint  = IN[5]\r\n\r\n# Function: Replace or remove illegal characters for windows\r\nCHARS_ILLEGAL = ['/','?','<','>','\\\\',':','*','|','\"','^', '.']\r\nRANGE_SELECT  = PrintRange.Select\r\n\r\ndef legalizeString(string_check, char_replace = None):\r\n\t# New string to build\r\n\tstring_legal  = \"\"\r\n\t# Check each character\r\n\tfor c in string_check:\r\n\t\tif c not in CHARS_ILLEGAL:\r\n\t\t\tstring_legal += c\r\n\t# Return new string\r\n\treturn string_legal\r\n\r\n# Legalize file names\r\nlegalNames = [legalizeString(fn, \"\") for fn in fileNames]\r\n\r\n# Make sure printer is valid\r\ntry:\r\n\tprintManager = doc.PrintManager\r\n\tprintManager.SelectNewPrintDriver(printerName)\r\n\tfoundPrinter = True\r\nexcept:\r\n\tfoundPrinter = False\r\n\r\n# Make file paths\r\nfilePaths = []\r\n\r\nfor fn in legalNames:\r\n\tfilePath = '{}\\{}.pdf'.format(directoryPath, fn)\r\n\tfilePaths.append(filePath)\r\n\r\n# Function: Export a sheet to PDF\r\ndef exportSheetPdf(revit_sheet, file_path, print_setting, myDoc = doc):\r\n\tTransactionManager.Instance.EnsureInTransaction(myDoc)\r\n\t# Set print range\r\n\tprint_manager = myDoc.PrintManager\r\n\tprint_manager.PrintRange = RANGE_SELECT\r\n\tprint_manager.Apply()\r\n\t# Define current view set as current\r\n\tviewSet_temp = ViewSet()\r\n\tviewSet_temp.Insert(revit_sheet)\r\n\tviewSheetSet_temp = print_manager.ViewSheetSetting\r\n\tviewSheetSet_temp.CurrentViewSheetSet.Views = viewSet_temp\r\n\t# Save print setting\r\n\tviewSheetSet_temp.SaveAs(\"_Delete me\")\r\n\t# Set printer\r\n\tprint_manager.SelectNewPrintDriver(printerName)\r\n\tprint_manager.Apply()\r\n\t# Check if printer is virtual and set print to file\r\n\tprint_manager.CombinedFile = True\r\n\tprint_manager.Apply()\r\n\tprint_manager.PrintToFile = True\r\n\t# Set destination filepath\r\n\tprint_manager.PrintToFileName = file_path\r\n\tprint_manager.Apply()\r\n\t# Set print setting\r\n\tprint_setup = print_manager.PrintSetup\r\n\tprint_setup.CurrentPrintSetting = print_setting\r\n\tprint_manager.Apply()\r\n\t# Submit to printer\r\n\tprint_manager.SubmitPrint()\r\n\ttry:\r\n\t\toutcome = True\r\n\texcept:\r\n\t\toutcome = False\r\n\t# Delete Current viewSheetSettings to allow new setting to be stored\r\n\tviewSheetSet_temp.Delete()\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\n\treturn outcome\r\n\r\n# If we didn't find printer, cancel\r\nif not foundPrinter:\r\n\tOUT = \"Printer not found.\", []\r\n# If we confirmed print, try to print\r\nelif confirmPrint:\r\n\t# Outcomes\r\n\toutcomes = []\r\n\t# For each sheet...\r\n\tfor v, f in zip(viewsToPrint, filePaths):\r\n\t\tif os.path.exists(f):\r\n\t\t\toutcomes.append(None)\r\n\t\telse:\r\n\t\t\tprinted = exportSheetPdf(v, f, printSetting, doc)\r\n\t\t\toutcomes.append(printed)\r\n\tOUT = outcomes, filePaths\r\n# If we didn't, return message\r\nelse:\r\n\tOUT = \"Set runMe to true.\", []",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport os\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import ViewSet, ViewSheetSetting, Transaction, PrintRange\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\ndirectoryPath = IN[0]\r\nviewsToPrint  = uwlist(IN[1])\r\nfileNames     = tolist(IN[2])\r\nprintSetting  = UnwrapElement(IN[3])\r\nprinterName   = IN[4]\r\nconfirmPrint  = IN[5]\r\n\r\n# Function: Replace or remove illegal characters for windows\r\nRANGE_SELECT  = PrintRange.Select\r\n\r\n# Make sure printer is valid\r\ntry:\r\n\tprintManager = doc.PrintManager\r\n\tprintManager.SelectNewPrintDriver(printerName)\r\n\tfoundPrinter = True\r\nexcept:\r\n\tfoundPrinter = False\r\n\r\n# Make file paths\r\nfilePaths = []\r\n\r\nfor fn in fileNames:\r\n\tfilePath = '{}\\{}.pdf'.format(directoryPath, fn)\r\n\tfilePaths.append(filePath)\r\n\r\n# Function: Export a sheet to PDF\r\ndef exportSheetPdf(revit_sheet, file_path, print_setting, myDoc = doc):\r\n\tTransactionManager.Instance.EnsureInTransaction(myDoc)\r\n\t# Set print range\r\n\tprint_manager = myDoc.PrintManager\r\n\tprint_manager.PrintRange = RANGE_SELECT\r\n\tprint_manager.Apply()\r\n\t# Define current view set as current\r\n\tviewSet_temp = ViewSet()\r\n\tviewSet_temp.Insert(revit_sheet)\r\n\tviewSheetSet_temp = print_manager.ViewSheetSetting\r\n\tviewSheetSet_temp.CurrentViewSheetSet.Views = viewSet_temp\r\n\t# Save print setting\r\n\tviewSheetSet_temp.SaveAs(\"_Delete me\")\r\n\t# Set printer\r\n\tprint_manager.SelectNewPrintDriver(printerName)\r\n\tprint_manager.Apply()\r\n\t# Check if printer is virtual and set print to file\r\n\tprint_manager.CombinedFile = True\r\n\tprint_manager.Apply()\r\n\tprint_manager.PrintToFile = True\r\n\t# Set destination filepath\r\n\tprint_manager.PrintToFileName = file_path\r\n\tprint_manager.Apply()\r\n\t# Set print setting\r\n\tprint_setup = print_manager.PrintSetup\r\n\tprint_setup.CurrentPrintSetting = print_setting\r\n\tprint_manager.Apply()\r\n\t# Submit to printer\r\n\tprint_manager.SubmitPrint()\r\n\ttry:\r\n\t\toutcome = True\r\n\texcept:\r\n\t\toutcome = False\r\n\t# Delete Current viewSheetSettings to allow new setting to be stored\r\n\tviewSheetSet_temp.Delete()\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\n\treturn outcome\r\n\r\n# If we didn't find printer, cancel\r\nif not foundPrinter:\r\n\tOUT = \"Printer not found.\", []\r\n# If we confirmed print, try to print\r\nelif confirmPrint:\r\n\t# Outcomes\r\n\toutcomes = []\r\n\t# For each sheet...\r\n\tfor v, f in zip(viewsToPrint, filePaths):\r\n\t\tif os.path.exists(f):\r\n\t\t\toutcomes.append(None)\r\n\t\telse:\r\n\t\t\tprinted = exportSheetPdf(v, f, printSetting, doc)\r\n\t\t\toutcomes.append(printed)\r\n\tOUT = outcomes, filePaths\r\n# If we didn't, return message\r\nelse:\r\n\tOUT = \"Set runMe to true.\", []",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "36c8dc087cbf44b0beb99d1f114d256f",
       "Inputs": [
@@ -117,7 +118,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "viewsOrSheets",
+        "Name": "viewsAndSheets",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -247,7 +248,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "wasPrinted",
+      "Symbol": "success",
       "Id": "80f3771be6c24e2db72fec53a9d116a9",
       "Inputs": [
         {
@@ -323,57 +324,132 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "4f47b9e4-aa60-4c35-899a-dcb09a373c19",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "8788a8b424e5476c97582271e2defd0c",
+      "Inputs": [
+        {
+          "Id": "fbdd5380d99e497d820991a2186e66e5",
+          "Name": "checkStrings",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "70939bc3b84c468789ba92b76b43f82e",
+          "Name": "replaceChar",
+          "Description": " Character to replace illegal characters with\n\nstring\nDefault value : \"\"",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "842f2005f0bc4f929c994e8b4d2a793a",
+          "Name": "legalStrings",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "f47a862ec5a14b9481dffa0d50e0c657",
+          "Name": "wasChanged",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Finds all illegal characters for a windows named element and substitutes them with a replacement."
     }
   ],
   "Connectors": [
     {
       "Start": "1dd244d59fb746439a55ea4073833d67",
       "End": "101ae2fa25524ee5afbcc4bfdad20ed2",
-      "Id": "d192dad449e24a52a70e7fa903fd6776"
+      "Id": "d192dad449e24a52a70e7fa903fd6776",
+      "IsHidden": "False"
     },
     {
       "Start": "549365ad52ef435b8d03349998228188",
       "End": "e32cff53f1064a6a9e9829bdd5e4cc19",
-      "Id": "a56e3c2e2a6a48828309a1a58bff6adf"
+      "Id": "a56e3c2e2a6a48828309a1a58bff6adf",
+      "IsHidden": "False"
     },
     {
       "Start": "e1b3da68403c49348b4faa79acaab495",
       "End": "30460dc494a74bada81c51d4b571493d",
-      "Id": "337485611921462dadd47815b907d77e"
+      "Id": "337485611921462dadd47815b907d77e",
+      "IsHidden": "False"
     },
     {
       "Start": "2874c7b13f1e45038e28f357431d725e",
-      "End": "e0505f7f46874c2fab2d47e4a7dee36c",
-      "Id": "36d060c5162c49ed848de272ee44343c"
+      "End": "fbdd5380d99e497d820991a2186e66e5",
+      "Id": "f00d5a888ed7412ca0a2db91c18d1629",
+      "IsHidden": "False"
     },
     {
       "Start": "1847ae83bf6342c981075b3a49a4b34d",
       "End": "6bac67fa6a6240b98e9a8872a8891067",
-      "Id": "af048a394f7949f1ac91755115def599"
+      "Id": "af048a394f7949f1ac91755115def599",
+      "IsHidden": "False"
     },
     {
       "Start": "52f2cb09f4ad41b4a52c346bbd9d9bd6",
       "End": "b5b5ed8b5de54e119383bca891e14ed5",
-      "Id": "3e53e64b0de64738a0b9e654d6b76dbe"
+      "Id": "3e53e64b0de64738a0b9e654d6b76dbe",
+      "IsHidden": "False"
     },
     {
       "Start": "65514bc0791946309e7513514a383253",
       "End": "d1846b6928a047c586727f3759ddef10",
-      "Id": "d026d49bff424c749892e86efab9603f"
+      "Id": "d026d49bff424c749892e86efab9603f",
+      "IsHidden": "False"
     },
     {
       "Start": "8cacd43cb1c34b128fdf9158e2b02c8c",
       "End": "3b94a01d867440fa8c8fb67635c901e3",
-      "Id": "7751928b0fa14e2b864be45e50be9d82"
+      "Id": "7751928b0fa14e2b864be45e50be9d82",
+      "IsHidden": "False"
     },
     {
       "Start": "6b183dcb33df46259209e398dd7df5eb",
       "End": "8bdc95c0cd204aa98c1fde89306bccda",
-      "Id": "6f367c0008234307a4ba2caccd1098c0"
+      "Id": "6f367c0008234307a4ba2caccd1098c0",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "842f2005f0bc4f929c994e8b4d2a793a",
+      "End": "e0505f7f46874c2fab2d47e4a7dee36c",
+      "Id": "d35af044fa134e5b91494c8ddb4cb316",
+      "IsHidden": "False"
     }
   ],
-  "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "Dependencies": [
+    "4f47b9e4-aa60-4c35-899a-dcb09a373c19"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Crumple",
+      "Version": "2024.4.3",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "8788a8b424e5476c97582271e2defd0c"
+      ]
+    }
+  ],
   "Author": "None provided",
   "Bindings": [],
   "View": {
@@ -381,7 +457,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -397,111 +473,122 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "36c8dc087cbf44b0beb99d1f114d256f",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 250.0,
-        "Y": 0.0
+        "X": 413.46473611589232,
+        "Y": -65.892761845165921
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "44050647f4604114ab9427b8fd952e56",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -193.52473150542278,
-        "Y": -119.87685872375727
+        "X": -197.73916891939757,
+        "Y": -356.59936122774457
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "10037792c47d4575b23c13ca65c84354",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -217.52473150542278,
-        "Y": -43.876858723757266
+        "X": -230.04833808242529,
+        "Y": -219.4459936465189
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "e5f0224cb7b84a4886895923b2453ae6",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -265.52473150542278,
-        "Y": 27.123141276242734
+        "X": -648.8530219201042,
+        "Y": -66.190896821746264
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "9e91bd1323044815b460534b87c3bdbd",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -159.52473150542278,
-        "Y": 110.12314127624273
+        "X": -175.27635648846581,
+        "Y": 130.50759713665127
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "a9c9f490d78d4c09b98d89f2959f0014",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -175.52473150542278,
-        "Y": 182.12314127624273
+        "X": -182.01069473373457,
+        "Y": 269.22036177071556
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "ef4aaa21d8d845b8908a9cafc23583ec",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -172.26011984080037,
-        "Y": 268.51884536300821
+        "X": -187.08517864837017,
+        "Y": 414.91630108776036
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "80f3771be6c24e2db72fec53a9d116a9",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 669.1158821295121,
-        "Y": -56.601226833303087
+        "X": 906.70591228325384,
+        "Y": -153.07067246908184
       },
       {
-        "ShowGeometry": true,
         "Name": "Code Block",
+        "ShowGeometry": true,
         "Id": "a1c7f9ae3c7b4710a8c11db87bdf980f",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 465.01704225938693,
-        "Y": 3.001818015478591
+        "X": 628.48177837527919,
+        "Y": -62.89094382968733
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "3206067380b04745b776240a9a923850",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 676.42013157712086,
-        "Y": 62.975005558618989
+        "X": 902.891367625185,
+        "Y": 5.4213392927110817
+      },
+      {
+        "Name": "© String.WindowsLegal",
+        "ShowGeometry": true,
+        "Id": "8788a8b424e5476c97582271e2defd0c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -220.37340166510671,
+        "Y": -66.104594722592708
       }
     ],
     "Annotations": [],
-    "X": 237.20657425551212,
-    "Y": 252.35409889213776,
-    "Zoom": 1.0792537289518347
+    "X": -5.54521691238358,
+    "Y": 224.54137375620323,
+    "Zoom": 0.789161032924816
   }
 }

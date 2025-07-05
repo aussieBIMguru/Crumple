@@ -15,6 +15,7 @@
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('DynamoRevitDS')\r\nimport Dynamo\r\n\r\n# Check Dynamo workspace properties\r\ndynamoRevit = Dynamo.Applications.DynamoRevit()\r\ncurrentWorkspace = dynamoRevit.RevitDynamoModel.CurrentWorkspace\r\nscript = currentWorkspace.Name\r\n\r\nif IN[0]:\r\n\text = \".dyn\"\r\nelse:\r\n\text = \"\"\r\n\r\n# Preparing output to Dynamo\r\nOUT = script + ext",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "da04c7733c6f4771800362c6859bc7b0",
       "Inputs": [
@@ -46,7 +47,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "extension",
+        "Name": "includeExtension",
         "TypeName": "bool",
         "TypeRank": 0,
         "DefaultValue": "false",
@@ -94,12 +95,14 @@
     {
       "Start": "1d5a896f48dc41cdb982aea7feff8615",
       "End": "74f9e75df5de40a08639b1732bde7a58",
-      "Id": "69689b9071b44ad1bb7ed81e048a339f"
+      "Id": "69689b9071b44ad1bb7ed81e048a339f",
+      "IsHidden": "False"
     },
     {
       "Start": "9709e1d8cd664b9db27a524a63684144",
       "End": "838c02795c3a4ed19827a82a7afe1f71",
-      "Id": "5f41f4f52e7c44e88bea110bde6266ab"
+      "Id": "5f41f4f52e7c44e88bea110bde6266ab",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -111,7 +114,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -127,10 +130,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "da04c7733c6f4771800362c6859bc7b0",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -139,8 +143,8 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "bb305af7c1464bb583e066fceb01f5b6",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -149,8 +153,8 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "2ba20489815f46828a1b8957f45087e7",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -160,8 +164,8 @@
       }
     ],
     "Annotations": [],
-    "X": -83.077137037186418,
-    "Y": 359.60372023899589,
+    "X": 157.92286296281358,
+    "Y": 290.60372023899589,
     "Zoom": 1.3708286388679531
   }
 }

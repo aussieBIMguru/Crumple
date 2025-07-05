@@ -15,6 +15,7 @@
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[1]):\r\n    if isinstance(initial, list):\r\n        return input\r\n    else:\r\n        return input[0]\r\n\r\n# Collect inputs\r\nsheet_names    = tolist(IN[1])\r\nread_asStrings = IN[2]\r\nfill_nan       = IN[3]\r\n\r\n# Import pandas\r\ntry:\r\n    import pandas as pd\r\n    filePath  = IN[0]\r\n    xcl = pd.ExcelFile(filePath)\r\n    xcl_sheetNames = xcl.sheet_names\r\n    \r\nexcept:\r\n    xcl = None\r\n    xcl_sheetNames = []\r\n\r\n# Function: Read excel\r\ndef pandas_readExcel(xclObject, sheetName, asStrings, fillNan = \"\"):\r\n    # If read strings\r\n    if asStrings:\r\n        # Get df\r\n        df = pd.read_excel(filePath, header=None, dtype = str, sheet_name=sheetName)\r\n    # Otherwise, read as is\r\n    else:\r\n        # Get df\r\n        df = pd.read_excel(filePath, header=None, sheet_name=sheetName)\r\n    # Fill nan, to list\r\n    df.fillna(fillNan, inplace=True)\r\n    dataOut = df.values.tolist()\r\n    # Return data\r\n    return dataOut\r\n\r\n# Output lists\r\ndata_list, wasRead_list, error_list = [],[],[]\r\n\r\n# For each sheet\r\nfor s in sheet_names:\r\n    # If we found pandas/excel\r\n    if xcl == None:\r\n        data_list.append(None)\r\n        wasRead_list.append(False)\r\n        error_list.append(\"ERROR: Pandas and/or file not found.\")\r\n    # If we didn't find workbook\r\n    elif s not in xcl_sheetNames:\r\n        data_list.append(None)\r\n        wasRead_list.append(False)\r\n        error_list.append(\"ERROR: Worksheet name not found.\")\r\n    # Otherwise read data\r\n    else:\r\n        try:\r\n            data = pandas_readExcel(xcl, s, read_asStrings, fill_nan)\r\n            data_list.append(data)\r\n            wasRead_list.append(True)\r\n            error_list.append(\"SUCCESS: Worksheet data read.\")\r\n        except:\r\n            data_list.append(None)\r\n            wasRead_list.append(False)\r\n            error_list.append(\"ERROR: Worksheet data not read.\")\r\n\r\n# Return outputs\r\nOUT = [objOrList(o) for o in [data_list, wasRead_list, error_list]]",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "b2ea8220246d42d0ae89d59267d54805",
       "Inputs": [
@@ -99,7 +100,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "workSheets",
+        "Name": "workSheetNames",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -125,7 +126,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "readAsStrings",
+        "Name": "readAsText",
         "TypeName": "bool",
         "TypeRank": 0,
         "DefaultValue": "true",
@@ -151,7 +152,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "replaceNulls",
+        "Name": "replaceNullsWith",
         "TypeName": "var",
         "TypeRank": 0,
         "DefaultValue": "\"\"",
@@ -177,7 +178,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "excelData",
+      "Symbol": "dataMatrix",
       "Id": "8a248836176a464e9fd8524813b4e707",
       "Inputs": [
         {
@@ -246,7 +247,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "wasRead",
+      "Symbol": "success",
       "Id": "cd7d2aef6e114bfe8492930f15a856e4",
       "Inputs": [
         {
@@ -289,42 +290,50 @@
     {
       "Start": "096dfd44cbdc4708b7b71d7168e1201d",
       "End": "b5bc03819cbf4c41ae7e554c447888a8",
-      "Id": "6ad63fadd9374f4f9797d75d827c9517"
+      "Id": "6ad63fadd9374f4f9797d75d827c9517",
+      "IsHidden": "False"
     },
     {
       "Start": "f970715ca03d48269da8ad59aa2f53b6",
       "End": "73ba545349254791b27ed4c998558e52",
-      "Id": "f802af8eebc145ddae6c43e7f8a65624"
+      "Id": "f802af8eebc145ddae6c43e7f8a65624",
+      "IsHidden": "False"
     },
     {
       "Start": "130229d321654ca684ba36f2480527c5",
       "End": "440c9906144140f0aa354a4ec76b57f7",
-      "Id": "ed74d7f5cc5c41e890f1f128a077d55a"
+      "Id": "ed74d7f5cc5c41e890f1f128a077d55a",
+      "IsHidden": "False"
     },
     {
       "Start": "f2eb6ff54ec54750acd0e5fc2a4dec39",
       "End": "28125611e6ba4223b36d58dec8a210fe",
-      "Id": "1f8db00d1a214a1ea95111c9d7537f53"
+      "Id": "1f8db00d1a214a1ea95111c9d7537f53",
+      "IsHidden": "False"
     },
     {
       "Start": "bf13b742da204c929be1bf7b39d074d7",
       "End": "5cd421a5602c43719709b0eb5c534138",
-      "Id": "924bb6bd08724edba65f1936513b4906"
+      "Id": "924bb6bd08724edba65f1936513b4906",
+      "IsHidden": "False"
     },
     {
       "Start": "34dbf65f5639411bb5eed0e910cb9928",
       "End": "fa3abe3a67e8456c934df0a31503bb6e",
-      "Id": "f5f04acef3fb4710b0c13a932b77d347"
+      "Id": "f5f04acef3fb4710b0c13a932b77d347",
+      "IsHidden": "False"
     },
     {
       "Start": "7727ad437ff64daab62fe1187f600b9a",
       "End": "015de189f6bd48ca8a8ba14960d0c8da",
-      "Id": "d80d4c2784464b45a18baebda0530f69"
+      "Id": "d80d4c2784464b45a18baebda0530f69",
+      "IsHidden": "False"
     },
     {
       "Start": "10dac6cf778048b4a1e1d979a7382b24",
       "End": "663da34b99e9421eafc0078da4498072",
-      "Id": "f0c205e2c3564bc1abc45d7749e92d15"
+      "Id": "f0c205e2c3564bc1abc45d7749e92d15",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -336,7 +345,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -352,10 +361,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "b2ea8220246d42d0ae89d59267d54805",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -364,58 +374,58 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "eb6fdbc1a2934c6da225221b5298c96f",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -73.2173540678898,
-        "Y": -55.042956950457437
+        "X": -104.52319135229709,
+        "Y": -145.82988507523856
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "b0d85119fa904143a603d47401df9f1f",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -246.00770794680767,
-        "Y": 14.738832543118519
+        "X": -283.57471268809633,
+        "Y": -8.74054542018689
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "56d3825bf2824db2b0b8a9e1fe735496",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -156.0,
-        "Y": 92.0
+        "X": -156.7826459321102,
+        "Y": 143.65463151927196
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "a8b44bd63a814c059ae0b3035689c983",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -122.0,
-        "Y": 170.0
+        "X": -159.56700474128877,
+        "Y": 272.52661710643383
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "8a248836176a464e9fd8524813b4e707",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 719.0,
-        "Y": -75.0
+        "X": 738.56614830275453,
+        "Y": -133.69844490826364
       },
       {
-        "ShowGeometry": true,
         "Name": "Code Block",
+        "ShowGeometry": true,
         "Id": "316d2d811ae74e78adfede8810a96c96",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -424,29 +434,29 @@
         "Y": 4.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "cd7d2aef6e114bfe8492930f15a856e4",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 717.0,
-        "Y": -8.0
+        "X": 738.914086099085,
+        "Y": 22.523191352297147
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "582142500a7046e19afe9753ff2fd7ef",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 715.6520622036694,
-        "Y": 69.475952209168724
+        "X": 736.00085643853424,
+        "Y": 173.5678611798229
       }
     ],
     "Annotations": [],
-    "X": 351.23039117116639,
-    "Y": 358.72509112155012,
+    "X": -492.76960882883361,
+    "Y": 360.72509112155012,
     "Zoom": 1.2777169841077241
   }
 }

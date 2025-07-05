@@ -13,8 +13,9 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Credit to Sean Page for sharing these methods via the forums\r\n# https://forum.dynamobim.com/t/export-pdf-in-revit-2022-quick-example/62697\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('System')\r\nfrom System.Collections.Generic import List\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application\r\n# Get revit version\r\nrevit_version = int(app.VersionNumber)\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\ndirectoryPath = IN[0]\r\nsheets        = uwlist(IN[1])\r\nfileNames     = tolist(IN[2])\r\noptions       = IN[3]\r\n\r\n# If we are in Revit 2022 or higher, print\r\nif revit_version > 2021:\r\n\t# Import the references\r\n\tclr.AddReference(\"RevitAPI\")\r\n\timport Autodesk\r\n\tfrom Autodesk.Revit.DB import PDFExportOptions, ElementId, ExportPaperFormat\r\n\t# Collect and set export options\r\n\topts                          = PDFExportOptions()\r\n\topts.HideCropBoundaries       = options[0]\r\n\topts.HideScopeBoxes           = options[1]\r\n\topts.HideReferencePlane       = options[2]\r\n\topts.HideUnreferencedViewTags = options[3]\r\n\topts.MaskCoincidentLines      = options[4]\r\n\t# This will uses the Sheet Size for Paper size, or default to Letter\r\n\topts.PaperFormat = ExportPaperFormat.Default\r\n\t# Variables to append to\r\n\tresults = []\r\n\tsheetList = List[ElementId]()\r\n\t# Execute the batch export\r\n\tfor s, n in zip(sheets, fileNames):\r\n\t\t# Set file name\r\n\t\topts.FileName = n\r\n\t\t# Add sheet to a list\r\n\t\tsheetList.Add(s.Id)\r\n\t\t# Export and append the result\r\n\t\tresult = doc.Export(directoryPath, sheetList, opts)\r\n\t\tresults.append(result)\r\n\t\tsheetList.Clear()\r\n\t# Preparing output to Dynamo\r\n\tOUT = results, \"SUCCESS: Version is 2022 or higher.\"\r\n# Otherwise tell the user we can't proceed\r\nelse:\r\n\tOUT = [False for s in sheets], \"ERROR: Only works in Revit 2022 or higher.\\n\\nUse Revit.PrintToPdf node instead.\"",
+      "Code": "# Made by Gavin Crump\r\n# Credit to Sean Page for sharing these methods via the forums\r\n# https://forum.dynamobim.com/t/export-pdf-in-revit-2022-quick-example/62697\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport os\r\n\r\nclr.AddReference('System')\r\nfrom System.Collections.Generic import List\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Import the references\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\n# Preparing input from dynamo to revit\r\ndirectoryPath = IN[0]\r\nsheets        = uwlist(IN[1])\r\nfileNames     = tolist(IN[2])\r\noptions       = IN[3]\r\n\r\n# Collect and set export options\r\nopts                          = PDFExportOptions()\r\nopts.HideCropBoundaries       = options[0]\r\nopts.HideScopeBoxes           = options[1]\r\nopts.HideReferencePlane       = options[2]\r\nopts.HideUnreferencedViewTags = options[3]\r\nopts.MaskCoincidentLines      = options[4]\r\nopts.PaperFormat = ExportPaperFormat.Default\r\n\r\n# Variables to append to\r\nresults, filePaths = [],[]\r\nsheetList = List[ElementId]()\r\n\r\n# Execute the batch export\r\nfor s, n in zip(sheets, fileNames):\r\n    \r\n    # Set file name\r\n    opts.FileName = n\r\n    \r\n    # Add sheet to a list\r\n    sheetList.Add(s.Id)\r\n    \r\n    # Export and append the result\r\n    result = doc.Export(directoryPath, sheetList, opts)\r\n    filePath = os.path.join(directoryPath, n + \".pdf\")\r\n    \r\n    results.append(result)\r\n    filePaths.append(result)\r\n    sheetList.Clear()\r\n\r\n# Preparing output to Dynamo\r\nOUT = filePaths, results",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "239b1a947b5340beb7fd646cf8d048ac",
       "Inputs": [
@@ -68,27 +69,6 @@
       ],
       "Replication": "Disabled",
       "Description": "Runs an embedded Python script."
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
-      "ElementResolver": null,
-      "Symbol": "wasExported",
-      "Id": "2e16c328990d44ea98806f8995dbc790",
-      "Inputs": [
-        {
-          "Id": "b95c510667a241659d3bc74029bec35e",
-          "Name": "",
-          "Description": "",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [],
-      "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -198,10 +178,10 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
       "Code": "x[0];\nx[1];",
-      "Id": "6a33518b55f842d1a38ec6cbae51d2bd",
+      "Id": "2b54cd80fb1641acb9fbfbedbb1270af",
       "Inputs": [
         {
-          "Id": "f49ffcd2f9a9455e98e23fc44873b913",
+          "Id": "b78c141e4c4544bc95851a45789d8dee",
           "Name": "x",
           "Description": "x",
           "UsingDefaultValue": false,
@@ -212,7 +192,7 @@
       ],
       "Outputs": [
         {
-          "Id": "d0b441621b804ca88dc3cb0fd907d7be",
+          "Id": "23accaf126ca490887274efdc556f9da",
           "Name": "",
           "Description": "Value of expression at line 1",
           "UsingDefaultValue": false,
@@ -221,7 +201,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "61a7b13615c344ada96f2f7c2177e1a2",
+          "Id": "d9a60ef327734b089c19398f969d9331",
           "Name": "",
           "Description": "Value of expression at line 2",
           "UsingDefaultValue": false,
@@ -237,13 +217,34 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "versionCheck",
-      "Id": "410e2f7990234c948f2dc10fd962bc01",
+      "Symbol": "filePaths",
+      "Id": "0b23229f6c1a4a30a9264fc77135a8b5",
       "Inputs": [
         {
-          "Id": "2b3a0aaecc41479099bc6b80e578fe3a",
+          "Id": "c94f7d0f5fa6422aa2959166d2802530",
           "Name": "",
-          "Description": "",
+          "Description": "Output Data",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "success",
+      "Id": "7b08dd6954c6446f975ee38537a0bc81",
+      "Inputs": [
+        {
+          "Id": "2193cb7c52c747df90979f4a5ad28bcb",
+          "Name": "",
+          "Description": "Output Data",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -258,38 +259,45 @@
   "Connectors": [
     {
       "Start": "b016fe3abfe84f0e8d3982c6e8bba603",
-      "End": "f49ffcd2f9a9455e98e23fc44873b913",
-      "Id": "62d3b57b76bc4dec83e46bdf76e29bb0"
+      "End": "b78c141e4c4544bc95851a45789d8dee",
+      "Id": "b88c4d08c6e64a4d97f7fc1e5da48a8c",
+      "IsHidden": "False"
     },
     {
       "Start": "d8a9e96dfd79452cb8410cbd9e5522f9",
       "End": "b4b95eeae2b6446abdcf2e453d8dd4a8",
-      "Id": "d2a6ff95107a4eb3b356800ef255faa4"
+      "Id": "d2a6ff95107a4eb3b356800ef255faa4",
+      "IsHidden": "False"
     },
     {
       "Start": "d5934b320ff4448994310a58199463fc",
       "End": "3da56629617d4a558d37a929e17de3d4",
-      "Id": "7f12e7570b0f4dc78ebe51cf8920859d"
+      "Id": "7f12e7570b0f4dc78ebe51cf8920859d",
+      "IsHidden": "False"
     },
     {
       "Start": "74fa578e770b4eec8d671b887a9c8d92",
       "End": "21ad014c4e1141bdaf3868ce43ca8c7d",
-      "Id": "e945c4e469284cba9fb0a2d44844dbb0"
+      "Id": "e945c4e469284cba9fb0a2d44844dbb0",
+      "IsHidden": "False"
     },
     {
       "Start": "0bf7472de12645a0b8f913459c36f52b",
       "End": "a30cc009478f4bf38f9ccf451d55cbe7",
-      "Id": "07989d0baccf439d9010a17f4f2f5972"
+      "Id": "07989d0baccf439d9010a17f4f2f5972",
+      "IsHidden": "False"
     },
     {
-      "Start": "d0b441621b804ca88dc3cb0fd907d7be",
-      "End": "b95c510667a241659d3bc74029bec35e",
-      "Id": "48f66e7a939b4d2d98d35fb528946210"
+      "Start": "23accaf126ca490887274efdc556f9da",
+      "End": "c94f7d0f5fa6422aa2959166d2802530",
+      "Id": "18663cdaf27e4266b9a3775bf0c1cf09",
+      "IsHidden": "False"
     },
     {
-      "Start": "61a7b13615c344ada96f2f7c2177e1a2",
-      "End": "2b3a0aaecc41479099bc6b80e578fe3a",
-      "Id": "38a49cb036154699b99917067f07acee"
+      "Start": "d9a60ef327734b089c19398f969d9331",
+      "End": "2193cb7c52c747df90979f4a5ad28bcb",
+      "Id": "8878c9d8b127427fb848362d099ca79b",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -301,7 +309,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -317,91 +325,92 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "239b1a947b5340beb7fd646cf8d048ac",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
         "X": 334.68004780368506,
-        "Y": -6.4430471154977909
+        "Y": -12.029304570857903
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
-        "Id": "2e16c328990d44ea98806f8995dbc790",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 736.82376316915327,
-        "Y": -70.685007852139279
-      },
-      {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "3a96364a28d24e21b6f8eaaf65178248",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -59.524288727662224,
-        "Y": -68.9060576959356
+        "X": -89.3176618229163,
+        "Y": -164.8034773462845
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "c8524d55dbea42728018a58bc520bb9a",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -23.268936881162404,
-        "Y": 0.12577547918738219
+        "X": -44.682923793376176,
+        "Y": -36.18489798065346
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "1f6ae2702b434c2ca3dba26c9695f4df",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -112.51380743053221,
-        "Y": 65.856878208376941
+        "X": -124.61736525047911,
+        "Y": 93.788165485177615
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "2c8257e44a41470da199285c277927ad",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -303.76921983500648,
-        "Y": 141.11532234955109
+        "X": -302.83817692577981,
+        "Y": 236.08169909067328
       },
       {
-        "ShowGeometry": true,
         "Name": "Code Block",
-        "Id": "6a33518b55f842d1a38ec6cbae51d2bd",
+        "ShowGeometry": true,
+        "Id": "2b54cd80fb1641acb9fbfbedbb1270af",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 529.03484509674763,
-        "Y": -3.30945162197105
+        "X": 582.70465295696681,
+        "Y": -10.151916947855682
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
-        "Id": "410e2f7990234c948f2dc10fd962bc01",
+        "ShowGeometry": true,
+        "Id": "0b23229f6c1a4a30a9264fc77135a8b5",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 746.26109025013011,
-        "Y": 70.182917035049684
+        "X": 892.66436841981442,
+        "Y": -61.959011512766381
+      },
+      {
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Id": "7b08dd6954c6446f975ee38537a0bc81",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 900.13696600868525,
+        "Y": 102.70341878089744
       }
     ],
     "Annotations": [],
-    "X": 47.189495455105487,
-    "Y": 255.34096120937647,
-    "Zoom": 1.0740643530925835
+    "X": 1.7761485713017464,
+    "Y": 277.66821695361853,
+    "Zoom": 0.76205798151224191
   }
 }

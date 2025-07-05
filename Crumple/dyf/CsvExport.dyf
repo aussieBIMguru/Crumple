@@ -15,6 +15,7 @@
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport csv\r\nimport os\r\n\r\n# Preparing input from dynamo to revit\r\nfilePath = IN[0]\r\ndata     = IN[1]\r\ndeLimit  = IN[2]\r\nappend   = IN[3]\r\n\r\n# Determine writemode\r\nif append:\r\n\twriteMode = \"a\"\r\n\tmodeName  = \"appended\"\r\nelse:\r\n\twriteMode = \"w\"\r\n\tmodeName  = \"written\"\r\n\r\n# Prepare data rows\r\ncsvData = []\r\n\r\ntry:\r\n\tfor row in data:\r\n\t\tdataRow = deLimit.join(row)\r\n\t\tcsvData.append(dataRow)\r\n\tdoProceed = True\r\nexcept:\r\n\tdoProceed = False\r\n\r\n# Try to write the file\r\nif os.path.isfile(filePath) and doProceed:\r\n\ttry:\r\n\t\twith open(filePath, writeMode) as file:\r\n\t\t\tfor row in csvData:\r\n\t\t\t\tfile.writelines(row + \"\\n\")\r\n\t\tresult = \"CSV data \" + modeName + \" to existing file.\"\r\n\texcept:\r\n\t\tresult = \"CSV file could not be accessed.\"\r\nelif doProceed:\r\n\ttry:\r\n\t\twith open(filePath, \"w\") as file:\r\n\t\t\tfor row in csvData:\r\n\t\t\t\tfile.writelines(row + \"\\n\")\r\n\t\tresult = \"CSV data written to new file.\"\r\n\texcept:\r\n\t\tresult = \"New CSV file could not be created.\"\r\nelse:\r\n\tresult = \"Data not writeable as CSV. Check types/formatting\"\r\n\r\n# Preparing output to Dynamo\r\nOUT = [csvData, result]",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "fde038e917de426b81f15e8b84032d77",
       "Inputs": [
@@ -99,7 +100,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "dataRows",
+        "Name": "stringMatrix",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -259,37 +260,44 @@
     {
       "Start": "9b958f9e3da74cec8984acb25626eb9f",
       "End": "b77014a7ed5b4841816fe60a04ebf0ed",
-      "Id": "1909ba68d66741cdb44c6a9cb05e9378"
+      "Id": "1909ba68d66741cdb44c6a9cb05e9378",
+      "IsHidden": "False"
     },
     {
       "Start": "d3a234fd2140490cbb166328dc63293b",
       "End": "f0834e604f7846d0b12ab6216d480f51",
-      "Id": "a10a7c8d6f1d44d1b9c015128a08716d"
+      "Id": "a10a7c8d6f1d44d1b9c015128a08716d",
+      "IsHidden": "False"
     },
     {
       "Start": "443b7c3654d6401983d3133209e5309a",
       "End": "8138e0c633c748ca8945213484f654c0",
-      "Id": "81927058a1524234abceda363e9509d1"
+      "Id": "81927058a1524234abceda363e9509d1",
+      "IsHidden": "False"
     },
     {
       "Start": "33b25481173848158f5c93fb5c96d3de",
       "End": "f80d7e1c1fcb42c18ac8f5add0f1f204",
-      "Id": "09bb1db57a5840f0b8ea48884ae2e2c2"
+      "Id": "09bb1db57a5840f0b8ea48884ae2e2c2",
+      "IsHidden": "False"
     },
     {
       "Start": "84228d2db77a404c87b7ac16e88ba4e7",
       "End": "30137821e5464469988298d291a6a09b",
-      "Id": "6c175d3b9cef4b0884d596c01b57d0ea"
+      "Id": "6c175d3b9cef4b0884d596c01b57d0ea",
+      "IsHidden": "False"
     },
     {
       "Start": "75f25cfcb84c42e390f5b8afc8fd8718",
       "End": "a396daf14c8a4681a5f8d8add6141563",
-      "Id": "496f0a88bd2f4da0b1e26deb9ba29ff2"
+      "Id": "496f0a88bd2f4da0b1e26deb9ba29ff2",
+      "IsHidden": "False"
     },
     {
       "Start": "9f012d7a9854414286a944df1839d2cf",
       "End": "8aec7732a4a549108198b5af84834474",
-      "Id": "0960c01c653f49c49aff98853c9266c3"
+      "Id": "0960c01c653f49c49aff98853c9266c3",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -301,7 +309,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -317,10 +325,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "fde038e917de426b81f15e8b84032d77",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -329,8 +338,8 @@
         "Y": 2.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "0e58d7c984584fd0a3c4b105b19671ab",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -339,8 +348,8 @@
         "Y": -49.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "d32edf872e504164b70a6a7b0d5ae565",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -349,8 +358,8 @@
         "Y": 27.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "42c0817602f94b9daca06383983e1d9b",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -359,8 +368,8 @@
         "Y": 98.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "7def03879b994fe28c27be6954d6ff8a",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -369,18 +378,18 @@
         "Y": 171.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "7961dfd53ff342e094e85cc7bb92bb49",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 632.0,
-        "Y": -37.0
+        "X": 681.87071636302551,
+        "Y": -82.4960921206548
       },
       {
-        "ShowGeometry": true,
         "Name": "Code Block",
+        "ShowGeometry": true,
         "Id": "b1131036e9b44a848d6a593a4f65c5ca",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -389,19 +398,19 @@
         "Y": 6.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "f813f57715814e219a4f66e560cca781",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 642.0,
-        "Y": 51.0
+        "X": 696.24534060539611,
+        "Y": 80.747444848120438
       }
     ],
     "Annotations": [],
-    "X": 100.8803485461579,
-    "Y": 296.25059053013297,
+    "X": -212.1196514538421,
+    "Y": 228.25059053013297,
     "Zoom": 1.142955308383343
   }
 }

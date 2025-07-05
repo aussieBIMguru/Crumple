@@ -11,49 +11,11 @@
   "Outputs": [],
   "Nodes": [
     {
-      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
-      "NodeType": "CodeBlockNode",
-      "Code": "out[0];\nout[1];",
-      "Id": "e5720cfc3a0b4466a4b9e326db824a55",
-      "Inputs": [
-        {
-          "Id": "0b3c1695c6424d6fa9cc6d651c8c6df7",
-          "Name": "out",
-          "Description": "out",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "175efaa576504e55b2be77e52cce2b74",
-          "Name": "",
-          "Description": "Value of expression at line 1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "33048bc73ce34065ba0b9d83236deb12",
-          "Name": "",
-          "Description": "Value of expression at line 2",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "Allows for DesignScript code to be authored directly"
-    },
-    {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Thanks to Sean Page for suggesting the os package\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport os\r\n\r\nuser = os.environ.get('USERNAME')\r\nfl = os.environ.get('USERPROFILE')\r\n\r\nOUT = [user,fl]",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Thanks to Sean Page for suggesting the os package\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport os\r\n\r\nOUT = os.environ.get('USERPROFILE')",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "a12775b0580549a8ac1d3509ce527748",
       "Inputs": [
@@ -111,27 +73,6 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//The active user's name\r\nusername",
-      "Id": "073094a450ff444380bee6ae89f38fd5",
-      "Inputs": [
-        {
-          "Id": "1212386491e14c5baa8f4fb5e284b3b9",
-          "Name": "",
-          "Description": "",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [],
-      "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
-      "ElementResolver": null,
       "Symbol": "//The active user's user folder\r\ndirectoryPath",
       "Id": "63e342ccdbf0464e9e94b4a11edea687",
       "Inputs": [
@@ -152,24 +93,16 @@
   ],
   "Connectors": [
     {
-      "Start": "175efaa576504e55b2be77e52cce2b74",
-      "End": "1212386491e14c5baa8f4fb5e284b3b9",
-      "Id": "e94a05ad6a594dc1ac3df3f34bac57e0"
-    },
-    {
-      "Start": "33048bc73ce34065ba0b9d83236deb12",
-      "End": "e840fdf1ceb44161b32992df5f5e3f58",
-      "Id": "9261fbc38e8749198451ac787e345394"
-    },
-    {
       "Start": "499165e0a71342e9a5a1d60ef7a42a01",
-      "End": "0b3c1695c6424d6fa9cc6d651c8c6df7",
-      "Id": "dfec928743824e4dbc60d00aab18805c"
+      "End": "e840fdf1ceb44161b32992df5f5e3f58",
+      "Id": "fe980665732e483a9d3bdf402b539516",
+      "IsHidden": "False"
     },
     {
       "Start": "ae941476c4cb4dd98a4974302f6d1d22",
       "End": "70fc5638c7d64ddf8221c46156e1d862",
-      "Id": "a86e056df58a4f48b6611eb5460cc48a"
+      "Id": "a86e056df58a4f48b6611eb5460cc48a",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -181,7 +114,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -197,20 +130,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
-        "Name": "Code Block",
-        "Id": "e5720cfc3a0b4466a4b9e326db824a55",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 377.53094285208681,
-        "Y": -2.8548129495462149
-      },
-      {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "a12775b0580549a8ac1d3509ce527748",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -219,8 +143,8 @@
         "Y": -8.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "2df4b911bd834df7a3b59c17c1ad569e",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -229,24 +153,14 @@
         "Y": -9.8101174768941632
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
-        "Id": "073094a450ff444380bee6ae89f38fd5",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 567.3053289858949,
-        "Y": -49.630333768370377
-      },
-      {
         "ShowGeometry": true,
-        "Name": "Output",
         "Id": "63e342ccdbf0464e9e94b4a11edea687",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 563.88808691045915,
-        "Y": 52.254264711504362
+        "X": 675.53949598305735,
+        "Y": -31.866659932234
       }
     ],
     "Annotations": [],

@@ -54,6 +54,7 @@
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Import os package\r\nimport os\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[1]):\r\n    if isinstance(initial, list):\r\n        return input\r\n    else:\r\n        return input[0]\r\n\r\n# Collect inputs\r\nfile_path   = IN[0]\r\nsheet_names = tolist(IN[1])\r\n# If list of sheets,data is as is\r\nif isinstance(IN[1], list):\r\n    data_lists = IN[2]\r\n# Otherwise, promote to list of matrix\r\nelse:\r\n    data_lists = [IN[2]]\r\n\r\n# Try to create excel writer (if we can't, pandas fail)\r\ntry:\r\n    import pandas as pd\r\n    # If file exists, append\r\n    if os.path.isfile(file_path):\r\n        # Excel writer append\r\n        writer = pd.ExcelWriter(file_path, mode = \"a\", if_sheet_exists = 'replace')\r\n    # Otherwise, write\r\n    else:\r\n        # Excel writer write\r\n        writer = pd.ExcelWriter(file_path, mode = \"w\")\r\nexcept:\r\n    writer = None\r\n\r\n# Function: Read excel\r\ndef pandas_writeExcel(dataList, sheetName, xclWriter):\r\n    # Write data\r\n    df = pd.DataFrame(dataList)\r\n    df.to_excel(xclWriter, sheet_name = sheetName, header = False, index = False, na_rep = \"\")\r\n    # Return nothing\r\n    return None\r\n\r\n# Output lists\r\nwasWritten_list, error_list = [],[]\r\n\r\n# For each sheet\r\nfor s,d in zip(sheet_names, data_lists):\r\n    # If we found pandas/excel\r\n    if writer == None:\r\n        wasWritten_list.append(False)\r\n        error_list.append(\"ERROR: Pandas and/or writer not made.\")\r\n    # Otherwise write data\r\n    else:\r\n        try:\r\n            pandas_writeExcel(d, s, writer)\r\n            wasWritten_list.append(True)\r\n            error_list.append(\"SUCCESS: Data written.\")\r\n        except:\r\n            wasWritten_list.append(False)\r\n            error_list.append(\"ERROR: Data not written.\")\r\n\r\n# Try to close writer\r\ntry:\r\n    writer.close()\r\nexcept:\r\n    pass\r\n\r\n# Return outputs\r\nOUT = objOrList(wasWritten_list), objOrList(error_list)",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "6051018e35df4c2aa04ad75f85c0e5dd",
       "Inputs": [
@@ -129,7 +130,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "workSheets",
+        "Name": "workSheetNames",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -181,7 +182,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "wasWritten",
+      "Symbol": "success",
       "Id": "aca57640629c4075ae8a66e9b8a8d3cf",
       "Inputs": [
         {
@@ -224,32 +225,38 @@
     {
       "Start": "a1652fd37d8d4d0a832ea3e124880b0e",
       "End": "beb070c52b924e88832a0aab32f03b84",
-      "Id": "db39e35fcb7a45799a32fa423c846b5b"
+      "Id": "db39e35fcb7a45799a32fa423c846b5b",
+      "IsHidden": "False"
     },
     {
       "Start": "a682d34ae0bd45a889629a30c6a78701",
       "End": "12a9567cc0e4463fb805cedadbaad61e",
-      "Id": "dcf3c7b80bd146d7b626adaac96a1c64"
+      "Id": "dcf3c7b80bd146d7b626adaac96a1c64",
+      "IsHidden": "False"
     },
     {
       "Start": "415c0ff7df89454aa69844baece991fb",
       "End": "9033bc8d9b0b42c2be3cdca7022878d1",
-      "Id": "ded787341b594ed9bf0ef174cb706e3b"
+      "Id": "ded787341b594ed9bf0ef174cb706e3b",
+      "IsHidden": "False"
     },
     {
       "Start": "48dfd67841cd48408397cff9a5bd9689",
       "End": "c59cd1fa62764a9eb0bffccd9c0be71c",
-      "Id": "6a03701ece6a470c905ebb9dc8c2ce4d"
+      "Id": "6a03701ece6a470c905ebb9dc8c2ce4d",
+      "IsHidden": "False"
     },
     {
       "Start": "4808bc863441436683603834c9d28cbe",
       "End": "dffcc230acb64295a778dcdaa8f9e608",
-      "Id": "0d6b9b11aeb148dcbaa64cb9344b720a"
+      "Id": "0d6b9b11aeb148dcbaa64cb9344b720a",
+      "IsHidden": "False"
     },
     {
       "Start": "b4d923084f6048cf81456ed08bc430a5",
       "End": "d32d8fd8e8a649598317997358c332db",
-      "Id": "af4025da85964c26b0000444c02e4795"
+      "Id": "af4025da85964c26b0000444c02e4795",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -261,7 +268,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -277,10 +284,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Code Block",
+        "ShowGeometry": true,
         "Id": "2a5ffe5b170d4ad6a864505182387bb1",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -289,8 +297,8 @@
         "Y": 5.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "6051018e35df4c2aa04ad75f85c0e5dd",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -299,38 +307,38 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "4fac71cf4f78405bba577f33430cfd91",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -109.20964612108179,
-        "Y": -56.781789493575957
+        "X": -112.19866614284564,
+        "Y": -115.81493492341104
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "e95a657d287b40979ad9a4f805a35db8",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -149.0,
-        "Y": 22.999999999999943
+        "X": -183.37373025028364,
+        "Y": 36.450590097937038
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "443f0b74e44d4af0a9894929f3b44d57",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -161.0,
-        "Y": 102.99999999999994
+        "X": -163.98902002176362,
+        "Y": 188.93432562570928
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "aca57640629c4075ae8a66e9b8a8d3cf",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -339,8 +347,8 @@
         "Y": -41.524047790831276
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "979eaaf97151468eb859482b6fd6bec8",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -350,8 +358,8 @@
       }
     ],
     "Annotations": [],
-    "X": 367.34287336663067,
-    "Y": 357.6171375,
+    "X": -284.65712663336933,
+    "Y": 285.6171375,
     "Zoom": 1.33823125
   }
 }

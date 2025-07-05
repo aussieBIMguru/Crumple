@@ -54,6 +54,7 @@
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\ndef getDocument(doc):\r\n\t# If no document, return current document\r\n\tif doc == None:\r\n\t\tgetDoc = DocumentManager.Instance.CurrentDBDocument\r\n\t\ttest = \"Null input, current document used.\"\r\n\t# If a document was provided, return it\r\n\telif doc.GetType().ToString() == \"Autodesk.Revit.DB.Document\":\r\n\t\tgetDoc = doc\r\n\t\ttest = \"Document was provided and used.\"\r\n\t# If a link instance, return it\r\n\telif doc.GetType().ToString() == \"Autodesk.Revit.DB.RevitLinkInstance\":\r\n\t\tgetDoc = doc.GetLinkDocument()\r\n\t\ttest = \"Document from provided linked instance used.\"\r\n\t# Otherwise, just return current document\r\n\telse:\r\n\t\tgetDoc = DocumentManager.Instance.CurrentDBDocument\r\n\t\ttest = \"Invalid input, current document used.\"\r\n\t# Return the doc\r\n\treturn getDoc, test\r\n\r\n# Get input to document\r\ndocs = uwlist(IN[0])\r\n\r\n# Get docs and values\r\ngetDocs, tests = [],[]\r\n\r\nfor d in docs:\r\n\tgetD,t = getDocument(d)\r\n\tgetDocs.append(getD)\r\n\ttests.append(t)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(getDocs), objOrList(tests)",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "13e8798271fc4eb7af03140aa45cc811",
       "Inputs": [
@@ -154,22 +155,26 @@
     {
       "Start": "1ea97c2bae0044f6ba8fd0985a0af80e",
       "End": "1b9f16b4103e4a8a9188bf40a3c67df5",
-      "Id": "6161a1485efa4202854169caf0615e7e"
+      "Id": "6161a1485efa4202854169caf0615e7e",
+      "IsHidden": "False"
     },
     {
       "Start": "c6f74947df5d480ba2bfda7a37e6c1a2",
       "End": "8dafd9803a3d4012a8cba1204a9f1e44",
-      "Id": "f1a463f9768541769f1d4a25f12bb5ea"
+      "Id": "f1a463f9768541769f1d4a25f12bb5ea",
+      "IsHidden": "False"
     },
     {
       "Start": "e4ea3b0529a44fc5a4512976c68af8d9",
       "End": "433be72669a84036817518dd977dddd5",
-      "Id": "d36d747eb19f4f1fabee897d75831ffd"
+      "Id": "d36d747eb19f4f1fabee897d75831ffd",
+      "IsHidden": "False"
     },
     {
       "Start": "1295c34181784fe191a87417205e602d",
       "End": "fd932514d6b7463cacfb6a48ca86230c",
-      "Id": "d5baa678759e4e01af36cff622832bfe"
+      "Id": "d5baa678759e4e01af36cff622832bfe",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -181,7 +186,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -197,10 +202,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Code Block",
+        "ShowGeometry": true,
         "Id": "22c825000da24685b7cc4345bb49f15b",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -209,49 +215,49 @@
         "Y": 3.8337332880504391
       },
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "13e8798271fc4eb7af03140aa45cc811",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 250.0,
-        "Y": 0.0
+        "X": 181.11402572754139,
+        "Y": 2.2585565335232332
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "2a9d54882e534fb1ad0e359408c41b56",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -71.0,
-        "Y": -1.0
+        "X": -183.92782667616166,
+        "Y": 1.2585565335232332
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "567ee784d1a8412a8caaf31cee209f18",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 611.0,
-        "Y": -35.0
+        "X": 684.40308733950519,
+        "Y": -100.49813947217382
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "c6ea3e0ceee54327956f70d542885dc8",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 621.0,
-        "Y": 61.0
+        "X": 710.21298307416771,
+        "Y": 96.007626269610171
       }
     ],
     "Annotations": [],
-    "X": 52.134050001416455,
-    "Y": 290.44753750184714,
-    "Zoom": 0.65619307783356151
+    "X": -176.9029532571135,
+    "Y": 231.08626895795362,
+    "Zoom": 0.8855213364440786
   }
 }

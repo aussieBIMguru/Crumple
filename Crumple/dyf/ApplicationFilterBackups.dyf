@@ -13,8 +13,9 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Preparing input from dynamo to revit\r\nfilePaths = tolist(IN[0])\r\n\r\n# Return only non-backup\r\ndef isBackup(fp):\r\n\tfp1 = fp.rsplit(\".\", 1)[0]\r\n\tfp2 = fp1.rsplit(\".\",1)[-1]\r\n\ttry:\r\n\t\tint(fp2)\r\n\t\treturn True\r\n\texcept:\r\n\t\treturn False\r\n\r\npathsOut, bkpPaths = [],[]\r\n\r\nfor fp in filePaths:\r\n\tbkp = isBackup(fp)\r\n\tif bkp:\r\n\t\tbkpPaths.append(fp)\r\n\telse:\r\n\t\tpathsOut.append(fp)\r\n\r\n# Preparing output to Dynamo\r\nOUT = pathsOut, bkpPaths",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\n# Preparing input from dynamo to revit\r\nfilePaths = tolist(IN[0])\r\n\r\n# Return only non-backup\r\ndef isBackup(fp):\r\n\tfp1 = fp.rsplit(\".\", 1)[0]\r\n\tfp2 = fp1.rsplit(\".\",1)[-1]\r\n\ttry:\r\n\t\tint(fp2)\r\n\t\treturn True\r\n\texcept:\r\n\t\treturn False\r\n\r\npathsOut, bkpPaths, mask = [],[],[]\r\n\r\nfor fp in filePaths:\r\n\tbkp = isBackup(fp)\r\n\tif bkp:\r\n\t\tbkpPaths.append(fp)\r\n\t\tmask.append(True)\r\n\telse:\r\n\t\tpathsOut.append(fp)\r\n\t\tmask.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = pathsOut, bkpPaths, mask",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "5a3bbe454af64fca969970915c94abc2",
       "Inputs": [
@@ -92,11 +93,11 @@
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
-      "Code": "fps = out[0];\nbkp = out[1];",
+      "Code": "fps = out[0];\nbkp = out[1];\nmask = out[2];",
       "Id": "c7a7b2a77df44e3e98607464a99a203a",
       "Inputs": [
         {
-          "Id": "2b14cc7f63b94eb0872985a1321aadc7",
+          "Id": "4aea36bad201411bbb269674a18c2c12",
           "Name": "out",
           "Description": "out",
           "UsingDefaultValue": false,
@@ -107,7 +108,7 @@
       ],
       "Outputs": [
         {
-          "Id": "7ff0ff10274045209002825fb7797e41",
+          "Id": "b937ada9f4b4432ea88a8d7511642311",
           "Name": "",
           "Description": "fps",
           "UsingDefaultValue": false,
@@ -116,9 +117,18 @@
           "KeepListStructure": false
         },
         {
-          "Id": "d5fa340da1c145a3a75f44312e1ce670",
+          "Id": "eeff699c433d41928501edc02990b7b3",
           "Name": "",
           "Description": "bkp",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "8aed6adba10a4cb0be9fa3697ea96367",
+          "Name": "",
+          "Description": "mask",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -148,28 +158,59 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "isBackupPath",
+      "Id": "5c9368059dc649b1a185b86c36c0a78a",
+      "Inputs": [
+        {
+          "Id": "a3439016c6e946e78670071045cd0d6a",
+          "Name": "",
+          "Description": "Output Data",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
     }
   ],
   "Connectors": [
     {
       "Start": "6e5b14effc8b4f4d95c99bb203f9bf60",
-      "End": "2b14cc7f63b94eb0872985a1321aadc7",
-      "Id": "f27c315e2c024b5583a125b5ec5befa1"
+      "End": "4aea36bad201411bbb269674a18c2c12",
+      "Id": "ba5823696c9f4d36af67232d59ee613e",
+      "IsHidden": "False"
     },
     {
       "Start": "422daa960d114a1a9711983070fee2bf",
       "End": "068ca25d52f842b9a6932483b19544e0",
-      "Id": "3e2f8c0705ea40dca110e33208a2c263"
+      "Id": "3e2f8c0705ea40dca110e33208a2c263",
+      "IsHidden": "False"
     },
     {
-      "Start": "7ff0ff10274045209002825fb7797e41",
+      "Start": "b937ada9f4b4432ea88a8d7511642311",
       "End": "8d963afdfb554ca4b876829130d93634",
-      "Id": "dc10b34b7b244c4483fd732b18b97d4c"
+      "Id": "7d0f2fdbcd4d4c3fafae568dd36f26ab",
+      "IsHidden": "False"
     },
     {
-      "Start": "d5fa340da1c145a3a75f44312e1ce670",
+      "Start": "eeff699c433d41928501edc02990b7b3",
       "End": "1e284a9c68074151af49450bce6b3f2f",
-      "Id": "42ab4ed33c764c30bdd2808166678fea"
+      "Id": "118c0cbe5be74d1a8ca88b71449ac8d9",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "8aed6adba10a4cb0be9fa3697ea96367",
+      "End": "a3439016c6e946e78670071045cd0d6a",
+      "Id": "0c5491b690a14fa0bf87264e447be1d3",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -181,7 +222,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -197,10 +238,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "5a3bbe454af64fca969970915c94abc2",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -209,8 +251,8 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "f93b74f1db6e450889bce0f5fe240b62",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -219,18 +261,18 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "6f621d3125764d6e92ef2479f1bfa95f",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 745.591269966187,
-        "Y": -56.627066666512093
+        "X": 889.20902716451985,
+        "Y": -139.09145628361941
       },
       {
-        "ShowGeometry": true,
         "Name": "Code Block",
+        "ShowGeometry": true,
         "Id": "c7a7b2a77df44e3e98607464a99a203a",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -239,19 +281,29 @@
         "Y": 2.8544198022235321
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "6ddbd2dec8d1448ab003c5c8871da3cb",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 749.45463894349177,
-        "Y": 63.171130032885458
+        "X": 896.778660843717,
+        "Y": 9.4302918554447217
+      },
+      {
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Id": "5c9368059dc649b1a185b86c36c0a78a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 894.39695108998524,
+        "Y": 178.08980532377575
       }
     ],
     "Annotations": [],
-    "X": 255.30382995201887,
-    "Y": 273.3809880950455,
+    "X": -158.69617004798113,
+    "Y": 221.3809880950455,
     "Zoom": 1.0792537289518345
   }
 }

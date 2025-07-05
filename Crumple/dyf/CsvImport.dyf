@@ -15,6 +15,7 @@
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport csv\r\nimport os\r\n\r\n# Preparing input from dynamo to revit\r\ncsvPath = IN[0]\r\ndeLimit = IN[1]\r\n\r\n# Try to read the file\r\nif os.path.isfile(csvPath):\r\n\twith open(csvPath,\"r\") as file:\r\n\t\treader = csv.reader(file,delimiter = deLimit)\r\n\t\tcsv_data = list(reader)\r\n\tresult = \"CSV contents read.\"\r\nelse:\r\n\tcsv_data = []\r\n\tresult = \"CSV contents not able to be read.\"\r\n\r\n# Preparing output to Dynamo\r\nOUT = [csv_data,result]",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "eb643537cbf54fecad6ebeb07fefdd26",
       "Inputs": [
@@ -107,7 +108,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "dataRows",
+      "Symbol": "stringMatrix",
       "Id": "0967669fbcbc40179dcc8143d512f41d",
       "Inputs": [
         {
@@ -189,27 +190,32 @@
     {
       "Start": "43d738294c494505a4dc4ea0d9cb9a46",
       "End": "402cbf377cca4826bc2ea7b5089fd49e",
-      "Id": "2688db0683c44d17924638af031c714c"
+      "Id": "2688db0683c44d17924638af031c714c",
+      "IsHidden": "False"
     },
     {
       "Start": "b33e1dac300442f082cd399a7ed82d3f",
       "End": "835afa44adc940d1b2c133a599faac6b",
-      "Id": "ae97c27a471c4c2a9fb2da7455cf07b6"
+      "Id": "ae97c27a471c4c2a9fb2da7455cf07b6",
+      "IsHidden": "False"
     },
     {
       "Start": "d42874e05f7c4f8ca6420a1ba3d06cc7",
       "End": "652f699874e74018bf251712e3cdafc5",
-      "Id": "967bee6914d34e429e38e27422d78e5f"
+      "Id": "967bee6914d34e429e38e27422d78e5f",
+      "IsHidden": "False"
     },
     {
       "Start": "3d79cf44d1ae4560b7d07c4cf8472c0f",
       "End": "67967484c1a74604b0128941538e1757",
-      "Id": "6f2ef78e0edc4736ac717b41398a8010"
+      "Id": "6f2ef78e0edc4736ac717b41398a8010",
+      "IsHidden": "False"
     },
     {
       "Start": "b9fdb130e6ed4dafbdf7d49aa9aa6e0b",
       "End": "5bf5b55ed9f74d96bc1178fe9f7c38f2",
-      "Id": "699800f321c24b10bb5546b27d4ded08"
+      "Id": "699800f321c24b10bb5546b27d4ded08",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -221,7 +227,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -237,10 +243,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "eb643537cbf54fecad6ebeb07fefdd26",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -249,8 +256,8 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "d6dba4bad9aa4e2da72989d67b8878ed",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -259,8 +266,8 @@
         "Y": -32.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "3c04b7d6eba24058a397f3b0fa331b5e",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -269,8 +276,8 @@
         "Y": 68.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "0967669fbcbc40179dcc8143d512f41d",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -279,8 +286,8 @@
         "Y": -25.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Code Block",
+        "ShowGeometry": true,
         "Id": "eead2e9e8f334ba9b4aa610cf5e0f3d0",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -289,8 +296,8 @@
         "Y": 4.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "b2da5c371fab4b19b883cef5df9a15c8",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
