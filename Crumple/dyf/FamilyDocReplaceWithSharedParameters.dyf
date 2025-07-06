@@ -13,8 +13,9 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nclr.AddReference('RevitAPI')\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FamilyManager, Transaction\r\n\r\n# Get Revit build version\r\nuiapp = DocumentManager.Instance.CurrentUIApplication\r\napp = uiapp.Application\r\nver = int(app.VersionNumber)\r\n\r\ntry:\r\n\tfrom Autodesk.Revit.DB import ParameterUtils\r\nexcept:\r\n    pass\r\n\r\n# Function to get forge type Id if in 2024\r\ndef getParGroup(par):\r\n    try:\r\n        return par.Definition.GetGroupTypeId()\r\n    except:\r\n        try:\r\n            return par.Definition.ParameterGroup\r\n        except:\r\n            return None\r\n\r\n# Function to replace parameter\r\ndef familyDoc_replaceParameter(famMan, par, exDef, myDoc):\r\n\t# If no parameter or def, we pass\r\n\tif par == None or exDef == None:\r\n\t\treturn None, False, 0\r\n\t# Convert parGrp\r\n\tparGrp = getParGroup(par)\r\n\tparInst = par.IsInstance\r\n\t# If parameter is shared, > family > shared\r\n\tif par.IsShared:\r\n\t\ttry:\r\n\t\t\tpar = famMan.ReplaceParameter(par, \"__Temp\", parGrp, parInst)\r\n\t\t\tpar = famMan.ReplaceParameter(par, exDef, parGrp, parInst)\r\n\t\t\treturn par, True, -1\r\n\t\texcept:\r\n\t\t\treturn None, False, 1\r\n\t# Otherwise, > shared\r\n\telse:\r\n\t\ttry:\r\n\t\t\tpar = famMan.ReplaceParameter(par, exDef, parGrp, par.IsInstance)\r\n\t\t\treturn par, True, -1\r\n\t\texcept:\r\n\t\t\treturn None, False, 1\r\n\r\n#unwrap all elements to use with API\r\ndocs_list = IN[0]\r\npars_list = IN[1]\r\ndefs_list = IN[2]\r\n\r\npars_out, results, outcomes = [],[],[]\r\n\r\n# Collect values\r\nfor doc, pars, defs in zip(docs_list, pars_list, defs_list):\r\n\t\r\n\t# Try to get doc title\r\n\ttry:\r\n\t\tdocTitle = doc.Title\r\n\texcept:\r\n\t\tdocTitle = \"N/A\"\r\n\t\r\n\t# Result lists, family manager\r\n\tfam_pars, result, outcome = [],[],[]\r\n\tfamMan = doc.FamilyManager\r\n\t\r\n\t# For each definition/parameter\r\n\tfor d,p in zip(defs, pars):\r\n\t\t\r\n\t\t# Try to get def and parnames\r\n\t\ttry:\r\n\t\t\tdefName = d.Name\r\n\t\texcept:\r\n\t\t\tdefName = \"N/A\"\r\n\t\ttry:\r\n\t\t\tparName = p.Definition.Name\r\n\t\texcept:\r\n\t\t\tparName = \"N/A\"\r\n\t\t\r\n\t\t# Early error states\r\n\t\tif doc == None:\r\n\t\t\tmsg = 'ERROR: Document not provided.'\r\n\t\telif d == None:\r\n\t\t\tmsg = 'ERROR: Definition not provided for {}.'.format(docTitle)\r\n\t\telif p == None:\r\n\t\t\tmsg = 'ERROR: Parameter not provided for {}.'.format(docTitle)\r\n\t\t\r\n\t\t# Try to replace parameter\r\n\t\twith Transaction(doc, 'Replace parameters') as t:\r\n\t\t\tt.Start()\r\n\t\t\tpar, res, outc = familyDoc_replaceParameter(famMan, p, d, doc)\r\n\t\t\tt.Commit()\r\n\t\t\t\r\n\t\t\t# Process outc\r\n\t\t\tif outc == -1:\r\n\t\t\t\tmsg = 'SUCCESS: {} replaced {} in {}.'.format(defName, parName, docTitle)\r\n\t\t\telif outc == 1:\r\n\t\t\t\tmsg = 'FAILURE: {} could not replace {} in {}.'.format(defName, parName, docTitle)\r\n\t\t\r\n\t\t# Append the result\r\n\t\tfam_pars.append(par)\r\n\t\tresult.append(res)\r\n\t\toutcome.append(msg)\r\n\t\r\n\t# Append the results\r\n\tpars_out.append(fam_pars)\r\n\tresults.append(result)\r\n\toutcomes.append(outcome)\r\n\r\n# Outputs to Dynamo\r\nOUT = docs_list, pars_out, results, outcomes",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nclr.AddReference('RevitAPI')\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Get Revit build version\r\nuiapp = DocumentManager.Instance.CurrentUIApplication\r\napp = uiapp.Application\r\nver = int(app.VersionNumber)\r\n\r\n# Function to get forge type Id if in 2024\r\ndef getParGroup(par):\r\n    if ver < 2024:\r\n        try:\r\n            return par.Definition.ParameterGroup\r\n        except:\r\n            return None\r\n    else:\r\n        try:\r\n            return par.Definition.GetGroupTypeId()\r\n        except:\r\n            return None\r\n\r\n# Function to replace parameter\r\ndef familyDoc_replaceParameter(famMan, par, exDef, myDoc):\r\n\t# If no parameter or def, we pass\r\n\tif par == None or exDef == None:\r\n\t\treturn None, False, 0\r\n\t# Convert parGrp\r\n\tparGrp = getParGroup(par)\r\n\tparInst = par.IsInstance\r\n\t# If parameter is shared, > family > shared\r\n\tif par.IsShared:\r\n\t\ttry:\r\n\t\t\tpar = famMan.ReplaceParameter(par, \"__Temp\", parGrp, parInst)\r\n\t\t\tpar = famMan.ReplaceParameter(par, exDef, parGrp, parInst)\r\n\t\t\treturn par, True, -1\r\n\t\texcept:\r\n\t\t\treturn None, False, 1\r\n\t# Otherwise, > shared\r\n\telse:\r\n\t\ttry:\r\n\t\t\tpar = famMan.ReplaceParameter(par, exDef, parGrp, par.IsInstance)\r\n\t\t\treturn par, True, -1\r\n\t\texcept:\r\n\t\t\treturn None, False, 1\r\n\r\n#unwrap all elements to use with API\r\ndocs_list = IN[0]\r\npars_list = IN[1]\r\ndefs_list = IN[2]\r\n\r\npars_out, results, outcomes = [],[],[]\r\n\r\n# Collect values\r\nfor doc, pars, defs in zip(docs_list, pars_list, defs_list):\r\n\t\r\n\t# Try to get doc title\r\n\ttry:\r\n\t\tdocTitle = doc.Title\r\n\texcept:\r\n\t\tdocTitle = \"N/A\"\r\n\t\r\n\t# Result lists, family manager\r\n\tfam_pars, result, outcome = [],[],[]\r\n\tfamMan = doc.FamilyManager\r\n\t\r\n\t# For each definition/parameter\r\n\tfor d,p in zip(defs, pars):\r\n\t\t\r\n\t\t# Try to get def and parnames\r\n\t\ttry:\r\n\t\t\tdefName = d.Name\r\n\t\texcept:\r\n\t\t\tdefName = \"N/A\"\r\n\t\ttry:\r\n\t\t\tparName = p.Definition.Name\r\n\t\texcept:\r\n\t\t\tparName = \"N/A\"\r\n\t\t\r\n\t\t# Early error states\r\n\t\tif doc == None:\r\n\t\t\tmsg = 'ERROR: Document not provided.'\r\n\t\telif d == None:\r\n\t\t\tmsg = 'ERROR: Definition not provided for {}.'.format(docTitle)\r\n\t\telif p == None:\r\n\t\t\tmsg = 'ERROR: Parameter not provided for {}.'.format(docTitle)\r\n\t\t\r\n\t\t# Try to replace parameter\r\n\t\twith Transaction(doc, 'Replace parameters') as t:\r\n\t\t\tt.Start()\r\n\t\t\tpar, res, outc = familyDoc_replaceParameter(famMan, p, d, doc)\r\n\t\t\tt.Commit()\r\n\t\t\t\r\n\t\t\t# Process outc\r\n\t\t\tif outc == -1:\r\n\t\t\t\tmsg = 'SUCCESS: {} replaced {} in {}.'.format(defName, parName, docTitle)\r\n\t\t\telif outc == 1:\r\n\t\t\t\tmsg = 'FAILURE: {} could not replace {} in {}.'.format(defName, parName, docTitle)\r\n\t\t\r\n\t\t# Append the result\r\n\t\tfam_pars.append(par)\r\n\t\tresult.append(res)\r\n\t\toutcome.append(msg)\r\n\t\r\n\t# Append the results\r\n\tpars_out.append(fam_pars)\r\n\tresults.append(result)\r\n\toutcomes.append(outcome)\r\n\r\n# Outputs to Dynamo\r\nOUT = docs_list, pars_out, results, outcomes",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "d344a158a50d4c58b3ec11286bdf293f",
       "Inputs": [
@@ -405,57 +406,68 @@
     {
       "Start": "93c3e11f1bb5426e930c48ecb3892019",
       "End": "3812d5ed218f4f878e864fa80ff4d5a1",
-      "Id": "e4f0337bf72a49dd8826b37079990a6a"
+      "Id": "e4f0337bf72a49dd8826b37079990a6a",
+      "IsHidden": "False"
     },
     {
       "Start": "f586036efe414b38a4034438c87979c9",
       "End": "0d24a8a115a44a99a2bcd4301c5cfccc",
-      "Id": "201acbf9fc834d90823b676c37a9d700"
+      "Id": "201acbf9fc834d90823b676c37a9d700",
+      "IsHidden": "False"
     },
     {
       "Start": "f60a79e799c6461096b1c8ed20524866",
       "End": "531091e1bbfb44a7982557dc16e67c98",
-      "Id": "00ad85ea9c4d418081c276985581c83c"
+      "Id": "00ad85ea9c4d418081c276985581c83c",
+      "IsHidden": "False"
     },
     {
       "Start": "ac9c8f6de4464b27a26e79482d4bed3b",
       "End": "967ad58103c346be9f4efce8d37f5cc8",
-      "Id": "29b919928baa4a0fb4e7489bfd0f4af2"
+      "Id": "29b919928baa4a0fb4e7489bfd0f4af2",
+      "IsHidden": "False"
     },
     {
       "Start": "8b51be8967974be6818d8750ae2623a6",
       "End": "bb005afb7fbd4679bc233e40253777c8",
-      "Id": "457f6fc2fade4ed081341f88608dde82"
+      "Id": "457f6fc2fade4ed081341f88608dde82",
+      "IsHidden": "False"
     },
     {
       "Start": "9090970710384c53965bcfb75305f22c",
       "End": "1f30d2a850e845408ba4c1a919e59b78",
-      "Id": "e2a48f41c3a64f528420dedeeedad3a5"
+      "Id": "e2a48f41c3a64f528420dedeeedad3a5",
+      "IsHidden": "False"
     },
     {
       "Start": "9d49afee9ffe43f1869d5232e01587a8",
       "End": "2b271450f1e14d75b527cbff8e0a4ec5",
-      "Id": "ecc2c48d5908440a85ece38e0225c779"
+      "Id": "ecc2c48d5908440a85ece38e0225c779",
+      "IsHidden": "False"
     },
     {
       "Start": "e3532c5616ee4a8e9f7cceb5205c0e3c",
       "End": "24f335d381804a409d01217fc6dabfd7",
-      "Id": "5a1c6523ca6944a2b755ca1332000c90"
+      "Id": "5a1c6523ca6944a2b755ca1332000c90",
+      "IsHidden": "False"
     },
     {
       "Start": "0fa120f8acf24f27b05d2a0b50f81918",
       "End": "2006032eb4fc49f7bf2c803b122761ca",
-      "Id": "5553b45ac5f1422d8e132c10cc2a8e91"
+      "Id": "5553b45ac5f1422d8e132c10cc2a8e91",
+      "IsHidden": "False"
     },
     {
       "Start": "b6bf125847b8426293b0f20d7cf76cc4",
       "End": "29361c4562c14970b586145c8d6c34fa",
-      "Id": "83f3652b969e45ae896f428842d58a26"
+      "Id": "83f3652b969e45ae896f428842d58a26",
+      "IsHidden": "False"
     },
     {
       "Start": "3f4700eadd5a4c64add218d9665691d4",
       "End": "5a628cbf451f409c8178d8342f09eca1",
-      "Id": "53fd179b827a4b468d1b79851ad01f4c"
+      "Id": "53fd179b827a4b468d1b79851ad01f4c",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [
@@ -478,7 +490,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -494,10 +506,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script (replace parameters)",
+        "ShowGeometry": true,
         "Id": "d344a158a50d4c58b3ec11286bdf293f",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -506,8 +519,8 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "© List.GraftByPrimary",
+        "ShowGeometry": true,
         "Id": "cff97a0f7e9e48329552de46fc729530",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -516,8 +529,8 @@
         "Y": 0.90812888629295685
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "2fad1efeba4b490dbecbb11aac220d31",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -526,8 +539,8 @@
         "Y": -139.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "091a8df1336046a6b54292a45b210612",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -536,8 +549,8 @@
         "Y": 85.436210509973023
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "1c0b5bca5047416684e12cbaaa229bd5",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -546,8 +559,8 @@
         "Y": 201.42281686545402
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "5f1d3f50d7fb42268198cd1545cda175",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -556,8 +569,8 @@
         "Y": -179.88193808938854
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "10cc965a0a3746ba92b1bd067037008b",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -566,8 +579,8 @@
         "Y": -75.9810281346779
       },
       {
-        "ShowGeometry": true,
         "Name": "Code Block",
+        "ShowGeometry": true,
         "Id": "52af0e7040a54acf80adc61c95754f21",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -576,8 +589,8 @@
         "Y": 4.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "2c53a9d2969c41b78709931c91959a82",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -586,8 +599,8 @@
         "Y": 96.949615610115472
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "8f95e04395dc4dda804607707bf6fdb9",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,

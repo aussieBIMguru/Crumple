@@ -13,8 +13,9 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import BuiltInParameter, ParameterFilterRuleFactory,\\\r\nElementId, ElementParameterFilter, FilteredElementCollector, Element\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Get all viewport types\r\nBIP_FAMILYNAME = BuiltInParameter.SYMBOL_FAMILY_NAME_PARAM\r\n\r\ncol_rule  = ParameterFilterRuleFactory.CreateEqualsRule(ElementId(BIP_FAMILYNAME), \"Viewport\", False)\r\ncol_filt  = ElementParameterFilter(col_rule)\r\n\r\nviewportTypes_all = FilteredElementCollector(doc).WhereElementIsElementType().WherePasses(col_filt).ToElements()\r\n\r\n# Preparing output to Dynamo\r\nOUT = viewportTypes_all",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import BuiltInParameter, ParameterFilterRuleFactory, ElementId, ElementParameterFilter, FilteredElementCollector, Element\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\n# Get app version\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application\r\nrvt_year = int(app.VersionNumber)\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Get all viewport types\r\nBIP_FAMILYNAME = BuiltInParameter.SYMBOL_FAMILY_NAME_PARAM\r\n\r\nif rvt_year > 2025:\r\n    col_rule  = ParameterFilterRuleFactory.CreateEqualsRule(ElementId(BIP_FAMILYNAME), \"Viewport\")\r\nelse:\r\n    col_rule  = ParameterFilterRuleFactory.CreateEqualsRule(ElementId(BIP_FAMILYNAME), \"Viewport\", False)\r\n\r\n\r\ncol_filt  = ElementParameterFilter(col_rule)\r\n\r\nviewportTypes_all = FilteredElementCollector(doc).WhereElementIsElementType().WherePasses(col_filt).ToElements()\r\n\r\n# Preparing output to Dynamo\r\nOUT = viewportTypes_all",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "c68ba6f619aa4ee7a4bafeb5dc4b3869",
       "Inputs": [
@@ -185,27 +186,32 @@
     {
       "Start": "4351d8d0bd2d4d37b8f70acce031a4c3",
       "End": "1507d7da5104434189d95dd1da1f940e",
-      "Id": "1cf9d6e80c9b41b68f34e27ce9cbbf8b"
+      "Id": "1cf9d6e80c9b41b68f34e27ce9cbbf8b",
+      "IsHidden": "False"
     },
     {
       "Start": "4351d8d0bd2d4d37b8f70acce031a4c3",
       "End": "54e3f3d8b6424e2b8d521652853469f1",
-      "Id": "4b5226768be245e9b525653302f231fe"
+      "Id": "4b5226768be245e9b525653302f231fe",
+      "IsHidden": "False"
     },
     {
       "Start": "294ff896406f4d1aa76c9ae7f2c66309",
       "End": "2a0fbf78c01e4fd5a17c5fcd284fef9f",
-      "Id": "b49d9f2edf67462b9578574a2a114451"
+      "Id": "b49d9f2edf67462b9578574a2a114451",
+      "IsHidden": "False"
     },
     {
       "Start": "f50ebfaa0ef7440fa619aca40331882f",
       "End": "36efba0d3d2b476ba730939c66904936",
-      "Id": "fef18cef22a8428abdf100f477a506d1"
+      "Id": "fef18cef22a8428abdf100f477a506d1",
+      "IsHidden": "False"
     },
     {
       "Start": "11240a96bd8c4747a737b3474279ab26",
       "End": "1e63940712394770b65cf6060e0d30b9",
-      "Id": "3d9205a15c5949c9910e9bef043bd3d5"
+      "Id": "3d9205a15c5949c9910e9bef043bd3d5",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [
@@ -228,7 +234,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -244,10 +250,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "c68ba6f619aa4ee7a4bafeb5dc4b3869",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -256,8 +263,8 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "© Revit.GetDocument",
+        "ShowGeometry": true,
         "Id": "a65e205816b6485995ffab8c3b1ae2c1",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -266,8 +273,8 @@
         "Y": 0.4545673773795329
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "db6db2d638b54cb388916c6b56b82ec0",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -276,8 +283,8 @@
         "Y": -0.7971990155655817
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "5e4b2e9babec4b76aeee0cadb7e1c848",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -286,8 +293,8 @@
         "Y": -49.310335256046585
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "257c93f8979b4bc7aacd8dca44b3eeed",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -296,8 +303,8 @@
         "Y": 145.06029361984935
       },
       {
-        "ShowGeometry": true,
         "Name": "Element.Name",
+        "ShowGeometry": true,
         "Id": "0b01e144f8fd4f2ba1f298fd51d338bb",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -307,8 +314,8 @@
       }
     ],
     "Annotations": [],
-    "X": -131.41204928942022,
-    "Y": 240.26850415751619,
+    "X": 30.587950710579776,
+    "Y": 347.26850415751619,
     "Zoom": 0.822695359375
   }
 }

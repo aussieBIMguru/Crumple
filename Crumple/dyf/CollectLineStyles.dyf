@@ -105,8 +105,9 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Credit\r\n# Large in part borrows ideas from Genius Loci (Alban de Chasteigner)\r\n# twitter : @geniusloci_bim\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory, GraphicsStyleType\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Collect the BIC\r\ncollector = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Lines).ToElements()\r\n\r\n# Isolate BIC from collection\r\nbic = collector[0].Category\r\nsubcats = bic.SubCategories\r\n\r\n# Collect subcategory data\r\nelements, styles, ids, names, user = [],[],[],[],[]\r\n\r\nfor subcat in subcats:\r\n\r\n\tsubcatidasint = subcat.Id.IntegerValue\r\n\t#subcatidasint = int(subcatid.ToString())\r\n\tids.append(subcatidasint)\r\n\t\r\n\tif subcatidasint > 0:\r\n\t\tuser.append(True)\r\n\telse:\r\n\t\tuser.append(False)\r\n\t\r\n\tsubcatele = Revit.Elements.Category.ById(subcatidasint)\r\n\telements.append(subcatele)\r\n\t\r\n\tstyle = subcat.GetGraphicsStyle(GraphicsStyleType.Projection)\r\n\tstyles.append(style)\r\n\t\r\n\tsubcatname = style.Name\r\n\tnames.append(subcatname)\r\n\r\n# Outputs for Dynamo\r\nOUT = elements, styles, ids, names, user",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Credit\r\n# Large in part borrows ideas from Genius Loci (Alban de Chasteigner)\r\n# twitter : @geniusloci_bim\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory, GraphicsStyleType\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Get app version\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application\r\nrvt_year = int(app.VersionNumber)\r\n\r\n# Collect the BIC\r\ncollector = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Lines).ToElements()\r\n\r\n# Isolate BIC from collection\r\nbic = collector[0].Category\r\nsubcats = bic.SubCategories\r\n\r\n# Collect subcategory data\r\nelements, styles, ids, names, user = [],[],[],[],[]\r\n\r\nfor subcat in subcats:\r\n\tif rvt_year > 2024:\r\n\t\tsubcatidasint = subcat.Id.Value\r\n\telse:\r\n\t\tsubcatidasint = subcat.Id.IntegerValue\r\n\tids.append(subcatidasint)\r\n\t\r\n\tif subcatidasint > 0:\r\n\t\tuser.append(True)\r\n\telse:\r\n\t\tuser.append(False)\r\n\t\r\n\tsubcatele = Revit.Elements.Category.ById(subcatidasint)\r\n\telements.append(subcatele)\r\n\t\r\n\tstyle = subcat.GetGraphicsStyle(GraphicsStyleType.Projection)\r\n\tstyles.append(style)\r\n\t\r\n\tsubcatname = style.Name\r\n\tnames.append(subcatname)\r\n\r\n# Outputs for Dynamo\r\nOUT = elements, styles, ids, names, user",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "8d27650b669e45f9b6f28956c0c7d5b6",
       "Inputs": [
@@ -289,42 +290,50 @@
     {
       "Start": "54b503e232224d5baec94fb534893761",
       "End": "425ff86fc831440bb9717ae06d8a2554",
-      "Id": "bf53bd74bea94051a99894184886bb06"
+      "Id": "bf53bd74bea94051a99894184886bb06",
+      "IsHidden": "False"
     },
     {
       "Start": "da7a322cf8004ceb82636499f2c76381",
       "End": "e2c2bd04700e4beeb701d228cec611aa",
-      "Id": "7a0b150d7ed743ce8c0d6a117090467c"
+      "Id": "7a0b150d7ed743ce8c0d6a117090467c",
+      "IsHidden": "False"
     },
     {
       "Start": "54b26d633f704a02850ea143046e41ea",
       "End": "db6709e437e945d1b2503a082fb75d08",
-      "Id": "5bdf20b843994df3a7262a80d2b47f68"
+      "Id": "5bdf20b843994df3a7262a80d2b47f68",
+      "IsHidden": "False"
     },
     {
       "Start": "4b5f7b7f874f4325a3c1f333c4202f29",
       "End": "ffa87456482f4e4cb575bc01ecc5652f",
-      "Id": "9f09b76d89f047748e5840cf8748879c"
+      "Id": "9f09b76d89f047748e5840cf8748879c",
+      "IsHidden": "False"
     },
     {
       "Start": "d382cf2718674cf0ad20eb9495789153",
       "End": "f16c50fad82144aeb99459f7a3fa3f67",
-      "Id": "bb85c22340c94d5dad3e31bed0b7d17e"
+      "Id": "bb85c22340c94d5dad3e31bed0b7d17e",
+      "IsHidden": "False"
     },
     {
       "Start": "6f9bb435e06a418b8b705e4999bdfe78",
       "End": "fbec181a6d5146d8b07bfde6284c1005",
-      "Id": "691088aedc6b44fc9fcf6b24f398176e"
+      "Id": "691088aedc6b44fc9fcf6b24f398176e",
+      "IsHidden": "False"
     },
     {
       "Start": "17aa668923d043c8b459c9bfe24d06e9",
       "End": "a4e859e54f4345c8bbc87ca0740f1272",
-      "Id": "2c32559d8e624b3d81cf73e2f2007650"
+      "Id": "2c32559d8e624b3d81cf73e2f2007650",
+      "IsHidden": "False"
     },
     {
       "Start": "944a6975e645439fa4b871c5cc9bef13",
       "End": "bb292cb661a64025b9141239fe768024",
-      "Id": "d0a4bf53688d475499c17b25e7549c69"
+      "Id": "d0a4bf53688d475499c17b25e7549c69",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [
@@ -347,7 +356,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -363,10 +372,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "6fc353d2680246669ac7a9a825be4bdd",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -375,8 +385,8 @@
         "Y": -118.496246904376
       },
       {
-        "ShowGeometry": true,
         "Name": "Code Block",
+        "ShowGeometry": true,
         "Id": "a323dd9ff35540709a5440fa20e818db",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -385,8 +395,8 @@
         "Y": 4.223921932870212
       },
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "8d27650b669e45f9b6f28956c0c7d5b6",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -395,8 +405,8 @@
         "Y": -0.13278757661623786
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "5d5d4027d09b4b9d81b600b9db721389",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -405,8 +415,8 @@
         "Y": -44.366554997607693
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "ad59b0678e3e4821b57eb0679bc9339f",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -415,8 +425,8 @@
         "Y": 33.00346377464831
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "17a8f2e192f7488fa685b142f70aa14b",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -425,8 +435,8 @@
         "Y": 112.31847219024604
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "a4378d8fe41747bb8128937b3fb0a35e",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -435,8 +445,8 @@
         "Y": 193.72319604450644
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "9fac29278b23414cb08eb88ea2575b38",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -445,8 +455,8 @@
         "Y": 1.2794710105436877
       },
       {
-        "ShowGeometry": true,
         "Name": "© Revit.GetDocument",
+        "ShowGeometry": true,
         "Id": "a4d8d54617ec43c3a0a28f1cf5262ff9",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
