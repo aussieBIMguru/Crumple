@@ -2,7 +2,7 @@
   "Uuid": "cd5e81d4-c1ed-4ead-82d5-7a4c9708b64e",
   "IsCustomNode": true,
   "Category": "Crumple.Revit.Query",
-  "Description": "For a family parameter of list of them, returns their parmater groups. If using Revit 2024+ the node will return ForgeTypeIds instead.",
+  "Description": "For a family parameter of list of them, returns their parmater groups. If using Revit 2022+ the node will return ForgeTypeIds instead.",
   "Name": "© FamilyParam.ParameterGroup",
   "ElementResolver": {
     "ResolutionMap": {}
@@ -40,7 +40,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "/*Parameter groups.\r\n\r\nWill return as GroupTypeIds\r\nif you are using Revit 2024+.*/\r\n\r\nparameterGroups",
+      "Symbol": "/*Parameter groups.\r\n\r\nWill return as GroupTypeIds\r\nif you are using Revit 2022+.*/\r\n\r\nparameterGroups",
       "Id": "d84981a568bd400c9a670698bdf1df0d",
       "Inputs": [
         {
@@ -60,8 +60,9 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference('RevitAPI')\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FamilyManager, Parameter\r\n\r\n# Get Revit build version\r\nuiapp = DocumentManager.Instance.CurrentUIApplication\r\napp = uiapp.Application\r\nver = int(app.VersionNumber)\r\n\r\ntry:\r\n\tfrom Autodesk.Revit.DB import ParameterUtils\r\nexcept:\r\n    pass\r\n\r\n# Function: Get param group\r\ndef parameterGroup(par):\r\n\tparGrp = par.Definition.ParameterGroup\r\n\ttry:\r\n\t\treturn ParameterUtils.GetParameterGroupTypeId(parGrp)\r\n\texcept:\r\n\t\treturn parGrp\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n#Inputdoc\r\nparams_list = tolist(IN[0])\r\n\r\n# Output the lists\r\nOUT = objOrList([parameterGroup(param) for param in params_list])",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport System\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference('RevitAPI')\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Get Revit build version\r\nuiapp = DocumentManager.Instance.CurrentUIApplication\r\napp = uiapp.Application\r\nver = int(app.VersionNumber)\r\n\r\n# Function: Get param group\r\ndef parameterGroup(par):\r\n    if ver < 2022:\r\n        try:\r\n            return par.Definition.ParameterGroup\r\n        except:\r\n            return None\r\n    else:\r\n        try:\r\n            return par.Definition.GetGroupTypeId()\r\n        except:\r\n            return None\r\n\r\ndef getGroupName(g):\r\n    if g is None:\r\n        return None\r\n    if ver < 2022:\r\n        return System.Enum.GetName(ParameterGroup, g)\r\n    else:\r\n        return LabelUtils.GetLabelForGroup(g)\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n\tresult = input if isinstance(input, list) else [input]\r\n\treturn result\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n#Inputdoc\r\nparams_list = tolist(IN[0])\r\ngroups, names = [],[]\r\n\r\nfor p in params_list:\r\n    grp = parameterGroup(p)\r\n    groups.append(grp)\r\n    names.append(getGroupName(grp))\r\n\r\n# Output the lists\r\nOUT = [objOrList(groups), objOrList(names)]",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "0e427ce17aad4eb79dbc2db4668da371",
       "Inputs": [
@@ -88,18 +89,92 @@
       ],
       "Replication": "Disabled",
       "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "x[0];\nx[1];",
+      "Id": "4d9c59dcbc2545a3b88610c3e0d19689",
+      "Inputs": [
+        {
+          "Id": "6fd9019cd2964819a01da257b7a85702",
+          "Name": "x",
+          "Description": "x",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "2470816067bd4a77bbe67c55797fff2a",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "43d8dc0b10fc47ce89a91687eb9f8055",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "groupNames",
+      "Id": "ea40f821bbd248b6918f4c8917731e10",
+      "Inputs": [
+        {
+          "Id": "6ab79402ab4340e8b44a8dc3774bd533",
+          "Name": "",
+          "Description": "Output Data",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
     }
   ],
   "Connectors": [
     {
       "Start": "2ef8316b99804f97a192913affa922b6",
       "End": "169166432d8f4a93b0d0f26840059b8c",
-      "Id": "a641c7370489484f9c0be548337ad122"
+      "Id": "a641c7370489484f9c0be548337ad122",
+      "IsHidden": "False"
     },
     {
       "Start": "0860f6e47c154736bd06e4915260b4c4",
+      "End": "6fd9019cd2964819a01da257b7a85702",
+      "Id": "df9a225c53854b18a251ac79e91c75bc",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "2470816067bd4a77bbe67c55797fff2a",
       "End": "2926160258394d9ea87359f0debfa605",
-      "Id": "8c199a065c5c413e83bd0f521175d158"
+      "Id": "509ed35015784c44a573858370dd234d",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "43d8dc0b10fc47ce89a91687eb9f8055",
+      "End": "6ab79402ab4340e8b44a8dc3774bd533",
+      "Id": "b74c219d67e0442497d4ae753cacf4d6",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -111,7 +186,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -127,10 +202,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "5a85ec51fda14385b95db5b46233358d",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -139,29 +215,49 @@
         "Y": 3.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "d84981a568bd400c9a670698bdf1df0d",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 561.0,
-        "Y": 5.0
+        "X": 923.0,
+        "Y": -155.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Python Script (get data)",
+        "ShowGeometry": true,
         "Id": "0e427ce17aad4eb79dbc2db4668da371",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
         "X": 261.0,
         "Y": -4.0
+      },
+      {
+        "Name": "Code Block",
+        "ShowGeometry": true,
+        "Id": "4d9c59dcbc2545a3b88610c3e0d19689",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 601.0,
+        "Y": -2.0
+      },
+      {
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Id": "ea40f821bbd248b6918f4c8917731e10",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 904.0,
+        "Y": 102.0
       }
     ],
     "Annotations": [],
-    "X": -8.0,
-    "Y": 187.0,
-    "Zoom": 1.0
+    "X": 34.690352477763327,
+    "Y": 126.74520341383601,
+    "Zoom": 0.9540429248828125
   }
 }

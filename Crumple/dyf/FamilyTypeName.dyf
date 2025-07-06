@@ -13,8 +13,9 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n#Inputdoc\r\ntypes_list = tolist(IN[0])\r\n\r\n# Output the lists\r\nOUT = objOrList([t.Name for t in types_list])",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\ndef getName(t):\r\n    if t is None:\r\n        return None\r\n    else:\r\n        return t.Name\r\n\r\n#Inputdoc\r\ntypes_list = tolist(IN[0])\r\n\r\n# Output the lists\r\nOUT = objOrList([getName(t) for t in types_list])",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "9c5efce37ac44eac894c36b4338bcd2d",
       "Inputs": [
@@ -94,12 +95,14 @@
     {
       "Start": "dfdee016a22d4be3990491bef0b29fcd",
       "End": "74371841dbf149a283c6c7bc82dfe134",
-      "Id": "dbde58253d1f4e65b44c321e4af5c7b7"
+      "Id": "dbde58253d1f4e65b44c321e4af5c7b7",
+      "IsHidden": "False"
     },
     {
       "Start": "8fb91772a7f741e0bf4d8bada4407964",
       "End": "ff51aa0750bf467dad6c8644dbbc168a",
-      "Id": "0309d4eea72145539ebcb4c1f7600b85"
+      "Id": "0309d4eea72145539ebcb4c1f7600b85",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -111,7 +114,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -127,10 +130,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script (get names)",
+        "ShowGeometry": true,
         "Id": "9c5efce37ac44eac894c36b4338bcd2d",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -139,8 +143,8 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "ebddaa1079fe4c73b83faccc00a78b60",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -149,8 +153,8 @@
         "Y": 2.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "3ba28ca97ce04b3ba18257eb45e48ffe",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,

@@ -13,8 +13,9 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('RevitAPI')\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import Parameter\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n#Inputdoc\r\nparams_list = tolist(IN[0])\r\n\r\nparamFormulae, hasFormulae = [],[]\r\n\r\nfor p in params_list:\r\n\tpf = p.Formula\r\n\tif not pf:\r\n\t\tpf = \"\"\r\n\tparamFormulae.append(pf)\r\n\thasFormulae.append(pf != \"\")\r\n\r\n# Output the lists\r\nOUT = objOrList(paramFormulae), objOrList(hasFormulae)",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('RevitAPI')\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import Parameter\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n#Inputdoc\r\nparams_list = tolist(IN[0])\r\n\r\nparamFormulae, hasFormulae = [],[]\r\n\r\nfor p in params_list:\r\n    if p is None:\r\n        paramFormulae.append(None)\r\n        hasFormulae.append(None)\r\n    else:\r\n        pf = p.Formula\r\n        if not pf:\r\n            pf = \"\"\r\n        paramFormulae.append(pf)\r\n        hasFormulae.append(pf != \"\")\r\n\r\n# Output the lists\r\nOUT = objOrList(paramFormulae), objOrList(hasFormulae)",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "dfa2e1d77ad342c9ab3a3f0bdd3922d2",
       "Inputs": [
@@ -154,22 +155,26 @@
     {
       "Start": "1d92bd9be4484ff58a5e0ac0a2aed181",
       "End": "bebfd7a998e9422aa810cbd1eb755ea3",
-      "Id": "67081d92662f4f269fc3d965c973ac6b"
+      "Id": "67081d92662f4f269fc3d965c973ac6b",
+      "IsHidden": "False"
     },
     {
       "Start": "87cacc967e734b389d37493619ad1d46",
       "End": "22612212f1e14b02a8d2ff9e1d7896bf",
-      "Id": "14dbc713031b4c0585f62ccc98ba05e7"
+      "Id": "14dbc713031b4c0585f62ccc98ba05e7",
+      "IsHidden": "False"
     },
     {
       "Start": "78e5c4c671ce49feb46bcd198997c767",
       "End": "04d4828530d645fe9f31796f3b8a06a5",
-      "Id": "5fa33edbddd247a4b7f6096884893755"
+      "Id": "5fa33edbddd247a4b7f6096884893755",
+      "IsHidden": "False"
     },
     {
       "Start": "e9960bca540e4568a3265ba95c193efa",
       "End": "b5b2efaa224e4c828e75c76f62769fb4",
-      "Id": "a7bb1abdfa1e458fbd73697497390223"
+      "Id": "a7bb1abdfa1e458fbd73697497390223",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -181,7 +186,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -197,10 +202,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script (get formulas)",
+        "ShowGeometry": true,
         "Id": "dfa2e1d77ad342c9ab3a3f0bdd3922d2",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -209,8 +215,8 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "aa6aa74325184074a9ad2a77b87e5670",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -219,8 +225,8 @@
         "Y": 1.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Code Block",
+        "ShowGeometry": true,
         "Id": "979ec2ceba3c42c4910a807304eb48dc",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -229,8 +235,8 @@
         "Y": 6.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "79ade5405e814059959e9f0e083ce3a7",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -239,8 +245,8 @@
         "Y": -57.756843259623238
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "e75b600ae4bf41f9bb82cba9df1383bc",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,

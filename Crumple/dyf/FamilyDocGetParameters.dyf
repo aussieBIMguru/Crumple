@@ -74,8 +74,9 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference('RevitAPI')\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FamilyManager, Parameter\r\n\r\n# Get Revit build version\r\nuiapp = DocumentManager.Instance.CurrentUIApplication\r\napp = uiapp.Application\r\nver = int(app.VersionNumber)\r\n\r\nif ver > 2023:\r\n\tfrom Autodesk.Revit.DB import ParameterUtils\r\n\r\n# Function: Get param group\r\ndef parameterGroup(par):\r\n\tif ver > 2023:\r\n\t\treturn ParameterUtils.GetParameterGroupTypeId(parGrp)\r\n\telse:\r\n\t\treturn param.Definition.ParameterGroup\r\n\r\n# Function: Get parameters by name or all\r\ndef parametersGet(namesGet, myDoc):\r\n\t# Get all parameters\r\n\tparamsAll = myDoc.FamilyManager.Parameters\r\n\t# If we want all, just return them\r\n\tif namesGet is None:\r\n\t\treturn paramsAll\r\n\t# Otherwise...\r\n\telse:\r\n\t\t# Get all names\r\n\t\tnamesAll = [p.Definition.Name for p in paramsAll]\r\n\t\tparamsGet = []\r\n\t\t# For each target name...\r\n\t\tfor n in namesGet:\r\n\t\t\t# If its a parameter, get its name\r\n\t\t\tif not isinstance(n, str):\r\n\t\t\t\tn = n.Definition.Name\r\n\t\t\t# Find it by zip looping\r\n\t\t\tpar = None\r\n\t\t\tfor nA,p in zip(namesAll, paramsAll):\r\n\t\t\t\tif n == nA:\r\n\t\t\t\t\tpar = p\r\n\t\t\t\t\tbreak\r\n\t\t\tparamsGet.append(par)\r\n\t\t# Return the parameters\r\n\t\treturn paramsGet\r\n\r\n#Inputdoc\r\ndocs_list   = IN[0]\r\nname_lists  = IN[1]\r\n\r\ncheck = None\r\n\r\nif not name_lists:\r\n\tname_lists = [None for d in docs_list]\r\n\r\n# Define lists\r\nparamLists, nameLists = [],[]\r\n\r\n# For each document...\r\nfor doc, name_list in zip(docs_list, name_lists):\r\n\tparamList, nameList = [],[]\r\n\t# If a family document...\r\n\tif doc.IsFamilyDocument:\r\n\t\t# Get parameters by name or all\r\n\t\tparams = parametersGet(name_list, doc)\r\n\t\t# For each parameter...\r\n\t\tfor param in params:\r\n\t\t\t# If we have a parameter, add its data\r\n\t\t\tif param is not None:\r\n\t\t\t\t# Add its data\r\n\t\t\t\tparamList.append(param)\r\n\t\t\t\tnameList.append(param.Definition.Name)\r\n\t\t\telse:\r\n\t\t\t\tparamList.append(None)\r\n\t\t\t\tnameList.append(None)\r\n\t# Append the lists\r\n\tparamLists.append(paramList)\r\n\tnameLists.append(nameList)\r\n\r\n# Output the lists\r\nOUT = docs_list, paramLists, nameLists",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference('RevitAPI')\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Get Revit build version\r\nuiapp = DocumentManager.Instance.CurrentUIApplication\r\napp = uiapp.Application\r\nver = int(app.VersionNumber)\r\n\r\n# Function: Get param group\r\ndef parameterGroup(par):\r\n\tif ver < 2022:\r\n\t\treturn param.Definition.ParameterGroup\r\n\telse:\r\n\t\treturn ParameterUtils.GetParameterGroupTypeId(parGrp)\r\n\r\ndef isFamilyDoc(doc):\r\n    if doc is None:\r\n        return False\r\n    else:\r\n        return doc.IsFamilyDocument\r\n\r\n# Function: Get parameters by name or all\r\ndef parametersGet(namesGet, myDoc):\r\n\t# Get all parameters\r\n\tparamsAll = myDoc.FamilyManager.Parameters\r\n\t# If we want all, just return them\r\n\tif namesGet is None:\r\n\t\treturn paramsAll\r\n\t# Otherwise...\r\n\telse:\r\n\t\t# Get all names\r\n\t\tnamesAll = [p.Definition.Name for p in paramsAll]\r\n\t\tparamsGet = []\r\n\t\t# For each target name...\r\n\t\tfor n in namesGet:\r\n\t\t\t# If its a parameter, get its name\r\n\t\t\tif not isinstance(n, str):\r\n\t\t\t\tn = n.Definition.Name\r\n\t\t\t# Find it by zip looping\r\n\t\t\tpar = None\r\n\t\t\tfor nA,p in zip(namesAll, paramsAll):\r\n\t\t\t\tif n == nA:\r\n\t\t\t\t\tpar = p\r\n\t\t\t\t\tbreak\r\n\t\t\tparamsGet.append(par)\r\n\t\t# Return the parameters\r\n\t\treturn paramsGet\r\n\r\n#Inputdoc\r\ndocs_list   = IN[0]\r\nname_lists  = IN[1]\r\n\r\ncheck = None\r\n\r\nif not name_lists:\r\n\tname_lists = [None for d in docs_list]\r\n\r\n# Define lists\r\nparamLists, nameLists = [],[]\r\n\r\n# For each document...\r\nfor doc, name_list in zip(docs_list, name_lists):\r\n\tparamList, nameList = [],[]\r\n\t# If a family document...\r\n\tif isFamilyDoc(doc):\r\n\t\t# Get parameters by name or all\r\n\t\tparams = parametersGet(name_list, doc)\r\n\t\t# For each parameter...\r\n\t\tfor param in params:\r\n\t\t\t# If we have a parameter, add its data\r\n\t\t\tif param is not None:\r\n\t\t\t\t# Add its data\r\n\t\t\t\tparamList.append(param)\r\n\t\t\t\tnameList.append(param.Definition.Name)\r\n\t\t\telse:\r\n\t\t\t\tparamList.append(None)\r\n\t\t\t\tnameList.append(None)\r\n\t# Append the lists\r\n\tparamLists.append(paramList)\r\n\tnameLists.append(nameList)\r\n\r\n# Output the lists\r\nOUT = docs_list, paramLists, nameLists",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "0108b05c71404472bee41e753b87d662",
       "Inputs": [
@@ -332,37 +333,44 @@
     {
       "Start": "02eb94a966394ab885333abbb61dbff0",
       "End": "7c90dea1801d4fb99560a9d8240838ef",
-      "Id": "b937e15314e94028a6b7e134c7f75ed5"
+      "Id": "b937e15314e94028a6b7e134c7f75ed5",
+      "IsHidden": "False"
     },
     {
       "Start": "91a8db0bb3814a09b6d539880567950a",
       "End": "bd902d4f49f4418e8e7b6ce16b3b13a9",
-      "Id": "7fa5d677d8a2471296896e1018dbbdba"
+      "Id": "7fa5d677d8a2471296896e1018dbbdba",
+      "IsHidden": "False"
     },
     {
       "Start": "8cab9973ea2c4351b8e945ff379b5c00",
       "End": "479fb45375c145c9ba9518ea93b58213",
-      "Id": "6ab1f9b3b6d047efaf9c13c3c566b186"
+      "Id": "6ab1f9b3b6d047efaf9c13c3c566b186",
+      "IsHidden": "False"
     },
     {
       "Start": "828b7750b12640fd9a526489232decce",
       "End": "13b19a1f340a4c9dab2795663a82a673",
-      "Id": "2d2399192e3243c4bd64b778dcc8a67f"
+      "Id": "2d2399192e3243c4bd64b778dcc8a67f",
+      "IsHidden": "False"
     },
     {
       "Start": "a2794834ef0e4fc28515a7819327ecd7",
       "End": "3e55fedc52824803970fda882e09acc9",
-      "Id": "028d8da2a6a343979dae88a0c0cbba63"
+      "Id": "028d8da2a6a343979dae88a0c0cbba63",
+      "IsHidden": "False"
     },
     {
       "Start": "583393f4b1fb49c5885ba56d09f96de2",
       "End": "4bc687389164482982edffeb7c1ac16f",
-      "Id": "4a97580aa15b438e9093d4b6ff43b42b"
+      "Id": "4a97580aa15b438e9093d4b6ff43b42b",
+      "IsHidden": "False"
     },
     {
       "Start": "f02826aea1c44f5bb5306a1538dc9b66",
       "End": "882f5670a84942ffb536ace7daac1e2c",
-      "Id": "961f74db051940b5b099de3ed7e44fed"
+      "Id": "961f74db051940b5b099de3ed7e44fed",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [
@@ -385,7 +393,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -401,10 +409,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Code Block",
+        "ShowGeometry": true,
         "Id": "885f50849cd641c386883504072069cf",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -413,8 +422,8 @@
         "Y": 46.328308773655806
       },
       {
-        "ShowGeometry": true,
         "Name": "Python Script (get parameters)",
+        "ShowGeometry": true,
         "Id": "0108b05c71404472bee41e753b87d662",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -423,8 +432,8 @@
         "Y": 43.120417083874543
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "6140ff4397844a5a807d96caf3a07ee2",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -433,8 +442,8 @@
         "Y": 11.696965380224896
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "d6061757722748d78b22785989f31cf8",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -443,8 +452,8 @@
         "Y": -41.421650720091151
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "e61265f18bbc4734aa3ffc8e687b1c49",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -453,8 +462,8 @@
         "Y": 59.551998940714469
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "d30cdc2ec18848b48e896e1d3e6a082f",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -463,8 +472,8 @@
         "Y": 111.41787487560296
       },
       {
-        "ShowGeometry": true,
         "Name": "© List.GraftByPrimary",
+        "ShowGeometry": true,
         "Id": "ec908221963a4d099895b19885b7db4b",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
