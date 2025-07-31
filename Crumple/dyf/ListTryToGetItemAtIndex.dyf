@@ -117,7 +117,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "list = IN[0]\r\nindices = IN[1]\r\nreplaceWith = IN[2]\r\n\r\nmaxIndex = len(list) - 1\r\n\r\noutList, bools = [],[]\r\n\r\ndef ValidIndex(i,c):\r\n    if i is None:\r\n        return False\r\n    else:\r\n        return i > 0 and i < c\r\n\r\nfor i in indices:\r\n    if ValidIndex(i, maxIndex):\r\n        outList.append(list[i])\r\n        bools.append(True)\r\n    else:\r\n        outList.append(None)\r\n        bools.append(False)\r\n\r\nOUT = outList, bools",
+      "Code": "list = IN[0]\r\nindices = IN[1]\r\nreplaceWith = IN[2]\r\n\r\nmaxIndex = len(list) - 1\r\n\r\noutList, bools = [],[]\r\n\r\ndef ValidIndex(i,c):\r\n    if i is None:\r\n        return False\r\n    else:\r\n        return i > 0 and i < c\r\n\r\nfor i in indices:\r\n    if ValidIndex(i, maxIndex):\r\n        outList.append(list[i])\r\n        bools.append(True)\r\n    else:\r\n        outList.append(replaceWith)\r\n        bools.append(False)\r\n\r\nOUT = outList, bools",
       "Engine": "CPython3",
       "EngineName": "CPython3",
       "VariableInputPorts": true,

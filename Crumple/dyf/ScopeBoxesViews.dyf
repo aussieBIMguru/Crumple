@@ -15,6 +15,7 @@
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory\r\n\r\n# Current doc/app/ui\r\ndoc = IN[1]\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Get scope boxes\r\nsbs = uwlist(IN[0])\r\nviewboxes,withboxes,finallist = [],[],[]\r\n\r\n# Check all scope boxes of views\r\nviews = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Views).ToElements()\r\n\r\nfor v in views:\r\n\ttry:\r\n\t\tsbname = v.GetParameters(\"Scope Box\")[0].AsValueString()\r\n\t\tif sbname != \"None\":\r\n\t\t\tviewboxes.append(sbname)\r\n\t\t\twithboxes.append(v)\r\n\texcept:\r\n\t\tpass\r\n\r\n# Check which views use each scope box\r\nfor s in sbs:\r\n\tviewset = []\r\n\tsbname2 = s.Name\r\n\tfor v,w in zip(viewboxes,withboxes):\r\n\t\tif sbname2 == v:\r\n\t\t\tviewset.append(w)\r\n\tfinallist.append(viewset)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(finallist)",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "0f070423ecac46af850740bd3767505e",
       "Inputs": [
@@ -129,10 +130,10 @@
       "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
       "FunctionType": "Graph",
       "NodeType": "FunctionNode",
-      "Id": "6c4151447d334c6a8a88763ed36eae6a",
+      "Id": "993155c6267a453dbca6594ae37ad544",
       "Inputs": [
         {
-          "Id": "d58298fd36c54f71b9ae1698abb96cbd",
+          "Id": "bdab541085664883841121ac2347435c",
           "Name": "docOrLink",
           "Description": "var[]..[]\nDefault value : null",
           "UsingDefaultValue": true,
@@ -143,7 +144,7 @@
       ],
       "Outputs": [
         {
-          "Id": "6cd5348aac3f4e8db4ee166e47f852c9",
+          "Id": "86571cb4cdaf47b1a4979759d8b7e677",
           "Name": "document",
           "Description": "return value",
           "UsingDefaultValue": false,
@@ -152,7 +153,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "5735a7ed3c4f4f1ba1b5b295d8dac659",
+          "Id": "54b2248984754d16842b7fdc6ad23139",
           "Name": "outcome",
           "Description": "return value",
           "UsingDefaultValue": false,
@@ -169,22 +170,26 @@
     {
       "Start": "21ba1be2d8b24fb8b8b3786809c78cc0",
       "End": "8a8dab91712544f99963d6944958ae79",
-      "Id": "1501900f8681471b9e643db59735f481"
+      "Id": "1501900f8681471b9e643db59735f481",
+      "IsHidden": "False"
     },
     {
       "Start": "ea6e3ee640034e7b95ce6be0bbb5609a",
       "End": "1313505971354825b9d0d62ea7fd3bd5",
-      "Id": "97de22e1ec9143ab8965c7409752f6e8"
+      "Id": "97de22e1ec9143ab8965c7409752f6e8",
+      "IsHidden": "False"
     },
     {
       "Start": "899619e4e462476ea3dd1201365d4949",
-      "End": "d58298fd36c54f71b9ae1698abb96cbd",
-      "Id": "5e34231b2fb04430aa568fe1d98b724a"
+      "End": "bdab541085664883841121ac2347435c",
+      "Id": "804432cfdf8d42f6aeb1f6b6f809c634",
+      "IsHidden": "False"
     },
     {
-      "Start": "6cd5348aac3f4e8db4ee166e47f852c9",
+      "Start": "86571cb4cdaf47b1a4979759d8b7e677",
       "End": "986f41f619c64e2a88c2f369677a7034",
-      "Id": "0f925b97752e442b91784f6d1ebe00bb"
+      "Id": "8f3375eb27644caa93cd7586f57edc21",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [
@@ -193,10 +198,10 @@
   "NodeLibraryDependencies": [
     {
       "Name": "Crumple",
-      "Version": "2022.2.13",
+      "Version": "2026.7.1",
       "ReferenceType": "Package",
       "Nodes": [
-        "6c4151447d334c6a8a88763ed36eae6a"
+        "993155c6267a453dbca6594ae37ad544"
       ]
     }
   ],
@@ -207,7 +212,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -223,10 +228,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "0f070423ecac46af850740bd3767505e",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -235,18 +241,18 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "bf79df3f0343403bac92bae058d63e58",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 0.0,
-        "Y": 0.0
+        "X": -152.30074353750547,
+        "Y": -88.116858760985281
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "f5a8f1a1bb0f43eab55ba294ebdb2bd5",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -255,8 +261,8 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "1c8bd98d33f84f4ea646939b44b03efd",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -265,19 +271,19 @@
         "Y": 71.284189990385087
       },
       {
-        "ShowGeometry": true,
         "Name": "© Revit.GetDocument",
-        "Id": "6c4151447d334c6a8a88763ed36eae6a",
+        "ShowGeometry": true,
+        "Id": "993155c6267a453dbca6594ae37ad544",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -36.855691779701374,
-        "Y": 69.144646498668266
+        "X": -46.128967202272861,
+        "Y": 71.91213516866523
       }
     ],
     "Annotations": [],
-    "X": 222.63490552286248,
-    "Y": 249.08883064780218,
+    "X": 406.63490552286248,
+    "Y": 246.08883064780218,
     "Zoom": 0.91923385761753518
   }
 }

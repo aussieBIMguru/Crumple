@@ -15,6 +15,7 @@
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import FilteredElementCollector, ViewPlan\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\ncurViewId = FilteredElementCollector(doc).WhereElementIsNotElementType().OfClass(ViewPlan).FirstElementId()\r\n\r\n# Define list/unwrap list functions\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nelev_bodies  = UnwrapElement(IN[1])\r\nelev_indices = IN[2]\r\n\r\n# List to append\r\nelevations_list, results, outcomes = [],[],[]\r\n\r\n# Start a transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor eb, inds in zip(elev_bodies, elev_indices):\r\n\t# Lists\r\n\televations, result, outcome = [],[],[]\r\n\t# For each index...\r\n\tfor i in inds:\r\n\t\t# If it is available...\r\n\t\tif eb.IsAvailableIndex(i):\r\n\t\t\t# Try to make elevation\r\n\t\t\ttry:\r\n\t\t\t\televationView = eb.CreateElevation(doc, curViewId, i)\r\n\t\t\t\televations.append(elevationView)\r\n\t\t\t\tresult.append(True)\r\n\t\t\t\toutcome.append(\"SUCCESS: Elevation added.\")\r\n\t\t\texcept:\r\n\t\t\t\televations.append(None)\r\n\t\t\t\tresult.append(False)\r\n\t\t\t\toutcome.append(\"FAILURE: View not added.\")\r\n\t\telse:\r\n\t\t\televations.append(None)\r\n\t\t\tresult.append(False)\r\n\t\t\toutcome.append(\"ERROR: Index is not available.\")\r\n\t# Append outcomes\r\n\televations_list.append(elevations)\r\n\tresults.append(result)\r\n\toutcomes.append(outcome)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = [objOrList(o) for o in [elevations_list, results, outcomes]]",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "3d4b4bfce10148a08806b6dfd731b61d",
       "Inputs": [
@@ -134,127 +135,6 @@
       "Description": "A function output, use with custom nodes"
     },
     {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "84785bdc-e909-45b6-974e-a1c23124fb65",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "4f5fb74db7b14d51b7478bb39463c899",
-      "Inputs": [
-        {
-          "Id": "faaed27edc474d01bf11ec9b44621bfb",
-          "Name": "primary",
-          "Description": "var[]..[]",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "292dbc69d04b45afa882c5b0ba93e769",
-          "Name": "listA",
-          "Description": "var[]..[]\nDefault value : null",
-          "UsingDefaultValue": true,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "436e6e7fe57d4c98823aaebdff0ab774",
-          "Name": "listB",
-          "Description": "var[]..[]\nDefault value : null",
-          "UsingDefaultValue": true,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "48344a4cc40c4a93a404b5a2971c43fa",
-          "Name": "listC",
-          "Description": "var[]..[]\nDefault value : null",
-          "UsingDefaultValue": true,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "4048274c87544293a8c484b74cd6880c",
-          "Name": "listD",
-          "Description": "var[]..[]\nDefault value : null",
-          "UsingDefaultValue": true,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "69e7338ecb85408d8c5207ebafe0d277",
-          "Name": "listE",
-          "Description": "var[]..[]\nDefault value : null",
-          "UsingDefaultValue": true,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "0e100dfcd64d4c8aa4a16b5375fbdab9",
-          "Name": "primary",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "bdd19168f0054a6cb72269a7ee08ae67",
-          "Name": "listA",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "e62199cb9f8c4d4b887282d28e219161",
-          "Name": "listB",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "f9304e6cfa924387803f63bf64e76412",
-          "Name": "listC",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "f1f8d72a86d24fa79db9d6e17f5865eb",
-          "Name": "listD",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "fabc4190e6ab4ceda6b72e5f7fea15c9",
-          "Name": "listE",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Given a first input, the node will assess how many items it contains (if one, it will make it a list of 1 item). Remaining branches will be forced into a list of lists, where the last branch will be repeated to a longest length as the first list (if one list or item is provided, it will repeat as the list of lists)."
-    },
-    {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "NodeType": "CodeBlockNode",
       "Code": "x[0];\nx[1];\nx[2];",
@@ -343,53 +223,183 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "84785bdc-e909-45b6-974e-a1c23124fb65",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "2545bb5ccf3347a4aac4741b03b7ce2f",
+      "Inputs": [
+        {
+          "Id": "f6582ab458574a5f94e04f6499a644d1",
+          "Name": "primary",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "1793a2c9b8904daba23e49f49d42ae38",
+          "Name": "listA",
+          "Description": "var[]..[]\nDefault value : null",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "df0d15730a1f4e5586171d895072b0ee",
+          "Name": "listB",
+          "Description": "var[]..[]\nDefault value : null",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "45e0a677507f4aad9b574f7a0f744330",
+          "Name": "listC",
+          "Description": "var[]..[]\nDefault value : null",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "5603170c83224bf5a2c64bb3ef9a29eb",
+          "Name": "listD",
+          "Description": "var[]..[]\nDefault value : null",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "da633b97d0b64754894c38b56635f47e",
+          "Name": "listE",
+          "Description": "var[]..[]\nDefault value : null",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "888a93f4f007423183bd67715dfb2d82",
+          "Name": "primary",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "4b6ae3f4760f4fe58b2150bf8d75f8e1",
+          "Name": "listA",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "0781b8317f9d462a9a6cfe5ae9c61ee8",
+          "Name": "listB",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "3b78929af98d45df93e96d1c71dab25a",
+          "Name": "listC",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "4bc50edebf074e21b26c9e07065fb022",
+          "Name": "listD",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "8eae7f5c7af34697bfafbd68f551f675",
+          "Name": "listE",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Given a first input, the node will assess how many items it contains (if one, it will make it a list of 1 item). Remaining branches will be forced into a list of lists, where the last branch will be repeated to a longest length as the first list (if one list or item is provided, it will repeat as the list of lists)."
     }
   ],
   "Connectors": [
     {
       "Start": "d54efe0840e54d918fa9275b333bbcfb",
       "End": "757cd55a133b4ff3af528ba5c942b708",
-      "Id": "559f88be6da14840a6ddf908b7fc1d84"
-    },
-    {
-      "Start": "d4f771ee99584815bb1e0b2d7e18e433",
-      "End": "faaed27edc474d01bf11ec9b44621bfb",
-      "Id": "11450f0744ce4b7486d7b5f9508062d1"
+      "Id": "559f88be6da14840a6ddf908b7fc1d84",
+      "IsHidden": "False"
     },
     {
       "Start": "d4f771ee99584815bb1e0b2d7e18e433",
       "End": "f83422a598c340799bf1434413337879",
-      "Id": "fe819e0939de4407a3f9264ab68a06bc"
+      "Id": "fe819e0939de4407a3f9264ab68a06bc",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "d4f771ee99584815bb1e0b2d7e18e433",
+      "End": "f6582ab458574a5f94e04f6499a644d1",
+      "Id": "74bedc2fd8844b5686da3b8049ea82e5",
+      "IsHidden": "False"
     },
     {
       "Start": "b391e621e341422291c3591dc28e2c66",
-      "End": "292dbc69d04b45afa882c5b0ba93e769",
-      "Id": "b7e6f5238eba470ca83cdaad45092de1"
-    },
-    {
-      "Start": "0e100dfcd64d4c8aa4a16b5375fbdab9",
-      "End": "7999e46e245e40bfa4ce6ab2a67c8403",
-      "Id": "dcc3097987fe435a975b836efbeb7591"
-    },
-    {
-      "Start": "bdd19168f0054a6cb72269a7ee08ae67",
-      "End": "907310caf74140efb2e4787c1b265d2d",
-      "Id": "3869b15491af477391fd813316ba3b3f"
+      "End": "1793a2c9b8904daba23e49f49d42ae38",
+      "Id": "a9249f1de1c0497db24e7d54279fe3c8",
+      "IsHidden": "False"
     },
     {
       "Start": "6e9c1208d68146179ec72e40440505c2",
       "End": "beae7f987e5940f4856a823e64f21adc",
-      "Id": "2d37f8b46171478797e10c8becdd0aa8"
+      "Id": "2d37f8b46171478797e10c8becdd0aa8",
+      "IsHidden": "False"
     },
     {
       "Start": "7adf8e9c16584e0bbcaf8d6654251495",
       "End": "ae7ed4b995e54a968173fa78a3e3b6d3",
-      "Id": "432cbd2cd7e44edaa4a42ad07d85a24f"
+      "Id": "432cbd2cd7e44edaa4a42ad07d85a24f",
+      "IsHidden": "False"
     },
     {
       "Start": "d589e67897cb4b908ebf84b6e1144b5c",
       "End": "cf0bcbb2d4cb40b896da6af079fc6971",
-      "Id": "c988015e94ba4b08b8c5e8ce5fe9079b"
+      "Id": "c988015e94ba4b08b8c5e8ce5fe9079b",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "888a93f4f007423183bd67715dfb2d82",
+      "End": "7999e46e245e40bfa4ce6ab2a67c8403",
+      "Id": "a50a8a5200224dd29fd857024ee2f60a",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "4b6ae3f4760f4fe58b2150bf8d75f8e1",
+      "End": "907310caf74140efb2e4787c1b265d2d",
+      "Id": "4e924f57b170470db7e9dff212667d8c",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [
@@ -398,10 +408,10 @@
   "NodeLibraryDependencies": [
     {
       "Name": "Crumple",
-      "Version": "2024.3.1",
+      "Version": "2026.7.1",
       "ReferenceType": "Package",
       "Nodes": [
-        "4f5fb74db7b14d51b7478bb39463c899"
+        "2545bb5ccf3347a4aac4741b03b7ce2f"
       ]
     }
   ],
@@ -412,7 +422,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -428,10 +438,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "3d4b4bfce10148a08806b6dfd731b61d",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -440,8 +451,8 @@
         "Y": -42.797010837077266
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "330f45b098bc4026a079b458dbafb56e",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -450,8 +461,8 @@
         "Y": -46.769880895974865
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "23817980e2674d458491beeb10d1a338",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -460,8 +471,8 @@
         "Y": 94.641259800857142
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "341534525a444e2f84a68e4dbf142465",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -470,18 +481,8 @@
         "Y": -122.35318278775469
       },
       {
-        "ShowGeometry": true,
-        "Name": "© List.GraftByPrimary",
-        "Id": "4f5fb74db7b14d51b7478bb39463c899",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 185.39173824533435,
-        "Y": 25.825222752604475
-      },
-      {
-        "ShowGeometry": true,
         "Name": "Code Block",
+        "ShowGeometry": true,
         "Id": "9852d927f2a14460b8c3e4e4f5c475e6",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -490,8 +491,8 @@
         "Y": -37.614856884429742
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "98b560900ec54e568928aea763fcbe37",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -500,18 +501,28 @@
         "Y": -24.65585318874372
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "08cd4780e9444f71a0a7f2f905506cf8",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
         "X": 929.10275309686619,
         "Y": 63.199155665729563
+      },
+      {
+        "Name": "© List.GraftByPrimary",
+        "ShowGeometry": true,
+        "Id": "2545bb5ccf3347a4aac4741b03b7ce2f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 194.42793845370488,
+        "Y": 29.652811705627983
       }
     ],
     "Annotations": [],
-    "X": 266.39185685070908,
+    "X": 20.391856850709075,
     "Y": 215.82750649711784,
     "Zoom": 0.88263108951367153
   }

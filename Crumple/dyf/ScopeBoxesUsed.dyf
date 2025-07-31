@@ -14,7 +14,8 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory, Grid, Level\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Inputs from Dynamo\r\ndoc = IN[1]\r\ncheckScopeBoxes = uwlist(IN[0])\r\nusedScopeBoxes = []\r\n\r\n# Get scope boxes\r\nusedNames = []\r\n    \r\n# Check scopebox of elements\r\ndef getScopeBox(elements):\r\n\tfor e in elements:\r\n\t\ttry:\r\n\t\t\tsbName = e.GetParameters(\"Scope Box\")[0].AsValueString()\r\n\t\t\tif sbName != \"None\" and sbName not in usedNames:\r\n\t\t\t\tusedScopeBoxes.append(sbName)\r\n\t\texcept:\r\n\t\t\tpass\r\n\r\n# Get all used scopebox names\r\ngrids  = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Grids).OfClass(Grid)\r\nlevels = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Levels).OfClass(Level)\r\nviews  = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Views)\r\n\r\n# Build list of scope box names in use\r\ngetScopeBox(grids)\r\ngetScopeBox(levels)\r\ngetScopeBox(views)\r\n\r\n# Preparing output to Dynamo\r\ncheckBools = [s.Name in usedScopeBoxes for s in checkScopeBoxes]\r\nOUT = objOrList(checkBools)",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "4a3db16fd2f745debc4938e000f52cc3",
       "Inputs": [
@@ -129,10 +130,10 @@
       "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
       "FunctionType": "Graph",
       "NodeType": "FunctionNode",
-      "Id": "c615527b53dd435991186234cbcc262e",
+      "Id": "d37e7e6754db4d89aceb0efe07aed071",
       "Inputs": [
         {
-          "Id": "1be4ac0a26b24a27b33e883d01bbe1b0",
+          "Id": "1e548536d72c4045a8a5fea5e1c19854",
           "Name": "docOrLink",
           "Description": "var[]..[]\nDefault value : null",
           "UsingDefaultValue": true,
@@ -143,7 +144,7 @@
       ],
       "Outputs": [
         {
-          "Id": "781b8fcb33514c1a9925a1b5ce9afc41",
+          "Id": "4237fe6ebe4a4b86ba486a117074d342",
           "Name": "document",
           "Description": "return value",
           "UsingDefaultValue": false,
@@ -152,7 +153,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "d1ab9cdc4fb54b50b146b35ba41b4063",
+          "Id": "62971498e54a489492a8977622a8dfce",
           "Name": "outcome",
           "Description": "return value",
           "UsingDefaultValue": false,
@@ -169,22 +170,26 @@
     {
       "Start": "c787989d6c3542a1bbfc4d7886d1fcfb",
       "End": "ec6e3de9430543268e8b60c8f43b1cb6",
-      "Id": "60bdc3a0a19d44e09d8a0eb33eda802b"
+      "Id": "60bdc3a0a19d44e09d8a0eb33eda802b",
+      "IsHidden": "False"
     },
     {
       "Start": "80044979fe914246b6d2f9a13e577bea",
       "End": "81299e942958461991b1fe5651cb86ad",
-      "Id": "fc455bb449a54b93af128b3b71c8df93"
+      "Id": "fc455bb449a54b93af128b3b71c8df93",
+      "IsHidden": "False"
     },
     {
       "Start": "6b3895080edd496da96db7888c116026",
-      "End": "1be4ac0a26b24a27b33e883d01bbe1b0",
-      "Id": "05fcecda3aba4318902f37bcacab135b"
+      "End": "1e548536d72c4045a8a5fea5e1c19854",
+      "Id": "f8616f2488184090a245b81b87b5d276",
+      "IsHidden": "False"
     },
     {
-      "Start": "781b8fcb33514c1a9925a1b5ce9afc41",
+      "Start": "4237fe6ebe4a4b86ba486a117074d342",
       "End": "4da093472e714ad5b33ec437f1196904",
-      "Id": "d33ffd4764ae4cd1bbf189146c997416"
+      "Id": "a34ecd0b2f36463fa81c202dbc7c527d",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [
@@ -193,10 +198,10 @@
   "NodeLibraryDependencies": [
     {
       "Name": "Crumple",
-      "Version": "2022.2.13",
+      "Version": "2026.7.1",
       "ReferenceType": "Package",
       "Nodes": [
-        "c615527b53dd435991186234cbcc262e"
+        "d37e7e6754db4d89aceb0efe07aed071"
       ]
     }
   ],
@@ -207,7 +212,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -223,10 +228,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "4a3db16fd2f745debc4938e000f52cc3",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -235,18 +241,18 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "a2bd759fed574bf7953f011c6d701118",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -31.216666675372153,
-        "Y": -21.11715686863414
+        "X": -80.3000303135018,
+        "Y": -134.12304059363029
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "a13482bd62254a299d4ee89a5b9a9c51",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -255,29 +261,29 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "d3390ebfb95642ef9dc4e266a24c28ab",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -432.00497574283543,
+        "X": -623.772536003435,
         "Y": 72.567976879923677
       },
       {
-        "ShowGeometry": true,
         "Name": "© Revit.GetDocument",
-        "Id": "c615527b53dd435991186234cbcc262e",
+        "ShowGeometry": true,
+        "Id": "d37e7e6754db4d89aceb0efe07aed071",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -39.822219751914304,
-        "Y": 73.355620230729755
+        "X": -63.823293835792128,
+        "Y": 67.339048144488743
       }
     ],
     "Annotations": [],
-    "X": 298.89053560876994,
-    "Y": 356.68712089811936,
-    "Zoom": 0.649008181772573
+    "X": 528.43428338597073,
+    "Y": 208.52812604245179,
+    "Zoom": 0.87606057965017159
   }
 }

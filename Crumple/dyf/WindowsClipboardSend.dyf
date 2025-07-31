@@ -15,6 +15,7 @@
       "NodeType": "PythonScriptNode",
       "Code": "# Boilerplate\r\nimport clr\r\nimport System\r\nfrom System.Threading import Thread, ThreadStart\r\nclr.AddReference(\"System.Windows.Forms\")\r\n\r\n# Define function\r\ndef SetText(text):\r\n    def thread_proc():\r\n        System.Windows.Forms.Clipboard.SetText(text)\r\n    t = Thread(ThreadStart(thread_proc))\r\n    t.ApartmentState = System.Threading.ApartmentState.STA\r\n    t.Start()\r\n\r\ntry:\r\n\tif IN[0] != \"\" and IN[0] != None:\r\n\t\tSetText(IN[0])\r\n\t\tOUT = True\r\n\telse:\r\n\t\tOUT = False\r\nexcept:\r\n\tOUT = False",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "6533ea609a4b4576b0faa80041178c7c",
       "Inputs": [
@@ -46,8 +47,8 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "dataToCopy",
-        "TypeName": "var",
+        "Name": "stringToSend",
+        "TypeName": "string",
         "TypeRank": 0,
         "DefaultValue": null,
         "Description": ""
@@ -94,12 +95,14 @@
     {
       "Start": "e7557be302a142bda660ddd7c03ac6e2",
       "End": "3b404f6facaf4b77af3f41ff53e1a639",
-      "Id": "dae36a6aa9e9410b94d7b9375956872e"
+      "Id": "dae36a6aa9e9410b94d7b9375956872e",
+      "IsHidden": "False"
     },
     {
       "Start": "006d75a944b246fab96ffd895bef1a58",
       "End": "f37ba9f004684562b55c3b8adaaffc82",
-      "Id": "940cb92552e1484392c7981182a9649b"
+      "Id": "940cb92552e1484392c7981182a9649b",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -111,7 +114,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -127,10 +130,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "6533ea609a4b4576b0faa80041178c7c",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -139,18 +143,18 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "eef99dd8250b4ef2af6d1f844e67c77e",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 38.142945212196992,
-        "Y": 0.0
+        "X": -30.357506388859406,
+        "Y": 0.6715730549123009
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "ab72dcb4f2004319b58ffb163dd604af",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -160,8 +164,8 @@
       }
     ],
     "Annotations": [],
-    "X": -79.843482346806269,
-    "Y": 367.68569689632773,
-    "Zoom": 2.8797850227800854
+    "X": 47.703471191582665,
+    "Y": 351.76751595023603,
+    "Zoom": 1.489041278064027
   }
 }

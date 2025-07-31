@@ -15,6 +15,7 @@
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Credit to Genius Loci for much of the workflow\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport math\r\n\r\n# Revit nodes\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\n# Revit services and API\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import BasePoint, BuiltInParameter\r\n\r\n# Current doc/app/ui\r\ndoc = IN[0]\r\n\r\n# Get app version\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application\r\nrvt_year = int(app.VersionNumber)\r\n\r\nif rvt_year < 2022:\r\n\tfrom Autodesk.Revit.DB import UnitUtils, UnitType, DisplayUnitType\r\nelse:\r\n\tfrom Autodesk.Revit.DB import UnitUtils, SpecTypeId\r\n\r\ndef interalToProject(val, ver = rvt_year, myDoc = doc):\r\n\tif rvt_year < 2022:\r\n\t\tintUnits = doc.GetUnits().GetFormatOptions(UnitType.UT_Length).DisplayUnits\r\n\t\treturn UnitUtils.Convert(val,DisplayUnitType.DUT_DECIMAL_FEET,intUnits)\r\n\telse:\r\n\t\tintUnitsId = doc.GetUnits().GetFormatOptions(SpecTypeId.Length).GetUnitTypeId()\r\n\t\treturn UnitUtils.ConvertFromInternalUnits(val, intUnitsId)\r\n\r\n# Get survey point\r\nsvp = BasePoint.GetSurveyPoint(doc)\r\n\r\n# Get svp values\r\nsvp_pt = svp.Position.ToPoint()\r\nsvp_ew = interalToProject(svp.get_Parameter(BuiltInParameter.BASEPOINT_EASTWEST_PARAM).AsDouble())\r\nsvp_ns = interalToProject(svp.get_Parameter(BuiltInParameter.BASEPOINT_NORTHSOUTH_PARAM).AsDouble())\r\nsvp_el = interalToProject(svp.get_Parameter(BuiltInParameter.BASEPOINT_ELEVATION_PARAM).AsDouble())\r\n\r\n# Preparing output to Dynamo\r\nOUT = svp_pt, svp_ns, svp_ew, svp_el",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "bd5b1544b45e4f53af91e80922859b83",
       "Inputs": [
@@ -126,46 +127,6 @@
       "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "40db80484bd94faab08289347e472b1a",
-      "Inputs": [
-        {
-          "Id": "00fec6a6e190431a8aa9809b4a2790c6",
-          "Name": "docOrLink",
-          "Description": "var[]..[]\nDefault value : null",
-          "UsingDefaultValue": true,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "a9e048041b414010a0e83d9e4980962d",
-          "Name": "document",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "d892f3cf30944e0fbc1ab85a361019a3",
-          "Name": "outcome",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
-    },
-    {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
@@ -248,43 +209,90 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "9c34f9270df14d8eba6a8c2754b8a2d4",
+      "Inputs": [
+        {
+          "Id": "e4deabd260264346ad7cb3e5f8de36a2",
+          "Name": "docOrLink",
+          "Description": "var[]..[]\nDefault value : null",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "6b69d0ab26354fd986fbaf39dfbe4f80",
+          "Name": "document",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "14cddef48cea4ade9ed1d59519553b07",
+          "Name": "outcome",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
     }
   ],
   "Connectors": [
     {
       "Start": "a168da2693cd4712992880fd134ed3c7",
       "End": "8f72460d1d134ca290c8b26b2e39b797",
-      "Id": "6d6345c5fefb49c3baf8640692a6310f"
+      "Id": "6d6345c5fefb49c3baf8640692a6310f",
+      "IsHidden": "False"
     },
     {
       "Start": "680505ed0aaa40c7a03000d2aac8cda1",
       "End": "e5ba8d35d3714c5c8597d606842f205e",
-      "Id": "fb19c92b228e400cbcf9aecbfc88e2b9"
+      "Id": "fb19c92b228e400cbcf9aecbfc88e2b9",
+      "IsHidden": "False"
     },
     {
       "Start": "daddf719cd08441b8e500ada0573876d",
       "End": "1f6f25a8bd144ea08f720caac03736a1",
-      "Id": "62e0862571434119941a4a0856388a9f"
+      "Id": "62e0862571434119941a4a0856388a9f",
+      "IsHidden": "False"
     },
     {
       "Start": "479b776fcd22402cb48f6a97831b475a",
       "End": "082054614e144dd18aaa8bffc7e7f92f",
-      "Id": "6d5cb863aaf1488ab9f341b448bff191"
+      "Id": "6d5cb863aaf1488ab9f341b448bff191",
+      "IsHidden": "False"
     },
     {
       "Start": "12c4d15967ce4f97b76e409187f80ebc",
       "End": "9701e737fbbb4d8ba99e1cce49ee7189",
-      "Id": "467bbcf2c23a44dc92e27dea9531f8a8"
+      "Id": "467bbcf2c23a44dc92e27dea9531f8a8",
+      "IsHidden": "False"
     },
     {
       "Start": "8021065c186746b2942894f87f5f5957",
-      "End": "00fec6a6e190431a8aa9809b4a2790c6",
-      "Id": "16cad2e0a5bf4fd39f5830466c8578a9"
+      "End": "e4deabd260264346ad7cb3e5f8de36a2",
+      "Id": "3bd0670fdb814668bd556c65588a2330",
+      "IsHidden": "False"
     },
     {
-      "Start": "a9e048041b414010a0e83d9e4980962d",
+      "Start": "6b69d0ab26354fd986fbaf39dfbe4f80",
       "End": "9bd5d55520da4f138538882d6dd7f6d2",
-      "Id": "95358b07f63b44548a699139da36125d"
+      "Id": "b7270c31bf304c76b6008f5b745cb241",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [
@@ -293,10 +301,10 @@
   "NodeLibraryDependencies": [
     {
       "Name": "Crumple",
-      "Version": "2022.2.13",
+      "Version": "2026.7.1",
       "ReferenceType": "Package",
       "Nodes": [
-        "40db80484bd94faab08289347e472b1a"
+        "9c34f9270df14d8eba6a8c2754b8a2d4"
       ]
     }
   ],
@@ -307,7 +315,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -323,10 +331,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "bd5b1544b45e4f53af91e80922859b83",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -335,8 +344,8 @@
         "Y": -1.7176378444419811
       },
       {
-        "ShowGeometry": true,
         "Name": "Code Block",
+        "ShowGeometry": true,
         "Id": "99ed78201665459f80b02371a97e1c12",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -345,8 +354,8 @@
         "Y": 2.3874013801548131
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "bafacb43ab0542349ae713ac377b8c87",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -355,18 +364,8 @@
         "Y": -2.2543309835062928
       },
       {
-        "ShowGeometry": true,
-        "Name": "© Revit.GetDocument",
-        "Id": "40db80484bd94faab08289347e472b1a",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": -91.4135366092446,
-        "Y": -2.5260468305143604
-      },
-      {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "ef844d0c1ec64c9eb7454621ff20b5b2",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -375,8 +374,8 @@
         "Y": -101.91516875194182
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "ffb3a227c0ab42d0844510fb164a5216",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -385,8 +384,8 @@
         "Y": -24.852609090331669
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "46b9898406b44fb5a2708a416ea7bf47",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -395,14 +394,24 @@
         "Y": 77.709415918595482
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "41aef46f874b40bf96709e9d1e4ba892",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
         "X": 719.54911919168728,
         "Y": 180.58499943700292
+      },
+      {
+        "Name": "© Revit.GetDocument",
+        "ShowGeometry": true,
+        "Id": "9c34f9270df14d8eba6a8c2754b8a2d4",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -24.71712429334309,
+        "Y": -4.4769259291025207
       }
     ],
     "Annotations": [],

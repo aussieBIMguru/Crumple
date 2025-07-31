@@ -15,6 +15,7 @@
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Import RevitAPI\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import FilteredElementCollector, View, ViewType\r\n\r\n# Get the project document.\r\ndoc = IN[0]\r\n\r\n# Get all views\r\nViews_doc = FilteredElementCollector(doc).OfClass(View).ToElements()\r\n\r\n# Create empty lists\r\nView_list = []\r\n\r\nignoreTypes = [ViewType.Legend, ViewType.Schedule, ViewType.DrawingSheet, ViewType.ProjectBrowser, ViewType.SystemBrowser, ViewType.Undefined]\r\n\r\n# Find views that aren't legends, then non-template\r\nfor v in Views_doc:\r\n\tif v.ViewType in ignoreTypes:\r\n\t\tpass\r\n\telif v.IsTemplate:\r\n\t\tpass\r\n\telse:\r\n\t\tView_list.append(v)\r\n\r\n# Output cleaned view lists\r\nOUT = View_list",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "779c3a82ecd34d2ba532d36ea87b6c36",
       "Inputs": [
@@ -94,10 +95,10 @@
       "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
       "FunctionType": "Graph",
       "NodeType": "FunctionNode",
-      "Id": "f3c74cd9f60b4f7eb659dc5b19e186e6",
+      "Id": "5b18219937414757b4ba7fdad83f919b",
       "Inputs": [
         {
-          "Id": "c10f3642d8964bf6b5dda3e961ba3f39",
+          "Id": "4323e516f44b4bf392ded60f89cfc962",
           "Name": "docOrLink",
           "Description": "var[]..[]\nDefault value : null",
           "UsingDefaultValue": true,
@@ -108,7 +109,7 @@
       ],
       "Outputs": [
         {
-          "Id": "607e9c0613c346ca9bf951487b133717",
+          "Id": "9fa31cc3bc7e4baab91c1facf6179f6b",
           "Name": "document",
           "Description": "return value",
           "UsingDefaultValue": false,
@@ -117,7 +118,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "a087aa358f2a43c593e99ac5490c2df3",
+          "Id": "86302754517440b5a64d6a1e16df770d",
           "Name": "outcome",
           "Description": "return value",
           "UsingDefaultValue": false,
@@ -134,17 +135,20 @@
     {
       "Start": "bda2f08dda8c4ecbab41d3aae7868f99",
       "End": "6396a71bbaff4fc8a6e636e02c27653a",
-      "Id": "9ff58111f48546ea902b78da962aa250"
+      "Id": "9ff58111f48546ea902b78da962aa250",
+      "IsHidden": "False"
     },
     {
       "Start": "b78d19bbb38944a2ac5680690daa2cc2",
-      "End": "c10f3642d8964bf6b5dda3e961ba3f39",
-      "Id": "6bb9a4c689bd4accae30bf941d9f275a"
+      "End": "4323e516f44b4bf392ded60f89cfc962",
+      "Id": "83556f4e8bb240d689d36dfdd546695e",
+      "IsHidden": "False"
     },
     {
-      "Start": "607e9c0613c346ca9bf951487b133717",
+      "Start": "9fa31cc3bc7e4baab91c1facf6179f6b",
       "End": "4f71cf6327a7452785111528696b3760",
-      "Id": "808590acdd3148189fac65723417546e"
+      "Id": "2aafdd1c6141486abb5ba3e5d7405a7a",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [
@@ -153,10 +157,10 @@
   "NodeLibraryDependencies": [
     {
       "Name": "Crumple",
-      "Version": "2022.2.13",
+      "Version": "2026.7.1",
       "ReferenceType": "Package",
       "Nodes": [
-        "f3c74cd9f60b4f7eb659dc5b19e186e6"
+        "5b18219937414757b4ba7fdad83f919b"
       ]
     }
   ],
@@ -167,7 +171,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -183,10 +187,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "779c3a82ecd34d2ba532d36ea87b6c36",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -195,8 +200,8 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "e1802ecc90474a858684c9de3f646ec0",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -205,8 +210,8 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "04359ed8f8b24028893b769a06e632cf",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -215,19 +220,19 @@
         "Y": 0.99003057248773985
       },
       {
-        "ShowGeometry": true,
         "Name": "© Revit.GetDocument",
-        "Id": "f3c74cd9f60b4f7eb659dc5b19e186e6",
+        "ShowGeometry": true,
+        "Id": "5b18219937414757b4ba7fdad83f919b",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -51.597604971601982,
-        "Y": 4.6557148226890206
+        "X": -26.8947453286425,
+        "Y": 5.6488773744045773
       }
     ],
     "Annotations": [],
-    "X": 72.053163815751532,
-    "Y": 145.15385853649383,
+    "X": 440.05316381575153,
+    "Y": 165.15385853649383,
     "Zoom": 1.1952973285796957
   }
 }

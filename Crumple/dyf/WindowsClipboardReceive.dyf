@@ -15,6 +15,7 @@
       "NodeType": "PythonScriptNode",
       "Code": "import clr\r\nimport System\r\nfrom System.Threading import Thread, ThreadStart\r\nclr.AddReference(\"System.Windows.Forms\")\r\n\r\nclipboardcontents = '###'\r\n\r\ndef GetText():\r\n    def thread_proc():\r\n        global clipboardcontents\r\n        clipboardcontents = System.Windows.Forms.Clipboard.GetText()\r\n    t = Thread(ThreadStart(thread_proc))\r\n    t.ApartmentState = System.Threading.ApartmentState.STA\r\n    t.Start()\r\n    t.Join()\r\n\r\ntry:\r\n\tGetText()\r\n\tOUT = [clipboardcontents, True]\r\nexcept:\r\n\tOUT = [\"\", False]",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "121179b8bf5a45d5bef6a4423208b456",
       "Inputs": [
@@ -72,7 +73,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "receivedData",
+      "Symbol": "stringReceived",
       "Id": "bbc7142bfb324efe8a6f9653bf72136b",
       "Inputs": [
         {
@@ -154,22 +155,26 @@
     {
       "Start": "b83b91a505c54508a71e1adc446bf0b2",
       "End": "2fe80265bb8745978f498a241685177b",
-      "Id": "81fe289bc05d40c697b147411461be4e"
+      "Id": "81fe289bc05d40c697b147411461be4e",
+      "IsHidden": "False"
     },
     {
       "Start": "169de71ef3c3475ab95d40c5c61511a8",
       "End": "8e65a9530bc84005ae27caefd551f00d",
-      "Id": "4c35c311cc664bdf88fbc6a1de23e4b7"
+      "Id": "4c35c311cc664bdf88fbc6a1de23e4b7",
+      "IsHidden": "False"
     },
     {
       "Start": "19f27f821c85451680ff10355718298e",
       "End": "996c1d00e30745c380e6e8ec6bbb35d6",
-      "Id": "173b112c68554cd991e4a1a1b8761c93"
+      "Id": "173b112c68554cd991e4a1a1b8761c93",
+      "IsHidden": "False"
     },
     {
       "Start": "4c08e0d730ac4cec9b4b3cf0671a8d6e",
       "End": "5207b3c713e142d88a6a70d0e6862d10",
-      "Id": "aeb66b5b00244022a24a6624cf36b384"
+      "Id": "aeb66b5b00244022a24a6624cf36b384",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -181,7 +186,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -197,10 +202,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "121179b8bf5a45d5bef6a4423208b456",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -209,8 +215,8 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "465d280c98b4498185b3097f496904aa",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -219,18 +225,18 @@
         "Y": 0.061097142323433218
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "bbc7142bfb324efe8a6f9653bf72136b",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 680.20544507700356,
-        "Y": -46.419122841482704
+        "X": 731.20544507700356,
+        "Y": -53.419122841482704
       },
       {
-        "ShowGeometry": true,
         "Name": "Code Block",
+        "ShowGeometry": true,
         "Id": "057726fe325349bfb263e37bf314189a",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -239,19 +245,19 @@
         "Y": 4.2314068007261483
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "856b4ba8fa2f4cff911e4f937153858e",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 691.27627763904661,
-        "Y": 33.04251068161841
+        "X": 717.27627763904661,
+        "Y": 94.04251068161841
       }
     ],
     "Annotations": [],
-    "X": 350.84947035779106,
-    "Y": 412.18830607993215,
-    "Zoom": 1.0
+    "X": -454.56576222125545,
+    "Y": 386.0554863895855,
+    "Zoom": 1.33823125
   }
 }

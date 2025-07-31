@@ -15,6 +15,7 @@
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport os\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import BasicFileInfo\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\ndef getVersion(filePath):\r\n\tif os.path.exists(filePath):\r\n\t\ttry:\r\n\t\t\tinfo_file = BasicFileInfo.Extract(filePath)\r\n\t\t\treturn int(info_file.Format)\r\n\t\texcept:\r\n\t\t\treturn None\t\r\n\r\nfile_paths = tolist(IN[0])\r\n\t\r\nOUT = objOrList([getVersion(fp) for fp in file_paths])",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "f2c67bc66f3d4d478a2470bc366a10f2",
       "Inputs": [
@@ -46,7 +47,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "versions",
+      "Symbol": "version",
       "Id": "239765f968364910950ffb0142c7db30",
       "Inputs": [
         {
@@ -67,7 +68,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "filePaths",
+        "Name": "filePath",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -94,12 +95,14 @@
     {
       "Start": "c8388cefee7b4712af2fc255bf971f43",
       "End": "09c64b2fe23543b0a4e0854e17645cf1",
-      "Id": "78d6e60010a84bdfa262e666c2359ab5"
+      "Id": "78d6e60010a84bdfa262e666c2359ab5",
+      "IsHidden": "False"
     },
     {
       "Start": "015bc985fe5a47c8a208807fb790e57d",
       "End": "c390bcfa8f6c462995e46178c8b605eb",
-      "Id": "566516a1d299462ea619c0e36c7387ae"
+      "Id": "566516a1d299462ea619c0e36c7387ae",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -111,7 +114,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -127,10 +130,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "f2c67bc66f3d4d478a2470bc366a10f2",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -139,8 +143,8 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "239765f968364910950ffb0142c7db30",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -149,8 +153,8 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "ede4ce46c36b4c38a9ecc24ebabef560",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,

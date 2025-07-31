@@ -63,6 +63,7 @@
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import FilteredElementCollector, ScheduleSheetInstance\r\n\r\n# Current doc/app/ui\r\ndoc = IN[3]\r\n\r\n# Preparing input from dynamo to revit\r\nincstd, inckey, increv = IN[0],IN[1],IN[2]\r\n\r\nschedules, revschedules, keyschedules = [],[],[]\r\n\r\ncoll = FilteredElementCollector(doc).OfClass(ScheduleSheetInstance).ToElements()\r\n\r\nschedInsts, schedTypes, schedNames = [],[],[]\r\n\r\nfor s in coll:\r\n\tschedType = doc.GetElement(s.ScheduleId)\r\n\tif schedType.Definition.IsKeySchedule and inckey:\r\n\t\tschedTypes.append(schedType)\r\n\t\tschedInsts.append(s)\r\n\t\tschedNames.append(\"Key Schedule\")\r\n\telif \"<Revision Schedule>\" in schedType.Name and increv:\r\n\t\tschedTypes.append(schedType)\r\n\t\tschedInsts.append(s)\r\n\t\tschedNames.append(\"Revision Schedule\")\r\n\telif incstd and not schedType.Definition.IsKeySchedule and not \"<Revision Schedule>\" in schedType.Name:\r\n\t\tschedTypes.append(schedType)\r\n\t\tschedInsts.append(s)\r\n\t\tschedNames.append(\"Schedule\")\r\n\r\n# Preparing output to Dynamo\r\nOUT = schedInsts, schedTypes, schedNames",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "4122b68a76064adbbfa4fbcd036ed065",
       "Inputs": [
@@ -289,10 +290,10 @@
       "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
       "FunctionType": "Graph",
       "NodeType": "FunctionNode",
-      "Id": "48061e3590704eca85288b90f0aca990",
+      "Id": "671d65806a3d4ab89e91e18c4a1b35b4",
       "Inputs": [
         {
-          "Id": "11aba9334571466cb1242a41a42d45e4",
+          "Id": "5bec981de93e4d35b15bdb05f7d25fa3",
           "Name": "docOrLink",
           "Description": "var[]..[]\nDefault value : null",
           "UsingDefaultValue": true,
@@ -303,7 +304,7 @@
       ],
       "Outputs": [
         {
-          "Id": "57f49d19d0f04f6e837d3ad55341ed4a",
+          "Id": "efd17d87db434f99a9f9c013a4bbe4a0",
           "Name": "document",
           "Description": "return value",
           "UsingDefaultValue": false,
@@ -312,7 +313,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "39be2b86baa24944ba9238dbed608c91",
+          "Id": "6bcc3d47c8774ff9b3e8324f1eff060d",
           "Name": "outcome",
           "Description": "return value",
           "UsingDefaultValue": false,
@@ -329,47 +330,56 @@
     {
       "Start": "cd03253582534ef2bb1f037193d4c71d",
       "End": "ddf227055d774a5481900200e1914a64",
-      "Id": "e19a6114f51c4c2ca2c891d00a4c0563"
+      "Id": "e19a6114f51c4c2ca2c891d00a4c0563",
+      "IsHidden": "False"
     },
     {
       "Start": "5a46a00da43c4ea9bde72f33683e3a08",
       "End": "0187dcd41a824c7691ab4b32b294a285",
-      "Id": "c5cacf7c08b244a7977684f01ec26e1d"
+      "Id": "c5cacf7c08b244a7977684f01ec26e1d",
+      "IsHidden": "False"
     },
     {
       "Start": "a502e87857054b738f44b1b68445be2d",
       "End": "3ab3d1121a7748b88a24dbc2a962f6f3",
-      "Id": "94e3c18cc3194863b549e0da8fded1b9"
+      "Id": "94e3c18cc3194863b549e0da8fded1b9",
+      "IsHidden": "False"
     },
     {
       "Start": "0f56b1466ad942adbd5915fa54ad29bd",
       "End": "13e86ffd140c42f8a099d5624547e06f",
-      "Id": "f048deff2d0a4518afe6ef42eac2ba3b"
+      "Id": "f048deff2d0a4518afe6ef42eac2ba3b",
+      "IsHidden": "False"
     },
     {
       "Start": "3abf2b3c1fd8476183c9667ce2d199fc",
       "End": "93d821e038ff46d986fcbf120e11b199",
-      "Id": "4a0fc048968c4ba6b7f299a1bc1cfd97"
+      "Id": "4a0fc048968c4ba6b7f299a1bc1cfd97",
+      "IsHidden": "False"
     },
     {
       "Start": "ca40f9ea57b24a9e94f25938d23c2574",
       "End": "dafcef15a15b499ca73408ebb73e4aa4",
-      "Id": "62403a9d10c1472c910c57ded7516bae"
+      "Id": "62403a9d10c1472c910c57ded7516bae",
+      "IsHidden": "False"
     },
     {
       "Start": "3671b63e3d2c4025ac81cd93d6625fde",
       "End": "8e3983cec1b14b9f92120cc075d43526",
-      "Id": "551c1160d62e4a57ae4a71b7323978ae"
+      "Id": "551c1160d62e4a57ae4a71b7323978ae",
+      "IsHidden": "False"
     },
     {
       "Start": "9e728982c4014493ac836d5ef7b1139e",
-      "End": "11aba9334571466cb1242a41a42d45e4",
-      "Id": "ab49d2e0374c4368a709c0314aadea5c"
+      "End": "5bec981de93e4d35b15bdb05f7d25fa3",
+      "Id": "13e995d60c8948b887c89cfb7d3c7709",
+      "IsHidden": "False"
     },
     {
-      "Start": "57f49d19d0f04f6e837d3ad55341ed4a",
+      "Start": "efd17d87db434f99a9f9c013a4bbe4a0",
       "End": "51272c09684041308290d8284932e6ed",
-      "Id": "241daed17e604cccbe51c394416e6589"
+      "Id": "ec7d0e8bc7664c40a32b4347b09f0c88",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [
@@ -378,10 +388,10 @@
   "NodeLibraryDependencies": [
     {
       "Name": "Crumple",
-      "Version": "2022.2.13",
+      "Version": "2026.7.1",
       "ReferenceType": "Package",
       "Nodes": [
-        "48061e3590704eca85288b90f0aca990"
+        "671d65806a3d4ab89e91e18c4a1b35b4"
       ]
     }
   ],
@@ -392,7 +402,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -408,10 +418,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Code Block",
+        "ShowGeometry": true,
         "Id": "b9604dddd6f6456da66e5d92bbf9e519",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -420,8 +431,8 @@
         "Y": 2.3045995194708553
       },
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "4122b68a76064adbbfa4fbcd036ed065",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -430,8 +441,8 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "b55c62f9aa814d629965e24c0d14bf4c",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -440,8 +451,8 @@
         "Y": -61.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "6b4342356c924f5ea66ede4fdd87b8cd",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -450,8 +461,8 @@
         "Y": -59.445393573438906
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "071222989bfa435ca1615bf1a2a0618e",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -460,8 +471,8 @@
         "Y": 107.65906913337102
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "69bf525fbef84239bbfa94d6b7f11263",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -470,8 +481,8 @@
         "Y": 25.936372346651638
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "1b8b86097e59400da8dad583af463ad6",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -480,8 +491,8 @@
         "Y": 14.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "713b875ab3a949dfb75aa8cbf4ca129a",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -490,8 +501,8 @@
         "Y": 91.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "2d800639a23341b5ad3d465825edd359",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -500,19 +511,19 @@
         "Y": 187.68908256694391
       },
       {
-        "ShowGeometry": true,
         "Name": "© Revit.GetDocument",
-        "Id": "48061e3590704eca85288b90f0aca990",
+        "ShowGeometry": true,
+        "Id": "671d65806a3d4ab89e91e18c4a1b35b4",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -85.238279452467168,
-        "Y": 186.72382630485154
+        "X": -21.140335115686469,
+        "Y": 229.63187097657078
       }
     ],
     "Annotations": [],
-    "X": 25.063448599401568,
-    "Y": 131.85543812296436,
+    "X": 478.06344859940157,
+    "Y": 57.855438122964358,
     "Zoom": 0.97382407038599372
   }
 }

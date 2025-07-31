@@ -20,6 +20,7 @@
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nfrom datetime import datetime\r\n\r\n# Collect input\r\ndatain = IN[0]\r\nstart  = IN[1]\r\n\r\n# Output the time now\r\nnow  = datetime.now()\r\ndiff = now - start\r\nsecs = divmod(diff.total_seconds(), 60)\r\n\r\nOUT = [datain, now, secs[1]]",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "4f87f7de60a84cb8bab55eef540ccaa8",
       "Inputs": [
@@ -60,7 +61,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "data_in",
+        "Name": "data",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": "Empty",
@@ -112,7 +113,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//Data as it leaves the node\r\ndata_out",
+      "Symbol": "//Data as it leaves the node\r\ndata",
       "Id": "d4f644851a5d4e7f9cf7f29ab6cba2ee",
       "Inputs": [
         {
@@ -224,32 +225,38 @@
     {
       "Start": "a3dfedfd6fbf469d977dd0e3d43936e5",
       "End": "c60d82bd425446368fd610e7aa1e0415",
-      "Id": "a4e5b9d608dd49bdb3d6dd5209378d4e"
+      "Id": "a4e5b9d608dd49bdb3d6dd5209378d4e",
+      "IsHidden": "False"
     },
     {
       "Start": "6ab29229d94344d9b4ab19657c8a2d91",
       "End": "644855cf7a8b4a83963f93fcc9646bff",
-      "Id": "baab0a0563964e779289c396f2dffb18"
+      "Id": "baab0a0563964e779289c396f2dffb18",
+      "IsHidden": "False"
     },
     {
       "Start": "d3e244470a7c45048e8b6a312f5cd461",
       "End": "1dbe3133c87b449691b693cbfa06c558",
-      "Id": "ecd7590039154dc5a80db8123dd2be18"
+      "Id": "ecd7590039154dc5a80db8123dd2be18",
+      "IsHidden": "False"
     },
     {
       "Start": "7442790977184c88a7b67e32237c040b",
       "End": "de19b6eea8fe43a4909f0eb36af10269",
-      "Id": "727b3242f6f54f5881521a6c575d34ab"
+      "Id": "727b3242f6f54f5881521a6c575d34ab",
+      "IsHidden": "False"
     },
     {
       "Start": "dee9936387a24a1faff69918867485d0",
       "End": "6a0caa2d788c46e7accc4f88288fbe75",
-      "Id": "c50c9cc4b55347b198fc0ab8ec9f85e3"
+      "Id": "c50c9cc4b55347b198fc0ab8ec9f85e3",
+      "IsHidden": "False"
     },
     {
       "Start": "0137eb7ac6bc4dd0aeefe163c6e9b2bd",
       "End": "c48f2eee453640e9bea7a7aefa8fb26a",
-      "Id": "da242e1dd3914000a4fb786815e1e4ef"
+      "Id": "da242e1dd3914000a4fb786815e1e4ef",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -261,7 +268,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -277,10 +284,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "4f87f7de60a84cb8bab55eef540ccaa8",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -289,8 +297,8 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "634a6f3e4142455686e91c04cd1e3a84",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -299,8 +307,8 @@
         "Y": -30.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "daed40e0961b480f981ea0455589adf0",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -309,18 +317,18 @@
         "Y": 62.17588605490937
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "d4f644851a5d4e7f9cf7f29ab6cba2ee",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 709.00000000000011,
-        "Y": -64.0
+        "X": 741.67763407229154,
+        "Y": -115.35056782788652
       },
       {
-        "ShowGeometry": true,
         "Name": "Code Block",
+        "ShowGeometry": true,
         "Id": "080ce685e2aa40d3920d93d705210426",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -329,8 +337,8 @@
         "Y": 4.1596528054656972
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "49ba004fdb4243c4b66634274051b097",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -339,8 +347,8 @@
         "Y": 18.5
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "860f64efbc454a6caf853e81124260c7",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -350,8 +358,8 @@
       }
     ],
     "Annotations": [],
-    "X": -61.554017093058292,
-    "Y": 256.11045803782872,
-    "Zoom": 1.1917937712929567
+    "X": 144.14911007510364,
+    "Y": 267.97877782905982,
+    "Zoom": 0.9155622852812263
   }
 }

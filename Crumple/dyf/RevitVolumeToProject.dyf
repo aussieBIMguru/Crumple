@@ -53,46 +53,6 @@
       "Description": "Runs an embedded Python script."
     },
     {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "b3418ae031ed43449081e17ff9cd1d6c",
-      "Inputs": [
-        {
-          "Id": "2ffbe12e6d6849b0b4b47c1d022ad300",
-          "Name": "docOrLink",
-          "Description": "var[]..[]\nDefault value : null",
-          "UsingDefaultValue": true,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "fa060cf9ccd849bf8075e7bf458a6e20",
-          "Name": "document",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "67fb33e7a20f45b5b307c6571fd4437a",
-          "Name": "outcome",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
-    },
-    {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
@@ -164,6 +124,46 @@
       ],
       "Replication": "Disabled",
       "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "4a8a580b-b56f-4e35-a1c0-dacf9b9c62bc",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "3732f6f03f2f4ce28fd416b8355de4f7",
+      "Inputs": [
+        {
+          "Id": "d67e7badd2604403a29f1794c4663cad",
+          "Name": "docOrLink",
+          "Description": "var[]..[]\nDefault value : null",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "0c119037c9c54cddb274ae7e7bd5484d",
+          "Name": "document",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "bd4f384ea3a34d2ba4804239e0e2c10c",
+          "Name": "outcome",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "If no input is specified or an invalid one is, returns current document. If a link instance is provided, it returns the linked document. If a document is provided it will pass it through."
     }
   ],
   "Connectors": [
@@ -174,12 +174,6 @@
       "IsHidden": "False"
     },
     {
-      "Start": "fa060cf9ccd849bf8075e7bf458a6e20",
-      "End": "8e22188f0f264e08a3bfaa9dc66ffb7a",
-      "Id": "184f4c7519fd40cc824d5f656584fae3",
-      "IsHidden": "False"
-    },
-    {
       "Start": "68a5a90174b443a3b1be7168fe3099a9",
       "End": "b9f64cc827434f549dfcc1352093d0f3",
       "Id": "c9a15eeb07474ffaa5047cbeb9d51e0f",
@@ -187,8 +181,14 @@
     },
     {
       "Start": "bc8b830f5b9d4f03a334aa41c508e94f",
-      "End": "2ffbe12e6d6849b0b4b47c1d022ad300",
-      "Id": "59268b10bfe944c396fbad0732bc3ec1",
+      "End": "d67e7badd2604403a29f1794c4663cad",
+      "Id": "945383abbca649a0a0de442b19280418",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "0c119037c9c54cddb274ae7e7bd5484d",
+      "End": "8e22188f0f264e08a3bfaa9dc66ffb7a",
+      "Id": "9c6e33677f19422cafb1d514d34a5a57",
       "IsHidden": "False"
     }
   ],
@@ -198,10 +198,10 @@
   "NodeLibraryDependencies": [
     {
       "Name": "Crumple",
-      "Version": "2024.4.3",
+      "Version": "2026.7.1",
       "ReferenceType": "Package",
       "Nodes": [
-        "b3418ae031ed43449081e17ff9cd1d6c"
+        "3732f6f03f2f4ce28fd416b8355de4f7"
       ]
     }
   ],
@@ -241,16 +241,6 @@
         "Y": 0.0
       },
       {
-        "Name": "© Revit.GetDocument",
-        "ShowGeometry": true,
-        "Id": "b3418ae031ed43449081e17ff9cd1d6c",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 250.0,
-        "Y": 147.639004118191
-      },
-      {
         "Name": "Output",
         "ShowGeometry": true,
         "Id": "2902e09f022745068edd8f0b2b04521c",
@@ -279,6 +269,16 @@
         "Excluded": false,
         "X": -232.08189451753196,
         "Y": 146.17513403950142
+      },
+      {
+        "Name": "© Revit.GetDocument",
+        "ShowGeometry": true,
+        "Id": "3732f6f03f2f4ce28fd416b8355de4f7",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 281.65652275964374,
+        "Y": 147.65620803058343
       }
     ],
     "Annotations": [],
