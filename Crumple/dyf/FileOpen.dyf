@@ -1,11 +1,20 @@
 {
-  "Uuid": "114fc630-ac45-484c-b254-8e04a412a46f",
+  "Uuid": "5b7be249-c9bb-44b8-b73b-1f9f2f167adc",
   "IsCustomNode": true,
-  "Category": "Crumple.Application.Query",
-  "Description": "Returns the size of a file path in MB.",
-  "Name": "© Windows.FileSize",
+  "Category": "Crumple.Application.Actions",
+  "Description": "Attempts to open a file in Windows.",
+  "Name": "© File.Open",
   "ElementResolver": {
-    "ResolutionMap": {}
+    "ResolutionMap": {
+      "Point": {
+        "Key": "Autodesk.DesignScript.Geometry.Point",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Vector": {
+        "Key": "Autodesk.DesignScript.Geometry.Vector",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
   },
   "Inputs": [],
   "Outputs": [],
@@ -13,14 +22,14 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Made by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n# Boilerplate text\nimport clr\nimport os\n\n# Define list/unwrap list functions\ndef tolist(input):\n    result = input if isinstance(input, list) else [input]\n    return result\n\ndef objOrList(input, initial = IN[0]):\n\tif isinstance(initial, list):\n\t\treturn input\n\telse:\n\t\treturn input[0]\n\ndef getFileSize(filePath):\n    try:\n        size = os.path.getsize(filePath)\n        return size / 1000000\n    except:\n        return None\n\n# Method from Data-Shapes to get current model size\nfilePaths = tolist(IN[0])\nsizes = [getFileSize(fp) for fp in filePaths]\n\n# Return size in MB\nOUT = objOrList(sizes)",
+      "Code": "# Made by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n# Boilerplate text\nimport clr\nimport os\n\n# Define list/unwrap list functions\ndef tolist(input):\n    result = input if isinstance(input, list) else [input]\n    return result\n\ndef objOrList(input):\n    if isinstance(input, list) and len(input) == 1:\n        return input[0]\n    else:\n        return input\n\n# Preparing input from dynamo to revit\nfilePaths = tolist(IN[0])\n\nsuccess = []\n\nfor fp in filePaths:\n    try:\n        os.startfile(fp)\n        success.append(True)\n    except:\n        success.append(False)\n\n# Preparing output to Dynamo\nOUT = objOrList(success)",
       "Engine": "CPython3",
       "EngineName": "CPython3",
       "VariableInputPorts": true,
-      "Id": "3560b8687b094627aaebd193ffae9443",
+      "Id": "29fa7f1dce3b4d59bc859ab8c4a2b905",
       "Inputs": [
         {
-          "Id": "07bd03bddf0749bcb8fb8f1e2e01fa93",
+          "Id": "26d8a5a327774d7b80bb6f0049cfeb15",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -31,7 +40,7 @@
       ],
       "Outputs": [
         {
-          "Id": "b472cf8646af4e958f726d78b12748f0",
+          "Id": "d7e96f3c75164250bdd93d85f59c6f69",
           "Name": "OUT",
           "Description": "Result of the python script",
           "UsingDefaultValue": false,
@@ -47,19 +56,19 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "filePaths",
-        "TypeName": "var",
+        "Name": "filePath",
+        "TypeName": "string",
         "TypeRank": -1,
         "DefaultValue": null,
         "Description": ""
       },
-      "Id": "ed0e34c7c15740e1845edef7ea575ee8",
+      "Id": "a92f5e177fd94dd4b068cdfe0028ee5a",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "9137a3c601814178b48c42bfd45bf5c0",
+          "Id": "75f249bdea794fb9b9f06693eed7e6dc",
           "Name": "",
-          "Description": "Symbol",
+          "Description": "Input Data",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -73,13 +82,13 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "// Returned in MB\r\nsizesInMb",
-      "Id": "d7da684b47754a75a175a3b9419c36f8",
+      "Symbol": "success",
+      "Id": "aca449c191d0456186ca36d96c48d414",
       "Inputs": [
         {
-          "Id": "820fa31b594a40ea98204b092a95d865",
+          "Id": "5759709e5dd84002aaba4261848da060",
           "Name": "",
-          "Description": "",
+          "Description": "Output Data",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -93,15 +102,15 @@
   ],
   "Connectors": [
     {
-      "Start": "b472cf8646af4e958f726d78b12748f0",
-      "End": "820fa31b594a40ea98204b092a95d865",
-      "Id": "f2c5700639c34ab7af90f36e2ecc0407",
+      "Start": "d7e96f3c75164250bdd93d85f59c6f69",
+      "End": "5759709e5dd84002aaba4261848da060",
+      "Id": "b77c2b4beff147758890c4d5acee7b63",
       "IsHidden": "False"
     },
     {
-      "Start": "9137a3c601814178b48c42bfd45bf5c0",
-      "End": "07bd03bddf0749bcb8fb8f1e2e01fa93",
-      "Id": "ec5e51d6008c4f4f8b48b3bf37e9fb22",
+      "Start": "75f249bdea794fb9b9f06693eed7e6dc",
+      "End": "26d8a5a327774d7b80bb6f0049cfeb15",
+      "Id": "f7d66565954e4a3a94c928a2755967bb",
       "IsHidden": "False"
     }
   ],
@@ -135,37 +144,37 @@
       {
         "Name": "Python Script",
         "ShowGeometry": true,
-        "Id": "3560b8687b094627aaebd193ffae9443",
+        "Id": "29fa7f1dce3b4d59bc859ab8c4a2b905",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 335.08766386298038,
-        "Y": 1.7364829359791543
+        "X": 250.0,
+        "Y": 0.0
       },
       {
         "Name": "Input",
         "ShowGeometry": true,
-        "Id": "ed0e34c7c15740e1845edef7ea575ee8",
+        "Id": "a92f5e177fd94dd4b068cdfe0028ee5a",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -45.756341455593429,
-        "Y": 0.90097590757170565
+        "X": -80.0,
+        "Y": 2.0
       },
       {
         "Name": "Output",
         "ShowGeometry": true,
-        "Id": "d7da684b47754a75a175a3b9419c36f8",
+        "Id": "aca449c191d0456186ca36d96c48d414",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 664.34750608126319,
-        "Y": 2.60472440396876
+        "X": 499.0,
+        "Y": 0.0
       }
     ],
     "Annotations": [],
-    "X": 50.638786974557661,
-    "Y": 256.97820828957379,
-    "Zoom": 1.1517533276952223
+    "X": 338.08183997030244,
+    "Y": 224.63265625000003,
+    "Zoom": 1.33823125
   }
 }

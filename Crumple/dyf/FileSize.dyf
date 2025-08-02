@@ -1,0 +1,171 @@
+{
+  "Uuid": "114fc630-ac45-484c-b254-8e04a412a46f",
+  "IsCustomNode": true,
+  "Category": "Crumple.Application.Query",
+  "Description": "Returns the size of a file path in MB.",
+  "Name": "© File.Size",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n# Boilerplate text\nimport clr\nimport os\n\n# Define list/unwrap list functions\ndef tolist(input):\n    result = input if isinstance(input, list) else [input]\n    return result\n\ndef objOrList(input, initial = IN[0]):\n\tif isinstance(initial, list):\n\t\treturn input\n\telse:\n\t\treturn input[0]\n\ndef getFileSize(filePath):\n    try:\n        size = os.path.getsize(filePath)\n        return size / 1000000\n    except:\n        return None\n\n# Method from Data-Shapes to get current model size\nfilePaths = tolist(IN[0])\nsizes = [getFileSize(fp) for fp in filePaths]\n\n# Return size in MB\nOUT = objOrList(sizes)",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "3560b8687b094627aaebd193ffae9443",
+      "Inputs": [
+        {
+          "Id": "07bd03bddf0749bcb8fb8f1e2e01fa93",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "b472cf8646af4e958f726d78b12748f0",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "filePaths",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "ed0e34c7c15740e1845edef7ea575ee8",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "9137a3c601814178b48c42bfd45bf5c0",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "// Returned in MB\r\nsizesInMb",
+      "Id": "d7da684b47754a75a175a3b9419c36f8",
+      "Inputs": [
+        {
+          "Id": "820fa31b594a40ea98204b092a95d865",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "b472cf8646af4e958f726d78b12748f0",
+      "End": "820fa31b594a40ea98204b092a95d865",
+      "Id": "f2c5700639c34ab7af90f36e2ecc0407",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "9137a3c601814178b48c42bfd45bf5c0",
+      "End": "07bd03bddf0749bcb8fb8f1e2e01fa93",
+      "Id": "ec5e51d6008c4f4f8b48b3bf37e9fb22",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.16.2.5624",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Id": "3560b8687b094627aaebd193ffae9443",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 335.08766386298038,
+        "Y": 1.7364829359791543
+      },
+      {
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Id": "ed0e34c7c15740e1845edef7ea575ee8",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -45.756341455593429,
+        "Y": 0.90097590757170565
+      },
+      {
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Id": "d7da684b47754a75a175a3b9419c36f8",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 664.34750608126319,
+        "Y": 2.60472440396876
+      }
+    ],
+    "Annotations": [],
+    "X": 50.638786974557661,
+    "Y": 256.97820828957379,
+    "Zoom": 1.1517533276952223
+  }
+}

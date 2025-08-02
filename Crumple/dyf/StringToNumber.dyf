@@ -1,0 +1,383 @@
+{
+  "Uuid": "d4b4fa6f-1a0b-4f2c-8be5-9052eb7a0bca",
+  "IsCustomNode": true,
+  "Category": "Crumple.Data.Create",
+  "Description": "Attempts to convert a string to a  number, with an optional failure replacement.",
+  "Name": "© String.ToNumber",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Point": {
+        "Key": "Autodesk.DesignScript.Geometry.Point",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Vector": {
+        "Key": "Autodesk.DesignScript.Geometry.Vector",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.String.ToNumber@string",
+      "Id": "c48bb56c4eec410f9c54d528f6ad8af3",
+      "Inputs": [
+        {
+          "Id": "0fd2a413a4ac41eab4179eb7858b8df3",
+          "Name": "string",
+          "Description": "String to be converted\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "4dd819b005804e1d8111971362611dd8",
+          "Name": "number",
+          "Description": "Integer or double-type number",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Converts a string to an integer or a double.\n\nString.ToNumber (string: string): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "str",
+        "TypeName": "string",
+        "TypeRank": 0,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "71ce749897924797b4fdb3e3153a93a0",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "cc65337bea7941ef8c0dcf469e6581d1",
+          "Name": "",
+          "Description": "Input Data",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "number",
+      "Id": "3cd795e917f94f2b9c6f7df3e1fb07a5",
+      "Inputs": [
+        {
+          "Id": "9d99613581fb4f91adad2f48feec6c19",
+          "Name": "",
+          "Description": "Output Data",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.HigherOrder.ApplyFunction, CoreNodeModels",
+      "VariableInputPorts": true,
+      "NodeType": "ExtensionNode",
+      "Id": "962d1f975b3840688196402e9382f7ff",
+      "Inputs": [
+        {
+          "Id": "cd6eb38f0d1549ec80ec879531e2366b",
+          "Name": "function",
+          "Description": "Function to apply.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "f9c4148ad83c4933b9f7fbcba040ae25",
+          "Name": "argument0",
+          "Description": "Argument #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "445f6425aba14230a9da5e732b75f856",
+          "Name": "result",
+          "Description": "Result of application.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Returns the result of a function with supplied arguments. Ex: arguments of a point and vector are applied to a translate function returning a translated point."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.HigherOrder.Replace, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "e515f5b17ee64df08ff29ccf6a6d1f49",
+      "Inputs": [
+        {
+          "Id": "5c62b58115f242b8a4503f44b11ff4b0",
+          "Name": "item",
+          "Description": "Item to potentially be replaced",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "8a4b07e435b84240995f2451d8548d32",
+          "Name": "replaceWith",
+          "Description": "Object to replace with",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "2b1599e13b8446e7bf715210a0c9c868",
+          "Name": "condition",
+          "Description": "Replacement function used to determine if an object should be replaced",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "e9e98f19327348b1ae49a0c7a1d18f8c",
+          "Name": "var[]..[]",
+          "Description": "Item, or list of items where condition was used to replace with item given in \"replaceWith\"",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Replaces an object with a given substitute if the original object satisfies a given condition."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "replaceNulls",
+        "TypeName": "var",
+        "TypeRank": 0,
+        "DefaultValue": "null",
+        "Description": ""
+      },
+      "Id": "240669d23c094dd59d823741d9a9f858",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "27db2ddf186c41f6a32abc200a88f9f5",
+          "Name": "",
+          "Description": "Input Data",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.Object.IsNull@var",
+      "Id": "5249495b895e49b4ae16e3961388ec1f",
+      "Inputs": [
+        {
+          "Id": "9c364821b3554dab94ab43eb8a870b23",
+          "Name": "object",
+          "Description": "Object to test.\n\nvar",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "59832675dffa4676a2beb7bf5e159525",
+          "Name": "bool",
+          "Description": "Whether object is null.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Determines if the given object is null.\n\nObject.IsNull (object: var): bool"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "4dd819b005804e1d8111971362611dd8",
+      "End": "cd6eb38f0d1549ec80ec879531e2366b",
+      "Id": "f98326b88c524c5f9c3584bf510f68c9",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "cc65337bea7941ef8c0dcf469e6581d1",
+      "End": "f9c4148ad83c4933b9f7fbcba040ae25",
+      "Id": "4c50a2acf0934803a7d8713fedc816d7",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "445f6425aba14230a9da5e732b75f856",
+      "End": "5c62b58115f242b8a4503f44b11ff4b0",
+      "Id": "588a422f09d74de4a388e4a426d21c4f",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "e9e98f19327348b1ae49a0c7a1d18f8c",
+      "End": "9d99613581fb4f91adad2f48feec6c19",
+      "Id": "2d1c85bcbaec49cda094ef4e34f3e928",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "27db2ddf186c41f6a32abc200a88f9f5",
+      "End": "8a4b07e435b84240995f2451d8548d32",
+      "Id": "dfcb5d2611a3432583eb7b9fea488598",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "59832675dffa4676a2beb7bf5e159525",
+      "End": "2b1599e13b8446e7bf715210a0c9c868",
+      "Id": "00b7fcd72f5f4dfa8529f02a6be6539f",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.16.2.5624",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Name": "String.ToNumber",
+        "ShowGeometry": true,
+        "Id": "c48bb56c4eec410f9c54d528f6ad8af3",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 134.0,
+        "Y": -179.0
+      },
+      {
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Id": "71ce749897924797b4fdb3e3153a93a0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -43.0,
+        "Y": -1.0
+      },
+      {
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Id": "3cd795e917f94f2b9c6f7df3e1fb07a5",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1146.0,
+        "Y": -45.0
+      },
+      {
+        "Name": "Function Apply",
+        "ShowGeometry": true,
+        "Id": "962d1f975b3840688196402e9382f7ff",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 434.0,
+        "Y": -43.0
+      },
+      {
+        "Name": "ReplaceByCondition",
+        "ShowGeometry": true,
+        "Id": "e515f5b17ee64df08ff29ccf6a6d1f49",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 786.0,
+        "Y": -44.0
+      },
+      {
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Id": "240669d23c094dd59d823741d9a9f858",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 365.0,
+        "Y": 123.0
+      },
+      {
+        "Name": "Object.IsNull",
+        "ShowGeometry": true,
+        "Id": "5249495b895e49b4ae16e3961388ec1f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 446.0,
+        "Y": 254.0
+      }
+    ],
+    "Annotations": [],
+    "X": 165.0,
+    "Y": 257.0,
+    "Zoom": 1.0
+  }
+}
