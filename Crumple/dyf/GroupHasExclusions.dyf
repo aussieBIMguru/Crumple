@@ -3,7 +3,7 @@
   "IsCustomNode": true,
   "Category": "Crumple.Revit.Query",
   "Description": "Returns a boolean as to whether a group contains excluded elements.",
-  "Name": "© Groups.HasExclusions",
+  "Name": "© Group.HasExclusions",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -15,6 +15,7 @@
       "NodeType": "PythonScriptNode",
       "Code": "# Boilerplate text\r\nimport clr\r\n\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\ngroups = uwlist(IN[0])\r\n\r\nexcluded = []\r\n\r\n# Check for excluded elements\r\nfor group in groups:\r\n\tif \"excluded\" in group.Name:\r\n\t\texcluded.append(True)\r\n\telse:\r\n\t\texcluded.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(excluded)",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "c1adc7efc66a46fe8ee93f62afab866f",
       "Inputs": [
@@ -46,7 +47,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "groups",
+        "Name": "group",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -72,7 +73,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "hasExcluded",
+      "Symbol": "hasExclusions",
       "Id": "9590237dcb1d4beea9bbcd1489062daf",
       "Inputs": [
         {
@@ -94,12 +95,14 @@
     {
       "Start": "9bc3cbb5ac8448d4a6f37737fd780afd",
       "End": "21c6275a13304e009dd580c8c8f52c4a",
-      "Id": "ab1641d042ac46bca6af56c37c1a9791"
+      "Id": "ab1641d042ac46bca6af56c37c1a9791",
+      "IsHidden": "False"
     },
     {
       "Start": "252667b31fd049809aa31a37794c0817",
       "End": "580de47280574951b8229486b99cc48f",
-      "Id": "447861d99c234eefb89bddc005016aca"
+      "Id": "447861d99c234eefb89bddc005016aca",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -111,7 +114,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -127,10 +130,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "c1adc7efc66a46fe8ee93f62afab866f",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -139,8 +143,8 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "3323dac25bcc4db38d91475fee24f54b",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -149,8 +153,8 @@
         "Y": -0.70356431005058084
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "9590237dcb1d4beea9bbcd1489062daf",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,

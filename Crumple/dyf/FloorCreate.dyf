@@ -1,0 +1,507 @@
+{
+  "Uuid": "572a1572-0c06-4185-82c6-17892fb8cced",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.Create",
+  "Description": "A new method unique to Revit 2022 that enables floors via the sketch API to support internal loops. Will not work in previous versions, and works best when the curves are in the form of list of lists of curves in continuous order.",
+  "Name": "© Floor.Create",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import CurveLoop, Floor\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application\r\n# Get revit version\r\nrevit_version = int(app.VersionNumber)\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n\tresult = input if isinstance(input, list) else [input]\r\n\treturn UnwrapElement(result)\r\n\r\ndef listpad(lst,count):\r\n\tpadded = []\r\n\tlength = len(lst)\r\n\tfor i in range(0,count):\r\n\t\tif i < length:\r\n\t\t\tpadded.append(lst[i])\r\n\t\telse:\r\n\t\t\tpadded.append(lst[-1])\r\n\treturn padded\r\n\r\n# If we are in Revit 2022 or higher, print\r\nif revit_version > 2021:\r\n    # Preparing input from dynamo to revit\r\n    roomset = IN[0]\r\n    maxlst = len(roomset)\r\n    \r\n    types  = listpad(uwlist(IN[1]),maxlst)\r\n    levels = listpad(uwlist(IN[2]),maxlst)\r\n    \r\n    floors = []\r\n    \r\n    TransactionManager.Instance.EnsureInTransaction(doc)\r\n    \r\n    for rm,f,l in zip(roomset,types,levels):\r\n    \tcurveloops = []\r\n    \tfor crv_setd in rm:\r\n    \t\tcrv_setr = []\r\n    \t\tfor crv_d in crv_setd:\r\n    \t\t\tcrv_setr.append(crv_d.ToRevitType())\r\n    \t\tcurveloop = CurveLoop.Create(crv_setr)\r\n    \t\tcurveloops.append(curveloop)\r\n    \tflr = Floor.Create(doc, curveloops, f.Id, l.Id)\r\n    \tfloors.append(flr)\r\n    \r\n    TransactionManager.Instance.TransactionTaskDone()\r\n    \r\n    # Preparing output to Dynamo\r\n    OUT = floors, \"SUCCESS: Version is 2022 or higher.\"\r\n# Otherwise tell the user we can't proceed\r\nelse:\r\n\tOUT = [], \"ERROR: Only works in Revit 2022 or higher..\"",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "cf27e808db944dcab7707f87813b9cde",
+      "Inputs": [
+        {
+          "Id": "d72708b4d7054433bbee8d3f945f7214",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a03b352a40de4d04a9dc4784c011c600",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "135409cef7534fb4a96e16cc913066c9",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "cbbca5198a7a41588002941bc18b2fcd",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "floor",
+      "Id": "5c5b7d9c372d4b608fbe69ccc3925de6",
+      "Inputs": [
+        {
+          "Id": "b22608b6062d474d8bea170561bb9ad6",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "curvelist",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "List of list of curves. The curves\nmust be in a continuous/closed order."
+      },
+      "Id": "c781dfc659804d319081e42a8cae5282",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "10efbe388bf04bf09e90c98ba06ef514",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "floortype",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "List of types to be applied\neach set of curves as a floor.\n\nNote that if you provide a\nshorter list of types than the\ncurve lists it will behave as\nlongest lacing."
+      },
+      "Id": "1db5039e9f6d461f868093d36569e262",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "e0b403dd109948e496b31afebe6a3ba8",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "level",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "Levels for the elements to\nbe created at."
+      },
+      "Id": "d087c4a6087942cbaf2196bde460c0d8",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "25d200108196480ab96ac7922e91cce8",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Elements.Element.SetParameterByName@string,var",
+      "Id": "6835652b83da4aa5afeb8da5718a1ab0",
+      "Inputs": [
+        {
+          "Id": "66fcbb6e9dfa463b8b327ace25eec7c6",
+          "Name": "element",
+          "Description": "Revit.Elements.Element",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "fa6f421ff19d421587de4b088dddb940",
+          "Name": "parameterName",
+          "Description": "The name of the parameter to set.\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "70229b9377614535a577e8ed0459fa46",
+          "Name": "value",
+          "Description": "The value.\n\nvar",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "35096d05e97d499d929c98d01b6c1868",
+          "Name": "Element",
+          "Description": "Element",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Longest",
+      "Description": "Set one of the element's parameters.\n\nElement.SetParameterByName (parameterName: string, value: var): Element"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "offset",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": "[0]",
+        "Description": "Height offset."
+      },
+      "Id": "7b3296ab0b154c0080d11c45994cea21",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "6a7608c742b54f24a3e8f582dd34b354",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"Height Offset From Level\";",
+      "Id": "2deefc501fcf42b48632dbec262ed4c1",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "e4a67be673aa4d3cace660a34e2f3399",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "x[0];\nx[1];",
+      "Id": "aec4e4a21a5447dca82aeddae1cfb06b",
+      "Inputs": [
+        {
+          "Id": "7e72a482e3964050abef37a920251522",
+          "Name": "x",
+          "Description": "x",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "4167d7e55b4e4a4f993c60b6f9ccc9a3",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "300e3791dcb64453b083215c1fd22341",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "versionCheck",
+      "Id": "d0dd78ee86c943cd887e064ce54b4c32",
+      "Inputs": [
+        {
+          "Id": "92eac43851cd46a9ae5b128f94b42262",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "cbbca5198a7a41588002941bc18b2fcd",
+      "End": "7e72a482e3964050abef37a920251522",
+      "Id": "949186f1a2a749349b0730ec29ef3639",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "10efbe388bf04bf09e90c98ba06ef514",
+      "End": "d72708b4d7054433bbee8d3f945f7214",
+      "Id": "b2bc97c2d4b346f38115247332d1e69c",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "e0b403dd109948e496b31afebe6a3ba8",
+      "End": "a03b352a40de4d04a9dc4784c011c600",
+      "Id": "ae753d4ceb9f4c6cbc60621dbb0aa336",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "25d200108196480ab96ac7922e91cce8",
+      "End": "135409cef7534fb4a96e16cc913066c9",
+      "Id": "2e2c056c2b1d435386ab606dfe3146a3",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "35096d05e97d499d929c98d01b6c1868",
+      "End": "b22608b6062d474d8bea170561bb9ad6",
+      "Id": "4ae6ecdfd0d14ebe967f0311e78f83ea",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "6a7608c742b54f24a3e8f582dd34b354",
+      "End": "70229b9377614535a577e8ed0459fa46",
+      "Id": "85910b9a51f641b0b477a99cdda1f341",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "e4a67be673aa4d3cace660a34e2f3399",
+      "End": "fa6f421ff19d421587de4b088dddb940",
+      "Id": "97d4518086824cbcad48e2afd8ad5f75",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "4167d7e55b4e4a4f993c60b6f9ccc9a3",
+      "End": "66fcbb6e9dfa463b8b327ace25eec7c6",
+      "Id": "b07abf68bf4d40f891aefdbdcb977fa9",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "300e3791dcb64453b083215c1fd22341",
+      "End": "92eac43851cd46a9ae5b128f94b42262",
+      "Id": "bee98f8e21604bcb8711c8448a4add16",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.16.2.5624",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Name": "Variable size lists",
+        "ShowGeometry": true,
+        "Id": "cf27e808db944dcab7707f87813b9cde",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Id": "5c5b7d9c372d4b608fbe69ccc3925de6",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1154.6942326510314,
+        "Y": -0.16242290434013285
+      },
+      {
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Id": "c781dfc659804d319081e42a8cae5282",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -189.19813680744892,
+        "Y": -77.207754740571772
+      },
+      {
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Id": "1db5039e9f6d461f868093d36569e262",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -131.70410367170621,
+        "Y": 21.803455723542044
+      },
+      {
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Id": "d087c4a6087942cbaf2196bde460c0d8",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -97.725602293960662,
+        "Y": 211.07613417040696
+      },
+      {
+        "Name": "Element.SetParameterByName",
+        "ShowGeometry": true,
+        "Id": "6835652b83da4aa5afeb8da5718a1ab0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 816.3596117497832,
+        "Y": 1.43054073455707
+      },
+      {
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Id": "7b3296ab0b154c0080d11c45994cea21",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 491.08048881119362,
+        "Y": 187.80537617877837
+      },
+      {
+        "Name": "Code Block",
+        "ShowGeometry": true,
+        "Id": "2deefc501fcf42b48632dbec262ed4c1",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 460.16260884804245,
+        "Y": 122.1336031179695
+      },
+      {
+        "Name": "Code Block",
+        "ShowGeometry": true,
+        "Id": "aec4e4a21a5447dca82aeddae1cfb06b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 536.56765910257116,
+        "Y": 3.7808603700715935
+      },
+      {
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Id": "d0dd78ee86c943cd887e064ce54b4c32",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1143.3077574675503,
+        "Y": 164.85194030764774
+      }
+    ],
+    "Annotations": [],
+    "X": -924.66909321805247,
+    "Y": 225.78983136316768,
+    "Zoom": 1.2416500433291171
+  }
+}

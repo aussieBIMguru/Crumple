@@ -15,6 +15,7 @@
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('RevitAPI')\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import Parameter\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Try to return name\r\ndef parName(par):\r\n\ttry:\r\n\t\treturn par.Definition.Name\r\n\texcept:\r\n\t\treturn None\r\n\r\n#Inputdoc\r\nparams_list = tolist(IN[0])\r\n\r\n# Output the lists\r\nOUT = objOrList([parName(par) for par in params_list])",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "dc15a8b114954e53b72f0d5a7699ced9",
       "Inputs": [
@@ -46,7 +47,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "familyParams",
+        "Name": "familyParam",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -72,7 +73,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "/*Parameter names.*/\r\n\r\nparameterNames",
+      "Symbol": "/*Parameter names.*/\r\n\r\nparameterName",
       "Id": "716c0bce8a3f4b70b98666e3d29cdd25",
       "Inputs": [
         {
@@ -94,12 +95,14 @@
     {
       "Start": "87f45fd8852645a9b9539866990c5668",
       "End": "fb2f4c5fa19e4197a78e06246ccd5f3e",
-      "Id": "27c4e85ad2b54f1ab5fd61d8ad83b6e7"
+      "Id": "27c4e85ad2b54f1ab5fd61d8ad83b6e7",
+      "IsHidden": "False"
     },
     {
       "Start": "28ce3e21b2f8465fbaae807954e32fbd",
       "End": "f7999f4295074991b312744d56407e38",
-      "Id": "c25a15414c854b408226b7d85dd3acd9"
+      "Id": "c25a15414c854b408226b7d85dd3acd9",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -111,7 +114,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -127,10 +130,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script (get names)",
+        "ShowGeometry": true,
         "Id": "dc15a8b114954e53b72f0d5a7699ced9",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -139,8 +143,8 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "c149922d66d1497491da4ad3cab309f9",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -149,8 +153,8 @@
         "Y": -2.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "716c0bce8a3f4b70b98666e3d29cdd25",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -160,8 +164,8 @@
       }
     ],
     "Annotations": [],
-    "X": 233.9335290488815,
-    "Y": 287.77076736503506,
+    "X": 117.9335290488815,
+    "Y": 307.77076736503506,
     "Zoom": 1.1047642563030273
   }
 }

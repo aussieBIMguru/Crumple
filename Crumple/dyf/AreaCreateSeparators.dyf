@@ -1,0 +1,247 @@
+{
+  "Uuid": "9a56fed4-fb58-477b-9cb5-c09b5f7fe039",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.Create",
+  "Description": "Given a list of Dynamo curves, the node generates area boundary lines along them in the given view. For convenience of iterability, this node flattens the curve list by default.",
+  "Name": "© Area.CreateSeparators",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Revit.Document.Current": {
+        "Key": "Revit.Application.Document",
+        "Value": "RevitNodes.dll"
+      },
+      "Revit.Document": {
+        "Key": "Revit.Application.Document",
+        "Value": "RevitNodes.dll"
+      },
+      "Revit.Application.Document.Current": {
+        "Key": "Revit.Application.Document",
+        "Value": "RevitNodes.dll"
+      },
+      "Revit.Application.Document": {
+        "Key": "Revit.Application.Document",
+        "Value": "RevitNodes.dll"
+      },
+      "Views": {
+        "Key": "archilab.Revit.Views.Views",
+        "Value": "archilab.dll"
+      },
+      "View": {
+        "Key": "Revit.Elements.Views.View",
+        "Value": "RevitNodes.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import SketchPlane\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\ndef matchLength(list1, list2):\r\n    len1 = len(list1)\r\n    len2 = len(list2)\r\n    if len1 == len2:\r\n        return list1\r\n    elif len1 > len2:\r\n        return list1[:len2]\r\n    else:\r\n        for i in range(0, len2-len1, 1):\r\n            list1.append(list1[-1])\r\n        return list1\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Preparing input from dynamo to revit\r\ncurves = uwlist(IN[0])\r\nviews = matchLength(uwlist(IN[1]),curves)\r\n\r\nbounds = []\r\n\r\n# Start making Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor c,v in zip(curves, views):\r\n    \r\n    view_level = v.GenLevel\r\n    view_plane = SketchPlane.Create(doc, view_level.Id)\r\n    \r\n    crv = curve.ToRevitType()\r\n    line = doc.Create.NewAreaBoundaryLine(view_plane, crv, v)\r\n    bounds.append(line.ToDSType(False))\r\n\t\t\r\n# Finish making transaction\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(bounds)",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "f81b7cde7fb94a84ac1476e1c4ba842c",
+      "Inputs": [
+        {
+          "Id": "45a1edf1a5ab442db1b0b0be6865ea61",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "f9e0b50e49a64e8b94680d0a685fb9d3",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "9864287982e34add91127207fc1d0656",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//The model curves as elements.\r\nareaSeparationLine",
+      "Id": "19ad51d1255a45ffb3df3159f63598ca",
+      "Inputs": [
+        {
+          "Id": "ef91f43e1765461cb95a7f7887217593",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "curve",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "Curves to base the area\nseparation lines from."
+      },
+      "Id": "23f22c59d87f4c579274e5153c731c2c",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "577e724d490f4088b8db942359b871b2",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "view",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "The view to place the lines in."
+      },
+      "Id": "a2d9863c526b4665ae031d7e6c496fa7",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "cd42b8ca95c943619feb3a60b494f9d6",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "9864287982e34add91127207fc1d0656",
+      "End": "ef91f43e1765461cb95a7f7887217593",
+      "Id": "9c1348be95364542b8eb52fa5de39dbb",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "577e724d490f4088b8db942359b871b2",
+      "End": "45a1edf1a5ab442db1b0b0be6865ea61",
+      "Id": "3cb5479904f141269cf54ead6020ad4d",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "cd42b8ca95c943619feb3a60b494f9d6",
+      "End": "f9e0b50e49a64e8b94680d0a685fb9d3",
+      "Id": "7cca785f094a4e328aff19aa1d876664",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.16.2.5624",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Id": "f81b7cde7fb94a84ac1476e1c4ba842c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 663.335714345289,
+        "Y": 28.454783560078852
+      },
+      {
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Id": "19ad51d1255a45ffb3df3159f63598ca",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 874.01901505438684,
+        "Y": 29.485876535972892
+      },
+      {
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Id": "23f22c59d87f4c579274e5153c731c2c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 291.32299494362638,
+        "Y": -9.4892631245152472
+      },
+      {
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Id": "a2d9863c526b4665ae031d7e6c496fa7",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 207.56419434769754,
+        "Y": 114.98214742956264
+      }
+    ],
+    "Annotations": [],
+    "X": -244.35706416518371,
+    "Y": 201.14399881790308,
+    "Zoom": 1.0857035604471863
+  }
+}

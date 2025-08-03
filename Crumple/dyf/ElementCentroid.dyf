@@ -1,0 +1,265 @@
+{
+  "Uuid": "0eb7903f-71ea-41dc-96cf-477270fbea37",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.Query",
+  "Description": "Returns the centroid of the element's axis-aligned bounding box.",
+  "Name": "© Element.Centroid",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Autodesk.DesignScript.Geometry.BoundingBox": {
+        "Key": "Autodesk.DesignScript.Geometry.BoundingBox",
+        "Value": "ProtoGeometry.dll"
+      },
+      "DSCore.List": {
+        "Key": "DSCore.List",
+        "Value": "DSCoreNodes.dll"
+      },
+      "DSCore.Math": {
+        "Key": "DSCore.Math",
+        "Value": "DSCoreNodes.dll"
+      },
+      "Autodesk.Point": {
+        "Key": "Autodesk.DesignScript.Geometry.Point",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Autodesk.DesignScript.Geometry.Point": {
+        "Key": "Autodesk.DesignScript.Geometry.Point",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Revit.Elements.Element": {
+        "Key": "Revit.Elements.Element",
+        "Value": "RevitNodes.dll"
+      },
+      "Point": {
+        "Key": "Autodesk.DesignScript.Geometry.Point",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Autodesk.DesignScript.BoundingBox": {
+        "Key": "Autodesk.DesignScript.Geometry.BoundingBox",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Elements.Element.BoundingBox",
+      "Id": "12a4b1a9f9fd4cce8867de9d058797fb",
+      "Inputs": [
+        {
+          "Id": "de4501e37d23440cb75c318fce24ee5e",
+          "Name": "element",
+          "Description": "Revit.Elements.Element",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "1a05a8e161ee4ab7a34b721d652c386a",
+          "Name": "BoundingBox",
+          "Description": "BoundingBox",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Get an Axis-aligned BoundingBox of the Element\n\nElement.BoundingBox: BoundingBox"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "element",
+        "TypeName": "Revit.Elements.Element",
+        "TypeRank": 0,
+        "DefaultValue": null,
+        "Description": "Model element(s).\n\nElement bounding box will be\nused to determine the centroid.\n\nNB: Axis aligned"
+      },
+      "Id": "0262773011bd4443a1a051d197a80ce5",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "0490e72c64734d388b4fcc2c33b343e4",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//Element BB Centroid as point.\r\npoint",
+      "Id": "bc166c7920cf47f98b63b23ce41e89c3",
+      "Inputs": [
+        {
+          "Id": "6dd11ef0c6aa4486a169e5a527902c4f",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "bbMax = Autodesk.DesignScript.BoundingBox.MaxPoint(bb);\nbbMin = Autodesk.DesignScript.BoundingBox.MinPoint(bb);\n\nPoint.ByCoordinates((bbMin.X + bbMax.X)/2, (bbMin.Y + bbMax.Y)/2, (bbMin.Z + bbMax.Z)/2);",
+      "Id": "91d7d2b806164ef2a21eb6ee035df8ea",
+      "Inputs": [
+        {
+          "Id": "a5f5bad1305242ac96892bd1f3d3d850",
+          "Name": "bb",
+          "Description": "bb",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "41fa082897f94e8d8f2b769092814af6",
+          "Name": "",
+          "Description": "bbMax",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "89e92c9c8045484799d7c223adaab232",
+          "Name": "",
+          "Description": "bbMin",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ca5342fe34e14e5296b7109e41055fcf",
+          "Name": "",
+          "Description": "Value of expression at line 4",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "1a05a8e161ee4ab7a34b721d652c386a",
+      "End": "a5f5bad1305242ac96892bd1f3d3d850",
+      "Id": "6ae40fdacc7f4fe5a1cd39503b8e07fd",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "0490e72c64734d388b4fcc2c33b343e4",
+      "End": "de4501e37d23440cb75c318fce24ee5e",
+      "Id": "9dd952217b31466299ce1c98aea5a474",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "ca5342fe34e14e5296b7109e41055fcf",
+      "End": "6dd11ef0c6aa4486a169e5a527902c4f",
+      "Id": "26632ea7fe0846b0add3284027181a32",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.16.2.5624",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Name": "Element.BoundingBox",
+        "ShowGeometry": true,
+        "Id": "12a4b1a9f9fd4cce8867de9d058797fb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 40.683759309472521
+      },
+      {
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Id": "0262773011bd4443a1a051d197a80ce5",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -126.78496519301274,
+        "Y": 40.837474138459235
+      },
+      {
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Id": "bc166c7920cf47f98b63b23ce41e89c3",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1401.5326745094974,
+        "Y": 94.774887226800445
+      },
+      {
+        "Name": "Code Block",
+        "ShowGeometry": true,
+        "Id": "91d7d2b806164ef2a21eb6ee035df8ea",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 584.51167163764012,
+        "Y": 45.965497828624109
+      }
+    ],
+    "Annotations": [],
+    "X": -1308.4523783574064,
+    "Y": 160.94050795621777,
+    "Zoom": 1.0125092511221052
+  }
+}

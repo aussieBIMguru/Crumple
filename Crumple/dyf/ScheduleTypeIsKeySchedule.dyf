@@ -1,0 +1,171 @@
+{
+  "Uuid": "d863665e-9843-4168-8226-b8cc61fc9011",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.Query",
+  "Description": "Given an element or list of elements, will return whether that item is a Key schedule.",
+  "Name": "© ScheduleType.IsKeySchedule",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nuw_list  = uwlist(IN[0])\r\nbools    = []\r\n\r\n# Do some action in a Transaction\r\nfor s in uw_list:\r\n\ttry:\r\n\t\tisKey = s.Definition.IsKeySchedule\r\n\t\tbools.append(isKey)\r\n\texcept:\r\n\t\tbools.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(bools)",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "f32be23fb35540b18964761ee45183de",
+      "Inputs": [
+        {
+          "Id": "8d386724c79544fd81b8fd25a9d6c44d",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "ae05ce358f0d4d298aa3d91660cefa79",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "schedule",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "e5a9261429004aefb3945b383a02a14c",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "b9ae665c65bc4b7fbf7a0a99e5e4c1f0",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "isKeySchedule",
+      "Id": "2ef09a91ef354bc587d482c482cfffcb",
+      "Inputs": [
+        {
+          "Id": "e7d9f5bc80094fa4bda1008c058a5f92",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "ae05ce358f0d4d298aa3d91660cefa79",
+      "End": "e7d9f5bc80094fa4bda1008c058a5f92",
+      "Id": "6ae36c581cea4a008ec1171fee87aa3e",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "b9ae665c65bc4b7fbf7a0a99e5e4c1f0",
+      "End": "8d386724c79544fd81b8fd25a9d6c44d",
+      "Id": "507b97360aa94e259419620345929123",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.16.2.5624",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Id": "f32be23fb35540b18964761ee45183de",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Id": "e5a9261429004aefb3945b383a02a14c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 0.0,
+        "Y": 0.0
+      },
+      {
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Id": "2ef09a91ef354bc587d482c482cfffcb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 449.0,
+        "Y": 0.0
+      }
+    ],
+    "Annotations": [],
+    "X": -23.902647170202883,
+    "Y": 357.70321251606936,
+    "Zoom": 1.3461330608298447
+  }
+}

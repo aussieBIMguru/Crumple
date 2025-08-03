@@ -1,0 +1,172 @@
+{
+  "Uuid": "fa718a89-fffb-47cb-85a6-69611f517520",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.Query",
+  "Description": "Returns true if an element has been hand flipped. If the element has been face flipped also, it will return false (as the element is technically not hand flipped in this case).",
+  "Name": "© Element.HandFlipped",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Revit.Elements.Element": {
+        "Key": "Revit.Elements.Element",
+        "Value": "RevitNodes.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(input)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nuw_list  = uwlist(IN[0])\r\n\r\nflips = []\r\n\r\nfor i in uw_list:\r\n\ttry:\r\n\t\tflip = 1 if i.HandFlipped else 0\r\n\t\tface = 1 if i.FacingFlipped else 0\t\r\n\t\tflips.append(flip+face == 1)\r\n\texcept:\r\n\t\tflips.append(None)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(flips)",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "94bd3e1c46a84df6a253b893cece12cc",
+      "Inputs": [
+        {
+          "Id": "445d29407e1d47d9a2a5473c926070de",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "24aeca688cdf463f8337c8a1a0a15cf5",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "element",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "Model element(s).\nShould be family instances."
+      },
+      "Id": "f6b262a8c975433bb8f705c4ca0addd6",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "9924601330d049fa9c9a7167d221d70e",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "//True if hand flipped.\r\nhandFlipped",
+      "Id": "1a500e5b0f0b4a59afd3e70f67ff33f2",
+      "Inputs": [
+        {
+          "Id": "bc27261d87c9477aab2adc684484fe3a",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "24aeca688cdf463f8337c8a1a0a15cf5",
+      "End": "bc27261d87c9477aab2adc684484fe3a",
+      "Id": "8cbf35856ccf4551b51fd0daab0261eb"
+    },
+    {
+      "Start": "9924601330d049fa9c9a7167d221d70e",
+      "End": "445d29407e1d47d9a2a5473c926070de",
+      "Id": "f75a2ea8b020410598b45f2ad01c9077"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.12.1.8246",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "94bd3e1c46a84df6a253b893cece12cc",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "f6b262a8c975433bb8f705c4ca0addd6",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -98.418717503326377,
+        "Y": -0.78620435648508646
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "1a500e5b0f0b4a59afd3e70f67ff33f2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 437.90433623406716,
+        "Y": 0.65766591938685792
+      }
+    ],
+    "Annotations": [],
+    "X": 27.626759394278395,
+    "Y": 116.30283203098918,
+    "Zoom": 0.91556228528122618
+  }
+}

@@ -15,6 +15,7 @@
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nfamilies = uwlist(IN[0])\r\n\r\n# Try to get family categories\r\ncategories, names = [],[]\r\n\r\nfor f in families:\r\n    try:\r\n        names.append(f.FamilyCategory.Name)\r\n    except:\r\n        names.append(None)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(names)",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "ac3352872a9f4f809db8e41b5a7872b5",
       "Inputs": [
@@ -46,7 +47,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "categoryNames",
+      "Symbol": "categoryName",
       "Id": "99fa29bc779d4243a3d2e5c110b959d4",
       "Inputs": [
         {
@@ -67,7 +68,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "families",
+        "Name": "family",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -94,12 +95,14 @@
     {
       "Start": "e257988ac9484b979e8c4a434e676ed5",
       "End": "c9db1a04cd004e88bd97f07e99954efc",
-      "Id": "c839be2560024ef4895a57d8d87ef9ad"
+      "Id": "c839be2560024ef4895a57d8d87ef9ad",
+      "IsHidden": "False"
     },
     {
       "Start": "0aea0292833e403592dbd8de100921d0",
       "End": "4977b1faca8144b1ba2d84f901d40bd6",
-      "Id": "f9c53722c0984054b0911b01a019a42a"
+      "Id": "f9c53722c0984054b0911b01a019a42a",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -111,7 +114,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -127,10 +130,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "ac3352872a9f4f809db8e41b5a7872b5",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -139,8 +143,8 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "99fa29bc779d4243a3d2e5c110b959d4",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -149,8 +153,8 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "ee883c283b104d91a6a21459c8c0b124",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,

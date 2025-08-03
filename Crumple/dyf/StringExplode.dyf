@@ -15,6 +15,7 @@
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Similar to Clockwork, but also allows sub of spaces\r\n# I often found this was my next step to exploding strings\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n#Declare Input\r\nstrings = tolist(IN[0])\r\nsub  = IN[1]\r\n\r\n# Function to split strings\r\ndef splitChars(string, subStr = sub):\r\n\tchars = []\r\n\tfor c in string:\r\n\t\tif c == \"\":\r\n\t\t\tchars.append(subStr)\r\n\t\telse:\r\n\t\t\tchars.append(c)\r\n\treturn chars\r\n\r\n#Declare Output\r\nOUT = objOrList([splitChars(s) for s in strings])",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "35f18aa224c3467581164ae163a8b92f",
       "Inputs": [
@@ -55,7 +56,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "strings",
+        "Name": "str",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -107,7 +108,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "//Sublists of the exploded\r\n//characters per string.\r\nstringsOut",
+      "Symbol": "//Sublists of the exploded\r\n//characters per string.\r\nchars",
       "Id": "60d03a76b3554d1592b3ccfa7dc179df",
       "Inputs": [
         {
@@ -129,17 +130,20 @@
     {
       "Start": "2ebc1d474f8b4c07ac36f3eaac210d02",
       "End": "05282044aaf64509ac483d210631f55b",
-      "Id": "d8ff34defdd34cafa1eb94996bd83cf1"
+      "Id": "d8ff34defdd34cafa1eb94996bd83cf1",
+      "IsHidden": "False"
     },
     {
       "Start": "ff08c446c49a4ad9900b07e34682dc78",
       "End": "6328400d74ca4a5a871456ec76ce94fe",
-      "Id": "d0580582cbc44c44b5a46862ab9d14c3"
+      "Id": "d0580582cbc44c44b5a46862ab9d14c3",
+      "IsHidden": "False"
     },
     {
       "Start": "43783f2d3b894903bb9e6924b85abbc6",
       "End": "aca24eb7021347aa942267c5bbcd56bb",
-      "Id": "722267d5954f49c99fc5871f4816501a"
+      "Id": "722267d5954f49c99fc5871f4816501a",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -151,7 +155,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -167,10 +171,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "35f18aa224c3467581164ae163a8b92f",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -179,8 +184,8 @@
         "Y": 30.408502136323648
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "1d6315c6014f4b80b7dc672d9b5e3296",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -189,8 +194,8 @@
         "Y": -23.349876707647354
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "16a745b7470644c4a9f5b8110cb4cafe",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -199,8 +204,8 @@
         "Y": 102.71151522758728
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "60d03a76b3554d1592b3ccfa7dc179df",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -210,8 +215,8 @@
       }
     ],
     "Annotations": [],
-    "X": 83.188088044122935,
-    "Y": 220.3419151685101,
+    "X": -88.811911955877065,
+    "Y": 174.3419151685101,
     "Zoom": 1.3076413563671876
   }
 }

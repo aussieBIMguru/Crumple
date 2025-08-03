@@ -1,0 +1,171 @@
+{
+  "Uuid": "2e28abd1-5659-43b5-8182-4570980e8289",
+  "IsCustomNode": true,
+  "Category": "Crumple.Application.Actions",
+  "Description": "Attempts to send data to the clipboard.",
+  "Name": "© Clipboard.Send",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Boilerplate\r\nimport clr\r\nimport System\r\nfrom System.Threading import Thread, ThreadStart\r\nclr.AddReference(\"System.Windows.Forms\")\r\n\r\n# Define function\r\ndef SetText(text):\r\n    def thread_proc():\r\n        System.Windows.Forms.Clipboard.SetText(text)\r\n    t = Thread(ThreadStart(thread_proc))\r\n    t.ApartmentState = System.Threading.ApartmentState.STA\r\n    t.Start()\r\n\r\ntry:\r\n\tif IN[0] != \"\" and IN[0] != None:\r\n\t\tSetText(IN[0])\r\n\t\tOUT = True\r\n\telse:\r\n\t\tOUT = False\r\nexcept:\r\n\tOUT = False",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "6533ea609a4b4576b0faa80041178c7c",
+      "Inputs": [
+        {
+          "Id": "f37ba9f004684562b55c3b8adaaffc82",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "e7557be302a142bda660ddd7c03ac6e2",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "stringToSend",
+        "TypeName": "string",
+        "TypeRank": 0,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "eef99dd8250b4ef2af6d1f844e67c77e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "006d75a944b246fab96ffd895bef1a58",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "success",
+      "Id": "ab72dcb4f2004319b58ffb163dd604af",
+      "Inputs": [
+        {
+          "Id": "3b404f6facaf4b77af3f41ff53e1a639",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "e7557be302a142bda660ddd7c03ac6e2",
+      "End": "3b404f6facaf4b77af3f41ff53e1a639",
+      "Id": "dae36a6aa9e9410b94d7b9375956872e",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "006d75a944b246fab96ffd895bef1a58",
+      "End": "f37ba9f004684562b55c3b8adaaffc82",
+      "Id": "940cb92552e1484392c7981182a9649b",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.16.2.5624",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Id": "6533ea609a4b4576b0faa80041178c7c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Id": "eef99dd8250b4ef2af6d1f844e67c77e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -30.357506388859406,
+        "Y": 0.6715730549123009
+      },
+      {
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Id": "ab72dcb4f2004319b58ffb163dd604af",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 454.0,
+        "Y": 0.0
+      }
+    ],
+    "Annotations": [],
+    "X": 47.703471191582665,
+    "Y": 351.76751595023603,
+    "Zoom": 1.489041278064027
+  }
+}

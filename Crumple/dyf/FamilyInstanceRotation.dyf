@@ -15,6 +15,7 @@
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\nimport math\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import LocationPoint, LocationCurve\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(input)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nuw_list  = uwlist(IN[0])\r\n\r\n# Try to get element rotation\r\nangles,bools, = [],[]\r\n\r\nfor i in uw_list:\r\n\t# See if item has a location\r\n\tif hasattr(i, \"Location\"):\r\n\t\tloc = i.Location\r\n\t\t# Check if it is is a point\r\n\t\tif isinstance(loc, LocationPoint):\r\n\t\t\trot = math.degrees(loc.Rotation)\r\n\t\t\tangles.append(round(rot,3))\r\n\t\t\tbools.append(True)\r\n\t\t# Check if it is is a line\r\n\t\telif isinstance(loc,LocationCurve):\r\n\t\t\tvec = loc.Curve.Direction\r\n\t\t\trot = math.degrees(vec.AngleOnPlaneTo(XYZ.BasisX, XYZ.BasisZ))\r\n\t\t\tangles.append(round(rot,3))\r\n\t\t\tbools.append(True)\r\n\t\t# None of the above\r\n\t\telse:\r\n\t\t\tangles.append(None)\r\n\t\t\tbools.append(False)\r\n\t# Item has no location\r\n\telse:\r\n\t\tangles.append(None)\r\n\t\tbools.append(False)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(angles), objOrList(bools)",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "3b3dfe99d1724821a991b25578f85bec",
       "Inputs": [
@@ -46,7 +47,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "familyInstances",
+        "Name": "familyInstance",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -132,7 +133,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "hasAngle",
+      "Symbol": "hasRotation",
       "Id": "60bea4a98f7e4175bc3a580216703b92",
       "Inputs": [
         {
@@ -154,22 +155,26 @@
     {
       "Start": "1f2019a060e042c4bef22f08c73febf9",
       "End": "5e8a3578f533464eb8a918edafa75863",
-      "Id": "10ff6f50d99b41d080965572b6241998"
+      "Id": "10ff6f50d99b41d080965572b6241998",
+      "IsHidden": "False"
     },
     {
       "Start": "517b8e466206428ab9dec4874d43b50c",
       "End": "c366064b54494357b71c058da3199705",
-      "Id": "a5e40d7e7072443493add812705d6ea3"
+      "Id": "a5e40d7e7072443493add812705d6ea3",
+      "IsHidden": "False"
     },
     {
       "Start": "c33344155d1140acb0b4632177475d1a",
       "End": "c1293b0e2a764599a946917c1ea6bbff",
-      "Id": "99e74a02febb4a80b78ffc701190f3ea"
+      "Id": "99e74a02febb4a80b78ffc701190f3ea",
+      "IsHidden": "False"
     },
     {
       "Start": "7d493dc667534251b18e6fadf7e63e1a",
       "End": "2a23552a66e14619b9ab6794cc70c4d6",
-      "Id": "f28b6757d3c24e969e11706e125f3f69"
+      "Id": "f28b6757d3c24e969e11706e125f3f69",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -181,7 +186,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -197,10 +202,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "3b3dfe99d1724821a991b25578f85bec",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -209,8 +215,8 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "7ec50906f9144404a8a8d80e6a56c5b6",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -219,8 +225,8 @@
         "Y": 0.74725500544093393
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "fbc74dffbdf949fb9706f069a8d38161",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -229,8 +235,8 @@
         "Y": -21.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Code Block",
+        "ShowGeometry": true,
         "Id": "e0a488dabb1040d6981e1b652eb7b13a",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -239,8 +245,8 @@
         "Y": 4.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "60bea4a98f7e4175bc3a580216703b92",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -250,8 +256,8 @@
       }
     ],
     "Annotations": [],
-    "X": -7.6275713822893749,
-    "Y": 172.44437385259181,
+    "X": -403.62757138228937,
+    "Y": 195.44437385259181,
     "Zoom": 1.33823125
   }
 }

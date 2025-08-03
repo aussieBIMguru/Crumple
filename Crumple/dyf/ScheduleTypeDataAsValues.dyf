@@ -1,0 +1,180 @@
+{
+  "Uuid": "5747201d-dba1-4d52-a316-4082cbb3f83e",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.Actions",
+  "Description": "Returns the data in a schedule in the form of native values.",
+  "Name": "© ScheduleType.DataAsValues",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Revit.Application.Document.Current": {
+        "Key": "Revit.Application.Document",
+        "Value": "RevitNodes.dll"
+      },
+      "Revit.Application.Document": {
+        "Key": "Revit.Application.Document",
+        "Value": "RevitNodes.dll"
+      },
+      "Revit.Elements.Views.ScheduleView": {
+        "Key": "Revit.Elements.Views.ScheduleView",
+        "Value": "RevitNodes.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n# Found at https://forum.dynamobim.com/t/schedule-in-revit-to-dynamo-data-maintain-data-types/48558/2\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference('RevitAPI')\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n# Get Revit build version\r\nuiapp = DocumentManager.Instance.CurrentUIApplication\r\napp = uiapp.Application\r\nrvt_year = int(app.VersionNumber)\r\n\r\n# Convert length to internal\r\ndef interalToProject_len(val, myDoc, ver = rvt_year):\r\n\tif rvt_year < 2022:\r\n\t\tintUnits = myDoc.GetUnits().GetFormatOptions(UnitType.UT_Length).DisplayUnits\r\n\t\treturn UnitUtils.Convert(val,DisplayUnitType.DUT_DECIMAL_FEET,intUnits)\r\n\telse:\r\n\t\tintUnitsId = myDoc.GetUnits().GetFormatOptions(SpecTypeId.Length).GetUnitTypeId()\r\n\t\treturn UnitUtils.ConvertFromInternalUnits(val, intUnitsId)\r\n\r\n# Convert area to internal\r\ndef interalToProject_area(val, myDoc, ver = rvt_year):\r\n\tif rvt_year < 2022:\r\n\t\tintUnits = myDoc.GetUnits().GetFormatOptions(UnitType.UT_Area).DisplayUnits\r\n\t\treturn UnitUtils.Convert(val,DisplayUnitType.DUT_SQUARE_FEET,intUnits)\r\n\telse:\r\n\t\tintUnitsId = myDoc.GetUnits().GetFormatOptions(SpecTypeId.Area).GetUnitTypeId()\r\n\t\treturn UnitUtils.ConvertFromInternalUnits(val, intUnitsId)\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Function for getting value of parameter\r\ndef convert_Value(paraL):\r\n\tif paraL.StorageType == StorageType.Double : \r\n\t\tvalue = paraL.AsDouble()\r\n\t\tpt    = paraL.Definition.ParameterType\r\n\t\tif value == 0.00:\r\n\t\t\treturn 0.00\r\n\t\telif pt == ParameterType.Length:\r\n\t\t\treturn interalToProject_len(value, doc)\r\n\t\telif pt == ParameterType.Area:\r\n\t\t\treturn interalToProject_area(value, doc)\r\n\t\telse:\r\n\t\t\treturn value\r\n\telif paraL.StorageType == StorageType.String : \r\n\t\tvalue = paraL.AsString()\r\n\t\tif value is None:\r\n\t\t\tvalue = paraL.AsValueString()\r\n\t\treturn value\r\n\telif paraL.StorageType == StorageType.Integer: \t\r\n\t\tvalue = paraL.AsInteger()\r\n\t\treturn value\t\r\n\telif paraL.StorageType == StorageType.ElementId: \t\r\n\t\tvalueId = paraL.AsElementId()\r\n\t\treturn doc.GetElement(valueId)\r\n\r\n# Function to return schedule data\r\ndef sched_returnData(sched):\r\n\tdata = []\r\n\tif sched.ViewType != ViewType.Schedule or sched.IsTemplate:\r\n\t\treturn data\r\n\tcollinview = FilteredElementCollector(doc, sched.Id).OfClass(FamilyInstance).WhereElementIsNotElementType().ToElements()\r\n\tdefinition = sched.Definition\r\n\tids = definition.GetFieldOrder()\r\n\tparaSchNames = []\r\n\tfor id in ids:\r\n\t\tfield = definition.GetField(id)\r\n\t\tif field.FieldType  == ScheduleFieldType.Instance or field.FieldType  == ScheduleFieldType.ElementType:\r\n\t\t\tparaSchNames.append(field.GetName())\r\n\tfor elem in collinview:\r\n\t\ttemp = []\r\n\t\telemType = doc.GetElement(elem.GetTypeId())\r\n\t\tfor paraSchName in paraSchNames:\r\n\t\t\tvalue = None\r\n\t\t\tparaelem = elem.LookupParameter(paraSchName)\r\n\t\t\tif paraelem is not None:\t\r\n\t\t\t\tvalue = convert_Value(paraelem)\r\n\t\t\t\ttemp.append(value)\r\n\t\t\t#if value is None check if it's a Parameter Type\t\r\n\t\t\tif \tvalue is None:\r\n\t\t\t\tparaelemT = elemType.LookupParameter(paraSchName)\r\n\t\t\t\tif paraelemT is not None:\t\r\n\t\t\t\t\tvalue = convert_Value(paraelemT)\r\n\t\t\t\t\ttemp.append(value)\t\t\t\t\r\n\t\tdata.append(temp)\r\n\treturn data\r\n\r\n# Get schedule view and read data\r\nschedules = uwlist(IN[0])\r\n\r\n# Preparing output to Dynamo\r\ndataAll = [sched_returnData(s) for s in schedules]\r\nOUT     = objOrList(dataAll)",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "25fd18cc7ce34ca3abddf414a94af992",
+      "Inputs": [
+        {
+          "Id": "1b68f4a0c5f6461586ef25795257f924",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "b26df7efb6e44d73a9d5d18069b8f3a4",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "schedules",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "5ce6bf3c50504183ab3d89b9cc9e9791",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "df647cf5125a4013b8d04a4cf8ca5880",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "scheduleValues",
+      "Id": "5fe05d27bb2a429e871891d97b85d6df",
+      "Inputs": [
+        {
+          "Id": "26b6707b8d8841dcafb6d874c387d893",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "b26df7efb6e44d73a9d5d18069b8f3a4",
+      "End": "26b6707b8d8841dcafb6d874c387d893",
+      "Id": "b8fecda9e7d34228bc065835c900b0ba"
+    },
+    {
+      "Start": "df647cf5125a4013b8d04a4cf8ca5880",
+      "End": "1b68f4a0c5f6461586ef25795257f924",
+      "Id": "0ba3271771554116a8f66dab2d38972b"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.12.1.8246",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "25fd18cc7ce34ca3abddf414a94af992",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "5ce6bf3c50504183ab3d89b9cc9e9791",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -33.662341209514523,
+        "Y": 1.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "5fe05d27bb2a429e871891d97b85d6df",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 436.0,
+        "Y": 0.0
+      }
+    ],
+    "Annotations": [],
+    "X": 41.182332877541626,
+    "Y": 292.05949599854796,
+    "Zoom": 1.0082481613707748
+  }
+}

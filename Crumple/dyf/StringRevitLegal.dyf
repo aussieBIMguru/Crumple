@@ -15,6 +15,7 @@
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Define list/unwrap list functions\r\ndef tolist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return result\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Inputs from Dynamo\r\nstrings = tolist(IN[0])\r\nreplace = IN[1]\r\n\r\nnewStrings, stringsChanged = [],[]\r\n\r\nCHARS_ILLEGAL = ['\\\\',':','{','}','[',']','|',';','<','>','?','`','~']\r\n\r\n# Function: Replace or remove illegal characters for windows\r\ndef legalizeString(string_check):\r\n\t# New string to build\r\n\tstring_legal  = \"\"\r\n\t# Check each character\r\n\tfor c in string_check:\r\n\t\tif c in CHARS_ILLEGAL:\r\n\t\t\tstring_legal += replace\r\n\t\telse:\r\n\t\t\tstring_legal += c\r\n\t# Return new string\r\n\treturn string_legal, string_check != string_legal\r\n\r\n# Legalize strings\r\nfor s in strings:\r\n\tsl, wc = legalizeString(s)\r\n\tnewStrings.append(sl)\r\n\tstringsChanged.append(wc)\r\n\r\n# Output to Dynamo\r\nOUT = objOrList(newStrings), objOrList(stringsChanged)",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "03d3f63b201a4962a5d1c015d81617d7",
       "Inputs": [
@@ -55,7 +56,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "checkStrings",
+        "Name": "str",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -107,7 +108,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "legalStrings",
+      "Symbol": "legalString",
       "Id": "7ceb4de5cba94b8f8c89d41dfd70f3ad",
       "Inputs": [
         {
@@ -189,27 +190,32 @@
     {
       "Start": "8699bc1f53954323a52bf9ed8d0c8f2c",
       "End": "ef3ba7a286bb4c5d9895ce63e8b4cd99",
-      "Id": "2872f603c7d14158b635fe105e92e497"
+      "Id": "2872f603c7d14158b635fe105e92e497",
+      "IsHidden": "False"
     },
     {
       "Start": "7d2f274c27194f76b68ed485c088cfe2",
       "End": "6b2e6935ab954aec93f84db5093b6af1",
-      "Id": "6a713be124fc49d895265eb8250eb819"
+      "Id": "6a713be124fc49d895265eb8250eb819",
+      "IsHidden": "False"
     },
     {
       "Start": "11e7791f720b4e00adb0b5aafebe6b1b",
       "End": "14cbc1b08f3a44089db405558b6ea09b",
-      "Id": "0012607b8e634fb19f720fa864373d41"
+      "Id": "0012607b8e634fb19f720fa864373d41",
+      "IsHidden": "False"
     },
     {
       "Start": "ae228066487d44bcb335d5e2db56529a",
       "End": "4e67a4840e5349efbb14750883832613",
-      "Id": "f6ad519517b8461f8da93a32a6ede586"
+      "Id": "f6ad519517b8461f8da93a32a6ede586",
+      "IsHidden": "False"
     },
     {
       "Start": "9c3cdc7a56294d1bb43ccccd0f7c93c8",
       "End": "0f79cdc97baa47fa8647f25017cd263f",
-      "Id": "67c3ea7ef675476aa339c1f8fd559ffc"
+      "Id": "67c3ea7ef675476aa339c1f8fd559ffc",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -221,7 +227,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -237,10 +243,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "03d3f63b201a4962a5d1c015d81617d7",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -249,8 +256,8 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "758dabb59abe4ab78a0994d70eaa8c29",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -259,8 +266,8 @@
         "Y": -53.155074740349079
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "d0a7f87f3ee34bf5996e1167cb294f22",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -269,8 +276,8 @@
         "Y": 60.773114470829768
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "7ceb4de5cba94b8f8c89d41dfd70f3ad",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -279,8 +286,8 @@
         "Y": -39.001246899006873
       },
       {
-        "ShowGeometry": true,
         "Name": "Code Block",
+        "ShowGeometry": true,
         "Id": "8d8abb01123943faa85b84eec821b198",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -289,8 +296,8 @@
         "Y": 5.0583192648144291
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "4a0f7ee64e534fe19eff5d4c628f207f",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -300,8 +307,8 @@
       }
     ],
     "Annotations": [],
-    "X": -65.9794187698908,
-    "Y": 307.74620351069586,
+    "X": -299.9794187698908,
+    "Y": 271.74620351069586,
     "Zoom": 1.2398459514422497
   }
 }

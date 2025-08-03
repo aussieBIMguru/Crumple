@@ -15,6 +15,7 @@
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nimport System\r\nfrom System.Collections.Generic import List\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import ElementId\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\nuidoc = uiapp.ActiveUIDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(input)\r\n\r\n# Preparing input from dynamo to revit\r\nuw_list    = uwlist(IN[0])\r\n\r\nidsCheck   = []\r\nelementIds = List[ElementId]()\r\n\r\n# Select elements\r\nfor e in uw_list:\r\n\ttry:\r\n\t\teid = e.Id.ToString()\r\n\texcept:\r\n\t\teid = None\r\n\tif eid not in idsCheck and eid:\r\n\t\telementIds.Add(e.Id)\r\n\t\tidsCheck.append(eid)\r\n\r\nselection = uidoc.Selection.SetElementIds(elementIds)\r\n\r\n# Preparing output to Dynamo\r\nOUT = True",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "d5caf71fc8844fd3a1929b0d4895653d",
       "Inputs": [
@@ -72,7 +73,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "wasRun",
+      "Symbol": "success",
       "Id": "2caeb84beaed4ed09cb0c1edba2aa355",
       "Inputs": [
         {
@@ -94,12 +95,14 @@
     {
       "Start": "d619e63760f74cadb11fa38f22647f83",
       "End": "6c18779411b24aa5988104f0b42bdc5c",
-      "Id": "3178ed5f7dd34ef3b6b6dd1c0bcc91cf"
+      "Id": "3178ed5f7dd34ef3b6b6dd1c0bcc91cf",
+      "IsHidden": "False"
     },
     {
       "Start": "7d57e78ae48141488c911d204fd55dec",
       "End": "bf4ed4008954469f94a687016e79e4ae",
-      "Id": "158d7f10176644fcbf9cd4155c6c4c42"
+      "Id": "158d7f10176644fcbf9cd4155c6c4c42",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -111,7 +114,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -127,10 +130,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "d5caf71fc8844fd3a1929b0d4895653d",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -139,8 +143,8 @@
         "Y": 10.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "0eb5e6ffabb54494b750dc85ec7ed548",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -149,8 +153,8 @@
         "Y": 9.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "2caeb84beaed4ed09cb0c1edba2aa355",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,

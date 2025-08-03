@@ -3,7 +3,7 @@
   "IsCustomNode": true,
   "Category": "Crumple.Revit.Actions",
   "Description": "Given a Revit group, return all elements in that given group if any.",
-  "Name": "© Groups.Elements",
+  "Name": "© Group.Elements",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -15,6 +15,7 @@
       "NodeType": "PythonScriptNode",
       "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\ngroups = uwlist(IN[0])\r\nelementslist = []\r\n\r\n# Get elements in groups\r\nfor grp in groups:\r\n\t\r\n\telements = []\r\n\tfor i in grp.GetMemberIds():\r\n\t\te = doc.GetElement(i)\r\n\t\telements.append(e)\r\n\t\r\n\telementslist.append(elements)\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(elementslist)",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "ca585d7f68544d1d9fe089179baea2dd",
       "Inputs": [
@@ -46,7 +47,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "groups",
+        "Name": "group",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -94,12 +95,14 @@
     {
       "Start": "045367a0b292491a9c3add2041ba8151",
       "End": "73ccf08b292a45fbae1e0ec2ca1b9d70",
-      "Id": "f4eae55a8bb04d9c99665de3a5db96d0"
+      "Id": "f4eae55a8bb04d9c99665de3a5db96d0",
+      "IsHidden": "False"
     },
     {
       "Start": "f7f01cc0e7d04e8caca17d8c7003dfc5",
       "End": "af5cb7004fcf423b960401dca5678bc3",
-      "Id": "f8c7cb39a775431a8ee84286f64412a9"
+      "Id": "f8c7cb39a775431a8ee84286f64412a9",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -111,7 +114,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -127,10 +130,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "ca585d7f68544d1d9fe089179baea2dd",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -139,8 +143,8 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "1662b961f613405abb31f82f97934ef7",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -149,8 +153,8 @@
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "d958f26b4f9b4f69bb24dce70bd2f624",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,

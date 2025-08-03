@@ -34,8 +34,9 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\npoints   = uwlist(IN[0])\r\nfamtype  = UnwrapElement(IN[1])\r\nview    =  UnwrapElement(IN[2])\r\n\r\nelementlist = []\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nif famtype.IsActive == False:\r\n\tfamtype.Activate()\r\n\tdoc.Regenerate()\r\n\r\nfor p in points:\r\n\tnewFam = doc.Create.NewFamilyInstance(p.ToXyz(), famtype, view)\r\n\telementlist.append(newFam.ToDSType(True))\r\n    \r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(elementlist)",
+      "Code": "# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\ndef matchLength(list1, list2):\r\n    len1 = len(list1)\r\n    len2 = len(list2)\r\n    if len1 == len2:\r\n        return list1\r\n    elif len1 > len2:\r\n        return list1[:len2]\r\n    else:\r\n        for i in range(0, len2-len1, 1):\r\n            list1.append(list1[-1])\r\n        return list1\r\n\r\n# Preparing input from dynamo to revit\r\npoints   = uwlist(IN[0])\r\nfamtypes = matchLength(uwlist(IN[1]), points)\r\nviews    = matchLength(uwlist(IN[2]), points)\r\n\r\nelementlist = []\r\n\r\n# Do some action in a Transaction\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor p,f,v in zip(points, famtypes, views):\r\n    \r\n    if famtype.IsActive == False:\r\n        famtype.Activate()\r\n        doc.Regenerate()\r\n    \r\n    newFam = doc.Create.NewFamilyInstance(p.ToXyz(), famtype, view)\r\n    elementlist.append(newFam.ToDSType(True))\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(elementlist)",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "ba39136fcb654e228d17e70dc22e8be6",
       "Inputs": [
@@ -85,7 +86,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "points",
+        "Name": "point",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -111,7 +112,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "familyInstances",
+      "Symbol": "familyInstance",
       "Id": "4ddc606d908944a3b5a9e8e77b588e8c",
       "Inputs": [
         {
@@ -133,8 +134,8 @@
       "NodeType": "InputNode",
       "Parameter": {
         "Name": "familyType",
-        "TypeName": "Revit.Elements.FamilyType",
-        "TypeRank": 0,
+        "TypeName": "var",
+        "TypeRank": -1,
         "DefaultValue": null,
         "Description": ""
       },
@@ -159,8 +160,8 @@
       "NodeType": "InputNode",
       "Parameter": {
         "Name": "view",
-        "TypeName": "Revit.Elements.Views.View",
-        "TypeRank": 0,
+        "TypeName": "var",
+        "TypeRank": -1,
         "DefaultValue": null,
         "Description": ""
       },
@@ -185,22 +186,26 @@
     {
       "Start": "12cae1d5229145a39ff6b615887c6b0e",
       "End": "ab28c73e802e4d0fb780be0970f962ef",
-      "Id": "8acd62c45dbf4d8e906f0bb2175d064d"
+      "Id": "8acd62c45dbf4d8e906f0bb2175d064d",
+      "IsHidden": "False"
     },
     {
       "Start": "e1ad1610735b4294a4bbf68edf0468e6",
       "End": "d8d56c635d294ad4b199d47b7531fc3d",
-      "Id": "c238b288db874f329a72bb7b3a8d15a1"
+      "Id": "c238b288db874f329a72bb7b3a8d15a1",
+      "IsHidden": "False"
     },
     {
       "Start": "7d2ab6b688334dd4b8d4682e4293d3bb",
       "End": "002ec27c96014d6ca968d38464804d80",
-      "Id": "dc9d9243d7d14a019bb7548a3dab707c"
+      "Id": "dc9d9243d7d14a019bb7548a3dab707c",
+      "IsHidden": "False"
     },
     {
       "Start": "eca308bd417b47b0a6c17d2e8eff6fe0",
       "End": "27cb03a4cc5a406fb9eb3f32b2103044",
-      "Id": "29d3cd52fb1240c1be5e1774bedc7784"
+      "Id": "29d3cd52fb1240c1be5e1774bedc7784",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -212,7 +217,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.2.5624",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -228,10 +233,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "ba39136fcb654e228d17e70dc22e8be6",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -240,49 +246,49 @@
         "Y": -1.0
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "22b1ad28a6a1426ca208b7137cecf908",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
         "X": -149.2978131358833,
-        "Y": -54.65216133845783
+        "Y": -124.93629079829287
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "4ddc606d908944a3b5a9e8e77b588e8c",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 434.9780400435277,
-        "Y": -0.87901474427528115
+        "X": 541.77340558639412,
+        "Y": -1.791795646351062
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "9de6c412aa834bdeaf8a8caef7adf67b",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -309.63876290330495,
-        "Y": 18.929722408539135
+        "X": -311.46432470745651,
+        "Y": 39.010902254206286
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "4f95446a3b274203bca39f282a8e097a",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -86.007441894738861,
-        "Y": 84.649947357995245
+        "X": -260.34859419121273,
+        "Y": 199.66034101954352
       }
     ],
     "Annotations": [],
-    "X": 66.225724595187216,
-    "Y": 210.2614828317611,
-    "Zoom": 1.0955531581849192
+    "X": 293.62442514006716,
+    "Y": 278.99392962111773,
+    "Zoom": 0.77767510491812863
   }
 }

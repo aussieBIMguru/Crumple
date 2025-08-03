@@ -1,0 +1,172 @@
+{
+  "Uuid": "b093de50-b850-464c-abf7-e181694c4e77",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.Actions",
+  "Description": "Returns the data from a Revit schedule object as strings.",
+  "Name": "© ScheduleType.DataAsText",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Revit.Elements.Views.ScheduleView": {
+        "Key": "Revit.Elements.Views.ScheduleView",
+        "Value": "RevitNodes.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import SectionType\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nST_BODY = SectionType.Body\r\n\r\n# Preparing input from dynamo to revit\r\nschedules = uwlist(IN[0])\r\n\r\n# Function to return schedule data\r\ndef sched_returnData(sched):\r\n\t# Retrieve data from the schedule\r\n\ttableData   = sched.GetTableData()\r\n\tsectionData = tableData.GetSectionData(ST_BODY)\r\n\tnumbRows    = sectionData.NumberOfRows\r\n\tnumbCols    = sectionData.NumberOfColumns\r\n\t# Create list with schedule data with rows as second level lists\r\n\tdata = []\r\n\t# Iterate through rows\r\n\tfor i in range(numbRows):\r\n\t    rows = []\r\n\t    for j in range(numbCols):\r\n\t        content = sched.GetCellText(ST_BODY, i, j)\r\n\t        rows.append(content)\r\n\t    data.append(rows)\r\n\t# Return data\r\n\treturn data\r\n\r\n# Preparing output to Dynamo\r\ndataAll = [sched_returnData(s) for s in schedules]\r\nOUT = objOrList(dataAll)",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "482710b834c84f239664e2f90e2d5ef2",
+      "Inputs": [
+        {
+          "Id": "7c4eefa00c964ae393e024615c34bf2e",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "b8f3f2750cc54cda9eaa92b7489de6c9",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "schedules",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "96a4f0bcb0de41be949a6d2a8a6fbdf5",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "3d351f4ed7bb4dcb8ef2b94573225a67",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "dataAsText",
+      "Id": "8fddb0527c3447758ebb6189b3886577",
+      "Inputs": [
+        {
+          "Id": "01f733f9b52847279d531e82e0383657",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "b8f3f2750cc54cda9eaa92b7489de6c9",
+      "End": "01f733f9b52847279d531e82e0383657",
+      "Id": "685439e3be814c039a4c3fe7d0fe88ab"
+    },
+    {
+      "Start": "3d351f4ed7bb4dcb8ef2b94573225a67",
+      "End": "7c4eefa00c964ae393e024615c34bf2e",
+      "Id": "41dcf1d77e2f4746825f5c3df6acfd96"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.12.1.8246",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "482710b834c84f239664e2f90e2d5ef2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "96a4f0bcb0de41be949a6d2a8a6fbdf5",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -37.172340843584493,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "8fddb0527c3447758ebb6189b3886577",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 449.0,
+        "Y": 0.0
+      }
+    ],
+    "Annotations": [],
+    "X": -58.698412979806619,
+    "Y": 301.92732189625451,
+    "Zoom": 1.3801010605186965
+  }
+}

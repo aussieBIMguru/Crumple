@@ -1,0 +1,222 @@
+{
+  "Uuid": "994a11aa-6bd7-4023-bb3d-f1eac229b419",
+  "IsCustomNode": true,
+  "Category": "Crumple.Revit.Actions",
+  "Description": "Given a list of views and a list of worksets or workset names, attempts to isolate them all in those views.",
+  "Name": "© Workset.IsolateInView",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\r\n# Free for use\r\n# BIM Guru, www.bimguru.com.au\r\n\r\n# Boilerplate text\r\nimport clr\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import WorksetVisibility, FilteredWorksetCollector, WorksetKind\r\n\r\n# Current doc/app/ui\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Define list/unwrap list functions\r\ndef uwlist(input):\r\n    result = input if isinstance(input, list) else [input]\r\n    return UnwrapElement(result)\r\n\r\ndef objOrList(input, initial = IN[0]):\r\n\tif isinstance(initial, list):\r\n\t\treturn input\r\n\telse:\r\n\t\treturn input[0]\r\n\r\n# Preparing input from dynamo to revit\r\nviews    = uwlist(IN[0])\r\nworksets = uwlist(IN[1])\r\n\r\n# Constants\r\nWORKSETS_HIDDEN = WorksetVisibility.Hidden\r\nWORKSETS_SHOW   = WorksetVisibility.Visible\r\nWORKSET_USER    = WorksetKind.UserWorkset\r\n\r\n# Get worksets\r\nworksets_all = FilteredWorksetCollector(doc).\\\r\n\t\t\t   OfKind(WorksetKind.UserWorkset).\\\r\n\t\t\t   ToWorksets()\r\n\r\nworkset_names = [w.Name for w in worksets_all]\r\n\r\n# Try to get all worksets if not from their names\r\nworksets_final = []\r\n\r\n# For each input...\r\nfor w in worksets:\r\n\t# If it's a name, and it exists...\r\n\tif w in workset_names:\r\n\t\t# Get the workset, append it\r\n\t\tind = workset_names.index(w)\r\n\t\tworksets_final.append(worksets_all[ind])\r\n\telse:\r\n\t\t# Otherwise, make sure it's a user workset\r\n\t\ttry:\r\n\t\t\tif w.Kind == WORKSET_USER:\r\n\t\t\t\tworksets_final.append(w)\r\n\t\texcept:\r\n\t\t\tpass\r\n\r\nworksetNames_final = [w.Name for w in worksets_final]\r\n\r\n# Function to turn off worksets in view if not given name\r\ndef view_worksetsOffButList(view, worksetNames, worksets = worksets_all):\r\n\tworksetFound = []\r\n\t# For each workset in all worksets\r\n\tfor ws in worksets:\r\n\t\t# If it's name is match, show it\r\n\t\tif ws.Name in worksetNames:\r\n\t\t\tview.SetWorksetVisibility(ws.Id , WORKSETS_SHOW)\r\n\t\t\tworksetFound.append(True)\r\n\t\t# Otherwise, hide it\r\n\t\telse:\r\n\t\t\tview.SetWorksetVisibility(ws.Id , WORKSETS_HIDDEN)\r\n\t# Return if we found it\r\n\treturn True\r\n\r\n# Do some action in a Transaction\r\noutcomes = []\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor v in views:\r\n\toutcome = view_worksetsOffButList(v, worksetNames_final)\r\n\toutcomes.append(outcome)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Preparing output to Dynamo\r\nOUT = objOrList(outcomes)",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "c5ed10a925494c88909cfe496ec48475",
+      "Inputs": [
+        {
+          "Id": "93870c99917942b3a7b66ac33844f3d1",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "473f41c975a24b828b233d85008ca678",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "d59483eb27c34d63bc3b05d0c0c12dce",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "view",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "View or list of views to\nisolate the worksets in."
+      },
+      "Id": "ea22e4f3a21e48c1b9d495c1377daa2d",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "7803f4b2ff37427c8ff2379cf9905a40",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "worksets",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": "List of worksets and/or\nworkset names to isolate."
+      },
+      "Id": "0ee965fdb89f4d5ab195cbfacfd5dd21",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "b1b78c7d38c4493cba3aaccf8f900c69",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "success",
+      "Id": "40888ca266424f96aab4c33075c5633f",
+      "Inputs": [
+        {
+          "Id": "a4219c64bb14489999c5bc45cb9e8487",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "d59483eb27c34d63bc3b05d0c0c12dce",
+      "End": "a4219c64bb14489999c5bc45cb9e8487",
+      "Id": "78478ec1326f4293903cc627f1d27e48",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "7803f4b2ff37427c8ff2379cf9905a40",
+      "End": "93870c99917942b3a7b66ac33844f3d1",
+      "Id": "0d22094ea05943e6a93128a83c797799",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "b1b78c7d38c4493cba3aaccf8f900c69",
+      "End": "473f41c975a24b828b233d85008ca678",
+      "Id": "4a7bee4b90204511869428563eadfd39",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.16.2.5624",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Id": "c5ed10a925494c88909cfe496ec48475",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 0.0
+      },
+      {
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Id": "ea22e4f3a21e48c1b9d495c1377daa2d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -145.57261661005992,
+        "Y": -78.932707673010313
+      },
+      {
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Id": "0ee965fdb89f4d5ab195cbfacfd5dd21",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -155.27745771739728,
+        "Y": 78.831165212859617
+      },
+      {
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Id": "40888ca266424f96aab4c33075c5633f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 449.0,
+        "Y": 0.0
+      }
+    ],
+    "Annotations": [],
+    "X": 356.70597244915916,
+    "Y": 210.79651317895343,
+    "Zoom": 1.0792537289518345
+  }
+}
