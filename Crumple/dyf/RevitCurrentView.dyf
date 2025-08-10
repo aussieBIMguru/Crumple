@@ -49,54 +49,6 @@
       "Description": "A function output, use with custom nodes"
     },
     {
-      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
-      "NodeType": "CodeBlockNode",
-      "Code": "x;\ndocument1 = Revit.Document.Current;\nRevit.Document.ActiveView(document1);",
-      "Id": "116c100d68d44247b7ce910ea3a2de25",
-      "Inputs": [
-        {
-          "Id": "7aeac1bf9aef498f8cccc96debf4af6e",
-          "Name": "x",
-          "Description": "x",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "10c7b4eee525453080afd149f94be5b1",
-          "Name": "",
-          "Description": "Value of expression at line 1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "b2556cbca3094d1ba608bccf10b53598",
-          "Name": "",
-          "Description": "document1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "05c089e70a74423ea6656e461a911cf7",
-          "Name": "",
-          "Description": "Value of expression at line 3",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "Allows for DesignScript code to be authored directly"
-    },
-    {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
@@ -121,19 +73,52 @@
       ],
       "Replication": "Disabled",
       "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Made by Gavin Crump\n# Free for use\n# BIM Guru, www.bimguru.com.au\n\n# Boilerplate text\nimport clr\n\nclr.AddReference(\"RevitServices\")\nimport RevitServices\nfrom RevitServices.Persistence import DocumentManager \n\n# Current doc/app/ui\ndoc = DocumentManager.Instance.CurrentDBDocument\nuiapp = DocumentManager.Instance.CurrentUIApplication \nuidoc = uiapp.ActiveUIDocument\n\n# Preparing output to Dynamo\nOUT = uidoc.ActiveGraphicalView",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "ff7de39b5b1449eb8eb00ddbc58422ae",
+      "Inputs": [
+        {
+          "Id": "48f2d5429c1646a3b2dc28dd97a9b3ef",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "3f39fcfdd9f24444b4a3869902530d6d",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
     }
   ],
   "Connectors": [
     {
-      "Start": "05c089e70a74423ea6656e461a911cf7",
-      "End": "6a7c17a0b00c4ebc87cbd9fb6598efdb",
-      "Id": "135c729fdd464f73b4ab596b8c49abbb",
+      "Start": "cce28bbc697341c5a69bc380d73e8720",
+      "End": "48f2d5429c1646a3b2dc28dd97a9b3ef",
+      "Id": "d3dc2f689c784489836b46986e59de81",
       "IsHidden": "False"
     },
     {
-      "Start": "cce28bbc697341c5a69bc380d73e8720",
-      "End": "7aeac1bf9aef498f8cccc96debf4af6e",
-      "Id": "0da0f9bde9724510963a96de25b48553",
+      "Start": "3f39fcfdd9f24444b4a3869902530d6d",
+      "End": "6a7c17a0b00c4ebc87cbd9fb6598efdb",
+      "Id": "e4820ebf36ac49babc2d7c1a899f070c",
       "IsHidden": "False"
     }
   ],
@@ -175,16 +160,6 @@
         "Y": 2.1869436201780559
       },
       {
-        "Name": "Code Block",
-        "ShowGeometry": true,
-        "Id": "116c100d68d44247b7ce910ea3a2de25",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 322.83382789317506,
-        "Y": -33.560830860534111
-      },
-      {
         "Name": "Input",
         "ShowGeometry": true,
         "Id": "98cc67b583f04f0d8958280926f019db",
@@ -193,11 +168,21 @@
         "Excluded": false,
         "X": -12.0,
         "Y": -34.0
+      },
+      {
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Id": "ff7de39b5b1449eb8eb00ddbc58422ae",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 407.02288202310291,
+        "Y": -30.770394406054606
       }
     ],
     "Annotations": [],
-    "X": -31.377499999999998,
-    "Y": 265.415,
-    "Zoom": 0.8425
+    "X": -12.045340003709214,
+    "Y": 283.51790389465873,
+    "Zoom": 0.97676875
   }
 }
